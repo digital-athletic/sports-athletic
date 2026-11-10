@@ -1,7 +1,9 @@
 import { generateChecklistRow } from "@test/factories/checklistRow";
 import { type ReactNode } from "react";
+import { type TestInstance } from "test-renderer";
 import { Dimensions, StyleSheet } from "react-native";
-import { act, fireEvent, render } from "../../utils/testUtils";
+import { theme } from "../../theme/theme";
+import { act, fireEvent, render, within } from "../../utils/testUtils";
 import {
   TrainingExerciseSheet,
   type TrainingExerciseSheetProps,
@@ -507,6 +509,85 @@ describe("TrainingExerciseSheet: feedback", () => {
     expect(onComplete.mock.invocationCallOrder[0]).toBeLessThan(
       onNext.mock.invocationCallOrder[0],
     );
+  });
+});
+
+describe("TrainingExerciseSheet: feedback buttons", () => {
+  // Opens the feedback step of the last set of a feedback exercise.
+  const renderFeedbackChoice = async (onComplete = jest.fn()) => {
+    const view = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({ isFeedbackSkill: true }),
+          onComplete,
+        })}
+      />,
+    );
+    await fireEvent.press(view.getByTestId("training-list-sheet-next"));
+    return view;
+  };
+
+  // The icons drawn inside one feedback button.
+  const feedbackIcons = (button: TestInstance) =>
+    button.queryAll((node) => node.type === "Ionicons");
+
+  it("shows too hard on the left, succeeded in the middle and too easy on the right", async () => {
+    const { getAllByRole } = await renderFeedbackChoice();
+
+    const feedbackNames = getAllByRole("button")
+      .map((button) => button.props.accessibilityLabel)
+      .filter((name) => ["Too hard", "Succeeded", "Too easy"].includes(name));
+    expect(feedbackNames).toEqual(["Too hard", "Succeeded", "Too easy"]);
+  });
+
+  it.each([
+    ["Too hard", "training-list-sheet-too-hard"],
+    ["Succeeded", "training-list-sheet-checkmark"],
+    ["Too easy", "training-list-sheet-too-easy"],
+  ])(
+    "shows the label %s on its button and names the button the same for screen readers",
+    async (label, testId) => {
+      const { getByTestId, getByRole } = await renderFeedbackChoice();
+
+      const button = getByTestId(testId);
+      expect(within(button).getByText(label)).toBeTruthy();
+      expect(getByRole("button", { name: label })).toBe(button);
+    },
+  );
+
+  it.each([
+    ["Too hard", "TOO_HARD"],
+    ["Succeeded", "SUCCEEDED"],
+    ["Too easy", "TOO_EASY"],
+  ])("saves %s when the athlete taps that button", async (label, feedback) => {
+    const onComplete = jest.fn();
+    const { getByRole } = await renderFeedbackChoice(onComplete);
+
+    await fireEvent.press(getByRole("button", { name: label }));
+
+    expect(onComplete).toHaveBeenCalledWith(feedback);
+  });
+
+  it.each([
+    ["Too hard", "arrow-down-circle-outline", "error"],
+    ["Succeeded", "checkmark-circle-outline", "darkGrey2"],
+    ["Too easy", "arrow-up-circle-outline", "info"],
+  ] as const)(
+    "draws the %s button with its arrow or checkmark in its color",
+    async (label, iconName, color) => {
+      const { getByRole } = await renderFeedbackChoice();
+
+      const [icon] = feedbackIcons(getByRole("button", { name: label }));
+      expect(icon.props.name).toBe(iconName);
+      expect(icon.props.color).toBe(theme.colors[color]);
+    },
+  );
+
+  it("draws the feedback icons larger than the icons of the list rows", async () => {
+    const { getByTestId } = await renderFeedbackChoice();
+
+    const [icon] = feedbackIcons(getByTestId("training-list-sheet-too-easy"));
+    expect(icon.props.size).toBeGreaterThan(32);
   });
 });
 

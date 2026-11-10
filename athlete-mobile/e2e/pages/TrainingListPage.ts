@@ -3,8 +3,14 @@ import { BasePage } from "./BasePage";
 
 type Feedback = "too_easy" | "too_hard";
 
-/** Feedback to give on the last set of the named exercise. */
-export type ExerciseFeedback = { exerciseName: string; feedback: Feedback };
+/**
+ * Feedback to give on the last set of the named exercise, either by its value
+ * or by the button the sheet shows on the right, e.g. { position: "right" }.
+ */
+export type ExerciseFeedback = { exerciseName: string } & (
+  | { feedback: Feedback }
+  | { position: "right" }
+);
 
 export class TrainingListPage extends BasePage {
   private get title() {
@@ -55,7 +61,32 @@ export class TrainingListPage extends BasePage {
     return this.page.getByTestId("training-list-sheet-reps-save");
   }
 
-  private sheetFeedbackButtonFor(feedback: Feedback) {
+  // The e2e runs use the English app language.
+  private get sheetFeedbackButtons() {
+    return this.sheet.getByRole("button", {
+      name: /^(Too hard|Succeeded|Too easy)$/,
+    });
+  }
+
+  /** Accessible names of the feedback buttons, sorted from left to right. */
+  async feedbackNamesLeftToRight(): Promise<string[]> {
+    const buttons = await this.sheetFeedbackButtons.all();
+    const placed = await Promise.all(
+      buttons.map(async (button) => ({
+        x: (await button.boundingBox())?.x ?? 0,
+        name: (await button.getAttribute("aria-label")) ?? "",
+      })),
+    );
+    return placed.sort((a, b) => a.x - b.x).map(({ name }) => name);
+  }
+
+  private async sheetFeedbackButtonFor(feedbackFor: ExerciseFeedback) {
+    if ("position" in feedbackFor) {
+      const names = await this.feedbackNamesLeftToRight();
+      expect(names).toHaveLength(3);
+      return this.sheet.getByRole("button", { name: names[2], exact: true });
+    }
+    const { feedback } = feedbackFor;
     const suffix = feedback === "too_easy" ? "too-easy" : "too-hard";
     return this.page.getByTestId(`training-list-sheet-${suffix}`);
   }
@@ -304,7 +335,7 @@ export class TrainingListPage extends BasePage {
         .isVisible()
         .catch(() => false));
     const button = isAskedExercise
-      ? this.sheetFeedbackButtonFor(feedbackFor.feedback)
+      ? await this.sheetFeedbackButtonFor(feedbackFor)
       : this.sheetSucceededButton;
     await button.click({ timeout: 3000 });
   }

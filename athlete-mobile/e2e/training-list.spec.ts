@@ -401,6 +401,39 @@ test.describe("Training list: checklist session", () => {
     });
   });
 
+  test.describe("Feedback buttons in the sheet", () => {
+    test.use({ profile: createMaxExerciseProfile(), signedIn: true });
+
+    test("athlete taps the right feedback button after the last set and the row shows too easy", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      await workoutPage.startWorkout("Tuesday");
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+
+      const row = trainingListPage.rowByExerciseName("KH-Bankdrücken (Max-K)");
+      await trainingListPage.completeFromRow(row, {
+        exerciseName: "KH-Bankdrücken (Max-K)",
+        position: "right",
+      });
+
+      await expect(
+        row.getByRole("button", { name: "Completed: too easy" }),
+      ).toBeVisible();
+    });
+  });
+
   test.describe("Leaving before the last set", () => {
     test.use({ profile: createCompletedProfile(), signedIn: true });
 

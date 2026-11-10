@@ -49,6 +49,27 @@ type ContentProps = Omit<
   "row" | "isPresented" | "sessionKey" | "isScreenFocused"
 > & { row: ListRow; isTimerActive: boolean };
 
+const FEEDBACK_ICON_SIZE = 56;
+
+// Left to right, matching the arrows: down to the left, up to the right.
+const FEEDBACK_CHOICES = [
+  {
+    feedback: "TOO_HARD",
+    labelKey: "training.list.feedback.tooHard",
+    testId: "training-list-sheet-too-hard",
+  },
+  {
+    feedback: "SUCCEEDED",
+    labelKey: "training.list.feedback.succeeded",
+    testId: "training-list-sheet-checkmark",
+  },
+  {
+    feedback: "TOO_EASY",
+    labelKey: "training.list.feedback.tooEasy",
+    testId: "training-list-sheet-too-easy",
+  },
+] as const;
+
 const TrainingExerciseFeedbackChoice: FC<{
   onSelect: (feedback: DifficultyFeedbackType) => void;
 }> = ({ onSelect }) => {
@@ -61,24 +82,18 @@ const TrainingExerciseFeedbackChoice: FC<{
       justifyContent="center"
       gap="m"
     >
-      <FeedbackIconButton
-        feedback="TOO_EASY"
-        onPress={() => onSelect("TOO_EASY")}
-        accessibilityLabel={t("training.active.feedback.tooEasy")}
-        testId="training-list-sheet-too-easy"
-      />
-      <FeedbackIconButton
-        feedback="SUCCEEDED"
-        onPress={() => onSelect("SUCCEEDED")}
-        accessibilityLabel={t("training.active.a11y.finishExercise")}
-        testId="training-list-sheet-checkmark"
-      />
-      <FeedbackIconButton
-        feedback="TOO_HARD"
-        onPress={() => onSelect("TOO_HARD")}
-        accessibilityLabel={t("training.active.feedback.tooHard")}
-        testId="training-list-sheet-too-hard"
-      />
+      {FEEDBACK_CHOICES.map(({ feedback, labelKey, testId }) => (
+        // Equal columns keep the icons evenly spaced whatever the label length
+        <Box key={feedback} flex={1} alignItems="center">
+          <FeedbackIconButton
+            feedback={feedback}
+            onPress={() => onSelect(feedback)}
+            label={t(labelKey)}
+            size={FEEDBACK_ICON_SIZE}
+            testId={testId}
+          />
+        </Box>
+      ))}
     </Box>
   );
 };
@@ -266,7 +281,7 @@ const TrainingExerciseSheetContent: FC<ContentProps> = ({
 /**
  * Bottom sheet for one set of the checklist: shows the exercise name, the set,
  * target reps and weight, a countdown (timed exercises) or stopwatch (open-ended ones), and a Next
- * step that completes the set, or first reveals the too-easy/succeeded/too-hard
+ * step that completes the set, or first reveals the too hard, succeeded, too easy
  * choice. A planned rest after the set runs before Next opens the next set.
  * Skip stays enabled during the countdown, so an athlete can drop a set mid-way.
  * A pause button next to the timer freezes it until resumed. A set reopened

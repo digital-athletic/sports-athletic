@@ -770,7 +770,7 @@
       "leaveConfirmButton": "Verlassen",
       "leaveErrorNotMember": "Du bist kein Mitglied dieses Teams.",
       "leaveErrorNotFound": "Die App hat dieses Team nicht gefunden. Versuche es später noch einmal.",
-      "leaveErrorOwner": "Du bist Inhaber dieses Teams. Inhaber können ein Team nicht verlassen.",
+      "leaveErrorOwner": "Du bist Eigentümer*in dieses Teams. Teameigentümer*innen können ein Team nicht verlassen.",
       "joinSection": "Team beitreten",
       "codeLabel": "Einladungscode",
       "codePlaceholder": "______",

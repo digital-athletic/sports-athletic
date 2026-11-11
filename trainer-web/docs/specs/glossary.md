@@ -16,8 +16,8 @@ Terms of the trainer dashboard. Training terms such as workout, focus and points
 | Term | German | Code | Meaning |
 |---|---|---|---|
 | Team | Team | | Group of accounts around one trainer. Older texts say "group" or "training group" for the same thing. |
-| Owner | Eigentümer | owner | The account that created the team. Exactly one per team. Manages members and invite codes and deletes the team. |
-| Co-owner | Co-Eigentümer | co_owner | Member promoted by the owner. Sees athlete training data, manages nothing. |
+| Owner | Eigentümer*in, Teameigentümer*in | owner | The account that created the team. Exactly one per team. Manages members and invite codes and deletes the team. |
+| Co-owner | Begleiter*in | co_owner | Member promoted by the owner. Sees athlete training data, manages nothing. |
 | Member | Mitglied | member | Account that joined with an invite code. |
 | Athlete | Athlet | | A team member with role member. Owner and co-owners are not athletes. |
 | Invite code | Einladungscode | | Six-character code of uppercase letters and digits that lets an account join one team. |

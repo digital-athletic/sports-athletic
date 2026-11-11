@@ -38,7 +38,7 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 |---|---|---|---|
 | Team | Team | | Group of athletes around one trainer, joined with an invite code. Listed under More, Team Management. |
 | Team guidance | Hinweise | guidance | Free text the team owner writes for the team, for example the team training days. Shown on the team info page. |
-| Weekly target | Wochenziel | weekly_training_days | Number of training days per week, 1 to 7, the team owner expects. Shown on the team info page only. It is independent of the training plan: the app neither adds nor removes training days because of it. |
+| Weekly target | Wochenziel | weekly_training_days | Number of training days per week, 1 to 7, the team owner expects. Shown on the team info page only. The training plan ignores it: the app neither adds nor removes training days because of the weekly target. |
 
 ## Training session
 

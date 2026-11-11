@@ -10,7 +10,7 @@ The athlete plans the week in the app, while the team's expectations come from t
 
 ## Solution
 
-Every row under Your Teams opens a read-only page for that team. The page loads the team each time it appears and shows the name, the guidance and the weekly target. The weekly target is a displayed count only; the training plan ignores it.
+Every row under Your Teams opens a read-only page for that team. The page shows the team name, the guidance and the weekly target. It reads the team again each time it appears. The weekly target is a displayed count only; the training plan ignores it.
 
 Rejected: showing the team description. It stays a note for the trainer dashboard; guidance is the field written for athletes.
 

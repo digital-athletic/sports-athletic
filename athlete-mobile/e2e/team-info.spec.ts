@@ -35,8 +35,8 @@ test.describe("Team info page: opening from Your Teams", () => {
     const basePage = new BasePage(page);
     await page.goto("/");
     await basePage.expectLoggedIn();
-    // mockSupabaseAuth registers its catch-all without awaiting it, so these
-    // go in once the app runs to make sure they win (Playwright matches LIFO).
+    // mockSupabaseAuth registers its catch-all route without awaiting it.
+    // Registered after the app starts, the team routes take priority (LIFO).
     await mockTeam(page, TEAM);
     await page.goto("/join-team");
 

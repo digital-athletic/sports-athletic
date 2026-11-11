@@ -119,3 +119,53 @@ test.describe("Joining a group", () => {
     await teamSelection.expectErrorWithoutCode("INVITE_CODE_INVALID");
   });
 });
+
+test.describe("Member list", () => {
+  const ERIKA = "11111111-1111-4111-8111-11111111aaaa";
+  const MAX = "11111111-1111-4111-8111-11111111bbbb";
+
+  const TEAM_WITH_ROLES = {
+    id: "44444444-4444-4444-8444-444444444444",
+    name: "U15 Handball",
+    invite_code: "ROLE01",
+    members: [
+      {
+        user_id: MOCK_USER.id,
+        role: "owner" as const,
+        display_name: "Trainer",
+      },
+      {
+        user_id: ERIKA,
+        role: "co_owner" as const,
+        display_name: "Erika Mustermann",
+      },
+      { user_id: MAX, role: "member" as const, display_name: "Max Mustermann" },
+    ],
+  };
+
+  // The one place a spec asserts on translated text: the German role names are
+  // the behaviour under test here, not chrome around it.
+  test("the roles carry their gendered German names", async ({ page }) => {
+    await mockSupabase(page, {
+      trainerGrantedAt: TRAINER,
+      teams: [TEAM_WITH_ROLES],
+    });
+
+    const login = new LoginPage(page);
+    const teamSelection = new TeamSelectionPage(page);
+    const dashboard = new DashboardPage(page);
+
+    await login.goto();
+    await login.signIn(MOCK_USER.email);
+    await teamSelection.openTeam(TEAM_WITH_ROLES.name);
+    await dashboard.openManagement();
+
+    await dashboard.expectMemberRole("Trainer", "Eigentümer*in");
+    await dashboard.expectMemberRole("Erika Mustermann", "Begleiter*in");
+    await dashboard.expectMemberRole("Max Mustermann", "Mitglied");
+    await dashboard.expectRoleAction(
+      "Max Mustermann",
+      "Zur Begleiter*in machen",
+    );
+  });
+});

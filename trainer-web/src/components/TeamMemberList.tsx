@@ -54,6 +54,7 @@ export function TeamMemberList({
           {members.map((member) => (
             <li
               key={member.id}
+              data-testid="team-member"
               className="flex items-center justify-between py-3"
             >
               <div>
@@ -63,6 +64,7 @@ export function TeamMemberList({
                     ` ${t("teamManagement.members.you")}`}
                 </span>
                 <span
+                  data-testid="member-role"
                   className={`ml-2 inline-block rounded px-2 py-0.5 text-xs ${ROLE_BADGE_CLASS[member.role]}`}
                 >
                   {t(ROLE_LABEL_KEY[member.role])}
@@ -78,6 +80,7 @@ export function TeamMemberList({
                     target. */}
                 {isOwner && member.role !== "owner" && onSetMemberRole && (
                   <button
+                    data-testid="member-role-toggle"
                     onClick={() =>
                       onSetMemberRole(
                         member.user_id,

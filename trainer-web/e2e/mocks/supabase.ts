@@ -343,6 +343,23 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
       );
     }
 
+    // Answers with the row the request describes, the way the database does:
+    // a new workout gets an id, and the template carries the row id.
+    if (name === "save_team_workout") {
+      const id: string =
+        body.p_workout_id ?? "44444444-4444-4444-8444-444444444444";
+      const now = new Date().toISOString();
+      return route.fulfill(
+        json({
+          id,
+          team_id: body.p_team_id,
+          template: { ...body.p_template, id },
+          created_at: now,
+          updated_at: now,
+        }),
+      );
+    }
+
     if (name === "delete_team_workout") {
       return route.fulfill({ status: 204, body: "" });
     }

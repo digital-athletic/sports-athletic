@@ -1,24 +1,30 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTeamWorkoutTemplates } from "../../hooks/useTeamWorkoutTemplates";
-import type { TeamWorkout } from "../../types/team";
+import type { AiwlTemplate, TeamWorkout } from "../../types/team";
 import {
   AMOUNT_UNITS,
   readTemplateName,
   sectionKind,
   templateToDraft,
   type SectionDraft,
+  type WorkoutDraft,
 } from "../../utils/workoutBuilder";
 import { Button } from "../Button";
 import { ConfirmModal } from "../ConfirmModal";
 import { ErrorMessage } from "../ErrorMessage";
 import { LoadingSpinner } from "../LoadingSpinner";
+import { WorkoutBuilder } from "./WorkoutBuilder";
 
 interface WorkoutsTabProps {
   teamId: string | null;
   /** Only the owner writes; co-owners and members see the list. */
   isOwner: boolean;
 }
+
+type Editing = { workoutId: string | null; draft: WorkoutDraft };
+
+const EMPTY_DRAFT: WorkoutDraft = { name: "", sections: [] };
 
 /** Section keys that stay the same across renders, e.g. "<id>-0", "<id>-1". */
 const keysFor = (workoutId: string): (() => string) => {
@@ -28,8 +34,9 @@ const keysFor = (workoutId: string): (() => string) => {
 
 export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
   const { t } = useTranslation();
-  const { workouts, loading, error, deleteWorkout } =
+  const { workouts, loading, error, saveWorkout, deleteWorkout } =
     useTeamWorkoutTemplates(teamId);
+  const [editing, setEditing] = useState<Editing | null>(null);
   const [toDelete, setToDelete] = useState<TeamWorkout | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -43,6 +50,14 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
       count: section.amount,
     });
     return `${skillWithTags} · ${amount}`;
+  };
+
+  const handleSave = async (
+    template: AiwlTemplate,
+    workoutId: string | null,
+  ) => {
+    await saveWorkout(template, workoutId);
+    setEditing(null);
   };
 
   const handleDelete = async () => {
@@ -59,15 +74,39 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
     }
   };
 
+  if (editing) {
+    return (
+      <WorkoutBuilder
+        initialDraft={editing.draft}
+        workoutId={editing.workoutId}
+        onSave={handleSave}
+        onCancel={() => setEditing(null)}
+      />
+    );
+  }
+
   if (loading) return <LoadingSpinner />;
 
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900">
-          {t("workouts.title")}
-        </h3>
-        <p className="text-sm text-gray-500">{t("workouts.description")}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">
+            {t("workouts.title")}
+          </h3>
+          <p className="text-sm text-gray-500">{t("workouts.description")}</p>
+        </div>
+        {isOwner && (
+          <Button
+            data-testid="workout-new"
+            onClick={() => {
+              setActionError(null);
+              setEditing({ workoutId: null, draft: EMPTY_DRAFT });
+            }}
+          >
+            + {t("workouts.new")}
+          </Button>
+        )}
       </div>
 
       {error && <ErrorMessage message={error} />}
@@ -78,7 +117,7 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
           data-testid="workouts-empty"
           className="py-8 text-center text-sm text-gray-500"
         >
-          {t("workouts.empty")}
+          {isOwner ? t("workouts.emptyOwner") : t("workouts.empty")}
         </p>
       ) : (
         <ul className="space-y-3">
@@ -112,13 +151,27 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
                   )}
                 </div>
                 {isOwner && (
-                  <Button
-                    variant="danger"
-                    data-testid="workout-delete"
-                    onClick={() => setToDelete(workout)}
-                  >
-                    {t("common.delete")}
-                  </Button>
+                  <div className="flex gap-2">
+                    {draft && (
+                      <Button
+                        variant="secondary"
+                        data-testid="workout-edit"
+                        onClick={() => {
+                          setActionError(null);
+                          setEditing({ workoutId: workout.id, draft });
+                        }}
+                      >
+                        {t("workouts.edit")}
+                      </Button>
+                    )}
+                    <Button
+                      variant="danger"
+                      data-testid="workout-delete"
+                      onClick={() => setToDelete(workout)}
+                    >
+                      {t("common.delete")}
+                    </Button>
+                  </div>
                 )}
               </li>
             );

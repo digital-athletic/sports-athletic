@@ -236,7 +236,10 @@
   "workouts": {
     "title": "Team workouts",
     "description": "Workouts your athletes can start in the app.",
+    "new": "New workout",
+    "edit": "Edit",
     "empty": "This team has no workouts yet.",
+    "emptyOwner": "This team has no workouts yet. Create the first one.",
     "deleteConfirmTitle": "Delete workout?",
     "deleteConfirmMessage": "\"{{name}}\" is removed for the whole team.",
     "list": {
@@ -244,6 +247,37 @@
       "exercises_other": "{{count}} exercises",
       "minutes_one": "{{count}} minute",
       "minutes_other": "{{count}} minutes"
+    },
+    "builder": {
+      "titleNew": "New workout",
+      "titleEdit": "Edit workout",
+      "name": "Name",
+      "namePlaceholder": "e.g. Tuesday stability",
+      "sections": "Sections",
+      "noSections": "No sections yet. Add the first one.",
+      "addSection": "Add section",
+      "sectionNumber": "Section {{number}}",
+      "skill": "Training",
+      "exercises": "Exercises",
+      "minutes": "Minutes",
+      "range": "{{min}} to {{max}}",
+      "moveUp": "Move section {{number}} up",
+      "moveDown": "Move section {{number}} down",
+      "removeSection": "Remove",
+      "tagGroups": {
+        "regions": "Body regions (optional)",
+        "prevention": "Prevention areas (optional)"
+      },
+      "tagGroupHint": "A section focuses on body regions or on prevention areas, not both."
+    },
+    "errors": {
+      "NAME_REQUIRED": "Enter a name.",
+      "NAME_TOO_LONG": "The name can have at most {{max}} characters.",
+      "SECTION_REQUIRED": "Add at least one section.",
+      "TOO_MANY_SECTIONS": "A workout can have at most {{max}} sections.",
+      "UNKNOWN_SKILL": "Section {{number}}: choose a training.",
+      "AMOUNT_OUT_OF_RANGE": "Section {{number}}: enter {{min}} to {{max}} {{unit}}.",
+      "TAG_NOT_ALLOWED": "Section {{number}}: choose body regions or prevention areas, not both."
     },
     "skills": {
       "WU": "Warm-up",

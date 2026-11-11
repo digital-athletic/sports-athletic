@@ -1,0 +1,226 @@
+import { type FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { AiwlTemplate } from "../../types/team";
+import {
+  AMOUNT_RANGES,
+  AMOUNT_UNITS,
+  changeSectionSkill,
+  createSection,
+  draftToTemplate,
+  MAX_NAME_LENGTH,
+  MAX_SECTIONS,
+  moveSection,
+  sectionKind,
+  toggleSectionTag,
+  validateDraft,
+  type DraftError,
+  type SectionDraft,
+  type WorkoutDraft,
+} from "../../utils/workoutBuilder";
+import { Button } from "../Button";
+import { ErrorMessage } from "../ErrorMessage";
+import { FormInput } from "../FormInput";
+import { WorkoutSectionEditor } from "./WorkoutSectionEditor";
+
+interface WorkoutBuilderProps {
+  /** The draft to start from; a new workout starts empty. */
+  initialDraft: WorkoutDraft;
+  /** The id of the workout being edited, or null for a new one. */
+  workoutId: string | null;
+  /** Saves the template; rejects with a translated message. */
+  onSave: (template: AiwlTemplate, workoutId: string | null) => Promise<void>;
+  onCancel: () => void;
+}
+
+const DEFAULT_SKILL = "WU";
+
+export function WorkoutBuilder({
+  initialDraft,
+  workoutId,
+  onSave,
+  onCancel,
+}: WorkoutBuilderProps) {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState<WorkoutDraft>(initialDraft);
+  const [showErrors, setShowErrors] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const errors = validateDraft(draft);
+
+  const setSections = (update: (sections: SectionDraft[]) => SectionDraft[]) =>
+    setDraft((prev) => ({ ...prev, sections: update(prev.sections) }));
+
+  const updateSection = (
+    key: string,
+    update: (section: SectionDraft) => SectionDraft,
+  ) =>
+    setSections((sections) =>
+      sections.map((section) =>
+        section.key === key ? update(section) : section,
+      ),
+    );
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (errors.length > 0) {
+      setShowErrors(true);
+      return;
+    }
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await onSave(
+        draftToTemplate(draft, workoutId ?? crypto.randomUUID()),
+        workoutId,
+      );
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : t("common.error"));
+      setSaving(false);
+    }
+  };
+
+  const describeError = (
+    error: DraftError,
+  ): { testId: string; message: string } => {
+    const key = `workouts.errors.${error.code}`;
+    if (!("sectionKey" in error)) {
+      return {
+        testId: `workout-error-${error.code}`,
+        message: t(key, {
+          max: error.code === "NAME_TOO_LONG" ? MAX_NAME_LENGTH : MAX_SECTIONS,
+        }),
+      };
+    }
+    const index = draft.sections.findIndex((s) => s.key === error.sectionKey);
+    const section = draft.sections[index];
+    const kind = section ? sectionKind(section) : "picks";
+    return {
+      testId: `workout-error-${error.code}-${index}`,
+      message: t(key, {
+        number: index + 1,
+        ...AMOUNT_RANGES[kind],
+        unit: t(`workouts.builder.${AMOUNT_UNITS[kind]}`),
+      }),
+    };
+  };
+
+  return (
+    <form
+      data-testid="workout-builder"
+      onSubmit={handleSubmit}
+      noValidate
+      className="space-y-5"
+    >
+      <h3 className="text-lg font-semibold text-gray-900">
+        {workoutId
+          ? t("workouts.builder.titleEdit")
+          : t("workouts.builder.titleNew")}
+      </h3>
+
+      <FormInput
+        name="workout-name"
+        data-testid="workout-name"
+        label={t("workouts.builder.name")}
+        placeholder={t("workouts.builder.namePlaceholder")}
+        value={draft.name}
+        maxLength={MAX_NAME_LENGTH}
+        onChange={(event) =>
+          setDraft((prev) => ({ ...prev, name: event.target.value }))
+        }
+      />
+
+      <div>
+        <h4 className="mb-2 text-sm font-semibold text-gray-900">
+          {t("workouts.builder.sections")}
+        </h4>
+        {draft.sections.length === 0 ? (
+          <p className="text-sm text-gray-500">
+            {t("workouts.builder.noSections")}
+          </p>
+        ) : (
+          <ol className="space-y-3">
+            {draft.sections.map((section, index) => (
+              <WorkoutSectionEditor
+                key={section.key}
+                section={section}
+                index={index}
+                isFirst={index === 0}
+                isLast={index === draft.sections.length - 1}
+                onSkillChange={(skill) =>
+                  updateSection(section.key, (s) =>
+                    changeSectionSkill(s, skill),
+                  )
+                }
+                onAmountChange={(amount) =>
+                  updateSection(section.key, (s) => ({ ...s, amount }))
+                }
+                onTagToggle={(tag) =>
+                  updateSection(section.key, (s) => toggleSectionTag(s, tag))
+                }
+                onMove={(offset) =>
+                  setSections((sections) =>
+                    moveSection(sections, index, offset),
+                  )
+                }
+                onRemove={() =>
+                  setSections((sections) =>
+                    sections.filter((s) => s.key !== section.key),
+                  )
+                }
+              />
+            ))}
+          </ol>
+        )}
+        <Button
+          type="button"
+          variant="secondary"
+          className="mt-3"
+          data-testid="workout-add-section"
+          disabled={draft.sections.length >= MAX_SECTIONS}
+          onClick={() =>
+            setSections((sections) => [
+              ...sections,
+              createSection(crypto.randomUUID(), DEFAULT_SKILL),
+            ])
+          }
+        >
+          + {t("workouts.builder.addSection")}
+        </Button>
+      </div>
+
+      <div aria-live="polite">
+        {showErrors && errors.length > 0 && (
+          <ul className="space-y-1 rounded bg-red-50 p-3 text-sm text-red-600">
+            {errors.map(describeError).map(({ testId, message }) => (
+              <li key={testId} data-testid={testId}>
+                {message}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {saveError && <ErrorMessage message={saveError} />}
+
+      <div className="flex justify-end gap-3">
+        <Button
+          type="button"
+          variant="secondary"
+          data-testid="workout-cancel"
+          onClick={onCancel}
+        >
+          {t("common.cancel")}
+        </Button>
+        <Button
+          type="submit"
+          data-testid="workout-save"
+          isLoading={saving}
+          loadingText={t("common.loading")}
+        >
+          {t("common.save")}
+        </Button>
+      </div>
+    </form>
+  );
+}

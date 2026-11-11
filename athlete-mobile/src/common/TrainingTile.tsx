@@ -19,7 +19,7 @@ export type TrainingTileSize = "full" | "half";
 interface TrainingTileProps {
   title: string;
   description?: string;
-  /** Photo of the tile. Without it the tile shows the icon on brand red. */
+  /** Photo of the tile. Without it the tile shows the icon on a grey card. */
   image?: ImageSourcePropType;
   icon?: AppIconSource;
   size: TrainingTileSize;
@@ -29,7 +29,7 @@ interface TrainingTileProps {
 
 type TileBackgroundProps = Pick<TrainingTileProps, "image" | "icon" | "size">;
 
-/** The photo under a dark shade, or the large icon on brand red. */
+/** The photo under a dark shade, or the large icon on a grey card. */
 const TileBackground: FC<TileBackgroundProps> = ({ image, icon, size }) => {
   const { colors } = useTheme();
 
@@ -49,18 +49,12 @@ const TileBackground: FC<TileBackgroundProps> = ({ image, icon, size }) => {
 
   return (
     <>
-      <LinearGradient
-        colors={[colors.primary, colors.primaryDark]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.fill}
-      />
       {icon && (
         <Box style={StyleSheet.absoluteFill} alignItems="center" paddingTop="l">
           <AppIcon
             icon={icon}
             size={size === "full" ? 64 : 48}
-            color={colors.white}
+            color={colors.primary}
             decorative
           />
         </Box>
@@ -80,6 +74,7 @@ export const TrainingTile: FC<TrainingTileProps> = ({
   testID,
 }) => {
   const accessibilityLabel = description ? `${title}, ${description}` : title;
+  const textColor = image ? "white" : "darkGrey3";
 
   return (
     <Pressable
@@ -89,7 +84,14 @@ export const TrainingTile: FC<TrainingTileProps> = ({
       accessibilityLabel={accessibilityLabel}
       testID={testID}
     >
-      <Box flex={1} borderRadius="xl" overflow="hidden">
+      <Box
+        flex={1}
+        borderRadius="xl"
+        overflow="hidden"
+        backgroundColor={image ? undefined : "lightGrey1"}
+        borderColor="lightGrey2"
+        borderWidth={image ? 0 : 1.5}
+      >
         <TileBackground image={image} icon={icon} size={size} />
         <Box flex={1} justifyContent="flex-end" padding="m">
           {/* Long German compounds carry soft hyphens in the translation, so
@@ -98,13 +100,17 @@ export const TrainingTile: FC<TrainingTileProps> = ({
             variant="body"
             fontSize={17}
             fontWeight="700"
-            color="white"
+            color={textColor}
             android_hyphenationFrequency="normal"
           >
             {title}
           </Text>
           {description && (
-            <Text variant="small" fontSize={13} color="white">
+            <Text
+              variant="small"
+              fontSize={13}
+              color={image ? "white" : "darkGrey1"}
+            >
               {description}
             </Text>
           )}

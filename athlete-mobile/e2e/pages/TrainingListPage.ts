@@ -18,7 +18,9 @@ export class TrainingListPage extends BasePage {
   }
 
   private get startButtons() {
-    return this.page.getByRole("button", { name: "Start exercise" });
+    return this.page.getByRole("button", {
+      name: /^Start (next )?exercise$/,
+    });
   }
 
   private get firstStartButton() {
@@ -91,7 +93,8 @@ export class TrainingListPage extends BasePage {
     return this.page.getByTestId(`training-list-sheet-${suffix}`);
   }
 
-  private startFor(testId: string) {
+  /** The start button of a row; its accessible name tells filled from quiet. */
+  startFor(testId: string) {
     return this.page.getByTestId(`${testId}-start`);
   }
 
@@ -168,10 +171,6 @@ export class TrainingListPage extends BasePage {
 
   skillTitle(key: number) {
     return this.page.getByTestId(`training-list-skill-${key}`);
-  }
-
-  nextArrow(testId: string) {
-    return this.page.getByTestId(`${testId}-next-arrow`);
   }
 
   /** Test id of the set the open sheet shows, e.g. "training-list-sheet-set-4". */

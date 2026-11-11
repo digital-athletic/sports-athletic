@@ -100,3 +100,49 @@ describe("useTrainingListScreen: finishing", () => {
     expect(result.current.isFinishing).toBe(true);
   });
 });
+
+describe("useTrainingListScreen: the featured exercise", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1" }),
+        createExercise({ exerciseId: "2" }),
+        createExercise({ exerciseId: "3" }),
+      ],
+    });
+  });
+
+  it("features the first exercise before any set is finished", async () => {
+    const { result } = await renderHook(() => useTrainingListScreen());
+
+    expect(result.current.featuredEntryKey).toBe(0);
+  });
+
+  it("features the exercise after the one completed out of order", async () => {
+    const { result } = await renderHook(() => useTrainingListScreen());
+
+    await act(() => {
+      result.current.handleStart(result.current.blocks[1].entries[0]);
+    });
+    await act(() => {
+      result.current.sheetProps.onComplete();
+    });
+
+    expect(result.current.featuredEntryKey).toBe(2);
+  });
+
+  it("features the first open exercise again after the last one is completed", async () => {
+    const { result } = await renderHook(() => useTrainingListScreen());
+
+    await act(() => {
+      result.current.handleStart(result.current.blocks[2].entries[0]);
+    });
+    await act(() => {
+      result.current.sheetProps.onComplete();
+    });
+
+    expect(result.current.featuredEntryKey).toBe(0);
+  });
+});

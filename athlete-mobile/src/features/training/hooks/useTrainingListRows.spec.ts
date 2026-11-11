@@ -765,38 +765,6 @@ describe("useTrainingListRows: superset blocks", () => {
 
     expect(result.current.blocks[0].isSuperset).toBe(false);
   });
-
-  it("points nextEntryKey at the first exercise before any set is done", async () => {
-    seedSuperset(0);
-
-    const { result } = await renderHook(() => useTrainingListRows());
-
-    expect(result.current.blocks[0].nextEntryKey).toBe(0);
-  });
-
-  it("points nextEntryKey at the second exercise after the first set", async () => {
-    seedSuperset(1);
-
-    const { result } = await renderHook(() => useTrainingListRows());
-
-    expect(result.current.blocks[0].nextEntryKey).toBe(2);
-  });
-
-  it("points nextEntryKey back at the first exercise after one round", async () => {
-    seedSuperset(2);
-
-    const { result } = await renderHook(() => useTrainingListRows());
-
-    expect(result.current.blocks[0].nextEntryKey).toBe(0);
-  });
-
-  it("sets nextEntryKey to null when every set of the block is done", async () => {
-    seedSuperset(4);
-
-    const { result } = await renderHook(() => useTrainingListRows());
-
-    expect(result.current.blocks[0].nextEntryKey).toBeNull();
-  });
 });
 
 describe("useTrainingListRows: exercise pictures", () => {

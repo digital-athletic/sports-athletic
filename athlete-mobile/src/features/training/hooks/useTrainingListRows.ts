@@ -71,7 +71,6 @@ export type ChecklistEntryBlock = {
   skill: string;
   isSuperset: boolean;
   entries: ChecklistEntry[];
-  nextEntryKey: number | null;
 };
 
 /** Target weight of a set in kg, or undefined for a set without weight. */
@@ -263,22 +262,12 @@ function buildEntryBlocks(
   return groupChecklistEntries(exerciseList).map((block) => {
     const entries = block.entries.map((group) => buildEntry(group, context));
 
-    const blockSetIndices = block.entries
-      .flatMap((group) => group.setIndices)
-      .sort((a, b) => a - b);
-    const nextSetIndex = findFirstOpenSetIndex(exerciseList, blockSetIndices);
-    const nextEntry = block.entries.find(
-      (group) =>
-        nextSetIndex !== null && group.setIndices.includes(nextSetIndex),
-    );
-
     const key = block.entries[0].key;
     return {
       key,
       skill: exerciseList[key].skill,
       isSuperset: block.isSuperset,
       entries,
-      nextEntryKey: nextEntry?.key ?? null,
     };
   });
 }

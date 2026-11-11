@@ -4,6 +4,7 @@ import { type UserExerciseDataType } from "@/schemas/sync.schema";
 import {
   findFirstOpenSetIndex,
   findNextOpenSetIndex,
+  findUpcomingSetIndex,
   groupChecklistEntries,
   hasSavedProgress,
 } from "./checklistEntries";
@@ -338,6 +339,46 @@ describe("findNextOpenSetIndex: forward playback", () => {
 
     expect(findNextOpenSetIndex(exerciseList, 1)).toBeNull();
     expect(exerciseList[0].completed).not.toBe(true);
+  });
+});
+
+describe("findUpcomingSetIndex: the set that comes next", () => {
+  // Three single-set exercises, e.g. generateOpenList([1]) completes the press.
+  const generateOpenList = (completedIndices: number[] = []) =>
+    ["squat", "press", "lunge"].map((exerciseId, index) =>
+      generateSetEntry(exerciseId, 1, 1, {
+        completed: completedIndices.includes(index),
+      }),
+    );
+
+  it("returns the first open set when no set is finished yet", () => {
+    expect(findUpcomingSetIndex(generateOpenList(), null)).toBe(0);
+  });
+
+  it("returns the first open set after the set finished last", () => {
+    expect(findUpcomingSetIndex(generateOpenList([1]), 1)).toBe(2);
+  });
+
+  it("returns the first open set of the list when none is open after the set finished last", () => {
+    expect(findUpcomingSetIndex(generateOpenList([2]), 2)).toBe(0);
+  });
+
+  it("skips a rest after the set finished last", () => {
+    const exerciseList = [
+      generateSetEntry("squat", 1, 2, { completed: true }),
+      generateRestEntry(),
+      generateSetEntry("squat", 2, 2),
+    ];
+
+    expect(findUpcomingSetIndex(exerciseList, 0)).toBe(2);
+  });
+
+  it("returns the set finished last once it is open again", () => {
+    expect(findUpcomingSetIndex(generateOpenList(), 1)).toBe(1);
+  });
+
+  it("returns null when every set is completed", () => {
+    expect(findUpcomingSetIndex(generateOpenList([0, 1, 2]), 1)).toBeNull();
   });
 });
 

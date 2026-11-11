@@ -25,7 +25,9 @@ describe("useTrainingListReps: submitting reps", () => {
 
   it("saves the reps once when Save fires twice before re-render", async () => {
     const row = generateChecklistRow({ isTest: true });
-    const { result } = await renderHook(() => useTrainingListReps());
+    const { result } = await renderHook(() =>
+      useTrainingListReps({ onSetFinished: jest.fn() }),
+    );
 
     await act(() => {
       result.current.handleSubmitReps(row);
@@ -33,5 +35,17 @@ describe("useTrainingListReps: submitting reps", () => {
     });
 
     expect(mockSaveExerciseAndBranchData).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports the saved set as finished", async () => {
+    const onSetFinished = jest.fn();
+    const row = generateChecklistRow({ isTest: true, index: 0 });
+    const { result } = await renderHook(() =>
+      useTrainingListReps({ onSetFinished }),
+    );
+
+    await act(() => result.current.handleSubmitReps(row));
+
+    expect(onSetFinished).toHaveBeenCalledWith(0);
   });
 });

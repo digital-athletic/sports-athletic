@@ -7,6 +7,7 @@ import {
 import { Logger } from "@/services/Logger";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
+import { useState } from "react";
 
 // Reads the store, not the render closure, so a second call before re-render sees the row as completed.
 export const isRowCompleted = (index: number) =>
@@ -15,7 +16,8 @@ export const isRowCompleted = (index: number) =>
 /**
  * Complete/skip handlers for a checklist row, guarding against
  * double-applying progression for an already-completed row. A skipped row
- * runs no progression.
+ * runs no progression. lastFinishedIndex is the set finished last, from
+ * which the checklist derives the set that comes next.
  */
 export function useTrainingListCompletion() {
   const markExerciseCompleted = useTrainingStore(
@@ -23,6 +25,9 @@ export function useTrainingListCompletion() {
   );
   const markExerciseSkipped = useTrainingStore((s) => s.markExerciseSkipped);
   const { saveExerciseAndBranchData, handleFeedback } = useExerciseCompletion();
+  const [lastFinishedIndex, setLastFinishedIndex] = useState<number | null>(
+    null,
+  );
 
   const handleComplete = (row: ListRow, feedback?: DifficultyFeedbackType) => {
     if (isRowCompleted(row.index)) return;
@@ -32,6 +37,7 @@ export function useTrainingListCompletion() {
     }
     saveExerciseAndBranchData(row.index);
     markExerciseCompleted(row.index);
+    setLastFinishedIndex(row.index);
   };
 
   const handleSkip = (row: ListRow) => {
@@ -41,6 +47,7 @@ export function useTrainingListCompletion() {
     markExerciseSkipped(row.index);
     Logger.logEvent("exercise_skipped", { exerciseId: row.exerciseId });
     markExerciseCompleted(row.index);
+    setLastFinishedIndex(row.index);
   };
 
   // Rests the athlete never started, e.g. after a skipped set, count as completed.
@@ -60,5 +67,12 @@ export function useTrainingListCompletion() {
     markExerciseCompleted(restIndex);
   };
 
-  return { handleComplete, handleSkip, handleRestEnd, completeRestRows };
+  return {
+    handleComplete,
+    handleSkip,
+    handleRestEnd,
+    completeRestRows,
+    lastFinishedIndex,
+    markFinished: setLastFinishedIndex,
+  };
 }

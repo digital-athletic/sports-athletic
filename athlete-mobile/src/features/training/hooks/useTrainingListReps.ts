@@ -8,7 +8,12 @@ import { useState } from "react";
  * Reps-draft state for strength-test rows in the checklist, plus the submit
  * handler that persists the drafted value and marks the row complete.
  */
-export function useTrainingListReps() {
+export function useTrainingListReps({
+  onSetFinished,
+}: {
+  /** Called with the list index of a set once its reps are saved. */
+  onSetFinished: (index: number) => void;
+}) {
   const markExerciseCompleted = useTrainingStore(
     (s) => s.markExerciseCompleted,
   );
@@ -26,6 +31,7 @@ export function useTrainingListReps() {
     saveRepsInput(row.index, repsDraft[row.index] ?? 0);
     saveExerciseAndBranchData(row.index);
     markExerciseCompleted(row.index);
+    onSetFinished(row.index);
   };
 
   return { repsDraft, setRepsForRow, handleSubmitReps };

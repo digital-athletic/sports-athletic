@@ -83,6 +83,73 @@ describe("useTrainingListCompletion: feedback and skipping", () => {
   });
 });
 
+describe("useTrainingListCompletion: the set finished last", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      exerciseList: [
+        { exerciseId: "1", skill: "SWR2" },
+        { exerciseId: "2", skill: "SWR2" },
+        { exerciseId: "3", skill: "SWR2" },
+      ],
+    });
+  });
+
+  it("has no set finished last before the athlete finishes one", async () => {
+    const { result } = await renderHook(() => useTrainingListCompletion());
+
+    expect(result.current.lastFinishedIndex).toBeNull();
+  });
+
+  it("remembers the completed set as the set finished last", async () => {
+    const { result } = await renderHook(() => useTrainingListCompletion());
+
+    await act(() =>
+      result.current.handleComplete(generateChecklistRow({ index: 2 })),
+    );
+
+    expect(result.current.lastFinishedIndex).toBe(2);
+  });
+
+  it("remembers the skipped set as the set finished last", async () => {
+    const { result } = await renderHook(() => useTrainingListCompletion());
+
+    await act(() =>
+      result.current.handleSkip(generateChecklistRow({ index: 1 })),
+    );
+
+    expect(result.current.lastFinishedIndex).toBe(1);
+  });
+
+  it("replaces the set finished last with an earlier set completed after it", async () => {
+    const { result } = await renderHook(() => useTrainingListCompletion());
+
+    await act(() =>
+      result.current.handleComplete(generateChecklistRow({ index: 2 })),
+    );
+    await act(() =>
+      result.current.handleComplete(generateChecklistRow({ index: 0 })),
+    );
+
+    expect(result.current.lastFinishedIndex).toBe(0);
+  });
+
+  it("ignores a rest that ends", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        { exerciseId: "1", skill: "SWR2" },
+        { exerciseId: "999999", skill: "SWR2", duration: 60 },
+      ],
+    });
+    const { result } = await renderHook(() => useTrainingListCompletion());
+
+    await act(() => result.current.handleRestEnd(1, false));
+
+    expect(result.current.lastFinishedIndex).toBeNull();
+  });
+});
+
 describe("useTrainingListCompletion: rests", () => {
   // A set followed by two rests of the same skill, e.g. index 1 and 2 are rests.
   const setListWithTwoRests = [

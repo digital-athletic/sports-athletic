@@ -50,6 +50,7 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Branch level | Branch-Level, Stufe | | Difficulty level within a branch, 1 to 6, stored per athlete. Entry mapping in [Branches, Exercises, and Levels](./foundations/branches-exercises-and-levels.md). |
 | Level up, level down | Aufstieg, Abstieg | | Move to the next or previous level of the branch, which holds a different exercise. |
 | Branch substitution | Branch-Ersatz | | When a branch is exhausted upwards or downwards, the plan swaps in an equivalent branch from the same skill tree. |
+| Exercise swap | Übung tauschen | | Replace an exercise with another branch of the same skill tree for the current plan workout only. The plan keeps the original. |
 | Exercise | Übung | | Catalog entry with muscles, region, side and equipment, plus start and target values per fitness level and gender. |
 | One-sided exercise | Einseitige Übung | | Exercise trained one side at a time; the workout lists it twice, left and right. |
 | Two-sided exercise | Beidseitige Übung | | Exercise trained with both sides at once; the workout lists it once. |

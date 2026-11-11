@@ -50,7 +50,7 @@ export type TrainingGenerationParams = {
 export const checksSoreness = (type: TrainingType) =>
   type === "PLAN" || type === "TEST_WORKOUT";
 
-type GenerationContext = {
+export type GenerationContext = {
   trainingDays: TrainingDayType[];
   places: ReturnType<typeof usePlacesStore.getState>["places"];
   workoutsList: ReturnType<
@@ -80,7 +80,7 @@ type GenerationContext = {
   >["setActiveTraining"];
 };
 
-function resolveSelectedPlace(
+export function resolveSelectedPlace(
   trainingType: TrainingType,
   fallbackPlace: PlaceType,
   weekdayNumber: number | undefined,
@@ -115,7 +115,7 @@ function resolveUser(
   return baseUser;
 }
 
-function buildUser(
+export function buildUser(
   params: TrainingGenerationParams,
   ctx: GenerationContext,
 ): UserType {
@@ -130,7 +130,7 @@ function buildUser(
   return resolveUser(baseUser, params.test, params.user);
 }
 
-function calculateDaysSinceLastWorkout(
+export function calculateDaysSinceLastWorkout(
   trainingType: TrainingType,
   ctx: GenerationContext,
 ): number {
@@ -251,7 +251,7 @@ function showGenerationError(e: unknown, t: TFunction, onDismiss: () => void) {
   ]);
 }
 
-function useGenerationContext(): GenerationContext {
+export function useGenerationContext(): GenerationContext {
   const skillTrees = getAllSkillTrees();
   const exercises = getAllExercises();
   const { branchData, exerciseProgress, exerciseData, setBranchData } =

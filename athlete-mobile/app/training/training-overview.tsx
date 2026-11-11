@@ -1,11 +1,17 @@
 import { BackHeader } from "@/common/BackHeader";
 import { CenteredLoading } from "@/common/CenteredLoading";
 import { featureFlags } from "@/config/featureFlags";
-import { WorkoutConstants } from "@/constants/workoutConstants";
+import { isPlaceType, WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import { useExerciseSwap } from "@/features/training/hooks/useExerciseSwap";
+import type { TrainingGenerationParams } from "@/features/training/hooks/useTrainingGeneration";
 import { SkillTitle } from "@/features/training/SkillTitle";
+import {
+  SwapControlsContext,
+  SwapExerciseButton,
+} from "@/features/training/SwapExerciseButton";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
 import { getExercisePictureSource } from "@/features/training/utils/exercisePicture";
@@ -18,7 +24,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { Image } from "expo-image";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { FC } from "react";
+import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -104,7 +110,9 @@ function buildTrainingExerciseList(
 export default function TrainingOverviewScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ weekday?: string; place?: string }>();
+  const params = useLocalSearchParams<
+    TrainingGenerationParams & { place?: string }
+  >();
   const insets = useSafeAreaInsets();
 
   // Get store data
@@ -120,6 +128,11 @@ export default function TrainingOverviewScreen() {
     (weekdayNumber !== undefined
       ? (trainingDays[weekdayNumber]?.place ?? "HOME")
       : "HOME");
+
+  const { swapControls } = useExerciseSwap(
+    params,
+    isPlaceType(place) ? place : "HOME",
+  );
 
   const handleBack = () => {
     router.back();
@@ -192,11 +205,13 @@ export default function TrainingOverviewScreen() {
         <ScrollView>
           <Box padding="l">
             <EquipmentSection equipment={trainingEquipment} />
-            <ExercisesSection
-              exList={trainingExerciseList}
-              exercises={exercises}
-              onShowExerciseInfo={handleShowExerciseInfo}
-            />
+            <SwapControlsContext value={swapControls}>
+              <ExercisesSection
+                exList={trainingExerciseList}
+                exercises={exercises}
+                onShowExerciseInfo={handleShowExerciseInfo}
+              />
+            </SwapControlsContext>
           </Box>
         </ScrollView>
 
@@ -442,36 +457,45 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
   if (!exerciseData) return null;
 
   return (
-    <Pressable onPress={onPress}>
-      <Box flexDirection="row" marginBottom="m">
-        {exerciseData.picture && (
-          <Box
-            borderRadius={"s"}
-            width={120}
-            marginRight={"s"}
-            overflow="hidden"
-          >
-            {imageUrl ? (
-              <Image
-                source={imageUrl}
-                style={{
-                  width: 120,
-                  aspectRatio: 1,
-                }}
-                cachePolicy="disk"
-                accessibilityLabel={exerciseData.displayName ?? undefined}
-              />
-            ) : (
-              <MediaSkeleton width={120} aspectRatio={1} showRetry={false} />
-            )}
+    <Box flexDirection="row" marginBottom="m">
+      {/* The swap button is outside the row press so screen readers reach it. */}
+      <Pressable onPress={onPress} style={{ flex: 1 }}>
+        <Box flexDirection="row">
+          {exerciseData.picture && (
+            <Box
+              borderRadius={"s"}
+              width={120}
+              marginRight={"s"}
+              overflow="hidden"
+            >
+              {imageUrl ? (
+                <Image
+                  source={imageUrl}
+                  style={{
+                    width: 120,
+                    aspectRatio: 1,
+                  }}
+                  cachePolicy="disk"
+                  accessibilityLabel={exerciseData.displayName ?? undefined}
+                />
+              ) : (
+                <MediaSkeleton width={120} aspectRatio={1} showRetry={false} />
+              )}
+            </Box>
+          )}
+          <Box flex={1} justifyContent="center">
+            <Text variant="body">{exerciseData.displayName}</Text>
+            <ExerciseValues exercise={exercise} exerciseData={exerciseData} />
           </Box>
-        )}
-        <Box flex={1} justifyContent="center">
-          <Text variant="body">{exerciseData.displayName}</Text>
-          <ExerciseValues exercise={exercise} exerciseData={exerciseData} />
         </Box>
+      </Pressable>
+      <Box justifyContent="center">
+        <SwapExerciseButton
+          branchId={exercise.branchId}
+          exerciseName={exerciseData.displayName ?? ""}
+        />
       </Box>
-    </Pressable>
+    </Box>
   );
 };
 

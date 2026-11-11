@@ -79,7 +79,6 @@ describe("useTrainingListScreen: finishing", () => {
         createExercise({ exerciseId: "2" }),
       ],
     });
-    mockFinishTraining.mockReturnValue(true);
     const { result } = await renderHook(() => useTrainingListScreen());
 
     await act(() => {

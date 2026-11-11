@@ -33,7 +33,7 @@ export function useTrainingListFinish({
             text: t("common.yes"),
             onPress: () => {
               setIsFinishing(true);
-              setIsFinishing(finishTraining(true));
+              finishTraining(true);
             },
           },
           { text: t("common.no") },
@@ -47,9 +47,7 @@ export function useTrainingListFinish({
     setIsFinishing(true);
     endPause();
     completeRestRows();
-    setIsFinishing(
-      finishTraining(false, useTrainingStore.getState().tempMaxValues),
-    );
+    finishTraining(false, useTrainingStore.getState().tempMaxValues);
   };
 
   return { isFinishing, handleFinish };

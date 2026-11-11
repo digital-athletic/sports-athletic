@@ -12,18 +12,12 @@ import { Alert } from "react-native";
 /**
  * Finalizes a training session (sequential or list-view) and navigates to
  * the success screen. Shared so both screens commit progress identically.
- * Returns false when the push fails; the session then stays resumable and
- * can be finished again.
  */
 export function useFinishTraining() {
   const router = useRouter();
   const { t } = useTranslation();
-  const {
-    activeTraining,
-    setTrainingEndTime,
-    resetTrainingEndTime,
-    setTempMaxValues,
-  } = useTrainingStore();
+  const { activeTraining, setTrainingEndTime, setTempMaxValues } =
+    useTrainingStore();
   const { addTestResult } = useExerciseProgressStore();
   const { saveMaxValues } = useUserWorkoutStore();
   const hasFinishedRef = useRef(false);
@@ -34,11 +28,11 @@ export function useFinishTraining() {
   const finishTraining = (
     aborted: boolean = false,
     strengthTestMaxValues?: MaxValuesType | null,
-  ): boolean => {
+  ) => {
     // Guards against double-invocation (e.g. a fast double-tap on the
     // finish button), which would otherwise duplicate XP/workout entries
     // and, for TEST_WORKOUT, saved max values/test results.
-    if (hasFinishedRef.current) return true;
+    if (hasFinishedRef.current) return;
     hasFinishedRef.current = true;
 
     // Computed before the try: the React Compiler skips a try block that
@@ -48,10 +42,28 @@ export function useFinishTraining() {
         ? strengthTestMaxValues
         : null;
 
-    // The push comes first: a failed push must leave nothing saved, so the
-    // session stays resumable and a retry does not store test results twice.
     try {
+      // Record end time
       setTrainingEndTime(Date.now());
+
+      // Log completion/abortion
+      if (aborted) {
+        logTrainingEvent(activeTraining, "training_aborted");
+      } else {
+        logTrainingEvent(activeTraining, "training_finished");
+      }
+
+      // Save test results if this is a test workout and not aborted
+      if (testMaxValues) {
+        Logger.logEvent("saving_max_values", { maxValues: testMaxValues });
+        saveMaxValues(testMaxValues);
+        addTestResult(testMaxValues);
+      }
+
+      // Clear temporary test results (committed or discarded)
+      setTempMaxValues(null);
+
+      // Navigate to success screen
       router.push({
         pathname: "/training/training-success",
         params: { aborted: aborted.toString() },
@@ -59,26 +71,7 @@ export function useFinishTraining() {
     } catch (error) {
       Logger.logError(error as Error);
       Alert.alert(t("common.error"), t("common.error"));
-      hasFinishedRef.current = false;
-      resetTrainingEndTime();
-      return false;
     }
-
-    logTrainingEvent(
-      activeTraining,
-      aborted ? "training_aborted" : "training_finished",
-    );
-
-    // Save test results if this is a test workout and not aborted
-    if (testMaxValues) {
-      Logger.logEvent("saving_max_values", { maxValues: testMaxValues });
-      saveMaxValues(testMaxValues);
-      addTestResult(testMaxValues);
-    }
-
-    // Clear temporary test results (committed or discarded)
-    setTempMaxValues(null);
-    return true;
   };
 
   return { finishTraining };

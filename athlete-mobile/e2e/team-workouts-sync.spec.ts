@@ -4,7 +4,11 @@ import customWorkout from "./mocks/files/custom-workout.json";
 import invalidWorkout from "./mocks/files/custom-workout-invalid.json";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
-import { generateTeamWorkoutRow, mockTeamWithWorkouts } from "./mocks/teams";
+import {
+  generateTeamWorkoutRow,
+  mockTeamWithWorkouts,
+  type TeamWorkoutRow,
+} from "./mocks/teams";
 import { mockWakeLock } from "./mocks/wakeLock";
 import { BasePage, WorkoutPage } from "./pages";
 import { getCompletedWorkouts } from "./utils/storage";
@@ -23,6 +27,13 @@ const INVALID_ROW = generateTeamWorkoutRow(
   "44444444-4444-4444-8444-444444444444",
   invalidWorkout,
 );
+const TEAM_DRAFT_ROW: TeamWorkoutRow = {
+  ...generateTeamWorkoutRow("55555555-5555-4555-8555-555555555555", {
+    ...customWorkout,
+    name: { en: "Team draft", de: "Team Entwurf" },
+  }),
+  status: "draft",
+};
 
 async function openTeamTile(page: Page) {
   await page.getByRole("button", { name: "Additional trainings" }).click();
@@ -39,7 +50,12 @@ test.describe("Team workouts: sync on a team tile", () => {
     await mockSupabaseAuth(page);
     await mockWakeLock(page);
     const server = await mockTeamWithWorkouts(page, TEAM);
-    server.setRows([TEAM_CORE_ROW, TEAM_SPRINT_ROW, INVALID_ROW]);
+    server.setRows([
+      TEAM_CORE_ROW,
+      TEAM_SPRINT_ROW,
+      INVALID_ROW,
+      TEAM_DRAFT_ROW,
+    ]);
 
     const basePage = new BasePage(page);
     const workoutPage = new WorkoutPage(page);
@@ -57,6 +73,9 @@ test.describe("Team workouts: sync on a team tile", () => {
       page.getByRole("button", { name: "Team sprint" }),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "Broken" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Team draft" })).toHaveCount(
+      0,
+    );
     await expect(
       page.getByRole("button", { name: "Import training" }),
     ).toHaveCount(0);

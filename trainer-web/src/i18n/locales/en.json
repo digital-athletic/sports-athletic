@@ -235,11 +235,17 @@
   },
   "workouts": {
     "title": "Team workouts",
-    "description": "Workouts your athletes can start in the app.",
+    "description": "Published workouts appear in your athletes' app. New workouts start as drafts, which only you and your co-owners see.",
     "new": "New workout",
     "edit": "Edit",
     "empty": "This team has no workouts yet.",
     "emptyOwner": "This team has no workouts yet. Create the first one.",
+    "publish": "Publish",
+    "moveToDraft": "Move to draft",
+    "download": "Download JSON",
+    "status": {
+      "draft": "Draft"
+    },
     "deleteConfirmTitle": "Delete workout?",
     "deleteConfirmMessage": "\"{{name}}\" is removed for the whole team.",
     "list": {

@@ -4,9 +4,14 @@ import {
   deleteTeamWorkout,
   getTeamWorkouts,
   saveTeamWorkout,
+  setTeamWorkoutStatus,
 } from "../services/teamWorkoutsApi";
 import { ApiError } from "../services/teamsApi";
-import type { AiwlTemplate, TeamWorkout } from "../types/team";
+import type {
+  AiwlTemplate,
+  TeamWorkout,
+  TeamWorkoutStatus,
+} from "../types/team";
 
 /**
  * The workout templates of a team, for the Workouts tab. Not to be confused
@@ -80,5 +85,28 @@ export function useTeamWorkoutTemplates(teamId: string | null) {
     }
   };
 
-  return { workouts, loading, error, saveWorkout, deleteWorkout };
+  /** Throws an Error whose message is already translated. */
+  const setWorkoutStatus = async (
+    workoutId: string,
+    status: TeamWorkoutStatus,
+  ): Promise<void> => {
+    if (!teamId) throw new Error(t("common.error"));
+    try {
+      const saved = await setTeamWorkoutStatus(teamId, workoutId, status);
+      setWorkouts((prev) =>
+        prev.map((workout) => (workout.id === saved.id ? saved : workout)),
+      );
+    } catch (err) {
+      throw new Error(translateError(err));
+    }
+  };
+
+  return {
+    workouts,
+    loading,
+    error,
+    saveWorkout,
+    deleteWorkout,
+    setWorkoutStatus,
+  };
 }

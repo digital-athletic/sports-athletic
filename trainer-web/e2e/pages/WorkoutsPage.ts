@@ -46,6 +46,49 @@ export class WorkoutsPage {
     await expect(this.page.getByTestId("workout-new")).toHaveCount(0);
     await expect(this.page.getByTestId("workout-edit")).toHaveCount(0);
     await expect(this.page.getByTestId("workout-delete")).toHaveCount(0);
+    await expect(this.page.getByTestId("workout-publish")).toHaveCount(0);
+    await expect(this.page.getByTestId("workout-unpublish")).toHaveCount(0);
+  }
+
+  async expectDraft(name: string) {
+    await expect(
+      this.workout(name).getByTestId("workout-draft-badge"),
+    ).toBeVisible();
+  }
+
+  async expectPublished(name: string) {
+    await expect(this.workout(name)).toBeVisible();
+    await expect(
+      this.workout(name).getByTestId("workout-draft-badge"),
+    ).toHaveCount(0);
+  }
+
+  async expectNoDownload() {
+    await expect(this.page.getByTestId("workout-download")).toHaveCount(0);
+  }
+
+  async publish(name: string) {
+    await this.workout(name).getByTestId("workout-publish").click();
+  }
+
+  async moveToDraft(name: string) {
+    await this.workout(name).getByTestId("workout-unpublish").click();
+  }
+
+  /** Downloads the workout and returns the file name and the file text. */
+  async download(name: string): Promise<{ fileName: string; text: string }> {
+    const downloadEvent = this.page.waitForEvent("download");
+    await this.workout(name).getByTestId("workout-download").click();
+    const download = await downloadEvent;
+    const stream = await download.createReadStream();
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+      chunks.push(Buffer.from(chunk));
+    }
+    return {
+      fileName: download.suggestedFilename(),
+      text: Buffer.concat(chunks).toString("utf8"),
+    };
   }
 
   async startNewWorkout() {

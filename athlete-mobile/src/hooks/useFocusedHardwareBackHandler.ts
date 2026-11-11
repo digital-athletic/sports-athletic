@@ -4,7 +4,7 @@ import { BackHandler, Platform } from "react-native";
 
 /**
  * Registers a hardware back button handler while the screen is focused, so a
- * screen below in the stack does not catch the press; a no-op on web.
+ * screen below in the stack does not catch the press. A no-op on web.
  */
 export function useFocusedHardwareBackHandler(handler: () => boolean) {
   useFocusEffect(

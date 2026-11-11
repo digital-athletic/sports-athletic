@@ -34,7 +34,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
  * Training Success Screen
  *
  * Displays training completion summary. Aborted sessions skip XP and history.
- * Back gestures disabled to ensure controlled flow; Android back acts as Continue.
+ * Back gestures disabled to ensure controlled flow. Android back acts as Continue.
  * Legacy: views/training/TrainingSuccess
  */
 const TrainingSuccessScreen: FC = () => {

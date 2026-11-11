@@ -12,7 +12,7 @@ import { Alert } from "react-native";
 /**
  * Finalizes a training session (sequential or list-view) and navigates to
  * the success screen. Shared so both screens commit progress identically.
- * Returns false when the push fails; the session then stays resumable and
+ * Returns false when the push fails. The session then stays resumable and
  * can be finished again.
  */
 export function useFinishTraining() {
@@ -69,7 +69,6 @@ export function useFinishTraining() {
       aborted ? "training_aborted" : "training_finished",
     );
 
-    // Save test results if this is a test workout and not aborted
     if (testMaxValues) {
       Logger.logEvent("saving_max_values", { maxValues: testMaxValues });
       saveMaxValues(testMaxValues);

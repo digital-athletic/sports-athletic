@@ -31,10 +31,7 @@ export function useTrainingListFinish({
         [
           {
             text: t("common.yes"),
-            onPress: () => {
-              setIsFinishing(true);
-              setIsFinishing(finishTraining(true));
-            },
+            onPress: () => setIsFinishing(finishTraining(true)),
           },
           { text: t("common.no") },
         ],
@@ -42,11 +39,10 @@ export function useTrainingListFinish({
       return;
     }
 
-    // Visible feedback only — useFinishTraining itself guards against
-    // duplicate invocations, this just disables the button after the first tap.
-    setIsFinishing(true);
     endPause();
     completeRestRows();
+    // Visible feedback only: useFinishTraining guards against duplicate
+    // invocations itself, this disables the button after the first tap.
     setIsFinishing(
       finishTraining(false, useTrainingStore.getState().tempMaxValues),
     );

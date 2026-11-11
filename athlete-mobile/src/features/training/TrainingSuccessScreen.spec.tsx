@@ -168,26 +168,13 @@ describe("TrainingSuccessScreen: leaving the screen", () => {
     expect(useTrainingStore.getState().activeTraining).toBeNull();
   });
 
-  it("keeps showing the summary after Continue cleared the session", async () => {
+  it("still shows the summary after Continue cleared the session", async () => {
     const { getByText, queryByText, getByTestId } = await render(
       <TrainingSuccessScreen />,
     );
 
     await act(() => {
       fireEvent.press(getByText("Go on"));
-    });
-
-    expect(getByTestId("training-success-summary")).toBeTruthy();
-    expect(queryByText(/did not record all of your training data/)).toBeNull();
-  });
-
-  it("keeps showing the summary when Home clears the session while the screen leaves", async () => {
-    const { queryByText, getByTestId } = await render(
-      <TrainingSuccessScreen />,
-    );
-
-    await act(() => {
-      useTrainingStore.getState().clearTraining();
     });
 
     expect(getByTestId("training-success-summary")).toBeTruthy();

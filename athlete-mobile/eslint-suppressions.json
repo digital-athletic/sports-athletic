@@ -201,11 +201,6 @@
       "count": 1
     }
   },
-  "src/features/onboarding/LoginScreen.tsx": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "src/features/onboarding/RegisterScreen.tsx": {
     "max-lines-per-function": {
       "count": 1

@@ -21,6 +21,23 @@ const renderScreen = async (processing = false) => {
 };
 
 describe("LoginScreen", () => {
+  it("shows a headline that explains the login by emailed code", async () => {
+    await renderScreen();
+
+    expect(screen.getByRole("header", { name: "Sign in" })).toBeTruthy();
+    expect(
+      screen.getByText(
+        "We send a code to your e-mail address. You do not need a password.",
+      ),
+    ).toBeTruthy();
+  });
+
+  it("asks athletes without an account to sign up", async () => {
+    await renderScreen();
+
+    expect(screen.getByText("No account yet?")).toBeTruthy();
+  });
+
   it("starts the login when the login button is pressed", async () => {
     const { onLogin } = await renderScreen();
 

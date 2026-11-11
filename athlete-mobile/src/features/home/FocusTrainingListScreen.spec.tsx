@@ -1,5 +1,5 @@
 import i18n from "@/i18n";
-import { act, fireEvent, render } from "@/utils/testUtils";
+import { act, fireEvent, render, within } from "@/utils/testUtils";
 import FocusTrainingListScreen from "./FocusTrainingListScreen";
 
 const mockPush = jest.fn();
@@ -96,6 +96,18 @@ describe("FocusTrainingListScreen: tiles", () => {
     const { getAllByRole } = await render(<FocusTrainingListScreen />);
 
     expect(getAllByRole("button")).toHaveLength(2);
+  });
+
+  it("places both tiles in the tile grid", async () => {
+    const { getByTestId } = await render(<FocusTrainingListScreen />);
+
+    const grid = getByTestId("focus-prevention-grid");
+    expect(
+      within(grid).getByRole("button", { name: FOCUS_LABEL }),
+    ).toBeTruthy();
+    expect(
+      within(grid).getByRole("button", { name: PREVENTION_LABEL }),
+    ).toBeTruthy();
   });
 });
 

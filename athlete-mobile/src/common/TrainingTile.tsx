@@ -7,14 +7,14 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { AppIcon, type AppIconSource } from "@/common/AppIcon";
+import { type AppIconSource } from "@/common/AppIcon";
+import { useTileWidth } from "@/common/TileGrid";
+import { TileIcon } from "@/common/TileIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
 
 const SHADE = ["transparent", "rgba(0, 0, 0, 0.75)"] as const;
-
-export type TrainingTileSize = "full" | "half";
+const ASPECT_RATIO = 1.1;
 
 interface TrainingTileProps {
   title: string;
@@ -22,64 +22,82 @@ interface TrainingTileProps {
   /** Photo of the tile. Without it the tile shows the icon on a grey card. */
   image?: ImageSourcePropType;
   icon?: AppIconSource;
-  size: TrainingTileSize;
   onPress: () => void;
   testID?: string;
 }
 
-type TileBackgroundProps = Pick<TrainingTileProps, "image" | "icon" | "size">;
+/** The photo under a dark shade. */
+const TilePhoto: FC<{ image: ImageSourcePropType }> = ({ image }) => (
+  <>
+    <Image
+      source={image}
+      style={styles.fill}
+      resizeMode="cover"
+      accessibilityIgnoresInvertColors
+    />
+    <LinearGradient colors={SHADE} style={styles.shade} />
+  </>
+);
 
-/** The photo under a dark shade, or the large icon on a grey card. */
-const TileBackground: FC<TileBackgroundProps> = ({ image, icon, size }) => {
-  const { colors } = useTheme();
-
-  if (image) {
-    return (
-      <>
-        <Image
-          source={image}
-          style={styles.fill}
-          resizeMode="cover"
-          accessibilityIgnoresInvertColors
-        />
-        <LinearGradient colors={SHADE} style={styles.shade} />
-      </>
-    );
-  }
-
-  return (
-    <>
-      {icon && (
-        <Box style={StyleSheet.absoluteFill} alignItems="center" paddingTop="l">
-          <AppIcon
-            icon={icon}
-            size={size === "full" ? 64 : 48}
-            color={colors.primary}
-            decorative
-          />
-        </Box>
-      )}
-    </>
-  );
+type TileTextProps = Pick<TrainingTileProps, "title" | "description"> & {
+  onPhoto: boolean;
 };
 
-/** Tile that opens a training, with a photo or a large icon behind its title. */
+/** Title and description, white on a photo and grey on a card. */
+const TileText: FC<TileTextProps> = ({ title, description, onPhoto }) => (
+  <Box>
+    {/* Long German compounds carry soft hyphens in the translation, so
+        they break between syllables in a narrow tile. */}
+    <Text
+      variant="body"
+      fontSize={17}
+      fontWeight="700"
+      color={onPhoto ? "white" : "darkGrey3"}
+      android_hyphenationFrequency="normal"
+    >
+      {title}
+    </Text>
+    {description && (
+      <Text
+        variant="small"
+        fontSize={13}
+        color={onPhoto ? "white" : "darkGrey1"}
+      >
+        {description}
+      </Text>
+    )}
+  </Box>
+);
+
+/**
+ * Tile that opens a training, with its title on a photo or below a large icon.
+ * An icon tile is at least as tall as a photo tile and grows with its text, so
+ * a long German title stays below the icon.
+ */
 export const TrainingTile: FC<TrainingTileProps> = ({
   title,
   description,
   image,
   icon,
-  size,
   onPress,
   testID,
 }) => {
+  const tileWidth = useTileWidth();
   const accessibilityLabel = description ? `${title}, ${description}` : title;
-  const textColor = image ? "white" : "darkGrey3";
 
   return (
     <Pressable
       onPress={onPress}
-      style={size === "full" ? styles.full : styles.half}
+      style={
+        image
+          ? styles.photoTile
+          : [
+              styles.iconTile,
+              tileWidth !== null && {
+                minHeight: Math.round(tileWidth / ASPECT_RATIO),
+              },
+            ]
+      }
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       testID={testID}
@@ -92,28 +110,18 @@ export const TrainingTile: FC<TrainingTileProps> = ({
         borderColor="lightGrey2"
         borderWidth={image ? 0 : 1.5}
       >
-        <TileBackground image={image} icon={icon} size={size} />
-        <Box flex={1} justifyContent="flex-end" padding="m">
-          {/* Long German compounds carry soft hyphens in the translation, so
-              they break between syllables in a half width tile. */}
-          <Text
-            variant="body"
-            fontSize={17}
-            fontWeight="700"
-            color={textColor}
-            android_hyphenationFrequency="normal"
-          >
-            {title}
-          </Text>
-          {description && (
-            <Text
-              variant="small"
-              fontSize={13}
-              color={image ? "white" : "darkGrey1"}
-            >
-              {description}
-            </Text>
+        {image && <TilePhoto image={image} />}
+        <Box flexGrow={1} justifyContent="flex-end" padding="m" gap="s">
+          {!image && icon && (
+            <Box flexGrow={1} alignItems="center" justifyContent="center">
+              <TileIcon icon={icon} testID={testID && `${testID}-icon`} />
+            </Box>
           )}
+          <TileText
+            title={title}
+            description={description}
+            onPhoto={image !== undefined}
+          />
         </Box>
       </Box>
     </Pressable>
@@ -121,13 +129,14 @@ export const TrainingTile: FC<TrainingTileProps> = ({
 };
 
 const styles = StyleSheet.create({
-  full: {
+  photoTile: {
     width: "100%",
-    height: 170,
+    aspectRatio: ASPECT_RATIO,
   },
-  half: {
-    width: "48%",
-    aspectRatio: 1.1,
+  // Fills the row height, so icon tiles next to each other end level.
+  iconTile: {
+    width: "100%",
+    flexGrow: 1,
   },
   // Explicit size: on web a bundled image renders at its pixel size otherwise.
   fill: {

@@ -1,19 +1,14 @@
 import { SilhouetteThumbnail } from "@/bodyParts/silhouette/SilhouetteThumbnail";
 import { HeadlineScreen } from "@/common/HeadlineScreen";
+import { TileCard, useTileCardHeaderHeight } from "@/common/TileCard";
 import { TileGrid } from "@/common/TileGrid";
-import { Ionicon } from "@/common/Ionicon";
 import { type TileData, WorkoutConstants } from "@/constants/workoutConstants";
 import { type I18nKey } from "@/i18n";
 import { useUserProfileStore } from "@/store/userProfileStore";
-import { Box } from "@/theme/Box";
-import { Card } from "@/theme/Card";
-import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import { useResponsiveProp } from "@shopify/restyle";
 import { useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet } from "react-native";
 import { tileHref } from "./tileHref";
 
 const BODY_PART_ORDER: readonly I18nKey[] = [
@@ -30,64 +25,28 @@ const BODY_PART_TILES = BODY_PART_ORDER.map((title) =>
 
 type BodyPartCardProps = {
   tile: TileData;
-  silhouetteSize: number;
   onPress: () => void;
 };
 
 /** Card with the highlighted silhouette above the name of the body part. */
-const BodyPartCard: FC<BodyPartCardProps> = ({
-  tile,
-  silhouetteSize,
-  onPress,
-}) => {
+const BodyPartCard: FC<BodyPartCardProps> = ({ tile, onPress }) => {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { spacing } = useTheme();
   const gender = useUserProfileStore((state) => state.personalData.gender);
-  const name = t(tile.title);
+  const silhouetteSize = useTileCardHeaderHeight() - 2 * spacing.s;
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
-      accessibilityRole="button"
-      accessibilityLabel={name}
-    >
-      <Card variant="outlined" flex={1} overflow="hidden">
-        <Box
-          backgroundColor="lightGrey1"
-          alignItems="center"
-          paddingVertical="s"
-        >
-          {tile.silhouette && (
-            <SilhouetteThumbnail
-              gender={gender}
-              side={tile.silhouette.side}
-              regions={tile.silhouette.regions}
-              centerY={tile.silhouette.centerY}
-              size={silhouetteSize}
-            />
-          )}
-        </Box>
-        <Box
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="space-between"
-          paddingHorizontal="m"
-          paddingVertical="m"
-          gap="xs"
-        >
-          <Text variant="body" fontSize={15} fontWeight="700" flexShrink={1}>
-            {name}
-          </Text>
-          <Ionicon
-            name="chevron-forward"
-            size={14}
-            color={colors.lightGrey3}
-            decorative
-          />
-        </Box>
-      </Card>
-    </Pressable>
+    <TileCard title={t(tile.title)} onPress={onPress}>
+      {tile.silhouette && (
+        <SilhouetteThumbnail
+          gender={gender}
+          side={tile.silhouette.side}
+          regions={tile.silhouette.regions}
+          centerY={tile.silhouette.centerY}
+          size={silhouetteSize}
+        />
+      )}
+    </TileCard>
   );
 };
 
@@ -97,15 +56,13 @@ type PreventionBodyPartScreenProps = {
   onBack: () => void;
 };
 
-/** Prevention training choice: one card per body part in a two column grid. */
+/** Prevention training choice: one card per body part in a grid. */
 export const PreventionBodyPartScreen: FC<PreventionBodyPartScreenProps> = ({
   title,
   onBack,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
-  // useResponsiveProp can briefly return undefined on web.
-  const silhouetteSize = useResponsiveProp({ phone: 96, tablet: 128 }) ?? 96;
 
   return (
     <HeadlineScreen
@@ -120,7 +77,6 @@ export const PreventionBodyPartScreen: FC<PreventionBodyPartScreenProps> = ({
           <BodyPartCard
             key={tile.title}
             tile={tile}
-            silhouetteSize={silhouetteSize}
             onPress={() => router.navigate(tileHref(tile))}
           />
         ))}
@@ -128,12 +84,3 @@ export const PreventionBodyPartScreen: FC<PreventionBodyPartScreenProps> = ({
     </HeadlineScreen>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    width: "48%",
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-});

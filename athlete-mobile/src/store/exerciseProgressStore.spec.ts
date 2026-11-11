@@ -505,6 +505,40 @@ describe("exerciseProgressStore", () => {
         .calls[0][1];
       expect(call).not.toHaveProperty("workoutId");
     });
+
+    it("passes the position in the workout to the sync notification", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+
+      await act(() => {
+        result.current.updateExercise(
+          "ex1",
+          { exerciseId: "ex1", skill: "WU", repetition: 10 },
+          "workout-42",
+          4,
+        );
+      });
+
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledWith(
+        "ex1",
+        expect.objectContaining({ workoutId: "workout-42", position: 4 }),
+      );
+    });
+
+    it("omits position from the sync notification when not provided", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+
+      await act(() => {
+        result.current.updateExercise(
+          "ex1",
+          { exerciseId: "ex1", skill: "WU", repetition: 5 },
+          "workout-42",
+        );
+      });
+
+      const call = (syncManager.notifyExerciseUpdated as jest.Mock).mock
+        .calls[0][1];
+      expect(call).not.toHaveProperty("position");
+    });
   });
 
   describe("resetExercise", () => {
@@ -531,6 +565,7 @@ describe("exerciseProgressStore", () => {
           "ex1",
           { skill: "MAX_STRENGTH", branchId: "branch-1" },
           "workout-42",
+          2,
         );
       });
 
@@ -544,6 +579,21 @@ describe("exerciseProgressStore", () => {
         exerciseId: "ex1",
         skill: "MAX_STRENGTH",
         branchId: "branch-1",
+        workoutId: "workout-42",
+        position: 2,
+      });
+    });
+
+    it("omits position from the sync notification when not provided", async () => {
+      const { result } = await renderHook(() => useExerciseProgressStore());
+
+      await act(() => {
+        result.current.resetExercise("ex1", { skill: "SWR1" }, "workout-42");
+      });
+
+      expect(syncManager.notifyExerciseUpdated).toHaveBeenCalledWith("ex1", {
+        exerciseId: "ex1",
+        skill: "SWR1",
         workoutId: "workout-42",
       });
     });

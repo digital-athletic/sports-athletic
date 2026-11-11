@@ -159,6 +159,7 @@ export async function syncExerciseData(
     user_id: userId,
     exercise_id: payload.exerciseId,
     workout_id: payload.workoutId ?? "legacy",
+    position: payload.position ?? 0,
     repetition: payload.repetition ?? null,
     weight: payload.weight ?? null,
     duration: payload.duration ?? null,
@@ -179,7 +180,7 @@ export async function syncExerciseData(
 
   const { error } = await supabase
     .from("user_exercises")
-    .upsert(row, { onConflict: "user_id,exercise_id,workout_id,skill" });
+    .upsert(row, { onConflict: "user_id,workout_id,exercise_id,position" });
 
   if (error) {
     throw new Error(`Failed to sync exercise data: ${error.message}`);

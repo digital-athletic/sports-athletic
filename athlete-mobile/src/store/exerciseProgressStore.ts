@@ -138,8 +138,12 @@ const writeRecord = (
 const toSyncPayload = (
   { updatedAt: _updatedAt, ...record }: ExerciseProgressRecordType,
   workoutId?: string,
-): UserExerciseDataType & { workoutId?: string } =>
-  workoutId ? { ...record, workoutId } : record;
+  position?: number,
+): UserExerciseDataType => ({
+  ...record,
+  ...(workoutId ? { workoutId } : {}),
+  ...(position === undefined ? {} : { position }),
+});
 
 type Actions = {
   // Exercise Data
@@ -148,11 +152,13 @@ type Actions = {
     exerciseId: string,
     data: UserExerciseDataType,
     workoutId?: string,
+    position?: number,
   ) => void;
   resetExercise: (
     exerciseId: string,
     data: Pick<UserExerciseDataType, "skill" | "branchId">,
     workoutId?: string,
+    position?: number,
   ) => void;
   setBranchLevel: (branchId: string, level: number, exerciseId: string) => void;
   setBranchData: (branchData: BranchDataMapType) => void;
@@ -219,7 +225,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
           state.exerciseData = data;
         }),
 
-      updateExercise: (exerciseId, data, workoutId) => {
+      updateExercise: (exerciseId, data, workoutId, position) => {
         set((state) => {
           const updatedAt = toUpdatedAt(Date.now());
           const bySkill = (state.exerciseProgress[data.skill] ??= {});
@@ -230,14 +236,14 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
         if (record) {
           syncManager.notifyExerciseUpdated(
             exerciseId,
-            toSyncPayload(record, workoutId),
+            toSyncPayload(record, workoutId, position),
           );
         }
       },
 
       // updateExercise merges and cannot drop fields; the completed workouts
       // keep the history, so the record may start over.
-      resetExercise: (exerciseId, { skill, branchId }, workoutId) => {
+      resetExercise: (exerciseId, { skill, branchId }, workoutId, position) => {
         const record: UserExerciseDataType = { exerciseId, skill };
         if (typeof branchId === "string") {
           record.branchId = branchId;
@@ -250,7 +256,7 @@ export const useExerciseProgressStore = create<ExerciseProgressState>()(
         });
         syncManager.notifyExerciseUpdated(
           exerciseId,
-          toSyncPayload(record, workoutId),
+          toSyncPayload(record, workoutId, position),
         );
       },
 

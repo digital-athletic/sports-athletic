@@ -1,6 +1,7 @@
 import { useTrainingStore } from "@/features/training/trainingStore";
 import type { SkillCode } from "@/schemas/generator.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
+import { syncManager } from "@/services/SyncManager";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { act, renderHook } from "@testing-library/react-native";
 import {
@@ -12,6 +13,13 @@ import { generateStoredExerciseData } from "@test/factories/storedExerciseData";
 import { useExerciseCompletion } from "./useExerciseCompletion";
 
 let mockExerciseValues: object = {};
+
+jest.mock("@/services/SyncManager", () => ({
+  syncManager: {
+    notifyExerciseUpdated: jest.fn(),
+    notifyTestResultAdded: jest.fn(),
+  },
+}));
 
 jest.mock("@/data/exerciseRegistry", () => ({
   getExerciseById: () => ({
@@ -284,6 +292,75 @@ describe("useExerciseCompletion: feedback on completion", () => {
     expect(stored()?.feedback?.difficulty).toBe("TOO_HARD");
     expect(useTrainingStore.getState().exerciseList?.[1]?.feedback).toBe(
       undefined,
+    );
+  });
+
+  it("uploads each session row with its position in the workout", async () => {
+    // Session rows: [{ 900, SWR2, set 3 of 3 }, { 900, SA, set 3 of 3 }]
+    jest.mocked(syncManager.notifyExerciseUpdated).mockClear();
+    seedCompletionSession({});
+    useTrainingStore.setState({
+      exerciseList: [
+        ...generateSetRows(1, { skill: "SWR2", set: [3, 3], repetition: 10 }),
+        ...generateSetRows(1, { skill: "SA", set: [3, 3], repetition: 10 }),
+      ],
+    });
+    const { result } = await renderHook(() => useExerciseCompletion());
+
+    await act(() => result.current.saveExerciseAndBranchData(0));
+    await act(() => result.current.saveExerciseAndBranchData(1));
+
+    expect(syncManager.notifyExerciseUpdated).toHaveBeenNthCalledWith(
+      1,
+      EXERCISE_ID,
+      expect.objectContaining({
+        skill: "SWR2",
+        workoutId: "training-1",
+        position: 0,
+      }),
+    );
+    expect(syncManager.notifyExerciseUpdated).toHaveBeenNthCalledWith(
+      2,
+      EXERCISE_ID,
+      expect.objectContaining({
+        skill: "SA",
+        workoutId: "training-1",
+        position: 1,
+      }),
+    );
+  });
+
+  it("uploads a reset record with its position in the workout", async () => {
+    // Session rows: [{ 900, SWR2, set 3 of 3 }, { 900, SWR2 branch 77, TOO_HARD at 40 kg }]
+    // The second row levels the branch down, which resets the record.
+    seedCompletionSession({});
+    storeValues();
+    useTrainingStore.setState({
+      exerciseList: [
+        ...generateSetRows(1, { set: [3, 3], repetition: 10 }),
+        ...generateSetRows(1, {
+          branchId: "77",
+          set: [3, 3],
+          repetition: 10,
+          weight: 40,
+          feedback: { difficulty: "TOO_HARD" },
+        }),
+      ],
+    });
+    const { result } = await renderHook(() => useExerciseCompletion());
+
+    await act(() => result.current.saveExerciseAndBranchData(1));
+
+    expect(useExerciseProgressStore.getState().getBranchLevel("77")).toBe(1);
+    expect(syncManager.notifyExerciseUpdated).toHaveBeenLastCalledWith(
+      EXERCISE_ID,
+      {
+        exerciseId: EXERCISE_ID,
+        skill: "SWR2",
+        branchId: "77",
+        workoutId: "training-1",
+        position: 1,
+      },
     );
   });
 });

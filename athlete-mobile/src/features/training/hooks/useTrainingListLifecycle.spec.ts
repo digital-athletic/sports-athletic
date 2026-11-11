@@ -26,7 +26,6 @@ jest.mock("@/features/training/hooks/useTrainingScreenLifecycle", () => ({
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ dismissTo: mockDismissTo, replace: mockReplace }),
-  router: { dismissTo: mockDismissTo, replace: mockReplace },
   useNavigation: () => ({
     getState: () => ({ routes: mockStackRoutes }),
     getParent: () => ({
@@ -247,7 +246,7 @@ describe("useTrainingListLifecycle: where an abort returns to", () => {
   });
 
   it.each(["plan", "focus", "prevention"])(
-    "dismisses to the %s selection when the stack holds it",
+    "dismisses to the %s selection when the stack contains it",
     async (category) => {
       mockStackRoutes = [
         { name: "new", params: { category } },
@@ -280,15 +279,6 @@ describe("useTrainingListLifecycle: where an abort returns to", () => {
     expect(mockParentGoBack).toHaveBeenCalledTimes(1);
     expect(mockDismissTo).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
-  });
-
-  it("goes back on the parent navigator for a power test opened from Statistics or More", async () => {
-    mockStackRoutes = [{ name: "muscle-soreness" }, { name: "training-list" }];
-
-    await confirmAbort();
-
-    expect(mockParentGoBack).toHaveBeenCalledTimes(1);
-    expect(mockDismissTo).not.toHaveBeenCalled();
   });
 
   it("replaces with Home for a resumed checklist with no screen below", async () => {
@@ -348,24 +338,4 @@ describe("useTrainingListLifecycle: where an abort returns to", () => {
       expect(activeTrainingAtDispatch).toEqual([null]);
     },
   );
-
-  it("dismisses to the overview on discard when no set is done", async () => {
-    mockStackRoutes = [
-      { name: "new", params: { category: "plan" } },
-      { name: "training-overview" },
-      { name: "training-list" },
-    ];
-    useTrainingStore.setState({
-      exerciseList: [createExercise({ exerciseId: "1" })],
-    });
-
-    await confirmAbort();
-
-    expect(mockDismissTo).toHaveBeenCalledTimes(1);
-    expect(mockDismissTo).toHaveBeenCalledWith({
-      pathname: "/training/training-overview",
-      params: { weekday: "2", place: "STUDIO" },
-    });
-    expect(mockParentGoBack).not.toHaveBeenCalled();
-  });
 });

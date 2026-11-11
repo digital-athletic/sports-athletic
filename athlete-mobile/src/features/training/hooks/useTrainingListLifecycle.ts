@@ -1,5 +1,6 @@
 import { Alert } from "@/common/Alert";
 import { useTrainingScreenLifecycle } from "@/features/training/hooks/useTrainingScreenLifecycle";
+import { isTrainingCategory } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { hasSavedProgress } from "@/features/training/utils/checklistEntries";
 import {
@@ -7,7 +8,6 @@ import {
   SELECTION_ROUTE_NAME,
 } from "@/features/training/utils/resolveAbortExit";
 import { logTrainingEvent } from "@/features/training/utils/trainingEventUtils";
-import { isTrainingCategory } from "@/features/training/models/Training";
 import {
   useLocalSearchParams,
   useNavigation,
@@ -73,9 +73,9 @@ function leaveTrainingList(
  * Screen-level lifecycle wiring for the list-view training flow: every way
  * back (header, Android hardware back, iOS swipe) discards the session and
  * returns to the overview, or aborts the training once a completed set saved
- * progression and returns to the selection screen in the stack, else to the
- * screen the training was opened from, else Home. Back-button/keep-awake/focus
- * wiring is shared with the sequential flow via useTrainingScreenLifecycle.
+ * progression and returns to the screen that resolveAbortExit picks.
+ * Back-button/keep-awake/focus wiring is shared with the sequential flow via
+ * useTrainingScreenLifecycle.
  * Reachability of this screen behind the feature flag is enforced by
  * Stack.Protected in app/training/_layout.tsx, not here.
  */

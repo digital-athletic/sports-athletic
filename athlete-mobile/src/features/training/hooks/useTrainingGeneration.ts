@@ -175,8 +175,7 @@ function saveGeneratedTraining(
   params: TrainingGenerationParams,
   ctx: GenerationContext,
 ) {
-  // Stale session state from a killed workout must not leak into the new
-  // session.
+  // Stale session state from a killed workout must not leak into the new session.
   ctx.clearTraining();
   const exerciseList = toUserExerciseDataList(generatedList);
   ctx.setExerciseList(exerciseList);

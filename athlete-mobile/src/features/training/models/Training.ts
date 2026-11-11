@@ -10,17 +10,13 @@ export type TrainingDataType = {
   activeTraining?: ActiveTrainingType;
 };
 
-/** The `category` route param of the selection screen at /training/new. */
-export type TrainingCategory = "plan" | "focus" | "prevention";
+const TRAINING_CATEGORIES = ["plan", "focus", "prevention"] as const;
 
-const TRAINING_CATEGORIES: readonly string[] = [
-  "plan",
-  "focus",
-  "prevention",
-] satisfies TrainingCategory[];
+/** The `category` route param of the selection screen at /training/new. */
+export type TrainingCategory = (typeof TRAINING_CATEGORIES)[number];
 
 export const isTrainingCategory = (value: unknown): value is TrainingCategory =>
-  typeof value === "string" && TRAINING_CATEGORIES.includes(value);
+  TRAINING_CATEGORIES.some((category) => category === value);
 
 export type TrainingTimeType = {
   start?: number;

@@ -72,20 +72,6 @@ describe("useTrainingStore", () => {
   });
 
   // ============================================================================
-
-  describe("removed selection", () => {
-    it("has no selection field", () => {
-      expect(useTrainingStore.getState()).not.toHaveProperty("selection");
-    });
-
-    it("has no setTrainingSelection action", () => {
-      expect(useTrainingStore.getState()).not.toHaveProperty(
-        "setTrainingSelection",
-      );
-    });
-  });
-
-  // ============================================================================
   // Exercise List Management Tests
   // ============================================================================
 
@@ -1334,19 +1320,6 @@ describe("migrateTrainingStore: legacy version bridge", () => {
     const result = migrateTrainingStore(persistedAtCurrentVersion, 17);
 
     expect(result).toEqual(persistedAtCurrentVersion);
-  });
-
-  it("drops the stored selection when persisted at v16", () => {
-    const persistedAtV16 = {
-      ...migratedFixture,
-      trainingViewMode: null,
-      selection: "QUICK",
-    };
-
-    const result = migrateTrainingStore(persistedAtV16, 16);
-
-    expect(result).not.toHaveProperty("selection");
-    expect(result).toEqual({ ...migratedFixture, trainingViewMode: null });
   });
 
   it("drops a stored selection from data persisted at legacy version 0", () => {

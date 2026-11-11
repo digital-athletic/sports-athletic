@@ -5,7 +5,7 @@ export const SELECTION_ROUTE_NAME = "new";
 
 /**
  * Picks where an aborted workout returns to: the selection screen when the
- * training stack holds it, else the screen below the whole training stack,
+ * training stack contains it, else the screen below the whole training stack,
  * else Home (a resumed session has nothing below it).
  */
 export function resolveAbortExit(

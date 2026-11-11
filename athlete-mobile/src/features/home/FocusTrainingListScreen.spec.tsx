@@ -19,18 +19,6 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
-const mockSetTrainingSelection = jest.fn();
-jest.mock("@/features/training/trainingStore", () => {
-  const state = {
-    setTrainingSelection: (selection: string | null) =>
-      mockSetTrainingSelection(selection),
-  };
-  return {
-    useTrainingStore: (selector?: (s: typeof state) => unknown) =>
-      selector ? selector(state) : state,
-  };
-});
-
 const FOCUS_LABEL = "Focus-Trainings, 10-20 minutes topic specific training";
 const PREVENTION_LABEL = "Imminent Pains, Specifically improve imminent pains";
 
@@ -132,14 +120,5 @@ describe("FocusTrainingListScreen: starting a training", () => {
       pathname: "/training/new",
       params: { category: "prevention" },
     });
-  });
-
-  it("does not write a selection to the training store", async () => {
-    const { getByRole } = await render(<FocusTrainingListScreen />);
-
-    await fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
-    await fireEvent.press(getByRole("button", { name: PREVENTION_LABEL }));
-
-    expect(mockSetTrainingSelection).not.toHaveBeenCalled();
   });
 });

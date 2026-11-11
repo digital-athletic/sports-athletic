@@ -16,11 +16,6 @@ jest.mock("expo-router", () => {
       replace: (href: string) => mockReplace(href),
       canGoBack: () => mockCanGoBack,
     },
-    useRouter: () => ({
-      back: () => mockBack(),
-      replace: (href: string) => mockReplace(href),
-      canGoBack: () => mockCanGoBack,
-    }),
     useLocalSearchParams: () => ({ category: mockCategory }),
     Stack: { Screen: () => null },
     Redirect: ({ href }: { href: string }) =>

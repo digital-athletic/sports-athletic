@@ -141,7 +141,8 @@
       "team": "Team",
       "evaluations": "Evaluations",
       "settings": "Settings",
-      "management": "Team Management"
+      "management": "Team Management",
+      "workouts": "Workouts"
     },
     "players": {
       "title": "Your Players",
@@ -230,6 +231,45 @@
       "generating": "Generating...",
       "success": "Successfully created 3 example workout entries!",
       "notLoggedIn": "You must be logged in to generate example data"
+    }
+  },
+  "workouts": {
+    "title": "Team workouts",
+    "description": "Workouts your athletes can start in the app.",
+    "empty": "This team has no workouts yet.",
+    "deleteConfirmTitle": "Delete workout?",
+    "deleteConfirmMessage": "\"{{name}}\" is removed for the whole team.",
+    "list": {
+      "exercises_one": "{{count}} exercise",
+      "exercises_other": "{{count}} exercises",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes"
+    },
+    "skills": {
+      "WU": "Warm-up",
+      "MOB": "Mobility",
+      "GKS": "Stability",
+      "PREV": "Prevention",
+      "SWR1": "Hypertrophy",
+      "SK": "Explosive power",
+      "PLYO_MEDIUM": "Plyometrics",
+      "CD": "Cool-down",
+      "CARDIO_1_LAKTAT": "Cardio zone 1",
+      "CARDIO_2": "Cardio zone 2",
+      "CARDIO_3": "Cardio zone 3",
+      "CARDIO_4": "Cardio zone 4",
+      "CARDIO_5": "Cardio zone 5"
+    },
+    "tags": {
+      "REGION_UPPER_BODY": "Upper body",
+      "REGION_LOWER_BODY": "Lower body",
+      "REGION_CORE": "Core",
+      "REGION_FULL_BODY": "Full body",
+      "PREVENTION_SHOULDER": "Shoulder",
+      "PREVENTION_KNEE_HIP": "Knee and hip",
+      "PREVENTION_SPINE": "Spine",
+      "PREVENTION_ANKLE": "Ankle",
+      "PREVENTION_WRIST_ELBOW": "Wrist and elbow"
     }
   }
 }

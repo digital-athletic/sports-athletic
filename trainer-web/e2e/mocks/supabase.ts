@@ -50,6 +50,13 @@ export type MockTeam = {
   members?: MockMember[];
 };
 
+/** A row of team_workouts; `template` is the AIWL JSON the builder saved. */
+export type MockTeamWorkout = {
+  id: string;
+  team_id: string;
+  template: Record<string, unknown>;
+};
+
 /** Makes an RPC fail; the string is the ErrorCode the app maps back. */
 export type MockRpcError = { error: string };
 
@@ -61,6 +68,8 @@ export type MockOptions = {
   teams?: MockTeam[];
   /** Completed workouts per athlete user id. */
   workouts?: Record<string, MockWorkout[]>;
+  /** Saved workout templates of the teams. */
+  teamWorkouts?: MockTeamWorkout[];
   /** Keyed by RPC function name, e.g. `create_team`. */
   rpc?: Record<string, MockRpcError>;
 };
@@ -113,6 +122,7 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
   const user = options.user ?? MOCK_USER;
   const teams = options.teams ?? [];
   const workouts = options.workouts ?? {};
+  const teamWorkouts = options.teamWorkouts ?? [];
   const rpcOverrides = options.rpc ?? {};
   const trainerGrantedAt = options.trainerGrantedAt ?? null;
   const adminGrantedAt = options.adminGrantedAt ?? null;
@@ -256,6 +266,21 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
     );
   });
 
+  await page.route("**/rest/v1/team_workouts**", (route) => {
+    const teamId = equalsFilter(route.request().url(), "team_id");
+    return route.fulfill(
+      json(
+        teamWorkouts
+          .filter((workout) => teamId === null || workout.team_id === teamId)
+          .map((workout) => ({
+            ...workout,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })),
+      ),
+    );
+  });
+
   await page.route("**/rest/v1/rpc/**", (route) => {
     const name = new URL(route.request().url()).pathname.split("/").pop() ?? "";
     const override = rpcOverrides[name];
@@ -316,6 +341,10 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
           weekly_training_days: body.p_weekly_training_days ?? null,
         }),
       );
+    }
+
+    if (name === "delete_team_workout") {
+      return route.fulfill({ status: 204, body: "" });
     }
 
     return route.fulfill(json({ success: true }));

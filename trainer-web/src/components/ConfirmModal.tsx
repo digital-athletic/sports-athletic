@@ -6,6 +6,8 @@ interface ConfirmModalProps {
   message: string;
   confirmLabel: string;
   isLoading?: boolean;
+  /** data-testid of the confirm button, for the e2e suite. */
+  confirmTestId?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -15,6 +17,7 @@ export const ConfirmModal = ({
   message,
   confirmLabel,
   isLoading = false,
+  confirmTestId,
   onConfirm,
   onCancel,
 }: ConfirmModalProps) => {
@@ -84,6 +87,7 @@ export const ConfirmModal = ({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
+            data-testid={confirmTestId}
             className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:bg-gray-300"
           >
             {isLoading ? t("common.loading") : confirmLabel}

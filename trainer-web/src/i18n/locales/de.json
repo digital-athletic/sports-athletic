@@ -141,7 +141,8 @@
       "team": "Mannschaft",
       "evaluations": "Auswertungen",
       "settings": "Einstellungen",
-      "management": "Teamverwaltung"
+      "management": "Teamverwaltung",
+      "workouts": "Workouts"
     },
     "players": {
       "title": "Deine Spieler",
@@ -230,6 +231,45 @@
       "generating": "Generiere...",
       "success": "3 Beispiel-Trainingseinträge erfolgreich erstellt!",
       "notLoggedIn": "Sie müssen angemeldet sein, um Beispieldaten zu generieren"
+    }
+  },
+  "workouts": {
+    "title": "Team-Workouts",
+    "description": "Workouts, die deine Athleten in der App starten können.",
+    "empty": "Dieses Team hat noch keine Workouts.",
+    "deleteConfirmTitle": "Workout löschen?",
+    "deleteConfirmMessage": "„{{name}}“ wird für das ganze Team entfernt.",
+    "list": {
+      "exercises_one": "{{count}} Übung",
+      "exercises_other": "{{count}} Übungen",
+      "minutes_one": "{{count}} Minute",
+      "minutes_other": "{{count}} Minuten"
+    },
+    "skills": {
+      "WU": "Aufwärmen",
+      "MOB": "Mobilität",
+      "GKS": "Stabilität",
+      "PREV": "Prävention",
+      "SWR1": "Hypertrophie",
+      "SK": "Schnellkraft",
+      "PLYO_MEDIUM": "Plyometrie",
+      "CD": "Cool-down",
+      "CARDIO_1_LAKTAT": "Cardio Zone 1",
+      "CARDIO_2": "Cardio Zone 2",
+      "CARDIO_3": "Cardio Zone 3",
+      "CARDIO_4": "Cardio Zone 4",
+      "CARDIO_5": "Cardio Zone 5"
+    },
+    "tags": {
+      "REGION_UPPER_BODY": "Oberkörper",
+      "REGION_LOWER_BODY": "Unterkörper",
+      "REGION_CORE": "Rumpf",
+      "REGION_FULL_BODY": "Ganzkörper",
+      "PREVENTION_SHOULDER": "Schulter",
+      "PREVENTION_KNEE_HIP": "Knie und Hüfte",
+      "PREVENTION_SPINE": "Wirbelsäule",
+      "PREVENTION_ANKLE": "Sprunggelenk",
+      "PREVENTION_WRIST_ELBOW": "Handgelenk und Ellbogen"
     }
   }
 }

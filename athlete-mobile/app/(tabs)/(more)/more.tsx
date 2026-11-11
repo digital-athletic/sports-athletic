@@ -98,7 +98,7 @@ export default function MoreScreen() {
           />
           <StrengthTestMenuItems />
           <ListItem
-            title={t("more.technicalVideos")}
+            title={t("more.introductionVideos")}
             navPath="/(tabs)/(more)/tutorials"
             icon={IconChalkboardTeacher}
             iconBackground="primary"

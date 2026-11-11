@@ -1,3 +1,4 @@
+import { externalLinks } from "@/config/externalLinks";
 import { featureFlags } from "@/config/featureFlags";
 import {
   LINK_A11Y_FEEDBACK,
@@ -18,6 +19,39 @@ import IconMail from "@tabler/icons-react-native/IconMail";
 import IconMessageDots from "@tabler/icons-react-native/IconMessageDots";
 import IconSettings from "@tabler/icons-react-native/IconSettings";
 import IconShieldCheck from "@tabler/icons-react-native/IconShieldCheck";
+
+const FormMenuItems: FC = () => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      {externalLinks.consentU16 !== "" && (
+        <ListItem
+          title={t("more.consentU16")}
+          externalUrl={externalLinks.consentU16}
+          icon="create"
+          iconBackground="darkGrey1"
+        />
+      )}
+      {externalLinks.feedbackReport !== "" && (
+        <ListItem
+          title={t("more.feedbackReport")}
+          externalUrl={externalLinks.feedbackReport}
+          icon="bug"
+          iconBackground="darkGrey1"
+        />
+      )}
+      {externalLinks.survey !== "" && (
+        <ListItem
+          title={t("more.survey")}
+          externalUrl={externalLinks.survey}
+          icon="clipboard"
+          iconBackground="darkGrey1"
+        />
+      )}
+    </>
+  );
+};
 
 const A11yMenuItems: FC = () => {
   const { t } = useTranslation();
@@ -44,12 +78,13 @@ const A11yMenuItems: FC = () => {
   );
 };
 
-/** Legal, settings and support entries of the More menu; several sit behind feature flags. */
+/** Online form, legal, settings and support entries of the More menu; several sit behind feature flags. */
 export const InfoMenuItems: FC = () => {
   const { t } = useTranslation();
 
   return (
     <>
+      <FormMenuItems />
       {featureFlags.termsEnabled && (
         <ListItem
           title={t("more.agb")}

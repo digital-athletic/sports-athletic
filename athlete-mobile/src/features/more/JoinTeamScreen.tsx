@@ -8,6 +8,7 @@ import {
 import { Stack, useRouter } from "expo-router";
 import { type TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
+import { TrainerAccessButton } from "@/features/more/TrainerAccessButton";
 import { useAuthStore } from "@/store/authStore";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { type I18nKey } from "@/i18n";
@@ -283,6 +284,8 @@ export default function JoinTeamScreen() {
             </Text>
           )}
         </Box>
+
+        <TrainerAccessButton />
       </ScrollBox>
     </>
   );

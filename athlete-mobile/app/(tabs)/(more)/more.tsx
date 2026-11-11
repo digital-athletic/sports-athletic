@@ -19,6 +19,9 @@ import { useResponsiveProp } from "@shopify/restyle";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
+import IconChalkboardTeacher from "@tabler/icons-react-native/IconChalkboardTeacher";
+import IconChartBar from "@tabler/icons-react-native/IconChartBar";
+import IconUsersGroup from "@tabler/icons-react-native/IconUsersGroup";
 
 export default function MoreScreen() {
   const { t } = useTranslation();
@@ -54,7 +57,7 @@ export default function MoreScreen() {
             <ListItem
               title={t("more.testPersonas")}
               navPath="/test"
-              iconName="help-circle"
+              icon="help-circle"
               iconBackground="primary"
               isLast
             />
@@ -65,44 +68,44 @@ export default function MoreScreen() {
           <ListItem
             title={t("more.myProfile")}
             navPath="/(more)/anamnesis/userprofile"
-            iconName="person"
+            icon="person"
             iconBackground="primary"
           />
           <ListItem
             title={t("more.mySport")}
             navPath="/(more)/anamnesis/sport"
-            iconName="basketball"
+            icon="basketball"
             iconBackground="primary"
           />
           <ListItem
             title={t("more.myEquipment")}
             navPath="/(tabs)/(more)/equipment"
-            iconName="fitness"
+            icon="fitness"
             iconBackground="primary"
           />
           <ListItem
             title={t("more.myTrainingData")}
             navPath="/(more)/anamnesis/season-phase"
-            iconName="stats-chart"
+            icon={IconChartBar}
             iconBackground="primary"
           />
           <StrengthTestMenuItems />
           <ListItem
             title={t("more.technicalVideos")}
             navPath="/(tabs)/(more)/tutorials"
-            iconName="videocam"
+            icon={IconChalkboardTeacher}
             iconBackground="primary"
           />
           <ListItem
             title={t("more.glossary.menuItem")}
             navPath="/(tabs)/(more)/glossary"
-            iconName="book"
+            icon="book"
             iconBackground="primary"
           />
           <ListItem
             title={t("more.joinTeam.menuItem")}
             navPath="/(tabs)/(more)/join-team"
-            iconName="people"
+            icon={IconUsersGroup}
             iconBackground="primary"
             isLast
           />

@@ -35,6 +35,11 @@
     "license": "MIT"
   },
   {
+    "name": "@tabler/icons-react-native",
+    "version": "3.50.0",
+    "license": "MIT"
+  },
+  {
     "name": "expo",
     "version": "58.0.14",
     "license": "MIT"

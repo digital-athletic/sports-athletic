@@ -4,8 +4,8 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { Box } from "@/theme/Box";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-
-const FOCUS_TRAINING_IMAGE = require("../../../assets/img/shortTrainings/mobility.jpg");
+import IconShieldHeart from "@tabler/icons-react-native/IconShieldHeart";
+import IconTargetArrow from "@tabler/icons-react-native/IconTargetArrow";
 
 export default function FocusTrainingListScreen() {
   const { t } = useTranslation();
@@ -25,7 +25,7 @@ export default function FocusTrainingListScreen() {
       <Box gap="l">
         <TrainingTile
           size="full"
-          image={FOCUS_TRAINING_IMAGE}
+          icon={IconTargetArrow}
           title={t("screens.home.focusTraining.title")}
           description={t("screens.home.focusTraining.subtitle")}
           onPress={() => startTraining("QUICK")}
@@ -33,7 +33,7 @@ export default function FocusTrainingListScreen() {
         />
         <TrainingTile
           size="full"
-          iconName="medkit-outline"
+          icon={IconShieldHeart}
           title={t("screens.home.preventionTraining.title")}
           description={t("screens.home.preventionTraining.subtitle")}
           onPress={() => startTraining("PREV")}

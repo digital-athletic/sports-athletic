@@ -7,7 +7,7 @@ describe("TrainingTile: screen reader", () => {
       <TrainingTile
         title="Focus trainings"
         description="Ten minutes on one topic"
-        iconName="add"
+        icon="add"
         size="full"
         onPress={jest.fn()}
       />,
@@ -24,7 +24,7 @@ describe("TrainingTile: screen reader", () => {
     await render(
       <TrainingTile
         title="Imminent pains"
-        iconName="add"
+        icon="add"
         size="half"
         onPress={jest.fn()}
       />,
@@ -55,7 +55,7 @@ describe("TrainingTile: content", () => {
     await render(
       <TrainingTile
         title="Imminent pains"
-        iconName="add"
+        icon="add"
         size="full"
         onPress={onPress}
         testID="pain-tile"

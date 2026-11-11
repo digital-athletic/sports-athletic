@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -19,21 +19,18 @@ export type TrainingTileSize = "full" | "half";
 interface TrainingTileProps {
   title: string;
   description?: string;
-  /** Photo of the tile. Without it the tile shows the icon on brand red. */
+  /** Photo of the tile. Without it the tile shows the icon on a grey card. */
   image?: ImageSourcePropType;
-  iconName?: IoniconName;
+  icon?: AppIconSource;
   size: TrainingTileSize;
   onPress: () => void;
   testID?: string;
 }
 
-type TileBackgroundProps = Pick<
-  TrainingTileProps,
-  "image" | "iconName" | "size"
->;
+type TileBackgroundProps = Pick<TrainingTileProps, "image" | "icon" | "size">;
 
-/** The photo under a dark shade, or the large icon on brand red. */
-const TileBackground: FC<TileBackgroundProps> = ({ image, iconName, size }) => {
+/** The photo under a dark shade, or the large icon on a grey card. */
+const TileBackground: FC<TileBackgroundProps> = ({ image, icon, size }) => {
   const { colors } = useTheme();
 
   if (image) {
@@ -52,18 +49,12 @@ const TileBackground: FC<TileBackgroundProps> = ({ image, iconName, size }) => {
 
   return (
     <>
-      <LinearGradient
-        colors={[colors.primary, colors.primaryDark]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.fill}
-      />
-      {iconName && (
+      {icon && (
         <Box style={StyleSheet.absoluteFill} alignItems="center" paddingTop="l">
-          <Ionicon
-            name={iconName}
+          <AppIcon
+            icon={icon}
             size={size === "full" ? 64 : 48}
-            color={colors.white}
+            color={colors.primary}
             decorative
           />
         </Box>
@@ -77,12 +68,13 @@ export const TrainingTile: FC<TrainingTileProps> = ({
   title,
   description,
   image,
-  iconName,
+  icon,
   size,
   onPress,
   testID,
 }) => {
   const accessibilityLabel = description ? `${title}, ${description}` : title;
+  const textColor = image ? "white" : "darkGrey3";
 
   return (
     <Pressable
@@ -92,8 +84,15 @@ export const TrainingTile: FC<TrainingTileProps> = ({
       accessibilityLabel={accessibilityLabel}
       testID={testID}
     >
-      <Box flex={1} borderRadius="xl" overflow="hidden">
-        <TileBackground image={image} iconName={iconName} size={size} />
+      <Box
+        flex={1}
+        borderRadius="xl"
+        overflow="hidden"
+        backgroundColor={image ? undefined : "lightGrey1"}
+        borderColor="lightGrey2"
+        borderWidth={image ? 0 : 1.5}
+      >
+        <TileBackground image={image} icon={icon} size={size} />
         <Box flex={1} justifyContent="flex-end" padding="m">
           {/* Long German compounds carry soft hyphens in the translation, so
               they break between syllables in a half width tile. */}
@@ -101,13 +100,17 @@ export const TrainingTile: FC<TrainingTileProps> = ({
             variant="body"
             fontSize={17}
             fontWeight="700"
-            color="white"
+            color={textColor}
             android_hyphenationFrequency="normal"
           >
             {title}
           </Text>
           {description && (
-            <Text variant="small" fontSize={13} color="white">
+            <Text
+              variant="small"
+              fontSize={13}
+              color={image ? "white" : "darkGrey1"}
+            >
               {description}
             </Text>
           )}

@@ -4,6 +4,18 @@ import { type UserTeam } from "@/services/TeamService";
 import { act, fireEvent, render, waitFor, within } from "@/utils/testUtils";
 import AdditionalTrainingListScreen from "./AdditionalTrainingListScreen";
 
+// Renders the Tabler icons as named host nodes, so the tests tell them apart.
+jest.mock("@tabler/icons-react-native/IconBarbell", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconBarbell", props),
+}));
+jest.mock("@tabler/icons-react-native/IconUsersGroup", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconUsersGroup", props),
+}));
+
 const mockGetUserTeams = jest.fn();
 jest.mock("@/services/TeamService", () => ({
   getUserTeams: () => mockGetUserTeams(),
@@ -102,15 +114,16 @@ describe("AdditionalTrainingListScreen: tiles", () => {
     expect(within(grid).getAllByRole("button")).toHaveLength(2);
   });
 
-  it("shows a single person icon on the own trainings tile", async () => {
+  it("shows the workout builder icon on the own trainings tile", async () => {
     const { findByRole } = await render(<AdditionalTrainingListScreen />);
 
     const tile = await findByRole("button", { name: OWN_TRAININGS });
-    const iconNames = tile
-      .queryAll((node) => node.type === "Ionicons")
-      .map((icon) => icon.props.name);
-    expect(iconNames).toContain("person-outline");
-    expect(iconNames).not.toContain("people-outline");
+    expect(tile.queryAll((node) => node.type === "IconBarbell")).toHaveLength(
+      1,
+    );
+    expect(
+      tile.queryAll((node) => node.type === "IconUsersGroup"),
+    ).toHaveLength(0);
   });
 
   it("shows a group icon on a team tile", async () => {
@@ -119,11 +132,12 @@ describe("AdditionalTrainingListScreen: tiles", () => {
     const { findByRole } = await render(<AdditionalTrainingListScreen />);
 
     const tile = await findByRole("button", { name: "Team Alpha" });
-    const iconNames = tile
-      .queryAll((node) => node.type === "Ionicons")
-      .map((icon) => icon.props.name);
-    expect(iconNames).toContain("people-outline");
-    expect(iconNames).not.toContain("person-outline");
+    expect(
+      tile.queryAll((node) => node.type === "IconUsersGroup"),
+    ).toHaveLength(1);
+    expect(tile.queryAll((node) => node.type === "IconBarbell")).toHaveLength(
+      0,
+    );
   });
 });
 

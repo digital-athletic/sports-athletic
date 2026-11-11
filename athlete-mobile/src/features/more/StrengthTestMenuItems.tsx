@@ -18,13 +18,13 @@ export const StrengthTestMenuItems: FC = () => {
           type: "TEST_WORKOUT",
           originPath: "/(tabs)/(more)/more",
         }}
-        iconName="barbell"
+        icon="barbell"
         iconBackground="primary"
       />
       <ListItem
         title={t("more.enterTestManually")}
         navPath="/training/manual-strength-test"
-        iconName="create"
+        icon="create"
         iconBackground="primary"
       />
     </>

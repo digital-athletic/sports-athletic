@@ -9,11 +9,14 @@ const SWAP_PREFIX = "Swap exercise ";
 
 /** Names of the exercises with a swap button, in screen order. */
 async function readSwappableNames(page: Page): Promise<string[]> {
-  const labels = await page
-    .getByRole("button", { name: new RegExp(`^${SWAP_PREFIX}`) })
-    .evaluateAll((buttons) =>
-      buttons.map((button) => button.getAttribute("aria-label") ?? ""),
-    );
+  const buttons = page.getByRole("button", {
+    name: new RegExp(`^${SWAP_PREFIX}`),
+  });
+  // evaluateAll does not wait, and the list renders after the screen title.
+  await expect(buttons.first()).toBeVisible();
+  const labels = await buttons.evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute("aria-label") ?? ""),
+  );
   return labels.map((label) => label.slice(SWAP_PREFIX.length));
 }
 

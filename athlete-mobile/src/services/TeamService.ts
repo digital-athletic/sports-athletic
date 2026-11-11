@@ -7,6 +7,14 @@ export interface UserTeam {
   ownerId: string;
 }
 
+export interface TeamInfo {
+  id: string;
+  name: string;
+  guidance: string | null;
+  /** Expected training days per week, 1 to 7. Independent of the training plan. */
+  weeklyTrainingDays: number | null;
+}
+
 export interface JoinTeamResult {
   teamId: string;
   teamName: string;
@@ -25,6 +33,13 @@ interface TeamRow {
   id: string;
   name: string;
   owner_id: string;
+}
+
+interface TeamInfoRow {
+  id: string;
+  name: string;
+  guidance: string | null;
+  weekly_training_days: number | null;
 }
 
 const RPC_ERROR_MAP: Record<string, I18nKey> = {
@@ -77,6 +92,33 @@ export async function getUserTeams(): Promise<UserTeam[]> {
   if (teamsError || !teams) return [];
 
   return teams.map((t) => ({ id: t.id, name: t.name, ownerId: t.owner_id }));
+}
+
+/**
+ * Returns null when the athlete can no longer see the team, which RLS reports
+ * as a missing row. Read failures throw, so they never look like a missing team.
+ */
+export async function getTeamInfo(teamId: string): Promise<TeamInfo | null> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) throw new Error("more.teamInfo.loadError");
+
+  const { data, error } = (await supabase
+    .from("teams")
+    .select("id, name, guidance, weekly_training_days")
+    .eq("id", teamId)
+    .maybeSingle()) as { data: TeamInfoRow | null; error: unknown };
+
+  if (error) throw new Error("more.teamInfo.loadError");
+  if (!data) return null;
+
+  return {
+    id: data.id,
+    name: data.name,
+    guidance: data.guidance,
+    weeklyTrainingDays: data.weekly_training_days,
+  };
 }
 
 export async function acceptInvitation(code: string): Promise<JoinTeamResult> {

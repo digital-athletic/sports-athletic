@@ -12,8 +12,9 @@ jest.mock("@/services/TeamService", () => ({
 }));
 
 const mockBack = jest.fn();
+const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ back: mockBack }),
+  useRouter: () => ({ back: mockBack, push: mockPush }),
   Stack: {
     Screen: ({ options }: { options: { title: string } }) => null,
   },
@@ -413,5 +414,51 @@ describe("JoinTeamScreen: Join form submission", () => {
         true,
       );
     });
+  });
+});
+
+describe("JoinTeamScreen: opening the team info page", () => {
+  it("opens the info page when the athlete taps a team row", async () => {
+    mockGetUserTeams.mockResolvedValue([makeTeam({ id: "team-1" })]);
+
+    const { findByTestId } = await render(<JoinTeamScreen />);
+    fireEvent.press(await findByTestId("team-row-team-1"));
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: "/team/[teamId]",
+      params: { teamId: "team-1" },
+    });
+  });
+
+  it("opens the info page for a team the athlete owns", async () => {
+    mockGetUserTeams.mockResolvedValue([
+      makeTeam({ id: "team-2", ownerId: "user-123" }),
+    ]);
+
+    const { findByTestId } = await render(<JoinTeamScreen />);
+    fireEvent.press(await findByTestId("team-row-team-2"));
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: "/team/[teamId]",
+      params: { teamId: "team-2" },
+    });
+  });
+
+  it("labels the team row as a button with the team name", async () => {
+    mockGetUserTeams.mockResolvedValue([makeTeam({ id: "team-1" })]);
+
+    const { findByRole } = await render(<JoinTeamScreen />);
+
+    expect(await findByRole("button", { name: "Team Alpha" })).toBeTruthy();
+  });
+
+  it("leaves the team without opening the info page", async () => {
+    mockGetUserTeams.mockResolvedValue([makeTeam({ id: "team-1" })]);
+
+    const { findByText } = await render(<JoinTeamScreen />);
+    fireEvent.press(await findByText("more.joinTeam.leave"));
+
+    expect(Alert.alert).toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });

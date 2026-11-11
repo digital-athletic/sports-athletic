@@ -779,6 +779,18 @@
       "errorInactive": "The invite code is no longer valid. Ask the person who invited you for a new code.",
       "errorMaxUses": "Too many people have already used the invite code. Ask the person who invited you for a new code.",
       "errorGeneric": "The app could not finish this. Try again."
+    },
+    "teamInfo": {
+      "title": "Team info",
+      "openHint": "Opens the team info page",
+      "guidanceTitle": "Guidance from your trainer",
+      "weeklyTargetTitle": "Weekly target",
+      "weeklyTarget_one": "{{count}} training day per week",
+      "weeklyTarget_other": "{{count}} training days per week",
+      "noGuidance": "Your trainer has not added any guidance for this team yet.",
+      "loadError": "The app could not load this team. Check your connection and try again.",
+      "retry": "Try again",
+      "notMember": "You are no longer a member of this team."
     }
   },
   "muscles": {

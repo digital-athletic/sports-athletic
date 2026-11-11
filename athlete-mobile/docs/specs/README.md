@@ -40,6 +40,12 @@ How prescribed values move from one session to the next.
 | [Max Strength Training](./progression/max-strength-progression.md) | Max strength: the F-Max ladder, warm-up sets, repetition tables, and support exercises |
 | [Weight Calculation from Strength Tests](./progression/weight-calculation-from-strength-tests.md) | Strength test to 1RM to equipment conversion to training weight to plate rounding |
 
+## teams
+
+| Spec | Covers |
+|---|---|
+| [Team Info Page](./teams/team-info-page.md) | The read-only page with the team's guidance and weekly target, its states, and how athletes reach it |
+
 ## Conventions
 
 - Every spec uses the same sections: Why & What, Problem, Solution, Out of Scope, Algorithm, Structure, Open Questions.

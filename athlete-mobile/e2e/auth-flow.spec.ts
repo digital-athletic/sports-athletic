@@ -16,7 +16,7 @@ test.describe("Auth Flow: signed out user", () => {
     await page.goto("/");
     await expect(sendCodeButton).toBeVisible({ timeout: 5000 });
     await expect(page.getByPlaceholder("E-Mail")).toBeVisible();
-    await expect(page.getByText(/sign up/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign up" })).toBeVisible();
     await expect(page.getByText("Data Protection")).not.toBeVisible({
       timeout: 3000,
     });

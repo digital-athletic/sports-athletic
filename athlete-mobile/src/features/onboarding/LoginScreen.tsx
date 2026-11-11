@@ -3,11 +3,10 @@ import { DividerWithText } from "@/features/onboarding/DividerWithText";
 import { EmailInputField } from "@/form/EmailInputField";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
-import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Image, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Props = {
@@ -33,6 +32,12 @@ export const LoginScreen: FC<Props> = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  // The register button below has a 1px outline. The same outline in the fill
+  // colour keeps both buttons exactly the same size.
+  const outlineMatchingStyle = {
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+  };
 
   return (
     <Box
@@ -67,7 +72,12 @@ export const LoginScreen: FC<Props> = ({
         </Box>
 
         <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
-          <Button onPress={onLogin} variant="primary" disabled={processing}>
+          <Button
+            onPress={onLogin}
+            variant="primary"
+            disabled={processing}
+            style={outlineMatchingStyle}
+          >
             {processing ? (
               <ActivityIndicator color={theme.colors.white} />
             ) : (
@@ -76,23 +86,10 @@ export const LoginScreen: FC<Props> = ({
           </Button>
         </Box>
 
-        <Box
-          alignSelf="center"
-          flexDirection="row"
-          justifyContent="center"
-          alignItems="center"
-          height={40}
-          paddingHorizontal="m"
-          marginTop="m"
-        >
-          <Text variant="body" color="darkGrey2">
-            {t("onboarding.noAccountYet")}{" "}
-          </Text>
-          <TouchableOpacity onPress={onSignup}>
-            <Text variant="button" color="primary">
-              {t("onboarding.register")}
-            </Text>
-          </TouchableOpacity>
+        <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
+          <Button onPress={onSignup} variant="secondary">
+            {t("onboarding.register")}
+          </Button>
         </Box>
       </Box>
     </Box>

@@ -1,6 +1,7 @@
 import { externalLinks } from "@/config/externalLinks";
 import { ListItem } from "@/features/more/ListItem";
 import { Box } from "@/theme/Box";
+import IconPlayerPlay from "@tabler/icons-react-native/IconPlayerPlay";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -28,7 +29,7 @@ export const IntroVideoLinks: FC = () => {
           key={link.url}
           title={link.title}
           externalUrl={link.url}
-          icon="play-circle"
+          icon={IconPlayerPlay}
           iconBackground="primary"
           isLast={index === links.length - 1}
         />

@@ -7,6 +7,13 @@ jest.mock("expo-router", () => ({
   useRouter: () => ({ navigate: jest.fn() }),
 }));
 
+// Renders each icon as a named host node, so the test finds it in the tree.
+jest.mock("@tabler/icons-react-native/IconPlayerPlay", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconPlayerPlay", props),
+}));
+
 describe("IntroVideoLinks: links above the introduction videos", () => {
   afterEach(() => {
     delete process.env.EXPO_PUBLIC_LINK_INTRO_VIDEOS_TRAINERS;
@@ -29,6 +36,18 @@ describe("IntroVideoLinks: links above the introduction videos", () => {
       ["https://example.com/trainer-videos"],
       ["https://example.com/player-videos"],
     ]);
+  });
+
+  it("shows a play icon on every link", async () => {
+    process.env.EXPO_PUBLIC_LINK_INTRO_VIDEOS_TRAINERS =
+      "https://example.com/trainer-videos";
+    process.env.EXPO_PUBLIC_LINK_INTRO_VIDEOS_PLAYERS =
+      "https://example.com/player-videos";
+
+    const { container } = await render(<IntroVideoLinks />);
+
+    const icons = container.queryAll((node) => node.type === "IconPlayerPlay");
+    expect(icons).toHaveLength(2);
   });
 
   it("shows only the link whose variable is set", async () => {

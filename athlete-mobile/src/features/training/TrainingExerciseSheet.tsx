@@ -204,6 +204,8 @@ const SheetSetHeading: FC<{
       <TrainingExerciseStats
         targetReps={row.targetReps}
         targetWeight={row.targetWeight}
+        targetDuration={row.targetDuration}
+        heartRateBand={row.heartRateBand}
       />
     </TrainingSheetHeading>
   );

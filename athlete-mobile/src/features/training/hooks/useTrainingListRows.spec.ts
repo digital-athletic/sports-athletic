@@ -11,6 +11,8 @@ import {
   createExerciseData,
 } from "@/features/training/utils/testFixtures";
 import { type UserExerciseDataType } from "@/schemas/sync.schema";
+import { heartRateBySkillAndBirthday } from "@/features/training/utils/heartRateUtils";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { renderHook } from "@testing-library/react-native";
 import { useTrainingListRows } from "./useTrainingListRows";
@@ -35,6 +37,7 @@ jest.mock("react-i18next", () => {
     "training.list.setKilos": (o) => `${o?.weight} kg`,
     "training.list.setSeconds": (o) => `${o?.count} s`,
     "training.list.setReps": (o) => `${o?.count} reps`,
+    "training.list.setMinutes": (o) => `${o?.minutes} min`,
   };
   return {
     useTranslation: () => ({
@@ -466,7 +469,7 @@ describe("useTrainingListRows: one entry per exercise", () => {
     ).toEqual(["20 s", "25 s"]);
   });
 
-  it("labels the sets of an endurance skill with the repetitions", async () => {
+  it("labels the set of a steady run with the planned duration in minutes", async () => {
     useTrainingStore.setState({
       exerciseList: [
         generateSetEntry("1", 1, 1, {
@@ -479,7 +482,53 @@ describe("useTrainingListRows: one entry per exercise", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.blocks[0].entries[0].sets[0].label).toBe("1 reps");
+    expect(result.current.blocks[0].entries[0].sets[0].label).toBe("10 min");
+  });
+
+  it("labels a steady run with a remainder of seconds as minutes and seconds", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 1, { skill: "CARDIO_5", duration: 630 }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.blocks[0].entries[0].sets[0].label).toBe("10:30 min");
+  });
+
+  it("gives the row of a steady run its planned duration and heart rate band", async () => {
+    const birthday = "1990-05-01";
+    useUserProfileStore.setState((state) => ({
+      personalData: { ...state.personalData, birthday },
+    }));
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 1, { skill: "CARDIO_4", duration: 1800 }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    const [row] = result.current.rows;
+    expect(row.targetDuration).toBe(1800);
+    expect(row.heartRateBand).toEqual(
+      heartRateBySkillAndBirthday("CARDIO_4", birthday),
+    );
+  });
+
+  it("gives the row of an interval no planned duration and no heart rate band", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 1, { skill: "CARDIO_2", duration: 60 }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    const [row] = result.current.rows;
+    expect(row.targetDuration).toBeUndefined();
+    expect(row.heartRateBand).toBeUndefined();
   });
 
   it("labels other sets with the repetitions", async () => {
@@ -555,7 +604,7 @@ describe("useTrainingListRows: one entry per exercise", () => {
     expect(result.current.blocks[0].entries[0].valueKind).toBe("time");
   });
 
-  it("gives an endurance exercise the value kind reps", async () => {
+  it("gives a steady run the value kind time", async () => {
     useTrainingStore.setState({
       exerciseList: [
         generateSetEntry("1", 1, 1, {
@@ -568,7 +617,7 @@ describe("useTrainingListRows: one entry per exercise", () => {
 
     const { result } = await renderHook(() => useTrainingListRows());
 
-    expect(result.current.blocks[0].entries[0].valueKind).toBe("reps");
+    expect(result.current.blocks[0].entries[0].valueKind).toBe("time");
   });
 
   it("gives an exercise with repetitions the value kind reps", async () => {

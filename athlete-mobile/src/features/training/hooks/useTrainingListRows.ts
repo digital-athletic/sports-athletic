@@ -13,11 +13,21 @@ import {
   isFeedbackEligibleSkill,
 } from "@/features/training/utils/exerciseDataUtils";
 import { getExercisePictureSource } from "@/features/training/utils/exercisePicture";
-import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
+import {
+  heartRateBySkillAndBirthday,
+  type HeartRateInterval,
+} from "@/features/training/utils/heartRateUtils";
+import {
+  deriveRowReps,
+  deriveSetWeight,
+  deriveSteadyRunDuration,
+} from "@/features/training/utils/checklistSetTargets";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { type ExerciseType } from "@/schemas/exercise.schema";
 import { type UserExerciseDataType } from "@/schemas/sync.schema";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { formatPlannedMinutes } from "@/utils/date";
 import { getTagValues } from "@/utils/tagUtils";
 import { type TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
@@ -36,6 +46,10 @@ export type ListRow = {
   nextSetLabel?: string;
   targetReps?: number;
   targetWeight?: RowWeight;
+  /** Planned duration of a steady run in seconds. */
+  targetDuration?: number;
+  /** Heart rate band of a steady run's cardio zone. */
+  heartRateBand?: HeartRateInterval;
   isTest: boolean;
   isLastInSet: boolean;
   isFeedbackSkill: boolean;
@@ -73,33 +87,6 @@ export type ChecklistEntryBlock = {
   entries: ChecklistEntry[];
   nextEntryKey: number | null;
 };
-
-/** Target weight of a set in kg, or undefined for a set without weight. */
-function deriveSetWeight(
-  exercise: UserExerciseDataType,
-  exerciseData: ExerciseType | undefined,
-  maxValues: MaxValuesType,
-): number | undefined {
-  if (!exercise.weight || !exerciseData) return undefined;
-
-  const derivedWeight = deriveEntryWeight(
-    {
-      weight: exercise.weight,
-      weightType: exercise.weightType,
-      skill: exercise.skill,
-    },
-    exerciseData,
-    maxValues,
-  );
-  return typeof derivedWeight === "number" ? derivedWeight : undefined;
-}
-
-// Strength tests mark reps as -1, which this check also excludes.
-function deriveRowReps(exercise: UserExerciseDataType): number | undefined {
-  return typeof exercise.repetition === "number" && exercise.repetition > 0
-    ? exercise.repetition
-    : undefined;
-}
 
 function deriveRowWeight(
   exercise: UserExerciseDataType,
@@ -159,11 +146,12 @@ function buildSetLabels(
   };
 }
 
-type SetValue = { kind: ValueKind; amount: number };
+/** inMinutes marks the planned duration of a steady run. */
+type SetValue = { kind: ValueKind; amount: number; inMinutes?: boolean };
 
 /**
- * The main value of a set: the weight, else the duration of a timed set, else
- * the repetitions. A strength test has none.
+ * The main value of a set: the weight, else the duration of a timed set or a
+ * steady run, else the repetitions. A strength test has none.
  */
 function deriveSetValue(
   exercise: UserExerciseDataType,
@@ -172,12 +160,12 @@ function deriveSetValue(
 ): SetValue | undefined {
   const weight = deriveSetWeight(exercise, exerciseData, maxValues);
   if (weight !== undefined) return { kind: "weight", amount: weight };
-  if (
-    typeof exercise.duration === "number" &&
-    exercise.duration > 0 &&
-    !isEnduranceSkill(exercise.skill)
-  ) {
-    return { kind: "time", amount: exercise.duration };
+  if (typeof exercise.duration === "number" && exercise.duration > 0) {
+    return {
+      kind: "time",
+      amount: exercise.duration,
+      inMinutes: isEnduranceSkill(exercise.skill),
+    };
   }
   if (typeof exercise.repetition === "number" && exercise.repetition > 0) {
     return { kind: "reps", amount: exercise.repetition };
@@ -203,7 +191,11 @@ function buildSetSummaryLabel(
         weight: Number(value.amount.toFixed(2)),
       });
     case "time":
-      return t("training.list.setSeconds", { count: value.amount });
+      return value.inMinutes
+        ? t("training.list.setMinutes", {
+            minutes: formatPlannedMinutes(value.amount),
+          })
+        : t("training.list.setSeconds", { count: value.amount });
     case "reps":
       return t("training.list.setReps", { count: value.amount });
     default:
@@ -289,6 +281,7 @@ export function useTrainingListRows() {
   const exerciseList = useTrainingStore((s) => s.exerciseList);
   const activeTraining = useTrainingStore((s) => s.activeTraining);
   const maxValues = useUserWorkoutStore((s) => s.workoutData.maxValues);
+  const birthday = useUserProfileStore((s) => s.personalData.birthday);
 
   const rows = (exerciseList ?? []).reduce<ListRow[]>(
     (acc, exercise, index) => {
@@ -297,6 +290,7 @@ export function useTrainingListRows() {
       const exerciseData = getExerciseById(exercise.exerciseId);
       const targetReps = deriveRowReps(exercise);
       const targetWeight = deriveRowWeight(exercise, exerciseData, maxValues);
+      const targetDuration = deriveSteadyRunDuration(exercise);
 
       acc.push({
         index,
@@ -310,6 +304,11 @@ export function useTrainingListRows() {
         ...buildSetLabels(exercise, targetReps, targetWeight, t),
         targetReps,
         targetWeight,
+        targetDuration,
+        heartRateBand:
+          targetDuration === undefined
+            ? undefined
+            : heartRateBySkillAndBirthday(exercise.skill, birthday),
         isTest: exercise.repetition === -1,
         isLastInSet: exercise.set?.[0] === exercise.set?.[1],
         isFeedbackSkill: isFeedbackEligibleSkill(

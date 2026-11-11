@@ -8,12 +8,9 @@ import { syncManager } from "@/services/SyncManager";
 import { act, renderHook } from "@testing-library/react-native";
 import { useExerciseProgressStore } from "./exerciseProgressStore";
 
-jest.mock("@/services/SyncManager", () => ({
-  syncManager: {
-    notifyExerciseUpdated: jest.fn(),
-    notifyTestResultAdded: jest.fn(),
-  },
-}));
+jest.mock("@/services/SyncManager", () =>
+  jest.requireActual("@test/syncManagerMock"),
+);
 
 describe("ExerciseTotals Types", () => {
   describe("createEmptyExerciseTotals", () => {
@@ -542,7 +539,7 @@ describe("exerciseProgressStore", () => {
   });
 
   describe("resetExercise", () => {
-    it("keeps only exerciseId, skill and branchId and notifies sync", async () => {
+    it("strips the record down to exerciseId, skill and branchId, then notifies sync", async () => {
       const { result } = await renderHook(() => useExerciseProgressStore());
 
       await act(() => {

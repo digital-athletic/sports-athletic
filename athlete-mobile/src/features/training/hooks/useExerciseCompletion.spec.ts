@@ -14,12 +14,9 @@ import { useExerciseCompletion } from "./useExerciseCompletion";
 
 let mockExerciseValues: object = {};
 
-jest.mock("@/services/SyncManager", () => ({
-  syncManager: {
-    notifyExerciseUpdated: jest.fn(),
-    notifyTestResultAdded: jest.fn(),
-  },
-}));
+jest.mock("@/services/SyncManager", () =>
+  jest.requireActual("@test/syncManagerMock"),
+);
 
 jest.mock("@/data/exerciseRegistry", () => ({
   getExerciseById: () => ({

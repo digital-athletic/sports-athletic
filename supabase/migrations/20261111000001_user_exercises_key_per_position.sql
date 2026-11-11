@@ -2,12 +2,12 @@
 -- Description: The same exercise can appear twice in one workout. The app
 --   uploads each entry with its index in the workout list and upserts on
 --   (user_id, workout_id, exercise_id, position), so a retry updates the row
---   instead of duplicating it. The keys without the position go away; the
---   per-skill key from 20261029000001 is no longer needed because the
---   position tells entries apart. Rows uploaded before the position existed
---   get 0; they were unique on (user_id, exercise_id, workout_id), so 0
---   cannot collide. No released build uploads individual exercises yet, so no
---   client depends on the old keys.
+--   instead of duplicating it. The position tells entries apart, which makes
+--   the key without the skill and the per-skill key from 20261029000001
+--   redundant; both are dropped. Rows uploaded before the position existed
+--   get 0. They were unique on (user_id, exercise_id, workout_id), so 0 cannot
+--   collide. The exercise upload is off in every released build, so no client
+--   depends on the old keys.
 
 ALTER TABLE user_exercises
   ADD COLUMN position INTEGER NOT NULL DEFAULT 0;

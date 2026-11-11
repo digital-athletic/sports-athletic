@@ -7,12 +7,9 @@ import {
 } from "@test/factories/storedExerciseData";
 import { useExerciseProgressStore } from "./exerciseProgressStore";
 
-jest.mock("@/services/SyncManager", () => ({
-  syncManager: {
-    notifyExerciseUpdated: jest.fn(),
-    notifyTestResultAdded: jest.fn(),
-  },
-}));
+jest.mock("@/services/SyncManager", () =>
+  jest.requireActual("@test/syncManagerMock"),
+);
 
 describe("exerciseProgressStore: progress per skill", () => {
   beforeEach(async () => {

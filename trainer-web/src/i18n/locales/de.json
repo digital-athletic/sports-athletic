@@ -17,7 +17,7 @@
   "login": {
     "title": "Anmelden",
     "email": "E-Mail",
-    "sendCode": "Code senden",
+    "sendCode": "Anmelden",
     "verifyTitle": "E-Mail bestätigen",
     "verifyCode": "Bestätigen",
     "otpSentMessage": "Wir haben einen 6-stelligen Code gesendet an",

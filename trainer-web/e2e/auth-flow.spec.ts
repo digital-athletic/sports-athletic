@@ -13,6 +13,7 @@ test.describe("Auth flow: signing in", () => {
     const teamSelection = new TeamSelectionPage(page);
 
     await login.goto();
+    await login.expectLoginButtonLabel("Anmelden");
     await login.signIn(MOCK_USER.email);
 
     await teamSelection.expectVisible();

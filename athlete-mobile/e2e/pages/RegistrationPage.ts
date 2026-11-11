@@ -15,7 +15,7 @@ export class RegistrationPage extends BasePage {
     ).toBeVisible({
       timeout: 5000,
     });
-    await this.page.getByText(/sign up/i).click();
+    await this.page.getByRole("button", { name: "Sign up" }).click();
     await expect(
       this.page.getByText("Registration", { exact: true }),
     ).toBeVisible();

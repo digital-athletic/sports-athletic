@@ -22,6 +22,10 @@ export class LoginPage {
     await this.page.getByTestId("login-verify").click();
   }
 
+  async expectLoginButtonLabel(label: string) {
+    await expect(this.page.getByTestId("login-send-code")).toHaveText(label);
+  }
+
   async expectOtpStep() {
     await expect(this.page.getByTestId("login-otp")).toBeVisible();
   }

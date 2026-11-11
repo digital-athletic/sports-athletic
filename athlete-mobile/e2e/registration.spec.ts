@@ -57,3 +57,36 @@ test.describe("Registration Flow", () => {
     await registration.expectAnamnesisScreen();
   });
 });
+
+test.describe("Login screen in German", () => {
+  test.use({ locale: "de-DE" });
+
+  test("an athlete who taps Registrieren reaches the registration flow", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const loginButton = page.getByRole("button", {
+      name: "Anmelden",
+      exact: true,
+    });
+    const registerButton = page.getByRole("button", {
+      name: "Registrieren",
+      exact: true,
+    });
+    await expect(loginButton).toBeVisible({ timeout: 5000 });
+    await expect(registerButton).toBeVisible();
+
+    const loginBox = await loginButton.boundingBox();
+    const registerBox = await registerButton.boundingBox();
+    expect(registerBox?.width).toBe(loginBox?.width);
+    expect(registerBox?.height).toBe(loginBox?.height);
+    expect(registerBox?.y).toBeGreaterThan(loginBox?.y ?? Infinity);
+
+    await registerButton.click();
+
+    await expect(
+      page.getByText("Registrierung", { exact: true }),
+    ).toBeVisible();
+  });
+});

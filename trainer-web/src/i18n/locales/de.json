@@ -236,7 +236,10 @@
   "workouts": {
     "title": "Team-Workouts",
     "description": "Workouts, die deine Athleten in der App starten können.",
+    "new": "Neues Workout",
+    "edit": "Bearbeiten",
     "empty": "Dieses Team hat noch keine Workouts.",
+    "emptyOwner": "Dieses Team hat noch keine Workouts. Erstelle das erste.",
     "deleteConfirmTitle": "Workout löschen?",
     "deleteConfirmMessage": "„{{name}}“ wird für das ganze Team entfernt.",
     "list": {
@@ -244,6 +247,37 @@
       "exercises_other": "{{count}} Übungen",
       "minutes_one": "{{count}} Minute",
       "minutes_other": "{{count}} Minuten"
+    },
+    "builder": {
+      "titleNew": "Neues Workout",
+      "titleEdit": "Workout bearbeiten",
+      "name": "Name",
+      "namePlaceholder": "z. B. Stabilität am Dienstag",
+      "sections": "Abschnitte",
+      "noSections": "Noch keine Abschnitte. Füge den ersten hinzu.",
+      "addSection": "Abschnitt hinzufügen",
+      "sectionNumber": "Abschnitt {{number}}",
+      "skill": "Training",
+      "exercises": "Übungen",
+      "minutes": "Minuten",
+      "range": "{{min}} bis {{max}}",
+      "moveUp": "Abschnitt {{number}} nach oben",
+      "moveDown": "Abschnitt {{number}} nach unten",
+      "removeSection": "Entfernen",
+      "tagGroups": {
+        "regions": "Körperregionen (optional)",
+        "prevention": "Präventionsbereiche (optional)"
+      },
+      "tagGroupHint": "Ein Abschnitt zielt auf Körperregionen oder auf Präventionsbereiche, nicht auf beides."
+    },
+    "errors": {
+      "NAME_REQUIRED": "Gib einen Namen ein.",
+      "NAME_TOO_LONG": "Der Name darf höchstens {{max}} Zeichen haben.",
+      "SECTION_REQUIRED": "Füge mindestens einen Abschnitt hinzu.",
+      "TOO_MANY_SECTIONS": "Ein Workout darf höchstens {{max}} Abschnitte haben.",
+      "UNKNOWN_SKILL": "Abschnitt {{number}}: Wähle ein Training.",
+      "AMOUNT_OUT_OF_RANGE": "Abschnitt {{number}}: Gib {{min}} bis {{max}} {{unit}} ein.",
+      "TAG_NOT_ALLOWED": "Abschnitt {{number}}: Wähle Körperregionen oder Präventionsbereiche, nicht beides."
     },
     "skills": {
       "WU": "Aufwärmen",

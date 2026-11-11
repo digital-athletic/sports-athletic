@@ -17,7 +17,7 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const activeTintColor = colors.primary;
   const inactiveTintColor = colors.darkGrey1;
-  // The icons reject the numeric and null colors the tab bar callback may pass.
+  // Ionicons rejects the numeric and null colors the tab bar callback may pass.
   const iconColor = (focused: boolean) =>
     focused ? activeTintColor : inactiveTintColor;
 

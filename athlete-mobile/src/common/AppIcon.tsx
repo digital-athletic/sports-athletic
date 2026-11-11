@@ -3,12 +3,10 @@ import type { FC } from "react";
 import { View } from "react-native";
 import { Ionicon, type IoniconName } from "./Ionicon";
 
-export type { TablerIcon };
-
 /**
- * An icon from the Tabler set, or the name of an Ionicons icon. Tabler icons are
- * imported one by one from their own entry point, so the bundle only contains
- * the icons in use: `import IconBarbell from "@tabler/icons-react-native/IconBarbell"`.
+ * A Tabler icon component or an Ionicons name. Import each Tabler icon from its
+ * own entry point (`@tabler/icons-react-native/IconBarbell`), so the bundle
+ * contains only the icons in use.
  */
 export type AppIconSource = TablerIcon | IoniconName;
 
@@ -21,12 +19,10 @@ interface AppIconProps {
   decorative?: boolean;
 }
 
-const DEFAULT_SIZE = 24;
-
 /** Renders a Tabler icon or an Ionicons icon with the same props. */
 export const AppIcon: FC<AppIconProps> = ({
   icon,
-  size = DEFAULT_SIZE,
+  size,
   color,
   accessibilityLabel,
   decorative = false,

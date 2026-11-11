@@ -12,7 +12,7 @@ type FocusTrainingGridProps = {
   onBack?: () => void;
 };
 
-/** Focus trainings as a two column grid of photo tiles under a headline. */
+/** Focus trainings as a grid of photo tiles under a headline. */
 export const FocusTrainingGrid: FC<FocusTrainingGridProps> = ({
   title,
   onBack,
@@ -36,7 +36,6 @@ export const FocusTrainingGrid: FC<FocusTrainingGridProps> = ({
               t(tile.description.text, tile.description.params)
             }
             image={tile.picture}
-            size="half"
             onPress={() => router.navigate(tileHref(tile))}
           />
         ))}

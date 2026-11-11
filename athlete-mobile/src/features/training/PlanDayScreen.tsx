@@ -1,7 +1,7 @@
 import { HeadlineScreen } from "@/common/HeadlineScreen";
+import { TileGrid } from "@/common/TileGrid";
 import { TrainingTile } from "@/common/TrainingTile";
 import { type TileData } from "@/constants/workoutConstants";
-import { Box } from "@/theme/Box";
 import { router } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,7 @@ type PlanDayScreenProps = {
   onBack: () => void;
 };
 
-/** The training days of the current plan week as large photo tiles. */
+/** The training days of the current plan week as photo tiles in a grid. */
 export const PlanDayScreen: FC<PlanDayScreenProps> = ({
   title,
   phase,
@@ -33,11 +33,10 @@ export const PlanDayScreen: FC<PlanDayScreenProps> = ({
       description={t("training.selectTraining.description")}
       onBack={onBack}
     >
-      <Box gap="m" testID="plan-days">
+      <TileGrid testID="plan-days">
         {days.map((day, index) => (
           <TrainingTile
             key={day.title + index}
-            size="full"
             image={day.picture}
             title={t(day.title)}
             description={
@@ -46,7 +45,7 @@ export const PlanDayScreen: FC<PlanDayScreenProps> = ({
             onPress={() => router.navigate(tileHref(day))}
           />
         ))}
-      </Box>
+      </TileGrid>
     </HeadlineScreen>
   );
 };

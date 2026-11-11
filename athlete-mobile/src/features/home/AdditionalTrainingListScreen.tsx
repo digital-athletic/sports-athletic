@@ -1,72 +1,16 @@
 import { HeadlineScreen } from "@/common/HeadlineScreen";
-import { AppIcon, type AppIconSource } from "@/common/AppIcon";
-import { Ionicon } from "@/common/Ionicon";
+import { TileCard } from "@/common/TileCard";
 import { TileGrid } from "@/common/TileGrid";
+import { TileIcon } from "@/common/TileIcon";
 import { Logger } from "@/services/Logger";
 import { type UserTeam, getUserTeams } from "@/services/TeamService";
 import { Box } from "@/theme/Box";
-import { Card } from "@/theme/Card";
-import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
 import { router } from "expo-router";
-import { type FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { ActivityIndicator } from "react-native";
 import IconBarbell from "@tabler/icons-react-native/IconBarbell";
 import IconUsersGroup from "@tabler/icons-react-native/IconUsersGroup";
-
-type TrainingSourceCardProps = {
-  title: string;
-  icon: AppIconSource;
-  onPress: () => void;
-};
-
-/** Card in the style of the body part cards, with an icon above the name. */
-const TrainingSourceCard: FC<TrainingSourceCardProps> = ({
-  title,
-  icon,
-  onPress,
-}) => {
-  const { colors } = useTheme();
-
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
-      accessibilityRole="button"
-      accessibilityLabel={title}
-    >
-      <Card variant="outlined" flex={1} overflow="hidden">
-        <Box
-          backgroundColor="lightGrey1"
-          alignItems="center"
-          justifyContent="center"
-          height={112}
-        >
-          <AppIcon icon={icon} size={48} color={colors.primary} decorative />
-        </Box>
-        <Box
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="space-between"
-          paddingHorizontal="m"
-          paddingVertical="m"
-          gap="xs"
-        >
-          <Text variant="body" fontSize={15} fontWeight="700" flexShrink={1}>
-            {title}
-          </Text>
-          <Ionicon
-            name="chevron-forward"
-            size={14}
-            color={colors.lightGrey3}
-            decorative
-          />
-        </Box>
-      </Card>
-    </Pressable>
-  );
-};
 
 export default function AdditionalTrainingListScreen() {
   const { t } = useTranslation();
@@ -107,18 +51,20 @@ export default function AdditionalTrainingListScreen() {
     >
       <Box gap="l">
         <TileGrid testID="additional-training-grid">
-          <TrainingSourceCard
-            icon={IconBarbell}
+          <TileCard
             title={ownTrainingsTitle}
             onPress={() => openWorkouts(ownTrainingsTitle, "own")}
-          />
+          >
+            <TileIcon icon={IconBarbell} />
+          </TileCard>
           {teams.map((team) => (
-            <TrainingSourceCard
+            <TileCard
               key={team.id}
-              icon={IconUsersGroup}
               title={team.name}
               onPress={() => openWorkouts(team.name, "team")}
-            />
+            >
+              <TileIcon icon={IconUsersGroup} />
+            </TileCard>
           ))}
         </TileGrid>
         {teamsLoading && (
@@ -132,12 +78,3 @@ export default function AdditionalTrainingListScreen() {
     </HeadlineScreen>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    width: "48%",
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-});

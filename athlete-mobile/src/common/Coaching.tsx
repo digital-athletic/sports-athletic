@@ -2,10 +2,11 @@ import { useResponsiveProp } from "@shopify/restyle";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, TouchableOpacity } from "react-native";
-import { Ionicon } from "./Ionicon";
+import { AppIcon } from "./AppIcon";
 import { Box } from "../theme/Box";
 import { useTheme } from "../theme/theme";
 import { SpeechBubble } from "./SpeechBubble";
+import IconCircleX from "@tabler/icons-react-native/IconCircleX";
 
 export type CoachingProps = {
   text: string;
@@ -49,8 +50,8 @@ export const Coaching: FC<CoachingProps> = ({ text, onDismiss }) => {
           accessibilityRole="button"
         >
           <Box paddingLeft="s">
-            <Ionicon
-              name="close-circle"
+            <AppIcon
+              icon={IconCircleX}
               size={24}
               color={theme.colors.darkGrey1}
               decorative

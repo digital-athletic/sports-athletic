@@ -1,3 +1,4 @@
+import IconCircleX from "@tabler/icons-react-native/IconCircleX";
 import { fireEvent, render } from "../utils/testUtils";
 import { HeaderIconButton } from "./HeaderIconButton";
 
@@ -5,7 +6,7 @@ describe("HeaderIconButton", () => {
   it("renders with the supplied accessibility label", async () => {
     const { getByLabelText } = await render(
       <HeaderIconButton
-        iconName="close-circle"
+        icon={IconCircleX}
         onPress={jest.fn()}
         accessibilityLabel="Abort training"
       />,
@@ -16,7 +17,7 @@ describe("HeaderIconButton", () => {
   it("exposes the button accessibility role", async () => {
     const { getByRole } = await render(
       <HeaderIconButton
-        iconName="close-circle"
+        icon={IconCircleX}
         onPress={jest.fn()}
         accessibilityLabel="Abort training"
       />,
@@ -28,7 +29,7 @@ describe("HeaderIconButton", () => {
     const onPress = jest.fn();
     const { getByRole } = await render(
       <HeaderIconButton
-        iconName="close-circle"
+        icon={IconCircleX}
         onPress={onPress}
         accessibilityLabel="Abort training"
       />,
@@ -41,7 +42,7 @@ describe("HeaderIconButton", () => {
     const onPress = jest.fn();
     const { getByRole } = await render(
       <HeaderIconButton
-        iconName="close-circle"
+        icon={IconCircleX}
         onPress={onPress}
         accessibilityLabel="Abort training"
         disabled
@@ -54,7 +55,7 @@ describe("HeaderIconButton", () => {
   it("reports the disabled state to screen readers when disabled", async () => {
     const { getByRole } = await render(
       <HeaderIconButton
-        iconName="close-circle"
+        icon={IconCircleX}
         onPress={jest.fn()}
         accessibilityLabel="Abort training"
         disabled

@@ -5,11 +5,6 @@
     "license": "MIT"
   },
   {
-    "name": "@expo/vector-icons",
-    "version": "15.1.1",
-    "license": "MIT"
-  },
-  {
     "name": "@react-native-async-storage/async-storage",
     "version": "2.2.0",
     "license": "MIT"
@@ -140,11 +135,6 @@
     "license": "MIT"
   },
   {
-    "name": "FontAwesome (icon font, vendored by @expo/vector-icons)",
-    "version": "4.7.0",
-    "license": "OFL-1.1 AND MIT"
-  },
-  {
     "name": "i18next",
     "version": "26.4.2",
     "license": "MIT"
@@ -152,11 +142,6 @@
   {
     "name": "immer",
     "version": "10.2.0",
-    "license": "MIT"
-  },
-  {
-    "name": "Ionicons (icon font, vendored by @expo/vector-icons)",
-    "version": "bundled by @expo/vector-icons",
     "license": "MIT"
   },
   {

@@ -1,14 +1,16 @@
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
 import { type RowWeight } from "@/features/training/hooks/useTrainingListRows";
 import { useTheme } from "@/theme/theme";
 import { Host, RNHostView, Row, Text } from "@expo/ui";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
+import IconRepeat from "@tabler/icons-react-native/IconRepeat";
+import IconWeight from "@tabler/icons-react-native/IconWeight";
 
 const ICON_SIZE = 18;
 
 type StatTileProps = {
-  icon: IoniconName;
+  icon: AppIconSource;
   value: string;
   caption: string;
   testID: string;
@@ -30,8 +32,8 @@ const StatTile: FC<StatTileProps> = ({ icon, value, caption, testID }) => {
       }}
     >
       <RNHostView matchContents>
-        <Ionicon
-          name={icon}
+        <AppIcon
+          icon={icon}
           size={ICON_SIZE}
           color={colors.primary}
           decorative
@@ -68,7 +70,7 @@ export const TrainingExerciseStats: FC<Props> = ({
       <Row spacing={8} alignment="center">
         {targetReps !== undefined && (
           <StatTile
-            icon="repeat-outline"
+            icon={IconRepeat}
             value={String(targetReps)}
             caption={t("training.active.repetitions")}
             testID="training-list-sheet-reps"
@@ -76,7 +78,7 @@ export const TrainingExerciseStats: FC<Props> = ({
         )}
         {targetWeight && (
           <StatTile
-            icon="barbell-outline"
+            icon={IconWeight}
             value={`${targetWeight.isPerHand ? t("training.active.2x") : ""}${targetWeight.kilos.toFixed(2)}`}
             caption={t("training.list.weightUnit")}
             testID="training-list-sheet-weight"

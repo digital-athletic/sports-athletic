@@ -1,4 +1,4 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import {
   type ChecklistSetSummary,
   type ValueKind,
@@ -12,6 +12,7 @@ import { Fragment, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { ExerciseThumbnail } from "./ExerciseThumbnail";
 import { TrainingListItemActions } from "./TrainingListItemActions";
+import IconArrowRight from "@tabler/icons-react-native/IconArrowRight";
 
 export type TrainingListItemProps = {
   displayName: string;
@@ -70,8 +71,8 @@ const NextArrow: FC<{ testId: string }> = ({ testId }) => {
       accessibilityLabel={t("training.list.a11y.nextExercise")}
       testID={`${testId}-next-arrow`}
     >
-      <Ionicon
-        name="arrow-forward"
+      <AppIcon
+        icon={IconArrowRight}
         size={20}
         color={colors.primary}
         decorative

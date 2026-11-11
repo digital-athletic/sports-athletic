@@ -1,4 +1,4 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -6,6 +6,7 @@ import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableWithoutFeedback } from "react-native";
 import { MuscleType } from "./types";
+import IconCircleX from "@tabler/icons-react-native/IconCircleX";
 
 type BodyPartsTagChipsProps = {
   tags: MuscleType[];
@@ -50,8 +51,8 @@ export const BodyPartsTagChips: FC<BodyPartsTagChipsProps> = ({
           {t(`muscles.${tag}`)}
         </Text>
         {onClick && (
-          <Ionicon
-            name="close-circle"
+          <AppIcon
+            icon={IconCircleX}
             size={18}
             color={theme.colors.primary}
             decorative

@@ -1,10 +1,10 @@
 import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
-import { Ionicon, type IoniconName } from "./Ionicon";
+import { AppIcon, type AppIconSource } from "./AppIcon";
 
 interface HeaderIconButtonProps {
-  iconName: IoniconName;
+  icon: AppIconSource;
   onPress: () => void;
   accessibilityLabel: string;
   disabled?: boolean;
@@ -14,7 +14,7 @@ interface HeaderIconButtonProps {
 const HIT_SLOP = { top: 4, bottom: 4, left: 4, right: 4 };
 
 export const HeaderIconButton: FC<HeaderIconButtonProps> = ({
-  iconName,
+  icon,
   onPress,
   accessibilityLabel,
   disabled = false,
@@ -36,12 +36,7 @@ export const HeaderIconButton: FC<HeaderIconButtonProps> = ({
       accessibilityLabel={accessibilityLabel}
       testID={testID}
     >
-      <Ionicon
-        name={iconName}
-        size={28}
-        color={theme.colors.black}
-        decorative
-      />
+      <AppIcon icon={icon} size={28} color={theme.colors.black} decorative />
     </TouchableBox>
   );
 };

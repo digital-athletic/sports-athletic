@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`<TextInputField /> renders correctly with Ionicon 1`] = `
+exports[`<TextInputField /> renders correctly with an icon 1`] = `
 <View
   style={
     [
@@ -24,14 +24,113 @@ exports[`<TextInputField /> renders correctly with Ionicon 1`] = `
       ]
     }
   >
-    <Ionicons
+    <View
       accessibilityElementsHidden={true}
       accessible={false}
-      color="#767676"
       importantForAccessibility="no-hide-descendants"
-      name="person"
-      size={22}
-    />
+      testID="decorative-icon"
+    >
+      <RNSVGSvgView
+        align="xMidYMid"
+        bbHeight={22}
+        bbWidth={22}
+        color="#767676"
+        fill="none"
+        focusable={false}
+        height={22}
+        meetOrSlice={0}
+        minX={0}
+        minY={0}
+        stroke="#767676"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        style={
+          [
+            {
+              "backgroundColor": "transparent",
+              "borderWidth": 0,
+            },
+            {
+              "flex": 0,
+              "height": 22,
+              "width": 22,
+            },
+          ]
+        }
+        vbHeight={24}
+        vbWidth={24}
+        width={22}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <RNSVGGroup
+          fill={null}
+          propList={
+            [
+              "fill",
+              "stroke",
+              "strokeWidth",
+              "strokeLinecap",
+              "strokeLinejoin",
+            ]
+          }
+          stroke={
+            {
+              "payload": 4285953654,
+              "type": 0,
+            }
+          }
+          strokeLinecap={1}
+          strokeLinejoin={1}
+          strokeWidth={2}
+        >
+          <RNSVGPath
+            d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"
+            fill={null}
+            propList={
+              [
+                "fill",
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
+              ]
+            }
+            stroke={
+              {
+                "payload": 4285953654,
+                "type": 0,
+              }
+            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={2}
+          />
+          <RNSVGPath
+            d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"
+            fill={null}
+            propList={
+              [
+                "fill",
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
+              ]
+            }
+            stroke={
+              {
+                "payload": 4285953654,
+                "type": 0,
+              }
+            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={2}
+          />
+        </RNSVGGroup>
+      </RNSVGSvgView>
+    </View>
     <TextInput
       autoCapitalize="none"
       keyboardType="default"

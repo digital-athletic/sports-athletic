@@ -14,6 +14,9 @@ import {
 } from "@/services/AuthService";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
+import IconGenderFemale from "@tabler/icons-react-native/IconGenderFemale";
+import IconGenderMale from "@tabler/icons-react-native/IconGenderMale";
+import IconUser from "@tabler/icons-react-native/IconUser";
 
 /**
  * UserProfile Component
@@ -77,12 +80,12 @@ export default function UserProfileScreen() {
     {
       value: "MALE",
       label: t("screens.userProfile.male"),
-      iconName: "male-outline",
+      icon: IconGenderMale,
     },
     {
       value: "FEMALE",
       label: t("screens.userProfile.female"),
-      iconName: "female-outline",
+      icon: IconGenderFemale,
     },
   ] as const;
 
@@ -112,7 +115,7 @@ export default function UserProfileScreen() {
         <TextInputField
           value={username}
           placeholder={t("screens.userProfile.usernamePlaceholder")}
-          iconName="person-outline"
+          icon={IconUser}
           accessibilityLabel={t("screens.userProfile.usernameTitle")}
           onChange={handleNameChange}
         />

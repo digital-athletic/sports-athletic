@@ -17,6 +17,9 @@ import { RoutePath, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useEffectEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
+import IconBed from "@tabler/icons-react-native/IconBed";
+import IconTrophy from "@tabler/icons-react-native/IconTrophy";
+import IconWeight from "@tabler/icons-react-native/IconWeight";
 
 const TWELVE_WEEKS_IN_MS = SharedConstants.TIME_IN_MS.WEEK * 12;
 
@@ -120,17 +123,17 @@ export default function SeasonPhase() {
     {
       value: SeasonPhaseEnum.PAUSE,
       label: t("screens.seasonPhase.phases.PAUSE"),
-      iconName: "bed-outline",
+      icon: IconBed,
     },
     {
       value: SeasonPhaseEnum.PREPARATORY,
       label: t("screens.seasonPhase.phases.PREPARATORY"),
-      iconName: "barbell-outline",
+      icon: IconWeight,
     },
     {
       value: SeasonPhaseEnum.COMPETITION,
       label: t("screens.seasonPhase.phases.COMPETITION"),
-      iconName: "trophy-outline",
+      icon: IconTrophy,
     },
   ] as const;
 

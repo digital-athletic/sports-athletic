@@ -3,8 +3,9 @@ import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Ionicon } from "../common/Ionicon";
+import { AppIcon } from "../common/AppIcon";
 import { BasicTextInput } from "./BasicTextInput";
+import IconMail from "@tabler/icons-react-native/IconMail";
 
 interface EmailInputFieldProps {
   email: string;
@@ -49,7 +50,12 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
         borderWidth={1.5}
         borderColor={showError ? "error" : "lightGrey3"}
       >
-        <Ionicon name="mail" size={22} color={colors.darkGrey1} decorative />
+        <AppIcon
+          icon={IconMail}
+          size={22}
+          color={colors.darkGrey1}
+          decorative
+        />
         <BasicTextInput
           onChangeText={onChange}
           placeholder={t("common.email")}

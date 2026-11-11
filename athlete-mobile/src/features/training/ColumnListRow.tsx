@@ -1,9 +1,10 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC, type ReactNode } from "react";
 import { TouchableOpacity, type TouchableOpacityProps } from "react-native";
+import IconChevronRight from "@tabler/icons-react-native/IconChevronRight";
 
 export type ColumnListRowProps = {
   /** Already translated. */
@@ -73,8 +74,8 @@ export const ColumnListRow: FC<ColumnListRowProps> = ({
           )}
         </Box>
         <Box paddingRight="m">
-          <Ionicon
-            name="chevron-forward"
+          <AppIcon
+            icon={IconChevronRight}
             size={20}
             color={colors.lightGrey3}
             decorative

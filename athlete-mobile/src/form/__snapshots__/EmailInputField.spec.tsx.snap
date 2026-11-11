@@ -24,14 +24,113 @@ exports[`<EmailInputField /> renders correctly 1`] = `
       ]
     }
   >
-    <Ionicons
+    <View
       accessibilityElementsHidden={true}
       accessible={false}
-      color="#767676"
       importantForAccessibility="no-hide-descendants"
-      name="mail"
-      size={22}
-    />
+      testID="decorative-icon"
+    >
+      <RNSVGSvgView
+        align="xMidYMid"
+        bbHeight={22}
+        bbWidth={22}
+        color="#767676"
+        fill="none"
+        focusable={false}
+        height={22}
+        meetOrSlice={0}
+        minX={0}
+        minY={0}
+        stroke="#767676"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        style={
+          [
+            {
+              "backgroundColor": "transparent",
+              "borderWidth": 0,
+            },
+            {
+              "flex": 0,
+              "height": 22,
+              "width": 22,
+            },
+          ]
+        }
+        vbHeight={24}
+        vbWidth={24}
+        width={22}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <RNSVGGroup
+          fill={null}
+          propList={
+            [
+              "fill",
+              "stroke",
+              "strokeWidth",
+              "strokeLinecap",
+              "strokeLinejoin",
+            ]
+          }
+          stroke={
+            {
+              "payload": 4285953654,
+              "type": 0,
+            }
+          }
+          strokeLinecap={1}
+          strokeLinejoin={1}
+          strokeWidth={2}
+        >
+          <RNSVGPath
+            d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10"
+            fill={null}
+            propList={
+              [
+                "fill",
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
+              ]
+            }
+            stroke={
+              {
+                "payload": 4285953654,
+                "type": 0,
+              }
+            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={2}
+          />
+          <RNSVGPath
+            d="M3 7l9 6l9 -6"
+            fill={null}
+            propList={
+              [
+                "fill",
+                "stroke",
+                "strokeWidth",
+                "strokeLinecap",
+                "strokeLinejoin",
+              ]
+            }
+            stroke={
+              {
+                "payload": 4285953654,
+                "type": 0,
+              }
+            }
+            strokeLinecap={1}
+            strokeLinejoin={1}
+            strokeWidth={2}
+          />
+        </RNSVGGroup>
+      </RNSVGSvgView>
+    </View>
     <TextInput
       autoCapitalize="none"
       autoComplete="email"

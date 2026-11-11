@@ -6,7 +6,7 @@
  */
 
 import { useDeleteAccount, useLogout } from "@/auth/useAuthActions";
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { ListDivider } from "@/common/ListDivider";
 import { InfoMenuItems } from "@/features/more/InfoMenuItems";
 import { ListItem } from "@/features/more/ListItem";
@@ -22,6 +22,13 @@ import { TouchableOpacity } from "react-native";
 import IconChalkboardTeacher from "@tabler/icons-react-native/IconChalkboardTeacher";
 import IconChartBar from "@tabler/icons-react-native/IconChartBar";
 import IconUsersGroup from "@tabler/icons-react-native/IconUsersGroup";
+import IconBallBasketball from "@tabler/icons-react-native/IconBallBasketball";
+import IconBook from "@tabler/icons-react-native/IconBook";
+import IconHeartbeat from "@tabler/icons-react-native/IconHeartbeat";
+import IconHelpCircle from "@tabler/icons-react-native/IconHelpCircle";
+import IconLogout from "@tabler/icons-react-native/IconLogout";
+import IconTrash from "@tabler/icons-react-native/IconTrash";
+import IconUser from "@tabler/icons-react-native/IconUser";
 
 export default function MoreScreen() {
   const { t } = useTranslation();
@@ -57,7 +64,7 @@ export default function MoreScreen() {
             <ListItem
               title={t("more.testPersonas")}
               navPath="/test"
-              icon="help-circle"
+              icon={IconHelpCircle}
               iconBackground="primary"
               isLast
             />
@@ -68,19 +75,19 @@ export default function MoreScreen() {
           <ListItem
             title={t("more.myProfile")}
             navPath="/(more)/anamnesis/userprofile"
-            icon="person"
+            icon={IconUser}
             iconBackground="primary"
           />
           <ListItem
             title={t("more.mySport")}
             navPath="/(more)/anamnesis/sport"
-            icon="basketball"
+            icon={IconBallBasketball}
             iconBackground="primary"
           />
           <ListItem
             title={t("more.myEquipment")}
             navPath="/(tabs)/(more)/equipment"
-            icon="fitness"
+            icon={IconHeartbeat}
             iconBackground="primary"
           />
           <ListItem
@@ -99,7 +106,7 @@ export default function MoreScreen() {
           <ListItem
             title={t("more.glossary.menuItem")}
             navPath="/(tabs)/(more)/glossary"
-            icon="book"
+            icon={IconBook}
             iconBackground="primary"
           />
           <ListItem
@@ -142,8 +149,8 @@ export default function MoreScreen() {
                     alignItems="center"
                     backgroundColor="darkGrey1"
                   >
-                    <Ionicon
-                      name="trash"
+                    <AppIcon
+                      icon={IconTrash}
                       size={iconSize}
                       color={colors.white}
                       decorative
@@ -176,8 +183,8 @@ export default function MoreScreen() {
                   alignItems="center"
                   backgroundColor="darkGrey1"
                 >
-                  <Ionicon
-                    name="exit"
+                  <AppIcon
+                    icon={IconLogout}
                     size={iconSize}
                     color={colors.white}
                     decorative

@@ -21,6 +21,8 @@ import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import IconCircleX from "@tabler/icons-react-native/IconCircleX";
+import IconInfoCircle from "@tabler/icons-react-native/IconInfoCircle";
 
 const TRAINING_INPUT_OFFSET = 100;
 
@@ -114,14 +116,14 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
           headerBackVisible: false,
           headerLeft: () => (
             <HeaderIconButton
-              iconName="information-circle"
+              icon={IconInfoCircle}
               onPress={handleShowExerciseInformation}
               accessibilityLabel={t("training.active.a11y.showExerciseInfo")}
             />
           ),
           headerRight: () => (
             <HeaderIconButton
-              iconName="close-circle"
+              icon={IconCircleX}
               onPress={handleAbortTraining}
               accessibilityLabel={t("training.active.a11y.abortTraining")}
             />

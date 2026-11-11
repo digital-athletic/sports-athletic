@@ -6,6 +6,8 @@ import { secondsToMMSS } from "@/utils/date";
 import { type FC, type PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 import { ExerciseThumbnail } from "./ExerciseThumbnail";
+import IconPlayerPause from "@tabler/icons-react-native/IconPlayerPause";
+import IconPlayerPlay from "@tabler/icons-react-native/IconPlayerPlay";
 
 export type PauseControl = { isPaused: boolean; onToggle: () => void };
 type Props = PropsWithChildren<{
@@ -26,7 +28,7 @@ const PauseToggle: FC<PauseControl> = ({ isPaused, onToggle }) => {
   return (
     <Box alignSelf="center">
       <HeaderIconButton
-        iconName={isPaused ? "play-circle-outline" : "pause-circle-outline"}
+        icon={isPaused ? IconPlayerPlay : IconPlayerPause}
         onPress={onToggle}
         accessibilityLabel={
           isPaused

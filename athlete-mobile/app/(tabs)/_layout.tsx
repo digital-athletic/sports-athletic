@@ -1,10 +1,10 @@
 import { useTheme } from "@/theme/theme";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
 import IconCalendarStats from "@tabler/icons-react-native/IconCalendarStats";
 import IconChartBar from "@tabler/icons-react-native/IconChartBar";
+import IconUser from "@tabler/icons-react-native/IconUser";
 
 /**
  * Main Tab Navigator Layout
@@ -17,7 +17,7 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const activeTintColor = colors.primary;
   const inactiveTintColor = colors.darkGrey1;
-  // Ionicons rejects the numeric and null colors the tab bar callback may pass.
+  // The tab bar callback may pass numeric and null colors, which the icons reject.
   const iconColor = (focused: boolean) =>
     focused ? activeTintColor : inactiveTintColor;
 
@@ -59,7 +59,7 @@ export default function TabLayout() {
         options={{
           title: t("tabs.profile"),
           tabBarIcon: ({ focused, size }) => (
-            <Ionicons name="person" size={size} color={iconColor(focused)} />
+            <IconUser size={size} color={iconColor(focused)} />
           ),
         }}
       />

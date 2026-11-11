@@ -100,10 +100,12 @@ describe("<TrainingRepetitionInput />", () => {
   });
 
   it("renders the keypad icon hidden from screen readers", async () => {
-    const { container } = await render(
+    const { getByTestId } = await render(
       <TrainingRepetitionInput {...mockProps} />,
     );
-    const [icon] = container.queryAll((node) => node.type === "Ionicons");
+    const icon = getByTestId("decorative-icon", {
+      includeHiddenElements: true,
+    });
     expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 

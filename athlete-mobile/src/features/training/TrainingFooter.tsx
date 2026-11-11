@@ -1,4 +1,4 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -6,6 +6,7 @@ import { TouchableBox } from "@/theme/TouchableBox";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import IconPlayerTrackNext from "@tabler/icons-react-native/IconPlayerTrackNext";
 
 export const FOOTER_HEIGHT = 80;
 
@@ -51,8 +52,8 @@ export const TrainingFooter: FC<Props> = ({
             accessibilityRole="button"
             accessibilityLabel={t("training.list.skipExercise")}
           >
-            <Ionicon
-              name="play-forward"
+            <AppIcon
+              icon={IconPlayerTrackNext}
               size={24}
               color={colors.primary}
               decorative

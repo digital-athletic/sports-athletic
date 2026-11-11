@@ -1,4 +1,4 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { POWER_TEST_EXERCISES } from "@/features/statistics/models/powerTestExercises";
 import { Box } from "@/theme/Box";
@@ -9,6 +9,8 @@ import { formatDateForDisplay } from "@/utils/date";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable } from "react-native";
+import IconChevronDown from "@tabler/icons-react-native/IconChevronDown";
+import IconChevronUp from "@tabler/icons-react-native/IconChevronUp";
 
 interface PowerTestResultCardProps {
   result: MaxValuesType;
@@ -90,8 +92,8 @@ export const PowerTestResultCard: FC<PowerTestResultCardProps> = ({
         <Text variant="body" fontWeight="600">
           {date}
         </Text>
-        <Ionicon
-          name={expanded ? "chevron-up" : "chevron-down"}
+        <AppIcon
+          icon={expanded ? IconChevronUp : IconChevronDown}
           size={20}
           color={colors.darkGrey1}
           decorative

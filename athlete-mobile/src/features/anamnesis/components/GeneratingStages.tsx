@@ -1,10 +1,12 @@
 import { liveRegionProps } from "@/common/announce";
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { ActivityIndicator } from "react-native";
+import IconCircle from "@tabler/icons-react-native/IconCircle";
+import IconCircleCheckFilled from "@tabler/icons-react-native/IconCircleCheckFilled";
 
 type GeneratingStagesProps = {
   stages: readonly string[];
@@ -22,8 +24,8 @@ const StageMark: FC<{ done: boolean; active: boolean }> = ({
     return <ActivityIndicator size="small" color={colors.primary} />;
   }
   return (
-    <Ionicon
-      name={done ? "checkmark-circle" : "ellipse-outline"}
+    <AppIcon
+      icon={done ? IconCircleCheckFilled : IconCircle}
       size={24}
       color={done ? colors.primary : colors.lightGrey3}
       decorative

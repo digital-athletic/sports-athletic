@@ -1,8 +1,9 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { Pressable, StyleSheet } from "react-native";
+import IconCheck from "@tabler/icons-react-native/IconCheck";
 
 type ChipProps = {
   label: string;
@@ -52,8 +53,8 @@ export const Chip: FC<ChipProps> = ({
       ]}
     >
       {selected && (
-        <Ionicon
-          name="checkmark"
+        <AppIcon
+          icon={IconCheck}
           size={iconSize}
           color={colors.white}
           decorative

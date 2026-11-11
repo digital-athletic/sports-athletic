@@ -10,6 +10,24 @@ jest.mock("expo-image", () => ({
   Image: "Image",
 }));
 
+// Renders each icon as a host node named after it, so the tests read which
+// icon a component draws and the props it gets.
+jest.mock("@tabler/icons-react-native/IconWeight", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconWeight", props),
+}));
+jest.mock("@tabler/icons-react-native/IconStopwatch", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconStopwatch", props),
+}));
+jest.mock("@tabler/icons-react-native/IconRepeat", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconRepeat", props),
+}));
+
 const PICTURE_URL = "https://pictures.test/exercise_pictures/squat.jpg";
 
 // A set summary, e.g. generateSetSummary(1, "20 kg", true) is
@@ -192,10 +210,8 @@ describe("TrainingListItem: exercise picture", () => {
       }),
     ).toBeTruthy();
     expect(
-      container
-        .queryAll((node) => node.type === "Ionicons")
-        .map((icon) => icon.props.name),
-    ).toContain("timer-outline");
+      container.queryAll((node) => node.type === "IconStopwatch"),
+    ).toHaveLength(1);
   });
 
   it("tries a new picture URL again after a failed one", async () => {
@@ -333,21 +349,20 @@ describe("TrainingListItem: exercise picture", () => {
 });
 
 describe("TrainingListItem: placeholder icon", () => {
-  const VALUE_ICONS = ["barbell-outline", "timer-outline", "repeat-outline"];
+  const VALUE_ICONS = ["IconWeight", "IconStopwatch", "IconRepeat"];
 
-  // Names of the value icons in the rendered tree, e.g. ["timer-outline"].
+  // Names of the value icons in the rendered tree, e.g. ["IconStopwatch"].
   const findValueIconNames = (
     container: Awaited<ReturnType<typeof render>>["container"],
   ) =>
     container
-      .queryAll((node) => node.type === "Ionicons")
-      .map((icon) => icon.props.name)
-      .filter((name) => VALUE_ICONS.includes(name));
+      .queryAll((node) => VALUE_ICONS.includes(String(node.type)))
+      .map((icon) => String(icon.type));
 
   it.each([
-    ["weight", "barbell-outline"],
-    ["time", "timer-outline"],
-    ["reps", "repeat-outline"],
+    ["weight", "IconWeight"],
+    ["time", "IconStopwatch"],
+    ["reps", "IconRepeat"],
   ] as const)(
     "shows the %s icon in the placeholder",
     async (valueKind, iconName) => {
@@ -378,7 +393,7 @@ describe("TrainingListItem: placeholder icon", () => {
       />,
     );
 
-    expect(findValueIconNames(container)).toEqual(["barbell-outline"]);
+    expect(findValueIconNames(container)).toEqual(["IconWeight"]);
   });
 });
 

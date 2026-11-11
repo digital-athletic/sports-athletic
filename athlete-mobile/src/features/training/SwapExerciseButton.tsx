@@ -1,8 +1,9 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { createContext, type FC, use } from "react";
 import { useTranslation } from "react-i18next";
+import IconSwitchHorizontal from "@tabler/icons-react-native/IconSwitchHorizontal";
 
 export interface SwapControls {
   canSwap: (branchId: string | undefined) => boolean;
@@ -43,7 +44,7 @@ export const SwapExerciseButton: FC<SwapExerciseButtonProps> = ({
       })}
       testID="swap-exercise-button"
     >
-      <Ionicon name="swap-horizontal" size={24} color={colors.darkGrey2} />
+      <AppIcon icon={IconSwitchHorizontal} size={24} color={colors.darkGrey2} />
     </TouchableBox>
   );
 };

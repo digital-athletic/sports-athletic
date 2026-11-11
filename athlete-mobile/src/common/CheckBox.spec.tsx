@@ -41,8 +41,10 @@ describe("CheckBox", () => {
   });
 
   it("hides the checkmark from screen readers", async () => {
-    const { container } = await mount(true);
-    const [icon] = container.queryAll((node) => node.type === "Ionicons");
+    const { getByTestId } = await mount(true);
+    const icon = getByTestId("decorative-icon", {
+      includeHiddenElements: true,
+    });
     expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 });

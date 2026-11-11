@@ -2,6 +2,7 @@ import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuesti
 import { TextInputField } from "@/form/TextInputField";
 import { useTranslation } from "react-i18next";
 import { type AnamnesisQuestionProps } from "./AnamnesisQuestionProps";
+import IconRulerMeasure from "@tabler/icons-react-native/IconRulerMeasure";
 
 export function HeightQuestion({
   values,
@@ -19,7 +20,7 @@ export function HeightQuestion({
       <TextInputField
         value={value}
         placeholder={t("anamnesisQuestions.height.placeholder")}
-        iconName="resize-outline"
+        icon={IconRulerMeasure}
         keyboardType="number-pad"
         accessibilityLabel={t("anamnesisQuestions.height.title")}
         onChange={(value) => onChangeValue("height", value)}

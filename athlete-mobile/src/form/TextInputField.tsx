@@ -2,13 +2,13 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { type FC, useState } from "react";
 import { type KeyboardTypeOptions, StyleSheet } from "react-native";
-import { type IoniconName } from "../common/Ionicon";
+import { type AppIconSource } from "../common/AppIcon";
 import { BasicTextInput } from "./BasicTextInput";
 import { FieldShell } from "./FieldShell";
 
 interface TextInputFieldProps {
   onChange: (value: string) => void;
-  iconName?: IoniconName;
+  icon?: AppIconSource;
   placeholder: string;
   value: string;
   title?: string;
@@ -25,7 +25,7 @@ interface TextInputFieldProps {
  */
 export const TextInputField: FC<TextInputFieldProps> = ({
   onChange,
-  iconName,
+  icon,
   placeholder,
   value,
   title,
@@ -54,7 +54,7 @@ export const TextInputField: FC<TextInputFieldProps> = ({
           {title}
         </Text>
       ) : null}
-      <FieldShell iconName={iconName} focused={focused}>
+      <FieldShell icon={icon} focused={focused}>
         <BasicTextInput
           onChangeText={onChange}
           placeholder={placeholder}

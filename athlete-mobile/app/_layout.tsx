@@ -14,8 +14,6 @@ import { ThemeProvider } from "@shopify/restyle";
 import { type Href, Stack } from "expo-router";
 import { ActivityIndicator, Platform, View } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useFonts } from "expo-font";
 
 function FullscreenSpinner() {
   return (
@@ -51,11 +49,10 @@ export default function RootLayout() {
   useSyncManager();
   usePendingPlanCheck();
 
-  const [loaded, error] = useFonts(Ionicons.font);
   const { auth, _hasHydrated } = useAuthStore();
   const consentStatus = useUserSettingsStore((state) => state.consentStatus);
 
-  if (!_hasHydrated || (!loaded && !error)) {
+  if (!_hasHydrated) {
     return <FullscreenSpinner />;
   }
 

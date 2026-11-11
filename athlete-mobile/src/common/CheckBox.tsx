@@ -3,7 +3,8 @@ import { type FC } from "react";
 import { TouchableOpacity } from "react-native";
 import { Box } from "../theme/Box";
 import { useTheme } from "../theme/theme";
-import { Ionicon } from "./Ionicon";
+import { AppIcon } from "./AppIcon";
+import IconCheck from "@tabler/icons-react-native/IconCheck";
 
 export type CheckBoxProps = {
   checked: boolean;
@@ -43,8 +44,8 @@ export const CheckBox: FC<CheckBoxProps> = ({
         alignItems="center"
       >
         {checked && (
-          <Ionicon
-            name="checkmark"
+          <AppIcon
+            icon={IconCheck}
             size={iconSize}
             color={theme.colors.white}
             decorative

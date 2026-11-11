@@ -8,11 +8,12 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
+import IconCheck from "@tabler/icons-react-native/IconCheck";
 
 const SPORT_IMAGES: Partial<
   Record<keyof typeof WorkoutConstants.SPORTS, ImageSourcePropType>
@@ -91,8 +92,8 @@ export const SportTile: FC<SportTileProps> = ({
             alignItems="center"
             justifyContent="center"
           >
-            <Ionicon
-              name="checkmark"
+            <AppIcon
+              icon={IconCheck}
               size={18}
               color={colors.white}
               decorative

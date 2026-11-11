@@ -4,10 +4,11 @@ import { PlaceEquipment } from "@/store/placesStore";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
-import { Ionicon } from "../../common/Ionicon";
+import { AppIcon } from "../../common/AppIcon";
 import { Box } from "../../theme/Box";
 import { Text } from "../../theme/Text";
 import { useTheme } from "../../theme/theme";
+import IconChevronRight from "@tabler/icons-react-native/IconChevronRight";
 
 export type PlaceSelectionProps = {
   selectPlace: (placeId: PlaceType) => void;
@@ -89,8 +90,8 @@ export const PlaceSelection: FC<PlaceSelectionProps> = ({
             ) : null}
           </Box>
           <Box paddingRight="m">
-            <Ionicon
-              name="chevron-forward"
+            <AppIcon
+              icon={IconChevronRight}
               size={20}
               color={colors.lightGrey3}
               decorative

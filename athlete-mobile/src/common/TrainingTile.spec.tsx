@@ -1,3 +1,4 @@
+import IconPlus from "@tabler/icons-react-native/IconPlus";
 import { fireEvent, render, screen } from "@/utils/testUtils";
 import { TileGrid } from "./TileGrid";
 import { TrainingTile } from "./TrainingTile";
@@ -8,7 +9,7 @@ describe("TrainingTile: screen reader", () => {
       <TrainingTile
         title="Focus trainings"
         description="Ten minutes on one topic"
-        icon="add"
+        icon={IconPlus}
         onPress={jest.fn()}
       />,
     );
@@ -22,7 +23,11 @@ describe("TrainingTile: screen reader", () => {
 
   it("announces only the title without a description", async () => {
     await render(
-      <TrainingTile title="Imminent pains" icon="add" onPress={jest.fn()} />,
+      <TrainingTile
+        title="Imminent pains"
+        icon={IconPlus}
+        onPress={jest.fn()}
+      />,
     );
 
     expect(screen.getByRole("button", { name: "Imminent pains" })).toBeTruthy();
@@ -49,7 +54,7 @@ describe("TrainingTile: content", () => {
     await render(
       <TrainingTile
         title="Imminent pains"
-        icon="add"
+        icon={IconPlus}
         onPress={onPress}
         testID="pain-tile"
       />,
@@ -72,7 +77,7 @@ describe("TrainingTile: icon size", () => {
       <TileGrid testID="grid">
         <TrainingTile
           title="Focus trainings"
-          icon="add"
+          icon={IconPlus}
           onPress={jest.fn()}
           testID="focus-tile"
         />
@@ -99,7 +104,7 @@ describe("TrainingTile: icon size", () => {
       <TileGrid testID="grid">
         <TrainingTile
           title="Focus trainings"
-          icon="add"
+          icon={IconPlus}
           onPress={jest.fn()}
           testID="focus-tile"
         />

@@ -1,10 +1,14 @@
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
+import IconClock from "@tabler/icons-react-native/IconClock";
+import IconDialpad from "@tabler/icons-react-native/IconDialpad";
+import IconTrophy from "@tabler/icons-react-native/IconTrophy";
+import IconWeight from "@tabler/icons-react-native/IconWeight";
 
 interface TrainingSummaryProps {
   duration: string;
@@ -19,11 +23,11 @@ type SummaryType = "duration" | "count" | "xp" | "weight";
 const ICON_CIRCLE_SIZE = 36;
 const ICON_SIZE = 18;
 
-const SUMMARY_ICONS: Record<SummaryType, IoniconName> = {
-  duration: "time-outline",
-  count: "keypad-outline",
-  xp: "trophy-outline",
-  weight: "barbell-outline",
+const SUMMARY_ICONS: Record<SummaryType, AppIconSource> = {
+  duration: IconClock,
+  count: IconDialpad,
+  xp: IconTrophy,
+  weight: IconWeight,
 };
 
 const ROWS: readonly (readonly [SummaryType, SummaryType])[] = [
@@ -61,8 +65,8 @@ const SummaryCard: FC<SummaryCardProps> = ({ type, value, testID }) => {
         alignItems="center"
         justifyContent="center"
       >
-        <Ionicon
-          name={SUMMARY_ICONS[type]}
+        <AppIcon
+          icon={SUMMARY_ICONS[type]}
           size={ICON_SIZE}
           color={colors.primary}
           decorative

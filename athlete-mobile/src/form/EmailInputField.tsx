@@ -18,7 +18,8 @@ interface EmailInputFieldProps {
 const HEIGHT = 56;
 
 /**
- * Email input field with mail icon and optional visible label
+ * Email input field with mail icon and optional visible label, outlined like
+ * the cards of the redesigned screens
  */
 export const EmailInputField: FC<EmailInputFieldProps> = ({
   email,
@@ -41,27 +42,14 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
       <Box
         flexDirection="row"
         alignItems="center"
-        backgroundColor="lightGrey2"
-        borderRadius="m"
+        backgroundColor="white"
+        borderRadius="xl"
         height={HEIGHT}
-        borderWidth={showError ? 1 : 0}
-        borderColor={showError ? "error" : undefined}
+        paddingLeft="m"
+        borderWidth={1.5}
+        borderColor={showError ? "error" : "lightGrey3"}
       >
-        <Box
-          width={HEIGHT}
-          height={HEIGHT}
-          justifyContent="center"
-          alignItems="center"
-          backgroundColor="lightGrey1"
-          borderTopLeftRadius="m"
-          borderBottomLeftRadius="m"
-          borderLeftWidth={showError ? 1 : 0}
-          borderTopWidth={showError ? 1 : 0}
-          borderBottomWidth={showError ? 1 : 0}
-          borderColor={showError ? "error" : undefined}
-        >
-          <Ionicon name="mail" size={24} color={colors.lightGrey3} decorative />
-        </Box>
+        <Ionicon name="mail" size={22} color={colors.darkGrey1} decorative />
         <BasicTextInput
           onChangeText={onChange}
           placeholder={t("common.email")}

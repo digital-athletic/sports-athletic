@@ -1,13 +1,15 @@
-import { LOGO_SIZE } from "@/constants/AppConstants";
-import { DividerWithText } from "@/features/onboarding/DividerWithText";
 import { EmailInputField } from "@/form/EmailInputField";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
+import { ScrollBox } from "@/theme/ScrollBox";
+import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Image } from "react-native";
+import { ActivityIndicator, Image, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const LOGO_SIZE = 72;
 
 type Props = {
   email: string;
@@ -18,9 +20,9 @@ type Props = {
 };
 
 /**
- * LoginScreen Component
- *
- * Login screen with email input — sends OTP code for passwordless login
+ * Login screen of the passwordless login: the athlete enters an email address
+ * and gets a code by email. The footer leads athletes without an account to
+ * the registration.
  */
 export const LoginScreen: FC<Props> = ({
   email,
@@ -30,67 +32,63 @@ export const LoginScreen: FC<Props> = ({
   processing,
 }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const { colors, spacing } = useTheme();
   const insets = useSafeAreaInsets();
-  // The register button below has a 1px outline. The same outline in the fill
-  // colour keeps both buttons exactly the same size.
-  const outlineMatchingStyle = {
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-  };
 
   return (
-    <Box
-      flex={1}
-      justifyContent="space-between"
-      alignItems="stretch"
-      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
-    >
-      <Box
+    <Box flex={1} backgroundColor="white" style={{ paddingTop: insets.top }}>
+      <ScrollBox
         flex={1}
-        justifyContent="center"
-        alignItems="center"
-        paddingVertical="m"
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ padding: spacing.l, gap: spacing.xl }}
       >
         <Image
           resizeMode="contain"
-          style={{ height: LOGO_SIZE, width: LOGO_SIZE, marginTop: 16 }}
+          style={{ height: LOGO_SIZE, width: LOGO_SIZE }}
           source={require("../../../assets/img/logos/SA_dark.png")}
         />
-      </Box>
 
-      <Box flex={4} justifyContent="flex-start" alignItems="center">
-        <DividerWithText text={t("onboarding.login")} />
+        <Box gap="s">
+          <Text variant="eyebrow">{t("onboarding.loginEyebrow")}</Text>
+          <Text variant="display" accessibilityRole="header">
+            {t("onboarding.loginHeading")}
+          </Text>
+          <Text variant="subtitle" color="darkGrey1">
+            {t("onboarding.loginDescription")}
+          </Text>
+        </Box>
 
-        <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
+        <Box gap="m">
           <EmailInputField
             email={email}
             title={t("onboarding.emailLabel")}
             onChange={onEmailChange}
             onSubmitEditing={onLogin}
           />
-        </Box>
-
-        <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
-          <Button
-            onPress={onLogin}
-            variant="primary"
-            disabled={processing}
-            style={outlineMatchingStyle}
-          >
+          <Button onPress={onLogin} variant="cta" disabled={processing}>
             {processing ? (
-              <ActivityIndicator color={theme.colors.white} />
+              <ActivityIndicator color={colors.white} />
             ) : (
               t("onboarding.sendCode")
             )}
           </Button>
         </Box>
+      </ScrollBox>
 
-        <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
-          <Button onPress={onSignup} variant="secondary">
-            {t("onboarding.register")}
-          </Button>
-        </Box>
+      <Box
+        gap="s"
+        paddingHorizontal="l"
+        paddingTop="m"
+        borderTopWidth={StyleSheet.hairlineWidth}
+        borderTopColor="lightGrey2"
+        style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
+      >
+        <Text variant="small" color="darkGrey1" textAlign="center">
+          {t("onboarding.noAccountYet")}
+        </Text>
+        <Button onPress={onSignup} variant="ctaOutline">
+          {t("onboarding.register")}
+        </Button>
       </Box>
     </Box>
   );

@@ -38,6 +38,22 @@ const REPLACEMENT_RULE_CHAIN: readonly RuleFamily[] = [
     ),
 ];
 
+/**
+ * Applies the replacement filters to a skill tree: muscle soreness,
+ * equipment, fitness level, age, gender and pain.
+ */
+export const filterReplacementBranches = (
+  skillTree: SkillTreeType,
+  input: WorkoutInput,
+  skill: string,
+): SkillTreeType => {
+  let filtered = skillTree;
+  for (const filterBranches of REPLACEMENT_RULE_CHAIN) {
+    filtered = filterBranches(filtered, input, skill).keep;
+  }
+  return filtered;
+};
+
 export interface BranchReplacementRequest {
   skill: string;
   /** One region per slot to refill. */
@@ -87,10 +103,7 @@ const buildReplacementPool = (
   { skill, usedBranchIds }: BranchReplacementRequest,
   input: WorkoutInput,
 ): ReplacementPool => {
-  let filtered = skillTree;
-  for (const filterBranches of REPLACEMENT_RULE_CHAIN) {
-    filtered = filterBranches(filtered, input, skill).keep;
-  }
+  const filtered = filterReplacementBranches(skillTree, input, skill);
   const resolveExerciseId = (branchId: string): string | null =>
     resolveBranchExerciseId(
       skillTree[branchId],

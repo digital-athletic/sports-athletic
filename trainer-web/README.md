@@ -46,4 +46,7 @@ pnpm preview
 
 # Lint code
 pnpm lint
+
+# Unit tests (Vitest, *.spec.ts next to the source in src/)
+pnpm test
 ```

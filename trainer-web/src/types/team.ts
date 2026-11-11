@@ -87,3 +87,32 @@ export interface UpdateTeamGuidanceResponse {
 export interface TeamWithMemberCount extends Team {
   member_count: number;
 }
+
+/** One block of an AIWL template, in the two kinds the workout builder writes. */
+export type AiwlBlock =
+  | {
+      kind: "picks";
+      skill: string;
+      picks: { tags: string[]; count: number }[];
+    }
+  | { kind: "duration"; skill: string; duration: number };
+
+/** An AIWL workout template as save_team_workout takes it. */
+export interface AiwlTemplate {
+  aiwl: 1;
+  id: string;
+  name: { en: string };
+  blocks: AiwlBlock[];
+}
+
+/**
+ * A row of team_workouts. The template is JSON any client may have written, so
+ * it is typed unknown and read through utils/workoutBuilder.
+ */
+export interface TeamWorkout {
+  id: string;
+  team_id: string;
+  template: unknown;
+  created_at: string;
+  updated_at: string;
+}

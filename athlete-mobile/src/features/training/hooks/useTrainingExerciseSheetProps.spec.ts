@@ -358,6 +358,74 @@ describe("useTrainingExerciseSheetProps: start", () => {
   });
 });
 
+describe("useTrainingExerciseSheetProps: retake", () => {
+  // The lunge entry of the superset with both sets (index 2 and 6) skipped.
+  const skippedLungeEntry = generateChecklistEntry({
+    key: 2,
+    exerciseId: "lunge",
+    sets: [
+      { index: 2, label: undefined, completed: true, skipped: true },
+      { index: 6, label: undefined, completed: true, skipped: true },
+    ],
+    completed: true,
+    skippedCount: 2,
+    firstOpenSetIndex: null,
+  });
+
+  beforeEach(() => {
+    useTrainingStore.setState({
+      exerciseList: generateSupersetList().map((exercise, index) =>
+        index === 2 || index === 6
+          ? { ...exercise, completed: true, skipped: true }
+          : { ...exercise, completed: true },
+      ),
+    });
+  });
+
+  it("reopens the skipped sets and opens the first one", async () => {
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps(generateSheetHookArgs()),
+    );
+
+    await act(() => result.current.handleRetake(skippedLungeEntry));
+
+    const exerciseList = useTrainingStore.getState().exerciseList;
+    expect(exerciseList?.[2]?.completed).toBeUndefined();
+    expect(exerciseList?.[2]?.skipped).toBeUndefined();
+    expect(exerciseList?.[6]?.completed).toBeUndefined();
+    expect(result.current.sheetProps.isPresented).toBe(true);
+    expect(result.current.sheetProps.row?.index).toBe(2);
+  });
+
+  it("keeps a done set of the entry completed", async () => {
+    const partlySkipped = generateChecklistEntry({
+      ...skippedLungeEntry,
+      sets: [
+        { index: 2, label: undefined, completed: true, skipped: false },
+        { index: 6, label: undefined, completed: true, skipped: true },
+      ],
+      skippedCount: 1,
+    });
+    useTrainingStore.setState({
+      exerciseList: generateSupersetList().map((exercise, index) =>
+        index === 6
+          ? { ...exercise, completed: true, skipped: true }
+          : { ...exercise, completed: true },
+      ),
+    });
+    const { result } = await renderHook(() =>
+      useTrainingExerciseSheetProps(generateSheetHookArgs()),
+    );
+
+    await act(() => result.current.handleRetake(partlySkipped));
+
+    const exerciseList = useTrainingStore.getState().exerciseList;
+    expect(exerciseList?.[2]?.completed).toBe(true);
+    expect(exerciseList?.[6]?.completed).toBeUndefined();
+    expect(result.current.sheetProps.row?.index).toBe(6);
+  });
+});
+
 describe("useTrainingExerciseSheetProps: next", () => {
   it("alternates between the exercises of a superset", async () => {
     const { result } = await renderHook(() =>

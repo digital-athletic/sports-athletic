@@ -6,13 +6,11 @@ import { useTrainingListCompletion } from "./useTrainingListCompletion";
 
 const mockSaveExerciseAndBranchData = jest.fn();
 const mockHandleFeedback = jest.fn();
-const mockHandleExerciseSkipped = jest.fn();
 
 jest.mock("@/features/training/hooks/useExerciseCompletion", () => ({
   useExerciseCompletion: () => ({
     saveExerciseAndBranchData: mockSaveExerciseAndBranchData,
     handleFeedback: mockHandleFeedback,
-    handleExerciseSkipped: mockHandleExerciseSkipped,
   }),
 }));
 
@@ -60,9 +58,28 @@ describe("useTrainingListCompletion: feedback and skipping", () => {
 
     await act(() => result.current.handleSkip(row));
 
-    expect(mockHandleExerciseSkipped).toHaveBeenCalledWith(0);
     expect(mockSaveExerciseAndBranchData).not.toHaveBeenCalled();
-    expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(true);
+    expect(useTrainingStore.getState().exerciseList?.[0]).toEqual(
+      expect.objectContaining({ completed: true, skipped: true }),
+    );
+  });
+
+  it("marks only the skipped set as skipped, even when an earlier set shares its exercise", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        { exerciseId: "1", skill: "SWR2", set: [1, 2], completed: true },
+        { exerciseId: "1", skill: "SWR2", set: [2, 2] },
+      ],
+    });
+    const { result } = await renderHook(() => useTrainingListCompletion());
+
+    await act(() =>
+      result.current.handleSkip(generateChecklistRow({ index: 1 })),
+    );
+
+    const exerciseList = useTrainingStore.getState().exerciseList;
+    expect(exerciseList?.[1]?.skipped).toBe(true);
+    expect(exerciseList?.[0]?.skipped).toBeUndefined();
   });
 });
 

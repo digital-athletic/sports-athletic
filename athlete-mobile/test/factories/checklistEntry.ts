@@ -6,8 +6,9 @@ import { type ChecklistEntry } from "@/features/training/hooks/useTrainingListRo
  *
  * generateChecklistEntry({ key: 2, firstOpenSetIndex: 2 })
  * → { key: 2, exerciseId: "1", displayName: "Test Exercise", pictureUrl: null,
- *     valueKind: null, isTest: false, sets: [{ index: 0, label: undefined, completed: false }],
- *     completed: false, firstOpenSetIndex: 2 }
+ *     valueKind: null, isTest: false,
+ *     sets: [{ index: 0, label: undefined, completed: false, skipped: false }],
+ *     completed: false, skippedCount: 0, firstOpenSetIndex: 2 }
  */
 export const generateChecklistEntry = (
   overrides: Partial<ChecklistEntry> = {},
@@ -18,8 +19,9 @@ export const generateChecklistEntry = (
   pictureUrl: null,
   valueKind: null,
   isTest: false,
-  sets: [{ index: 0, label: undefined, completed: false }],
+  sets: [{ index: 0, label: undefined, completed: false, skipped: false }],
   completed: false,
+  skippedCount: 0,
   firstOpenSetIndex: 0,
   ...overrides,
 });

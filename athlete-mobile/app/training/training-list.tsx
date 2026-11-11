@@ -29,6 +29,7 @@ const TrainingList: FC<TrainingListProps> = () => {
     handleFinish,
     handleShowInfo,
     handleStart,
+    handleRetake,
     handleDiscard,
     resumeSecondsOf,
     sheetProps,
@@ -52,6 +53,7 @@ const TrainingList: FC<TrainingListProps> = () => {
           repsDraft={repsDraft}
           resumeSecondsOf={resumeSecondsOf}
           onStart={handleStart}
+          onRetake={handleRetake}
           onShowInfo={handleShowInfo}
         />
         <Box

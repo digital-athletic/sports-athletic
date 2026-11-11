@@ -8,8 +8,10 @@ describe("TrainingListItemActions: accessible names", () => {
   const baseProps: TrainingListItemActionsProps = {
     isTest: false,
     isCompleted: false,
+    skippedCount: 0,
     repsValue: 0,
     onStart: jest.fn(),
+    onRetake: jest.fn(),
     testId: "row",
   };
 

@@ -158,5 +158,10 @@ export function useTrainingExerciseSheetProps({
   const resumeSecondsOf = (setIndex: number) =>
     resumeSecondsFor(actions.resumeRunMsOf(setIndex), exerciseList?.[setIndex]);
 
-  return { handleStart: actions.handleStart, sheetProps, resumeSecondsOf };
+  return {
+    handleStart: actions.handleStart,
+    handleRetake: actions.handleRetake,
+    sheetProps,
+    resumeSecondsOf,
+  };
 }

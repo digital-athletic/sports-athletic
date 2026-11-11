@@ -5,15 +5,18 @@ import { type TFunction } from "i18next";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedbackIconButton } from "./FeedbackIconButton";
+import { RetakeExerciseButton } from "./RetakeExerciseButton";
 import { StartExerciseButton } from "./StartExerciseButton";
 
 export type TrainingListItemActionsProps = {
   isTest: boolean;
   isCompleted: boolean;
+  skippedCount: number;
   completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
   resumeSeconds?: number;
   onStart: () => void;
+  onRetake: () => void;
   testId: string;
 };
 
@@ -29,20 +32,38 @@ const checkLabel = (
 ): string => t(COMPLETED_LABEL_KEYS[feedback ?? "SUCCEEDED"]);
 
 /**
- * The start-or-checkmark control for a single checklist row.
- * Starting, skipping, and the timer/feedback/reps flow happen in the
- * TrainingExerciseSheet opened by onStart, not inline here.
+ * The start, retake or checkmark control for a single checklist row. A row
+ * with skipped sets offers Retake, plus Start while other sets are still open.
+ * The timer/feedback/reps flow happens in the TrainingExerciseSheet.
  */
 export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
   isTest,
   isCompleted,
+  skippedCount,
   completedFeedback,
   repsValue,
   resumeSeconds,
   onStart,
+  onRetake,
   testId,
 }) => {
   const { t } = useTranslation();
+
+  // The skipped note itself sits under the set summary in TrainingListItem.
+  if (skippedCount > 0) {
+    return (
+      <Box flexDirection="row" alignItems="center" gap="m">
+        <RetakeExerciseButton onPress={onRetake} testId={`${testId}-retake`} />
+        {!isCompleted && (
+          <StartExerciseButton
+            onPress={onStart}
+            resumeSeconds={resumeSeconds}
+            testId={`${testId}-start`}
+          />
+        )}
+      </Box>
+    );
+  }
 
   return (
     <Box flexDirection="row" alignItems="center" gap="m">

@@ -18,6 +18,21 @@ type Args = {
   timing: Pick<TrainingListTiming, "startExercise" | "endExercise">;
 };
 
+/** Running time per set index, kept so a reopened set can continue. */
+function useSavedSetTimes() {
+  const [savedRunMs, setSavedRunMs] = useState<Record<number, number>>({});
+
+  const saveSetTime = (index: number, elapsedMs: number) =>
+    setSavedRunMs((prev) => ({ ...prev, [index]: elapsedMs }));
+
+  const resumeRunMsOf = (index: number) => {
+    const runMs = savedRunMs[index] ?? 0;
+    return runMs >= RESUME_MIN_RUN_MS ? runMs : 0;
+  };
+
+  return { saveSetTime, resumeRunMsOf };
+}
+
 /**
  * Moves the checklist sheet between sets: Start opens an entry's first open
  * set, Next opens the next open set below it, and reaching the end closes the
@@ -31,20 +46,25 @@ export function useTrainingListSetNavigation({
 }: Args) {
   const sheet = useTrainingListSheet(rows);
   const { activeRow, openSheet, closeSheet } = sheet;
-  const [savedRunMs, setSavedRunMs] = useState<Record<number, number>>({});
-
-  const saveSetTime = (index: number, elapsedMs: number) =>
-    setSavedRunMs((prev) => ({ ...prev, [index]: elapsedMs }));
-
-  const resumeRunMsOf = (index: number) => {
-    const runMs = savedRunMs[index] ?? 0;
-    return runMs >= RESUME_MIN_RUN_MS ? runMs : 0;
-  };
+  const { saveSetTime, resumeRunMsOf } = useSavedSetTimes();
 
   const handleStart = (entry: ChecklistEntry) => {
     if (entry.firstOpenSetIndex === null) return;
     timing.startExercise(exerciseList?.[entry.firstOpenSetIndex]?.skill);
     openSheet(entry.firstOpenSetIndex, resumeRunMsOf(entry.firstOpenSetIndex));
+  };
+
+  // entry.firstOpenSetIndex predates the reopen, so the skipped sets give the index.
+  const handleRetake = (entry: ChecklistEntry) => {
+    const skippedIndices = entry.sets
+      .filter((set) => set.skipped)
+      .map((set) => set.index);
+    const firstIndex = skippedIndices[0];
+    if (firstIndex === undefined) return;
+
+    useTrainingStore.getState().reopenSkippedSets(skippedIndices);
+    timing.startExercise(exerciseList?.[firstIndex]?.skill);
+    openSheet(firstIndex);
   };
 
   const handleDismiss = () => {
@@ -70,6 +90,7 @@ export function useTrainingListSetNavigation({
   return {
     ...sheet,
     handleStart,
+    handleRetake,
     handleNext,
     handleDismiss,
     saveSetTime,

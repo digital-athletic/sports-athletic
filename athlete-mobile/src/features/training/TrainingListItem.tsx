@@ -23,11 +23,13 @@ export type TrainingListItemProps = {
   isNext: boolean;
   isTest: boolean;
   isCompleted: boolean;
+  skippedCount: number;
   /** Which feedback (if any) was chosen when this row was completed. */
   completedFeedback?: DifficultyFeedbackType | null;
   repsValue: number;
   resumeSeconds?: number;
   onStart: () => void;
+  onRetake: () => void;
   onShowInfo: () => void;
   /** Base identifier for this row, used to derive per-control testIDs (e2e). */
   testId: string;
@@ -43,20 +45,44 @@ const SetSummary: FC<{ sets: ChecklistSetSummary[]; testId: string }> = ({
 
   return (
     <Text variant="small" color="darkGrey1">
-      {labelledSets.map((set, position) => (
-        <Fragment key={set.index}>
-          {position > 0 && " / "}
-          <Text
-            variant="small"
-            color={set.completed ? "successText" : "darkGrey1"}
-            fontWeight={set.completed ? "600" : "400"}
-            accessibilityState={{ checked: set.completed }}
-            testID={`${testId}-set-${set.index}`}
-          >
-            {set.completed ? `✓ ${set.label}` : set.label}
-          </Text>
-        </Fragment>
-      ))}
+      {labelledSets.map((set, position) => {
+        const isDone = set.completed && !set.skipped;
+        return (
+          <Fragment key={set.index}>
+            {position > 0 && " / "}
+            <Text
+              variant="small"
+              color={isDone ? "successText" : "darkGrey1"}
+              fontWeight={isDone ? "600" : "400"}
+              accessibilityState={{ checked: isDone }}
+              testID={`${testId}-set-${set.index}`}
+            >
+              {isDone ? `✓ ${set.label}` : set.label}
+            </Text>
+          </Fragment>
+        );
+      })}
+    </Text>
+  );
+};
+
+/** "Skipped" when every set was skipped, else e.g. "2 of 3 skipped". */
+const SkippedNote: FC<{
+  skippedCount: number;
+  setCount: number;
+  testId: string;
+}> = ({ skippedCount, setCount, testId }) => {
+  const { t } = useTranslation();
+  if (skippedCount === 0) return null;
+
+  return (
+    <Text variant="small" color="darkGrey1" testID={`${testId}-skipped-label`}>
+      {skippedCount === setCount
+        ? t("training.list.skipped")
+        : t("training.list.skippedOfSets", {
+            count: skippedCount,
+            total: setCount,
+          })}
     </Text>
   );
 };
@@ -81,6 +107,25 @@ const NextArrow: FC<{ testId: string }> = ({ testId }) => {
   );
 };
 
+const EntryDetails: FC<{
+  displayName: string;
+  sets: ChecklistSetSummary[];
+  skippedCount: number;
+  testId: string;
+}> = ({ displayName, sets, skippedCount, testId }) => (
+  <>
+    <Text variant="body" testID={`${testId}-name`}>
+      {displayName}
+    </Text>
+    <SetSummary sets={sets} testId={testId} />
+    <SkippedNote
+      skippedCount={skippedCount}
+      setCount={sets.length}
+      testId={testId}
+    />
+  </>
+);
+
 /**
  * One exercise in the list-view training checklist: its name, the main value
  * of each set, and a start control. Start opens the TrainingExerciseSheet on
@@ -92,14 +137,11 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
   valueKind,
   sets,
   isNext,
-  isTest,
   isCompleted,
-  completedFeedback,
-  repsValue,
-  resumeSeconds,
-  onStart,
+  skippedCount,
   onShowInfo,
   testId,
+  ...actionProps
 }) => {
   const dimOpacity = isCompleted ? 0.5 : 1;
 
@@ -128,20 +170,19 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
           </Box>
           {isNext && <NextArrow testId={testId} />}
           <Box flex={1} opacity={dimOpacity}>
-            <Text variant="body" testID={`${testId}-name`}>
-              {displayName}
-            </Text>
-            <SetSummary sets={sets} testId={testId} />
+            <EntryDetails
+              displayName={displayName}
+              sets={sets}
+              skippedCount={skippedCount}
+              testId={testId}
+            />
           </Box>
         </TouchableBox>
 
         <TrainingListItemActions
-          isTest={isTest}
+          {...actionProps}
           isCompleted={isCompleted}
-          completedFeedback={completedFeedback}
-          repsValue={repsValue}
-          resumeSeconds={resumeSeconds}
-          onStart={onStart}
+          skippedCount={skippedCount}
           testId={testId}
         />
       </Box>

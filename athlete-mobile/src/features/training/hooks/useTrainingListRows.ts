@@ -46,6 +46,7 @@ export type ChecklistSetSummary = {
   index: number;
   label: string | undefined;
   completed: boolean;
+  skipped: boolean;
 };
 
 /** The main value of an exercise, which its placeholder icon tells. */
@@ -60,6 +61,7 @@ export type ChecklistEntry = {
   isTest: boolean;
   sets: ChecklistSetSummary[];
   completed: boolean;
+  skippedCount: number;
   firstOpenSetIndex: number | null;
 };
 
@@ -228,6 +230,7 @@ function buildEntry(
     index,
     label: buildSetSummaryLabel(values[position], t),
     completed: Boolean(exerciseList[index].completed),
+    skipped: Boolean(exerciseList[index].skipped),
   }));
   const firstRow = rowsByIndex.get(group.key);
   return {
@@ -239,6 +242,7 @@ function buildEntry(
     isTest: firstRow?.isTest ?? false,
     sets,
     completed: sets.every((set) => set.completed),
+    skippedCount: sets.filter((set) => set.skipped).length,
     firstOpenSetIndex: findFirstOpenSetIndex(exerciseList, group.setIndices),
   };
 }

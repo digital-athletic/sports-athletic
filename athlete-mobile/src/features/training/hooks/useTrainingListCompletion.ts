@@ -22,8 +22,7 @@ export function useTrainingListCompletion() {
     (s) => s.markExerciseCompleted,
   );
   const markExerciseSkipped = useTrainingStore((s) => s.markExerciseSkipped);
-  const { saveExerciseAndBranchData, handleFeedback, handleExerciseSkipped } =
-    useExerciseCompletion();
+  const { saveExerciseAndBranchData, handleFeedback } = useExerciseCompletion();
 
   const handleComplete = (row: ListRow, feedback?: DifficultyFeedbackType) => {
     if (isRowCompleted(row.index)) return;
@@ -38,7 +37,9 @@ export function useTrainingListCompletion() {
   const handleSkip = (row: ListRow) => {
     if (isRowCompleted(row.index)) return;
 
-    handleExerciseSkipped(row.index);
+    // Sets share exerciseId and skill, so only the index marks the skipped set.
+    markExerciseSkipped(row.index);
+    Logger.logEvent("exercise_skipped", { exerciseId: row.exerciseId });
     markExerciseCompleted(row.index);
   };
 

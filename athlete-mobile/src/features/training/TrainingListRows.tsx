@@ -16,6 +16,7 @@ export type TrainingListRowsProps = {
   /** Saved timer value of a set that resumes when opened. */
   resumeSecondsOf: (setIndex: number) => number | undefined;
   onStart: (entry: ChecklistEntry) => void;
+  onRetake: (entry: ChecklistEntry) => void;
   onShowInfo: (exerciseId: string) => void;
 };
 
@@ -31,6 +32,7 @@ const Entry: FC<EntryProps> = ({
   repsDraft,
   resumeSecondsOf,
   onStart,
+  onRetake,
   onShowInfo,
 }) => {
   // Feedback belongs to the last set of the exercise.
@@ -46,6 +48,7 @@ const Entry: FC<EntryProps> = ({
       isNext={isNext}
       isTest={entry.isTest}
       isCompleted={entry.completed}
+      skippedCount={entry.skippedCount}
       completedFeedback={exerciseList?.[lastSetIndex]?.feedback?.difficulty}
       repsValue={repsDraft[entry.key] ?? 0}
       resumeSeconds={
@@ -54,6 +57,7 @@ const Entry: FC<EntryProps> = ({
           : resumeSecondsOf(entry.firstOpenSetIndex)
       }
       onStart={() => onStart(entry)}
+      onRetake={() => onRetake(entry)}
       onShowInfo={() => onShowInfo(entry.exerciseId)}
     />
   );

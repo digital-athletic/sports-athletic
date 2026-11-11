@@ -131,6 +131,8 @@
     "CANNOT_REMOVE_SELF": "Cannot remove yourself. Use leave team instead.",
     "CANNOT_CHANGE_OWNER_ROLE": "The team owner's role cannot be changed.",
     "MEMBER_NOT_FOUND": "Member not found in this team",
+    "TEAM_WORKOUT_NOT_FOUND": "Workout not found in this team",
+    "INVALID_WORKOUT_TEMPLATE": "The workout needs AIWL version 1, an English name and at least one block.",
     "INTERNAL_ERROR": "An internal error occurred"
   },
   "dashboard": {

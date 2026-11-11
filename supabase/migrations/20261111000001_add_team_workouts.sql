@@ -1,9 +1,9 @@
 -- Team workouts: one AIWL workout template per row, stored for a team.
 --
 -- Owner, co-owners and members read a team's workouts through SELECT RLS.
--- Only the team owner writes, and only through save_team_workout and
--- delete_team_workout. Like the other team tables, the table has no INSERT,
--- UPDATE or DELETE policy and authenticated holds no write grant on it.
+-- Only the team owner writes, through save_team_workout and
+-- delete_team_workout. Like the other team tables, team_workouts has no INSERT,
+-- UPDATE or DELETE policy, and the authenticated role lacks a write grant.
 --
 -- The server checks only the outer frame of a template: "aiwl" is the number 1,
 -- "name"."en" is a non-blank string and "blocks" is a non-empty array. The
@@ -20,7 +20,7 @@ BEGIN;
 CREATE TABLE public.team_workouts (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_id    UUID NOT NULL REFERENCES public.teams(id) ON DELETE CASCADE,
-  -- The AIWL template. save_team_workout keeps template.id equal to id.
+  -- The AIWL template. save_team_workout sets template.id to the row id.
   template   JSONB NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -38,8 +38,8 @@ CREATE TRIGGER update_team_workouts_updated_at
 -- ============================================================================
 ALTER TABLE public.team_workouts ENABLE ROW LEVEL SECURITY;
 
--- The owner also holds an 'owner' row in team_members; the owner_id check keeps
--- the policy in line with the teams SELECT policy should that row be missing.
+-- The owner also has an 'owner' row in team_members. The owner_id check matches
+-- the teams SELECT policy in case that row is missing.
 CREATE POLICY "Team members can view team workouts"
   ON public.team_workouts FOR SELECT
   TO authenticated
@@ -86,17 +86,15 @@ AS $$
   );
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.is_valid_team_workout_template(jsonb) FROM PUBLIC;
-REVOKE EXECUTE ON FUNCTION public.is_valid_team_workout_template(jsonb) FROM anon;
-REVOKE EXECUTE ON FUNCTION public.is_valid_team_workout_template(jsonb) FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.is_valid_team_workout_template(jsonb) FROM service_role;
+REVOKE EXECUTE ON FUNCTION public.is_valid_team_workout_template(jsonb)
+  FROM PUBLIC, anon, authenticated, service_role;
 
 -- ============================================================================
 -- 4. save_team_workout
 -- ============================================================================
 -- Creates a team workout when p_workout_id is NULL, otherwise replaces the
--- template of that workout. Returns the saved row. The function writes the row
--- id into template.id, so a client-sent template.id is ignored.
+-- template of that workout. Returns the saved row. A client-sent template.id is
+-- ignored.
 --
 -- Errors, checked in this order:
 --   AUTH_REQUIRED            no caller
@@ -116,24 +114,26 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 DECLARE
-  v_id      uuid := coalesce(p_workout_id, gen_random_uuid());
-  v_workout public.team_workouts%ROWTYPE;
+  v_id       uuid := coalesce(p_workout_id, gen_random_uuid());
+  v_template jsonb;
+  v_workout  public.team_workouts%ROWTYPE;
 BEGIN
-  -- Raises AUTH_REQUIRED, INVALID_REQUEST_BODY, TEAM_NOT_FOUND or NOT_TEAM_OWNER,
-  -- and locks the team row so a concurrent delete_team waits.
+  -- Also locks the team row, so a concurrent delete_team waits.
   PERFORM public.assert_visible_team_owner(p_team_id);
 
   IF NOT public.is_valid_team_workout_template(p_template) THEN
     RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'INVALID_WORKOUT_TEMPLATE';
   END IF;
 
+  v_template := jsonb_set(p_template, '{id}', to_jsonb(v_id::text));
+
   IF p_workout_id IS NULL THEN
     INSERT INTO public.team_workouts (id, team_id, template)
-    VALUES (v_id, p_team_id, jsonb_set(p_template, '{id}', to_jsonb(v_id::text)))
+    VALUES (v_id, p_team_id, v_template)
     RETURNING * INTO v_workout;
   ELSE
     UPDATE public.team_workouts
-    SET    template = jsonb_set(p_template, '{id}', to_jsonb(v_id::text))
+    SET    template = v_template
     WHERE  id = p_workout_id AND team_id = p_team_id
     RETURNING * INTO v_workout;
 
@@ -146,10 +146,9 @@ BEGIN
 END;
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.save_team_workout(uuid, jsonb, uuid) FROM PUBLIC;
-REVOKE EXECUTE ON FUNCTION public.save_team_workout(uuid, jsonb, uuid) FROM anon;
-REVOKE EXECUTE ON FUNCTION public.save_team_workout(uuid, jsonb, uuid) FROM service_role;
-GRANT  EXECUTE ON FUNCTION public.save_team_workout(uuid, jsonb, uuid) TO   authenticated;
+REVOKE EXECUTE ON FUNCTION public.save_team_workout(uuid, jsonb, uuid)
+  FROM PUBLIC, anon, service_role;
+GRANT EXECUTE ON FUNCTION public.save_team_workout(uuid, jsonb, uuid) TO authenticated;
 
 -- ============================================================================
 -- 5. delete_team_workout
@@ -194,16 +193,14 @@ BEGIN
     RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'TEAM_WORKOUT_NOT_FOUND';
   END IF;
 
-  -- Raises NOT_TEAM_OWNER for co-owners and members.
   PERFORM public.assert_visible_team_owner(v_team_id);
 
   DELETE FROM public.team_workouts WHERE id = p_workout_id;
 END;
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.delete_team_workout(uuid) FROM PUBLIC;
-REVOKE EXECUTE ON FUNCTION public.delete_team_workout(uuid) FROM anon;
-REVOKE EXECUTE ON FUNCTION public.delete_team_workout(uuid) FROM service_role;
-GRANT  EXECUTE ON FUNCTION public.delete_team_workout(uuid) TO   authenticated;
+REVOKE EXECUTE ON FUNCTION public.delete_team_workout(uuid)
+  FROM PUBLIC, anon, service_role;
+GRANT EXECUTE ON FUNCTION public.delete_team_workout(uuid) TO authenticated;
 
 COMMIT;

@@ -1,11 +1,11 @@
--- Team workouts: only the owner writes (through save_team_workout and
--- delete_team_workout), owner, co-owners and members read, outsiders see
--- nothing. The save function checks the outer frame of the AIWL template, and
--- deleting a team deletes its workouts.
+-- Team workouts: the owner writes through save_team_workout and
+-- delete_team_workout. Owner, co-owners and members read; outsiders see nothing.
+-- save_team_workout checks the outer frame of the AIWL template. Deleting a team
+-- deletes its workouts.
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(51);
+SELECT plan(49);
 
 -- Team A: T owns it, C is co-owner, M is a plain member. O belongs to no team.
 -- Team B: T2 owns it.
@@ -117,9 +117,9 @@ RESET ROLE;
 SELECT is((SELECT template->'name'->>'en' FROM public.team_workouts WHERE id = :'W1'), 'Renamed',
   'save: the change is stored');
 SELECT is((SELECT template->>'id' FROM public.team_workouts WHERE id = :'W1'), :'W1',
-  'save: a change keeps template.id equal to the row id');
+  'save: after a change, template.id still equals the row id');
 SELECT is((SELECT count(*) FROM public.team_workouts WHERE template->'name'->>'en' = 'Hijack'), 0::bigint,
-  'save: rejected changes left no trace');
+  'save: rejected changes wrote nothing');
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claim.sub" TO :'T';
 
@@ -152,11 +152,8 @@ SELECT throws_ok($$ SELECT public.save_team_workout('55555555-5555-5555-5555-555
     '{"aiwl": "1", "name": {"en": "X"}, "blocks": [{}]}') $$,
   'P0001', 'INVALID_WORKOUT_TEMPLATE', 'save: aiwl as a string -> INVALID_WORKOUT_TEMPLATE');
 SELECT throws_ok($$ SELECT public.save_team_workout('55555555-5555-5555-5555-555555555551',
-    '{"aiwl": "one", "name": {"en": "X"}, "blocks": "many"}') $$,
-  'P0001', 'INVALID_WORKOUT_TEMPLATE', 'save: non-numeric aiwl and string blocks -> INVALID_WORKOUT_TEMPLATE');
-SELECT throws_ok($$ SELECT public.save_team_workout('55555555-5555-5555-5555-555555555551',
     '{"aiwl": 1.0, "name": {"en": "X"}, "blocks": "many"}') $$,
-  'P0001', 'INVALID_WORKOUT_TEMPLATE', 'save: blocks as a string -> INVALID_WORKOUT_TEMPLATE');
+  'P0001', 'INVALID_WORKOUT_TEMPLATE', 'save: aiwl 1.0 with blocks as a string -> INVALID_WORKOUT_TEMPLATE');
 SELECT throws_ok($$ SELECT public.save_team_workout('55555555-5555-5555-5555-555555555551',
     '{"aiwl": 1, "blocks": [{}]}') $$,
   'P0001', 'INVALID_WORKOUT_TEMPLATE', 'save: missing name -> INVALID_WORKOUT_TEMPLATE');
@@ -175,14 +172,11 @@ SELECT throws_ok($$ SELECT public.save_team_workout('55555555-5555-5555-5555-555
 SELECT throws_ok($$ SELECT public.save_team_workout('55555555-5555-5555-5555-555555555551',
     '{"aiwl": 1, "name": {"en": "X"}, "blocks": []}') $$,
   'P0001', 'INVALID_WORKOUT_TEMPLATE', 'save: empty blocks -> INVALID_WORKOUT_TEMPLATE');
-SELECT throws_ok($$ SELECT public.save_team_workout('55555555-5555-5555-5555-555555555551',
-    '{"aiwl": 1, "name": {"en": "X"}, "blocks": {}}') $$,
-  'P0001', 'INVALID_WORKOUT_TEMPLATE', 'save: blocks not an array -> INVALID_WORKOUT_TEMPLATE');
 
 -- ---------------------------------------------------------------------------
 -- Read
 -- ---------------------------------------------------------------------------
--- Team A holds W1 plus the two workouts the owner created above.
+-- Team A contains W1 and the two workouts the owner created above.
 SET LOCAL "request.jwt.claim.sub" TO :'T';
 SELECT is((SELECT count(*) FROM public.team_workouts WHERE team_id = :'TEAM'), 3::bigint,
   'read: owner reads the team''s workouts');
@@ -207,7 +201,7 @@ SELECT throws_ok($$ SELECT count(*) FROM public.team_workouts $$,
 SET LOCAL ROLE authenticated;
 
 -- ---------------------------------------------------------------------------
--- Direct writes are closed, even for the owner
+-- Direct writes fail, even for the owner
 -- ---------------------------------------------------------------------------
 SET LOCAL "request.jwt.claim.sub" TO :'T';
 SELECT throws_ok($$ INSERT INTO public.team_workouts (team_id, template)

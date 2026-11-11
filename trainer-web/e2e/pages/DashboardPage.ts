@@ -24,6 +24,28 @@ export class DashboardPage {
     await expect(this.page.getByText(name, { exact: false })).toBeVisible();
   }
 
+  async openManagement() {
+    await this.page.getByTestId("tab-management").click();
+  }
+
+  /** Member names come from the fixture, so the row is found by its name. */
+  private memberRow(name: string) {
+    return this.page.getByTestId("team-member").filter({ hasText: name });
+  }
+
+  async expectMemberRole(name: string, label: string) {
+    await expect(this.memberRow(name).getByTestId("member-role")).toHaveText(
+      label,
+    );
+  }
+
+  /** The button that promotes a member or demotes a co-owner. */
+  async expectRoleAction(name: string, label: string) {
+    await expect(
+      this.memberRow(name).getByTestId("member-role-toggle"),
+    ).toHaveText(label);
+  }
+
   async openEvaluations() {
     await this.page.getByTestId("tab-evaluations").click();
   }

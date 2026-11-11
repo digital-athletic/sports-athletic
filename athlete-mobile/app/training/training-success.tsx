@@ -7,6 +7,7 @@ import { seconds } from "@/features/training/models/TimeUnits";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { calculateSkillsFromTime } from "@/features/training/utils/trainingSuccessUtils";
 import { calculateWorkoutTotals } from "@/features/training/utils/workoutUtils";
+import { useFocusedHardwareBackHandler } from "@/hooks/useFocusedHardwareBackHandler";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
@@ -17,7 +18,14 @@ import { getTimeString, getWeightString } from "@/utils/formatters";
 import { parseBooleanParam } from "@/utils/router";
 import { supportMessage } from "@/utils/supportMessage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useMemo, useRef, type FC } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FC,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,7 +34,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
  * Training Success Screen
  *
  * Displays training completion summary. Aborted sessions skip XP and history.
- * Back gestures disabled to ensure controlled flow.
+ * Back gestures disabled to ensure controlled flow; Android back acts as Continue.
  * Legacy: views/training/TrainingSuccess
  */
 const TrainingSuccessScreen: FC = () => {
@@ -34,13 +42,8 @@ const TrainingSuccessScreen: FC = () => {
   const router = useRouter();
   const params = useLocalSearchParams<{ aborted?: string }>();
   const aborted = parseBooleanParam(params.aborted);
-  const {
-    exerciseList,
-    time,
-    activeTraining,
-    trainingViewMode,
-    clearTraining,
-  } = useTrainingStore();
+  const { exerciseList, time, activeTraining, trainingViewMode } =
+    useTrainingStore();
   const exercises = getAllExercises();
   const { workoutData } = useUserWorkoutStore();
   const maxValues = workoutData.maxValues;
@@ -108,10 +111,30 @@ const TrainingSuccessScreen: FC = () => {
     trainingViewMode,
   ]);
 
-  const handleGoOn = () => {
-    clearTraining();
+  // Clearing on unmount instead of on Continue keeps the summary rendered
+  // while the screen leaves. The id check skips a training started meanwhile.
+  const [finishedTrainingId] = useState(
+    () => useTrainingStore.getState().activeTraining?.id,
+  );
+  useEffect(
+    () => () => {
+      const { activeTraining: current, clearTraining } =
+        useTrainingStore.getState();
+      if (current?.id === finishedTrainingId) clearTraining();
+    },
+    [finishedTrainingId],
+  );
+
+  const handleGoOn = useCallback(() => {
     router.replace("/(tabs)/(home)");
-  };
+  }, [router]);
+
+  const handleHardwareBack = useCallback(() => {
+    handleGoOn();
+    return true;
+  }, [handleGoOn]);
+
+  useFocusedHardwareBackHandler(handleHardwareBack);
 
   const hasWorkoutData = totals.count > 0;
 

@@ -16,10 +16,7 @@ export const StrengthTestMenuItems: FC = () => {
       <ListItem
         title={t("more.startNewTestWorkout")}
         navPath="/training/muscle-soreness"
-        navParams={{
-          type: "TEST_WORKOUT",
-          originPath: "/(tabs)/(more)/more",
-        }}
+        navParams={{ type: "TEST_WORKOUT" }}
         icon={IconWeight}
         iconBackground="primary"
       />

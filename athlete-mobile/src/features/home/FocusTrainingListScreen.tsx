@@ -1,7 +1,7 @@
 import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { TileGrid } from "@/common/TileGrid";
 import { TrainingTile } from "@/common/TrainingTile";
-import { useTrainingStore } from "@/features/training/trainingStore";
+import type { TrainingCategory } from "@/features/training/models/Training";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import IconShieldHeart from "@tabler/icons-react-native/IconShieldHeart";
@@ -9,11 +9,8 @@ import IconTargetArrow from "@tabler/icons-react-native/IconTargetArrow";
 
 export default function FocusTrainingListScreen() {
   const { t } = useTranslation();
-  const { setTrainingSelection } = useTrainingStore();
-
-  const startTraining = (type: "QUICK" | "PREV") => {
-    setTrainingSelection(type);
-    router.push({ pathname: "/training", params: { type } });
+  const startTraining = (category: TrainingCategory) => {
+    router.push({ pathname: "/training/new", params: { category } });
   };
 
   return (
@@ -27,14 +24,14 @@ export default function FocusTrainingListScreen() {
           icon={IconTargetArrow}
           title={t("screens.home.focusTraining.title")}
           description={t("screens.home.focusTraining.subtitle")}
-          onPress={() => startTraining("QUICK")}
+          onPress={() => startTraining("focus")}
           testID="focus-training-tile"
         />
         <TrainingTile
           icon={IconShieldHeart}
           title={t("screens.home.preventionTraining.title")}
           description={t("screens.home.preventionTraining.subtitle")}
-          onPress={() => startTraining("PREV")}
+          onPress={() => startTraining("prevention")}
           testID="prevention-training-tile"
         />
       </TileGrid>

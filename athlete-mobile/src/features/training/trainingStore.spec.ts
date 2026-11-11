@@ -9,7 +9,6 @@ describe("useTrainingStore", () => {
   beforeEach(() => {
     // Reset store state before each test
     useTrainingStore.setState({
-      selection: null,
       exerciseList: null,
       progressBefore: null,
       equipment: [],
@@ -76,65 +75,15 @@ describe("useTrainingStore", () => {
   // Selection Management Tests
   // ============================================================================
 
-  describe("setTrainingSelection", () => {
-    it("should set training selection to PLAN", async () => {
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setTrainingSelection("PLAN");
-      });
-
-      expect(result.current.selection).toBe("PLAN");
+  describe("removed selection", () => {
+    it("has no selection field", () => {
+      expect(useTrainingStore.getState()).not.toHaveProperty("selection");
     });
 
-    it("should set training selection to PREV", async () => {
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setTrainingSelection("PREV");
-      });
-
-      expect(result.current.selection).toBe("PREV");
-    });
-
-    it("should set training selection to QUICK", async () => {
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setTrainingSelection("QUICK");
-      });
-
-      expect(result.current.selection).toBe("QUICK");
-    });
-
-    it("should set selection to null", async () => {
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setTrainingSelection("PLAN");
-        result.current.setTrainingSelection(null);
-      });
-
-      expect(result.current.selection).toBeNull();
-    });
-
-    it("should update selection multiple times", async () => {
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setTrainingSelection("PLAN");
-      });
-      expect(result.current.selection).toBe("PLAN");
-
-      await act(() => {
-        result.current.setTrainingSelection("PREV");
-      });
-      expect(result.current.selection).toBe("PREV");
-
-      await act(() => {
-        result.current.setTrainingSelection("QUICK");
-      });
-      expect(result.current.selection).toBe("QUICK");
+    it("has no setTrainingSelection action", () => {
+      expect(useTrainingStore.getState()).not.toHaveProperty(
+        "setTrainingSelection",
+      );
     });
   });
 
@@ -821,7 +770,6 @@ describe("useTrainingStore", () => {
 
       // Setup state
       await act(() => {
-        result.current.setTrainingSelection("PLAN");
         result.current.setExerciseList([
           {
             exerciseId: "10",
@@ -839,7 +787,6 @@ describe("useTrainingStore", () => {
       });
 
       // Verify state is set
-      expect(result.current.selection).toBe("PLAN");
       expect(result.current.exerciseList).not.toBeNull();
       expect(result.current.progressBefore).not.toBeNull();
       expect(result.current.equipment).not.toEqual([]);
@@ -854,7 +801,6 @@ describe("useTrainingStore", () => {
       });
 
       // Verify reset
-      expect(result.current.selection).toBe("PLAN"); // Selection not reset
       expect(result.current.exerciseList).toBeNull();
       expect(result.current.progressBefore).toBeNull();
       expect(result.current.equipment).toEqual([]);
@@ -863,19 +809,6 @@ describe("useTrainingStore", () => {
       expect(result.current.time.pause).toBe(0);
       expect(result.current.time.skill.SWR).toBe(0);
       expect(result.current.activeTraining).toBeNull();
-    });
-
-    it("should preserve selection after reset", async () => {
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setTrainingSelection("QUICK");
-        result.current.setTrainingStartTime(1000);
-        result.current.clearTraining();
-      });
-
-      expect(result.current.selection).toBe("QUICK");
-      expect(result.current.time.start).toBeUndefined();
     });
 
     it("should reset all skill times to zero", async () => {
@@ -1152,11 +1085,9 @@ describe("useTrainingStore", () => {
 
       // Start training session
       await act(() => {
-        result.current.setTrainingSelection("PLAN");
         result.current.setTrainingStartTime(1000);
       });
 
-      expect(result.current.selection).toBe("PLAN");
       expect(result.current.time.start).toBe(1000);
 
       // Add exercises
@@ -1207,12 +1138,10 @@ describe("useTrainingStore", () => {
 
       // First session
       await act(() => {
-        result.current.setTrainingSelection("PLAN");
         result.current.setTrainingStartTime(1000);
         result.current.addSkillTime("SWR", 30000);
       });
 
-      expect(result.current.selection).toBe("PLAN");
       expect(result.current.time.skill.SWR).toBe(30000);
 
       // Reset for next session
@@ -1239,7 +1168,6 @@ describe("useTrainingStore", () => {
 
       // Multiple state updates without reset
       await act(() => {
-        result.current.setTrainingSelection("PREV");
         result.current.setEquipment(["dumbbells"]);
         result.current.addSkillTime("PREVENTION", 5000);
       });
@@ -1254,7 +1182,6 @@ describe("useTrainingStore", () => {
         result.current.addSkillTime("PREVENTION", 2000);
       });
 
-      expect(result.current.selection).toBe("PREV");
       expect(result.current.equipment).toEqual(["dumbbells", "barbell"]);
       expect(result.current.time.skill.PREVENTION).toBe(10000);
       expect(result.current.time.start).toBe(1000);
@@ -1266,16 +1193,10 @@ describe("useTrainingStore", () => {
 
       // Both hooks share same store
       await act(() => {
-        hook1.current.setTrainingSelection("PLAN");
+        hook1.current.addSkillTime("SWR", 10000);
       });
 
-      expect(hook2.current.selection).toBe("PLAN");
-
-      await act(() => {
-        hook2.current.addSkillTime("SWR", 10000);
-      });
-
-      expect(hook1.current.time.skill.SWR).toBe(10000);
+      expect(hook2.current.time.skill.SWR).toBe(10000);
     });
   });
 
@@ -1344,7 +1265,6 @@ describe("useTrainingStore", () => {
 
 describe("migrateTrainingStore: legacy version bridge", () => {
   const migratedFixture = {
-    selection: "QUICK",
     exerciseList: [
       {
         skill: "SWR1",
@@ -1386,7 +1306,7 @@ describe("migrateTrainingStore: legacy version bridge", () => {
     expect(result).toEqual({ ...migratedFixture, trainingViewMode: null });
   });
 
-  it("applies the v14 -> v16 migrations when persisted at v14", () => {
+  it("applies the v14 -> v17 migrations when persisted at v14", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 14);
 
     expect(result).toEqual({ ...migratedFixture, trainingViewMode: null });
@@ -1413,15 +1333,36 @@ describe("migrateTrainingStore: legacy version bridge", () => {
       trainingViewMode: null,
     };
 
-    const result = migrateTrainingStore(persistedAtCurrentVersion, 16);
+    const result = migrateTrainingStore(persistedAtCurrentVersion, 17);
 
     expect(result).toEqual(persistedAtCurrentVersion);
+  });
+
+  it("drops the stored selection when persisted at v16", () => {
+    const persistedAtV16 = {
+      ...migratedFixture,
+      trainingViewMode: null,
+      selection: "QUICK",
+    };
+
+    const result = migrateTrainingStore(persistedAtV16, 16);
+
+    expect(result).not.toHaveProperty("selection");
+    expect(result).toEqual({ ...migratedFixture, trainingViewMode: null });
+  });
+
+  it("drops a stored selection from data persisted at legacy version 0", () => {
+    const result = migrateTrainingStore(
+      { ...persistedAtVersionZero, selection: "PREV" },
+      0,
+    );
+
+    expect(result).not.toHaveProperty("selection");
   });
 
   it("resets to defaults for unknown ancient versions", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, 5);
 
-    expect(result.selection).toBeNull();
     expect(result.trainingViewMode).toBeNull();
     expect(result.tempMaxValues).toBeNull();
     expect(result.time.start).toBeUndefined();
@@ -1430,7 +1371,6 @@ describe("migrateTrainingStore: legacy version bridge", () => {
   it("resets to defaults for non integer versions", () => {
     const result = migrateTrainingStore(persistedAtVersionZero, Number.NaN);
 
-    expect(result.selection).toBeNull();
     expect(result.trainingViewMode).toBeNull();
   });
 });

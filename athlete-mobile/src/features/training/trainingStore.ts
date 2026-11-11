@@ -10,12 +10,11 @@ import { ActiveTrainingType } from "./models/ActiveTraining";
 import { type MaxValuesType } from "./models/MaxValues";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { FocusArea, TrainingViewMode } from "@/schemas/sync.schema";
-import { TrainingSelectionType, TrainingTimeType } from "./models/Training";
+import { TrainingTimeType } from "./models/Training";
 import { UserExerciseDataType } from "./models/UserExerciseData";
 import { UserProgressType } from "./models/UserProgress";
 
 export type State = {
-  selection: TrainingSelectionType | null;
   exerciseList: UserExerciseDataType[] | null;
   progressBefore: UserProgressType | null;
   equipment: string[];
@@ -41,7 +40,6 @@ const createInitialTrainingTime = (): TrainingTimeType => ({
 });
 
 const createInitialState = (): State => ({
-  selection: null,
   exerciseList: null,
   progressBefore: null,
   equipment: [],
@@ -53,7 +51,6 @@ const createInitialState = (): State => ({
 });
 
 type Actions = {
-  setTrainingSelection: (selection: TrainingSelectionType | null) => void;
   setExerciseList: (list: UserExerciseDataType[] | null) => void;
   setExerciseFeedback: (
     exerciseId: string,
@@ -75,6 +72,7 @@ type Actions = {
   setTempMaxValues: (values: MaxValuesType | null) => void;
   setTrainingStartTime: (time: number) => void;
   setTrainingEndTime: (time: number) => void;
+  resetTrainingEndTime: () => void;
   addPauseTime: (pauseTime: number) => void;
   addSkillTime: (focusArea: FocusArea, skillTime: number) => void;
   clearTraining: () => void;
@@ -112,10 +110,6 @@ export const useTrainingStore = create<TrainingState>()(
     immer((set) => ({
       ...createInitialState(),
 
-      setTrainingSelection: (selection) =>
-        set((state) => {
-          state.selection = selection;
-        }),
       setExerciseList: (list) =>
         set((state) => {
           state.exerciseList = list;
@@ -187,6 +181,10 @@ export const useTrainingStore = create<TrainingState>()(
       setTrainingEndTime: (time) =>
         set((state) => {
           state.time.end = time;
+        }),
+      resetTrainingEndTime: () =>
+        set((state) => {
+          state.time.end = undefined;
         }),
       addPauseTime: (pauseTime) =>
         set((state) => {
@@ -260,7 +258,6 @@ export const useTrainingStore = create<TrainingState>()(
       version: STORE_VERSIONS.TRAINING,
       migrate: migrateTrainingStore,
       partialize: (state) => ({
-        selection: state.selection,
         exerciseList: state.exerciseList,
         progressBefore: state.progressBefore,
         equipment: state.equipment,

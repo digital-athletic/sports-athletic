@@ -12,12 +12,18 @@ import { Alert } from "react-native";
 /**
  * Finalizes a training session (sequential or list-view) and navigates to
  * the success screen. Shared so both screens commit progress identically.
+ * Returns false when the push fails; the session then stays resumable and
+ * can be finished again.
  */
 export function useFinishTraining() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { activeTraining, setTrainingEndTime, setTempMaxValues } =
-    useTrainingStore();
+  const {
+    activeTraining,
+    setTrainingEndTime,
+    resetTrainingEndTime,
+    setTempMaxValues,
+  } = useTrainingStore();
   const { addTestResult } = useExerciseProgressStore();
   const { saveMaxValues } = useUserWorkoutStore();
   const hasFinishedRef = useRef(false);
@@ -28,11 +34,11 @@ export function useFinishTraining() {
   const finishTraining = (
     aborted: boolean = false,
     strengthTestMaxValues?: MaxValuesType | null,
-  ) => {
+  ): boolean => {
     // Guards against double-invocation (e.g. a fast double-tap on the
     // finish button), which would otherwise duplicate XP/workout entries
     // and, for TEST_WORKOUT, saved max values/test results.
-    if (hasFinishedRef.current) return;
+    if (hasFinishedRef.current) return true;
     hasFinishedRef.current = true;
 
     // Computed before the try: the React Compiler skips a try block that
@@ -68,9 +74,13 @@ export function useFinishTraining() {
         pathname: "/training/training-success",
         params: { aborted: aborted.toString() },
       });
+      return true;
     } catch (error) {
       Logger.logError(error as Error);
       Alert.alert(t("common.error"), t("common.error"));
+      hasFinishedRef.current = false;
+      resetTrainingEndTime();
+      return false;
     }
   };
 

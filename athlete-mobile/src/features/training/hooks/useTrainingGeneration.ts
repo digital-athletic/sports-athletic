@@ -38,7 +38,6 @@ export type TrainingGenerationParams = {
   type: TrainingType;
   weekday?: string;
   sectionIndex?: string;
-  originPath?: string;
   sectionType?: SectionTypes;
   sectionCardioType?: CardioTypes;
   trainingFocus?: FocusType;
@@ -177,8 +176,7 @@ function saveGeneratedTraining(
   ctx: GenerationContext,
 ) {
   // Stale session state from a killed workout must not leak into the new
-  // session. clearTraining preserves `selection`, so the user's training
-  // selection is unaffected.
+  // session.
   ctx.clearTraining();
   const exerciseList = toUserExerciseDataList(generatedList);
   ctx.setExerciseList(exerciseList);

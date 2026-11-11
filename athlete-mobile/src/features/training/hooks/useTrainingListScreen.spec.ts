@@ -21,6 +21,7 @@ jest.mock("@/features/training/hooks/useTrainingScreenLifecycle", () => ({
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: jest.fn(), dismissTo: jest.fn() }),
   useLocalSearchParams: () => ({}),
+  useNavigation: jest.fn(),
   usePreventRemove: jest.fn(),
 }));
 
@@ -78,6 +79,7 @@ describe("useTrainingListScreen: finishing", () => {
         createExercise({ exerciseId: "2" }),
       ],
     });
+    mockFinishTraining.mockReturnValue(true);
     const { result } = await renderHook(() => useTrainingListScreen());
 
     await act(() => {

@@ -1,9 +1,11 @@
 import HomeScreen from "../../../app/(tabs)/(home)/index";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { useTrainingStore } from "@/features/training/trainingStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { fireEvent, render } from "@/utils/testUtils";
 import { generateLayoutEvent } from "@test/factories/layoutEvent";
+import { router } from "expo-router";
 import { Dimensions } from "react-native";
 
 jest.mock("expo-router", () => ({
@@ -16,6 +18,7 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
+const mockPush = jest.mocked(router.push);
 const START_TRAINING = "Start Training";
 const EMPTY_PLAN_TEXT = "You have no training phases right now";
 const FOCUS_SUBTITLE =
@@ -96,5 +99,30 @@ describe("HomeScreen: content taller than the screen", () => {
     await fireEvent(scrollView, "contentSizeChange", 375, 400);
 
     expect(getByText(FOCUS_SUBTITLE)).toBeTruthy();
+  });
+});
+
+describe("HomeScreen: starting the plan training", () => {
+  beforeEach(() => {
+    mockPush.mockClear();
+  });
+
+  it("pushes the plan selection through the route category", async () => {
+    const { getByText } = await render(<HomeScreen />);
+
+    await fireEvent.press(getByText(START_TRAINING));
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: "/training/new",
+      params: { category: "plan" },
+    });
+  });
+
+  it("does not write a selection to the training store", async () => {
+    const { getByText } = await render(<HomeScreen />);
+
+    await fireEvent.press(getByText(START_TRAINING));
+
+    expect(useTrainingStore.getState()).not.toHaveProperty("selection");
   });
 });

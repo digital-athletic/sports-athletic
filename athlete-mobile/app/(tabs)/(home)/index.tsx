@@ -1,6 +1,7 @@
 import { featureFlags } from "@/config/featureFlags";
 import { HomeTrainingShortcuts } from "@/features/home/HomeTrainingShortcuts";
 import { IndividualWorkoutDisplay } from "@/features/training/IndividualWorkoutDisplay";
+import type { TrainingCategory } from "@/features/training/models/Training";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
   getTrainingRouteForMode,
@@ -25,7 +26,6 @@ export default function HomeScreen() {
   const { personalData, anamnesisCompleted, _hasHydrated } =
     useUserProfileStore();
   const { isSkipped } = useAnamnesisStore();
-  const { setTrainingSelection } = useTrainingStore();
   const trainingHasHydrated = useTrainingStore((s) => s._hasHydrated);
   const activeTraining = useTrainingStore((s) => s.activeTraining);
   const time = useTrainingStore((s) => s.time);
@@ -79,12 +79,8 @@ export default function HomeScreen() {
     ]),
   );
 
-  const goToTraining = (type: "QUICK" | "PREV" | "PLAN") => {
-    setTrainingSelection(type);
-    router.push({
-      pathname: "/training",
-      params: { type },
-    });
+  const goToTraining = (category: TrainingCategory) => {
+    router.push({ pathname: "/training/new", params: { category } });
   };
 
   const goToAnamnesis = () => {

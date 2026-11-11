@@ -72,7 +72,7 @@ export default function IndexScreen() {
               Active training session with navigation buttons (Select → Soreness
               → Overview → Training → Success).
             </Text>
-            <Link href="/training" asChild>
+            <Link href="/training/new?category=plan" asChild>
               <Button>Start Training</Button>
             </Link>
           </Card>

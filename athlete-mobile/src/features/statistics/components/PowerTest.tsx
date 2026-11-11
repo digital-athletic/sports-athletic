@@ -93,10 +93,7 @@ const PowerTestActions: FC<{ anamnesisCompleted: boolean }> = ({
           runWithAnamnesis(() =>
             router.push({
               pathname: "/training/muscle-soreness",
-              params: {
-                type: "TEST_WORKOUT",
-                originPath: "/(tabs)/statistics",
-              },
+              params: { type: "TEST_WORKOUT" },
             }),
           )
         }

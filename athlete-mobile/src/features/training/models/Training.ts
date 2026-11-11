@@ -3,7 +3,6 @@ import type { UserExerciseDataType } from "./UserExerciseData";
 import type { UserProgressType } from "./UserProgress";
 
 export type TrainingDataType = {
-  selection?: TrainingSelectionType;
   exerciseList?: UserExerciseDataType[];
   progressBefore?: UserProgressType;
   equipment: string[];
@@ -11,7 +10,17 @@ export type TrainingDataType = {
   activeTraining?: ActiveTrainingType;
 };
 
-export type TrainingSelectionType = "PLAN" | "PREV" | "QUICK";
+/** The `category` route param of the selection screen at /training/new. */
+export type TrainingCategory = "plan" | "focus" | "prevention";
+
+const TRAINING_CATEGORIES: readonly string[] = [
+  "plan",
+  "focus",
+  "prevention",
+] satisfies TrainingCategory[];
+
+export const isTrainingCategory = (value: unknown): value is TrainingCategory =>
+  typeof value === "string" && TRAINING_CATEGORIES.includes(value);
 
 export type TrainingTimeType = {
   start?: number;

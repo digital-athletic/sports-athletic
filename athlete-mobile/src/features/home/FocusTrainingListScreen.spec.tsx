@@ -112,27 +112,34 @@ describe("FocusTrainingListScreen: tiles", () => {
 });
 
 describe("FocusTrainingListScreen: starting a training", () => {
-  it("selects QUICK and opens the focus training selection", async () => {
+  it("opens the focus selection through the route category", async () => {
     const { getByRole } = await render(<FocusTrainingListScreen />);
 
     await fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
 
-    expect(mockSetTrainingSelection).toHaveBeenCalledWith("QUICK");
     expect(mockPush).toHaveBeenCalledWith({
-      pathname: "/training",
-      params: { type: "QUICK" },
+      pathname: "/training/new",
+      params: { category: "focus" },
     });
   });
 
-  it("selects PREV and opens the prevention training selection", async () => {
+  it("opens the prevention selection through the route category", async () => {
     const { getByRole } = await render(<FocusTrainingListScreen />);
 
     await fireEvent.press(getByRole("button", { name: PREVENTION_LABEL }));
 
-    expect(mockSetTrainingSelection).toHaveBeenCalledWith("PREV");
     expect(mockPush).toHaveBeenCalledWith({
-      pathname: "/training",
-      params: { type: "PREV" },
+      pathname: "/training/new",
+      params: { category: "prevention" },
     });
+  });
+
+  it("does not write a selection to the training store", async () => {
+    const { getByRole } = await render(<FocusTrainingListScreen />);
+
+    await fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
+    await fireEvent.press(getByRole("button", { name: PREVENTION_LABEL }));
+
+    expect(mockSetTrainingSelection).not.toHaveBeenCalled();
   });
 });

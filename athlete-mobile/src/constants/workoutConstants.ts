@@ -346,7 +346,6 @@ export type TileData = {
       type: SkillTypes | "PLAN" | "TEST_WORKOUT";
       weekday?: number;
       sectionIndex?: number;
-      originPath?: string;
       sectionType?: SectionTypes;
       sectionCardioType?: CardioTypes;
       trainingFocus?: FocusType;

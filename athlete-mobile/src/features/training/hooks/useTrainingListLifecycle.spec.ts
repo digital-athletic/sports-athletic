@@ -10,6 +10,10 @@ import { act, renderHook } from "@testing-library/react-native";
 import { useTrainingListLifecycle } from "./useTrainingListLifecycle";
 
 const mockDismissTo = jest.fn();
+const mockReplace = jest.fn();
+const mockParentGoBack = jest.fn();
+let mockParentCanGoBack = true;
+let mockStackRoutes: { name: string; params?: { category?: string } }[] = [];
 const mockUsePreventRemove = jest.fn();
 let mockOnHardwareBack: (() => void) | undefined;
 
@@ -21,7 +25,15 @@ jest.mock("@/features/training/hooks/useTrainingScreenLifecycle", () => ({
 }));
 
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ dismissTo: mockDismissTo }),
+  useRouter: () => ({ dismissTo: mockDismissTo, replace: mockReplace }),
+  router: { dismissTo: mockDismissTo, replace: mockReplace },
+  useNavigation: () => ({
+    getState: () => ({ routes: mockStackRoutes }),
+    getParent: () => ({
+      goBack: mockParentGoBack,
+      canGoBack: () => mockParentCanGoBack,
+    }),
+  }),
   useLocalSearchParams: () => ({ weekday: "2", place: "STUDIO" }),
   usePreventRemove: (prevent: boolean, callback: () => void) =>
     mockUsePreventRemove(prevent, callback),
@@ -140,6 +152,8 @@ describe("useTrainingListLifecycle: back before a completed set", () => {
 describe("useTrainingListLifecycle: back after a completed set", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockParentCanGoBack = true;
+    mockStackRoutes = [{ name: "training-list" }];
     startListTraining();
     useTrainingStore.setState({
       exerciseList: [
@@ -165,7 +179,7 @@ describe("useTrainingListLifecycle: back after a completed set", () => {
     );
   });
 
-  it("clears the training and returns to the training selection when the athlete confirms", async () => {
+  it("clears the training when the athlete confirms", async () => {
     const { result } = await renderHook(() =>
       useTrainingListLifecycle({ isEnding: false }),
     );
@@ -181,8 +195,6 @@ describe("useTrainingListLifecycle: back after a completed set", () => {
     expect(logEventSpy).toHaveBeenCalledWith("training_discarded", {
       type: "PLAN",
     });
-    expect(mockDismissTo).toHaveBeenCalledTimes(1);
-    expect(mockDismissTo).toHaveBeenCalledWith("/training");
     expect(mockUsePreventRemove).toHaveBeenLastCalledWith(
       false,
       expect.any(Function),
@@ -201,5 +213,159 @@ describe("useTrainingListLifecycle: back after a completed set", () => {
 
     expect(useTrainingStore.getState().exerciseList?.[0]?.completed).toBe(true);
     expect(mockDismissTo).not.toHaveBeenCalled();
+  });
+});
+
+describe("useTrainingListLifecycle: where an abort returns to", () => {
+  const confirmAbort = async () => {
+    const { result, rerender } = await renderHook(() =>
+      useTrainingListLifecycle({ isEnding: false }),
+    );
+    await act(() => {
+      result.current.handleDiscard();
+    });
+    await pressAlertButton("common.yes");
+    return { rerender };
+  };
+
+  const dispatchCount = () =>
+    mockDismissTo.mock.calls.length +
+    mockParentGoBack.mock.calls.length +
+    mockReplace.mock.calls.length;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockParentCanGoBack = true;
+    mockStackRoutes = [{ name: "training-list" }];
+    startListTraining();
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", completed: true }),
+        createExercise({ exerciseId: "2" }),
+      ],
+    });
+  });
+
+  it.each(["plan", "focus", "prevention"])(
+    "dismisses to the %s selection when the stack holds it",
+    async (category) => {
+      mockStackRoutes = [
+        { name: "new", params: { category } },
+        { name: "muscle-soreness" },
+        { name: "training-overview" },
+        { name: "training-list" },
+      ];
+
+      await confirmAbort();
+
+      expect(mockDismissTo).toHaveBeenCalledTimes(1);
+      expect(mockDismissTo).toHaveBeenCalledWith({
+        pathname: "/training/new",
+        params: { category },
+      });
+      expect(mockParentGoBack).not.toHaveBeenCalled();
+      expect(mockReplace).not.toHaveBeenCalled();
+    },
+  );
+
+  it("goes back on the parent navigator for a custom workout opened from a list", async () => {
+    mockStackRoutes = [
+      { name: "muscle-soreness" },
+      { name: "training-overview" },
+      { name: "training-list" },
+    ];
+
+    await confirmAbort();
+
+    expect(mockParentGoBack).toHaveBeenCalledTimes(1);
+    expect(mockDismissTo).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it("goes back on the parent navigator for a power test opened from Statistics or More", async () => {
+    mockStackRoutes = [{ name: "muscle-soreness" }, { name: "training-list" }];
+
+    await confirmAbort();
+
+    expect(mockParentGoBack).toHaveBeenCalledTimes(1);
+    expect(mockDismissTo).not.toHaveBeenCalled();
+  });
+
+  it("replaces with Home for a resumed checklist with no screen below", async () => {
+    mockStackRoutes = [{ name: "training-list" }];
+    mockParentCanGoBack = false;
+
+    await confirmAbort();
+
+    expect(mockReplace).toHaveBeenCalledTimes(1);
+    expect(mockReplace).toHaveBeenCalledWith("/(tabs)/(home)");
+    expect(mockDismissTo).not.toHaveBeenCalled();
+    expect(mockParentGoBack).not.toHaveBeenCalled();
+  });
+
+  it("dispatches exactly once even when the screen renders again", async () => {
+    mockStackRoutes = [
+      { name: "new", params: { category: "plan" } },
+      { name: "training-list" },
+    ];
+
+    const { rerender } = await confirmAbort();
+    await rerender({});
+    await rerender({});
+
+    expect(dispatchCount()).toBe(1);
+  });
+
+  it.each([
+    {
+      name: "the selection",
+      routes: [{ name: "new", params: { category: "plan" } }],
+      canGoBack: true,
+    },
+    {
+      name: "the origin",
+      routes: [{ name: "muscle-soreness" }],
+      canGoBack: true,
+    },
+    { name: "Home", routes: [{ name: "training-list" }], canGoBack: false },
+  ])(
+    "clears the training before it returns to $name",
+    async ({ routes, canGoBack }) => {
+      mockStackRoutes = [...routes, { name: "training-list" }];
+      mockParentCanGoBack = canGoBack;
+      const activeTrainingAtDispatch: unknown[] = [];
+      const recordActiveTraining = () => {
+        activeTrainingAtDispatch.push(
+          useTrainingStore.getState().activeTraining,
+        );
+      };
+      mockDismissTo.mockImplementation(recordActiveTraining);
+      mockParentGoBack.mockImplementation(recordActiveTraining);
+      mockReplace.mockImplementation(recordActiveTraining);
+
+      await confirmAbort();
+
+      expect(activeTrainingAtDispatch).toEqual([null]);
+    },
+  );
+
+  it("dismisses to the overview on discard when no set is done", async () => {
+    mockStackRoutes = [
+      { name: "new", params: { category: "plan" } },
+      { name: "training-overview" },
+      { name: "training-list" },
+    ];
+    useTrainingStore.setState({
+      exerciseList: [createExercise({ exerciseId: "1" })],
+    });
+
+    await confirmAbort();
+
+    expect(mockDismissTo).toHaveBeenCalledTimes(1);
+    expect(mockDismissTo).toHaveBeenCalledWith({
+      pathname: "/training/training-overview",
+      params: { weekday: "2", place: "STUDIO" },
+    });
+    expect(mockParentGoBack).not.toHaveBeenCalled();
   });
 });

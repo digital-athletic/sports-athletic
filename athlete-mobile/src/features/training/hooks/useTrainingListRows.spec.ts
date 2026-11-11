@@ -469,6 +469,22 @@ describe("useTrainingListRows: one entry per exercise", () => {
     ).toEqual(["20 s", "25 s"]);
   });
 
+  it("previews a steady run with the planned duration in minutes", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 1, {
+          skill: "CARDIO_4",
+          duration: 1800,
+          repetition: 1,
+        }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.rows[0].nextSetLabel).toBe("30 min");
+  });
+
   it("labels the set of a steady run with the planned duration in minutes", async () => {
     useTrainingStore.setState({
       exerciseList: [

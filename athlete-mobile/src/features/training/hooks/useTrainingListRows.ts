@@ -129,6 +129,14 @@ function buildSetLabels(
       ? t("training.overview.repetitions", { count: reps })
       : undefined;
 
+  const steadyRunDuration = deriveSteadyRunDuration(exercise);
+  const steadyRunPart =
+    steadyRunDuration === undefined
+      ? undefined
+      : t("training.list.setMinutes", {
+          minutes: formatPlannedMinutes(steadyRunDuration),
+        });
+
   const durationPart = exercise.duration
     ? t("training.overview.seconds", { count: exercise.duration })
     : undefined;
@@ -142,7 +150,11 @@ function buildSetLabels(
 
   return {
     setLabel: setPart,
-    nextSetLabel: joinParts([setPart, repsPart ?? durationPart, weightPart]),
+    nextSetLabel: joinParts([
+      setPart,
+      steadyRunPart ?? repsPart ?? durationPart,
+      weightPart,
+    ]),
   };
 }
 

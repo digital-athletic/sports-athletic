@@ -210,6 +210,13 @@ module.exports = defineConfig([
         "error",
         { maxDepth: Infinity, ignoreExternal: true },
       ],
+      // @tabler/icons-react-native maps the types of its per-icon entry points
+      // to a folder it does not ship, so the typescript resolver rejects them.
+      // src/common/tablerIcons.d.ts types these imports for tsc.
+      "import/no-unresolved": [
+        "error",
+        { ignore: ["^@tabler/icons-react-native/Icon[A-Za-z0-9]+$"] },
+      ],
     },
   },
   // The new workout and plan generators are full rewrites and import no code

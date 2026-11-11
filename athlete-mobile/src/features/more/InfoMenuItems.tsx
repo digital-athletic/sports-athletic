@@ -20,7 +20,7 @@ const A11yMenuItems: FC = () => {
         <ListItem
           title={t("more.a11yStatement")}
           externalUrl={LINK_A11Y_STATEMENT}
-          iconName="accessibility"
+          icon="accessibility"
           iconBackground="darkGrey1"
         />
       )}
@@ -28,7 +28,7 @@ const A11yMenuItems: FC = () => {
         <ListItem
           title={t("more.a11yFeedback")}
           externalUrl={LINK_A11Y_FEEDBACK}
-          iconName="chatbubble-ellipses"
+          icon="chatbubble-ellipses"
           iconBackground="darkGrey1"
         />
       )}
@@ -46,7 +46,7 @@ export const InfoMenuItems: FC = () => {
         <ListItem
           title={t("more.agb")}
           externalUrl={LINK_AGB}
-          iconName="information-circle"
+          icon="information-circle"
           iconBackground="darkGrey1"
         />
       )}
@@ -54,21 +54,21 @@ export const InfoMenuItems: FC = () => {
         <ListItem
           title={t("more.privacy")}
           externalUrl={LINK_PRIVACY}
-          iconName="shield-checkmark"
+          icon="shield-checkmark"
           iconBackground="darkGrey1"
         />
       )}
       <ListItem
         title={t("more.notificationsSettings")}
         navPath="/(tabs)/(more)/notifications"
-        iconName="settings"
+        icon="settings"
         iconBackground="darkGrey1"
       />
       {featureFlags.contactEnabled && (
         <ListItem
           title={t("more.contact")}
           externalUrl={`mailto:${SUPPORT_EMAIL}`}
-          iconName="mail"
+          icon="mail"
           iconBackground="darkGrey1"
         />
       )}
@@ -76,7 +76,7 @@ export const InfoMenuItems: FC = () => {
         <ListItem
           title={t("more.imprint")}
           externalUrl={LINK_IMPRINT}
-          iconName="document-text"
+          icon="document-text"
           iconBackground="darkGrey1"
         />
       )}
@@ -84,7 +84,7 @@ export const InfoMenuItems: FC = () => {
       <ListItem
         title={t("more.thirdPartyNotices.menuItem")}
         navPath="/(tabs)/(more)/third-party-notices"
-        iconName="code-slash"
+        icon="code-slash"
         iconBackground="darkGrey1"
       />
     </>

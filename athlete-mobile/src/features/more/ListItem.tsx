@@ -1,5 +1,5 @@
 import { Alert } from "@/common/Alert";
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
 import { SUPPORT_EMAIL } from "@/constants/AppConstants";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -15,15 +15,15 @@ export type ListItemProps = {
   title: string;
   navPath?: RoutePath;
   externalUrl?: string;
-  iconName: IoniconName;
+  icon: AppIconSource;
   iconBackground: ThemeColor;
   backPath?: string;
   isLast?: boolean;
   navParams?: Record<string, string>;
 };
 
-const ListItemIcon: FC<{ name: IoniconName; background: ThemeColor }> = ({
-  name,
+const ListItemIcon: FC<{ icon: AppIconSource; background: ThemeColor }> = ({
+  icon,
   background,
 }) => {
   const { colors } = useTheme();
@@ -40,7 +40,7 @@ const ListItemIcon: FC<{ name: IoniconName; background: ThemeColor }> = ({
         alignItems="center"
         backgroundColor={background || "primary"}
       >
-        <Ionicon name={name} size={iconSize} color={colors.white} decorative />
+        <AppIcon icon={icon} size={iconSize} color={colors.white} decorative />
       </Box>
     </Box>
   );
@@ -48,13 +48,13 @@ const ListItemIcon: FC<{ name: IoniconName; background: ThemeColor }> = ({
 
 /**
  * List item component for navigation menus.
- * Renders an Ionicon with text and handles navigation.
+ * Renders an icon with text and handles navigation.
  */
 export const ListItem: FC<ListItemProps> = ({
   title,
   navPath,
   externalUrl,
-  iconName,
+  icon,
   iconBackground,
   isLast = false,
   navParams,
@@ -105,7 +105,7 @@ export const ListItem: FC<ListItemProps> = ({
             marginBottom: listItemMarginBottom,
           }}
         >
-          <ListItemIcon name={iconName} background={iconBackground} />
+          <ListItemIcon icon={icon} background={iconBackground} />
           <Text flex={5} variant="body">
             {title}
           </Text>

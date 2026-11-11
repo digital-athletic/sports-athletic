@@ -19,7 +19,7 @@ describe("ListItem: external link", () => {
       <ListItem
         title="Kontakt"
         externalUrl={externalUrl}
-        iconName="mail"
+        icon="mail"
         iconBackground="primary"
       />,
     );

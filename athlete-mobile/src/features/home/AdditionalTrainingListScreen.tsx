@@ -1,5 +1,6 @@
 import { HeadlineScreen } from "@/common/HeadlineScreen";
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
+import { Ionicon } from "@/common/Ionicon";
 import { TileGrid } from "@/common/TileGrid";
 import { Logger } from "@/services/Logger";
 import { type UserTeam, getUserTeams } from "@/services/TeamService";
@@ -11,17 +12,19 @@ import { router } from "expo-router";
 import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import IconBarbell from "@tabler/icons-react-native/IconBarbell";
+import IconUsersGroup from "@tabler/icons-react-native/IconUsersGroup";
 
 type TrainingSourceCardProps = {
   title: string;
-  iconName: IoniconName;
+  icon: AppIconSource;
   onPress: () => void;
 };
 
 /** Card in the style of the body part cards, with an icon above the name. */
 const TrainingSourceCard: FC<TrainingSourceCardProps> = ({
   title,
-  iconName,
+  icon,
   onPress,
 }) => {
   const { colors } = useTheme();
@@ -40,12 +43,7 @@ const TrainingSourceCard: FC<TrainingSourceCardProps> = ({
           justifyContent="center"
           height={112}
         >
-          <Ionicon
-            name={iconName}
-            size={48}
-            color={colors.primary}
-            decorative
-          />
+          <AppIcon icon={icon} size={48} color={colors.primary} decorative />
         </Box>
         <Box
           flexDirection="row"
@@ -110,14 +108,14 @@ export default function AdditionalTrainingListScreen() {
       <Box gap="l">
         <TileGrid testID="additional-training-grid">
           <TrainingSourceCard
-            iconName="person-outline"
+            icon={IconBarbell}
             title={ownTrainingsTitle}
             onPress={() => openWorkouts(ownTrainingsTitle, "own")}
           />
           {teams.map((team) => (
             <TrainingSourceCard
               key={team.id}
-              iconName="people-outline"
+              icon={IconUsersGroup}
               title={team.name}
               onPress={() => openWorkouts(team.name, "team")}
             />

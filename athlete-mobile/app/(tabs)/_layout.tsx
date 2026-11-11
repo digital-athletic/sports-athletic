@@ -3,6 +3,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
+import IconCalendarStats from "@tabler/icons-react-native/IconCalendarStats";
+import IconChartBar from "@tabler/icons-react-native/IconChartBar";
 
 /**
  * Main Tab Navigator Layout
@@ -15,7 +17,7 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const activeTintColor = colors.primary;
   const inactiveTintColor = colors.darkGrey1;
-  // Ionicons rejects the numeric and null colors the tab bar callback may pass.
+  // The icons reject the numeric and null colors the tab bar callback may pass.
   const iconColor = (focused: boolean) =>
     focused ? activeTintColor : inactiveTintColor;
 
@@ -39,7 +41,7 @@ export default function TabLayout() {
         options={{
           title: t("tabs.training"),
           tabBarIcon: ({ focused, size }) => (
-            <Ionicons name="walk" size={size} color={iconColor(focused)} />
+            <IconCalendarStats size={size} color={iconColor(focused)} />
           ),
         }}
       />
@@ -48,11 +50,7 @@ export default function TabLayout() {
         options={{
           title: t("tabs.statistics"),
           tabBarIcon: ({ focused, size }) => (
-            <Ionicons
-              name="stats-chart"
-              size={size}
-              color={iconColor(focused)}
-            />
+            <IconChartBar size={size} color={iconColor(focused)} />
           ),
         }}
       />

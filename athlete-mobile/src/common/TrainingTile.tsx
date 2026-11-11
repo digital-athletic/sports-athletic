@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -21,19 +21,16 @@ interface TrainingTileProps {
   description?: string;
   /** Photo of the tile. Without it the tile shows the icon on brand red. */
   image?: ImageSourcePropType;
-  iconName?: IoniconName;
+  icon?: AppIconSource;
   size: TrainingTileSize;
   onPress: () => void;
   testID?: string;
 }
 
-type TileBackgroundProps = Pick<
-  TrainingTileProps,
-  "image" | "iconName" | "size"
->;
+type TileBackgroundProps = Pick<TrainingTileProps, "image" | "icon" | "size">;
 
 /** The photo under a dark shade, or the large icon on brand red. */
-const TileBackground: FC<TileBackgroundProps> = ({ image, iconName, size }) => {
+const TileBackground: FC<TileBackgroundProps> = ({ image, icon, size }) => {
   const { colors } = useTheme();
 
   if (image) {
@@ -58,10 +55,10 @@ const TileBackground: FC<TileBackgroundProps> = ({ image, iconName, size }) => {
         end={{ x: 1, y: 1 }}
         style={styles.fill}
       />
-      {iconName && (
+      {icon && (
         <Box style={StyleSheet.absoluteFill} alignItems="center" paddingTop="l">
-          <Ionicon
-            name={iconName}
+          <AppIcon
+            icon={icon}
             size={size === "full" ? 64 : 48}
             color={colors.white}
             decorative
@@ -77,7 +74,7 @@ export const TrainingTile: FC<TrainingTileProps> = ({
   title,
   description,
   image,
-  iconName,
+  icon,
   size,
   onPress,
   testID,
@@ -93,7 +90,7 @@ export const TrainingTile: FC<TrainingTileProps> = ({
       testID={testID}
     >
       <Box flex={1} borderRadius="xl" overflow="hidden">
-        <TileBackground image={image} iconName={iconName} size={size} />
+        <TileBackground image={image} icon={icon} size={size} />
         <Box flex={1} justifyContent="flex-end" padding="m">
           {/* Long German compounds carry soft hyphens in the translation, so
               they break between syllables in a half width tile. */}

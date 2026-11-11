@@ -1,4 +1,4 @@
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -6,16 +6,18 @@ import { router } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, TouchableOpacity } from "react-native";
+import IconClipboardList from "@tabler/icons-react-native/IconClipboardList";
+import IconTargetArrow from "@tabler/icons-react-native/IconTargetArrow";
 
 type ShortcutButtonProps = {
-  iconName: IoniconName;
+  icon: AppIconSource;
   title: string;
   subtitle: string;
   onPress: () => void;
 };
 
 const ShortcutButton: FC<ShortcutButtonProps> = ({
-  iconName,
+  icon,
   title,
   subtitle,
   onPress,
@@ -33,7 +35,7 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
       accessibilityLabel={title}
     >
       <Box alignItems="center" justifyContent="space-between" gap="s">
-        <Ionicon name={iconName} size={32} color={colors.primary} decorative />
+        <AppIcon icon={icon} size={32} color={colors.primary} decorative />
         <Text variant="cardTitle" textAlign="center" fontSize={14}>
           {title}
         </Text>
@@ -71,7 +73,7 @@ export const HomeTrainingShortcuts: FC<HomeTrainingShortcutsProps> = ({
       testID="home-shortcuts"
     >
       <ShortcutButton
-        iconName="radio-button-on-outline"
+        icon={IconTargetArrow}
         title={t("screens.home.trainingShortcuts.focusAndPrevention.title")}
         subtitle={t(
           "screens.home.trainingShortcuts.focusAndPrevention.subtitle",
@@ -79,7 +81,7 @@ export const HomeTrainingShortcuts: FC<HomeTrainingShortcutsProps> = ({
         onPress={() => router.push("/focus-trainings")}
       />
       <ShortcutButton
-        iconName="clipboard-outline"
+        icon={IconClipboardList}
         title={t("screens.home.trainingShortcuts.additionalTrainings.title")}
         subtitle={t(
           "screens.home.trainingShortcuts.additionalTrainings.subtitle",

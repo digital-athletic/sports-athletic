@@ -31,6 +31,8 @@ The owner promotes a member to co-owner and demotes back. A co-owner sees athlet
 | See athlete training data | yes | yes | no |
 | Read guidance and weekly target | yes | yes | yes |
 | Edit guidance and weekly target | yes | no | no |
+| Read team workouts | yes | yes | yes |
+| Create, change, delete team workouts | yes | no | no |
 | Leave team | no | yes | yes |
 | Delete team | yes | no | no |
 

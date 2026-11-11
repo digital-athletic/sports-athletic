@@ -12,6 +12,7 @@ import {
   deleteTeam as deleteTeamApi,
   removeMember as removeMemberApi,
   setMemberRole as setMemberRoleApi,
+  updateTeamGuidance as updateTeamGuidanceApi,
   ApiError,
 } from "../services/teamsApi";
 import { supabase } from "../services/supabase";
@@ -201,6 +202,29 @@ export function useTeam(teamId: string | null) {
     }
   };
 
+  // The form shows its own error and keeps the input, so this only throws.
+  const updateGuidance = async (
+    guidance: string | null,
+    weeklyTrainingDays: number | null,
+  ) => {
+    if (!team) throw new Error("No team selected");
+    const result = await updateTeamGuidanceApi(
+      team.id,
+      guidance,
+      weeklyTrainingDays,
+    );
+    setTeam((prev) =>
+      prev
+        ? {
+            ...prev,
+            guidance: result.guidance,
+            weekly_training_days: result.weekly_training_days,
+          }
+        : prev,
+    );
+    return result;
+  };
+
   const isOwner = team?.owner_id === currentUserId;
 
   return {
@@ -219,6 +243,7 @@ export function useTeam(teamId: string | null) {
     deleteCurrentTeam,
     removeMember,
     setMemberRole,
+    updateGuidance,
     refresh: loadTeam,
   };
 }

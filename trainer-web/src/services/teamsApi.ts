@@ -10,6 +10,7 @@ import type {
   Team,
   TeamMember,
   TeamWithMemberCount,
+  UpdateTeamGuidanceResponse,
 } from "../types/team";
 import { supabase, getAuthToken } from "./supabase";
 
@@ -197,5 +198,17 @@ export async function setMemberRole(
     p_team_id: teamId,
     p_member_user_id: memberUserId,
     p_role: role,
+  });
+}
+
+export async function updateTeamGuidance(
+  teamId: string,
+  guidance: string | null,
+  weeklyTrainingDays: number | null,
+): Promise<UpdateTeamGuidanceResponse> {
+  return callRpc<UpdateTeamGuidanceResponse>("update_team_guidance", {
+    p_team_id: teamId,
+    p_guidance: guidance,
+    p_weekly_training_days: weeklyTrainingDays,
   });
 }

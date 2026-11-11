@@ -3,12 +3,14 @@ import {
   type AssignableTeamRole,
   type Team,
   type TeamMember,
+  type UpdateTeamGuidanceResponse,
 } from "../types/team";
 import { ConfirmModal } from "./ConfirmModal";
 import { ErrorMessage } from "./ErrorMessage";
 import { InviteCodeSection } from "./InviteCodeSection";
 import { LeaveTeamSection } from "./LeaveTeamSection";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { TeamGuidanceForm } from "./TeamGuidanceForm";
 import { TeamInfoCard } from "./TeamInfoCard";
 import { TeamMemberList } from "./TeamMemberList";
 
@@ -35,6 +37,10 @@ interface ManagementTabProps {
   onRemoveConfirm: () => void;
   onRemoveCancel: () => void;
   onSetMemberRole: (memberId: string, role: AssignableTeamRole) => void;
+  onSaveGuidance: (
+    guidance: string | null,
+    weeklyTrainingDays: number | null,
+  ) => Promise<UpdateTeamGuidanceResponse>;
   onDeleteClick: () => void;
   onDeleteConfirm: () => void;
   onDeleteCancel: () => void;
@@ -63,6 +69,7 @@ export function ManagementTab({
   onRemoveConfirm,
   onRemoveCancel,
   onSetMemberRole,
+  onSaveGuidance,
   onDeleteClick,
   onDeleteConfirm,
   onDeleteCancel,
@@ -82,6 +89,15 @@ export function ManagementTab({
       ) : (
         <>
           <TeamInfoCard team={team} memberCount={members.length} />
+
+          {isOwner && (
+            <TeamGuidanceForm
+              key={team.id}
+              guidance={team.guidance ?? null}
+              weeklyTrainingDays={team.weekly_training_days ?? null}
+              onSave={onSaveGuidance}
+            />
+          )}
 
           {isOwner && (
             <InviteCodeSection

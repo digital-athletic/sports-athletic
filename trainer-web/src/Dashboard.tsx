@@ -29,6 +29,7 @@ export const Dashboard = () => {
     deleteCurrentTeam,
     removeMember,
     setMemberRole,
+    updateGuidance,
   } = useTeam(teamId);
 
   useEffect(() => {
@@ -151,6 +152,7 @@ export const Dashboard = () => {
               onRemoveConfirm={handleRemoveMember}
               onRemoveCancel={() => setMemberToRemove(null)}
               onSetMemberRole={handleSetMemberRole}
+              onSaveGuidance={updateGuidance}
               onDeleteClick={() => setShowDeleteConfirm(true)}
               onDeleteConfirm={handleDeleteTeam}
               onDeleteCancel={() => setShowDeleteConfirm(false)}

@@ -2,6 +2,10 @@ export interface Team {
   id: string;
   name: string;
   description?: string;
+  /** Free text from the owner, e.g. the team training days. */
+  guidance?: string | null;
+  /** Expected training days per week, 1 to 7. Display only. */
+  weekly_training_days?: number | null;
   owner_id: string;
   invite_code?: string;
   created_at: string;
@@ -72,6 +76,12 @@ export interface SetMemberRoleResponse {
   team_id: string;
   user_id: string;
   role: AssignableTeamRole;
+}
+
+export interface UpdateTeamGuidanceResponse {
+  team_id: string;
+  guidance: string | null;
+  weekly_training_days: number | null;
 }
 
 export interface TeamWithMemberCount extends Team {

@@ -21,6 +21,8 @@ Terms of the trainer dashboard. Training terms such as workout, focus and points
 | Member | Mitglied | member | Account that joined with an invite code. |
 | Athlete | Athlet | | A team member with role member. Owner and co-owners are not athletes. |
 | Invite code | Einladungscode | | Six-character code of uppercase letters and digits that lets an account join one team. |
+| Guidance | Hinweise | guidance | Free text the owner writes for the team's athletes, for example the team training days. At most 1,000 characters. Athletes read it on the team info page in the app. |
+| Weekly target | Wochenziel | weekly_training_days | Number of training days per week, 1 to 7, the owner expects from the team's athletes. Shown only; it does not change any training plan. |
 | Regenerate | Neu generieren | | Deactivate every active invite code of a team and create one new code. |
 
 ## Evaluations

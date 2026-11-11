@@ -24,7 +24,7 @@ export const MOCK_USER = {
 export type MockMember = {
   user_id: string;
   display_name?: string | null;
-  role?: "owner" | "member";
+  role?: "owner" | "member" | "co_owner";
   joined_at?: string;
 };
 
@@ -42,6 +42,8 @@ export type MockTeam = {
   id: string;
   name: string;
   description?: string | null;
+  guidance?: string | null;
+  weekly_training_days?: number | null;
   member_count?: number;
   owner_id?: string;
   invite_code?: string;
@@ -132,6 +134,8 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
     id: team.id,
     name: team.name,
     description: team.description ?? null,
+    guidance: team.guidance ?? null,
+    weekly_training_days: team.weekly_training_days ?? null,
     owner_id: ownerOf(team),
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -297,6 +301,19 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
           user_id: user.id,
           role: "member",
           joined_at: new Date().toISOString(),
+        }),
+      );
+    }
+
+    // Echoes what the backend would store: trimmed, blank guidance as null.
+    if (name === "update_team_guidance") {
+      const guidance =
+        typeof body.p_guidance === "string" ? body.p_guidance.trim() : "";
+      return route.fulfill(
+        json({
+          team_id: body.p_team_id,
+          guidance: guidance === "" ? null : guidance,
+          weekly_training_days: body.p_weekly_training_days ?? null,
         }),
       );
     }

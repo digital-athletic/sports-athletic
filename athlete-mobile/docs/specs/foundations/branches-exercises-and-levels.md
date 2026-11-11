@@ -138,14 +138,15 @@ An athlete with the fitness level "Advanced" has a default entry level of 2.
 
 **General rule:** When substituting a branch, the target level is the higher of the athlete's fitness-level entry level and the previously stored progression level of the replacement branch. The level of the original branch is not automatically transferred.
 
-### Manual exercise swapping (deferred)
+### Manual exercise swap
 
-Athletes cannot swap exercises manually, and building this is currently not planned. The agreed design, should it be built later:
+The training overview of a plan training shows a swap button next to each exercise that has an alternative. Each tap replaces the exercise with the next alternative. After the last alternative, the next tap brings back the original.
 
-- The athlete may pick any eligible exercise from the respective skill tree; there is no restriction to levels near the current one.
-- Guidance comes from labels instead: each exercise is labeled relative to the athlete's current level in its branch, for example "easier", "appropriate", "more challenging", "significantly more challenging". Exercises near the current level are listed first, but proximity is never a selection requirement.
-- A manual swap changes neither the stored branch progress nor the athlete's fitness level. Automatic level progression stays exclusive to the progression logic above.
-- The hard exclusions keep applying: unavailable equipment, exercises unsuitable for the athlete's age or gender, and every other mandatory filter.
+- **One workout only**: the swap changes the current workout and nothing else. The training plan still references the original branch, so the next workout on that weekday shows the original exercise again.
+- **Alternatives**: up to three branches from the same skill tree. They pass the same filters as workout generation (muscle soreness, equipment, fitness level, age, gender, pain), have the same side setting as the original (one-sided or both-sided), and are not already in the workout. Branches from the same body region come first, then branches with the same movement direction.
+- **Level**: the alternative gets the level workout generation would give it: the stored level for that branch, or the entry level when none is stored.
+- **Values**: repetitions, duration and weight are calculated for the alternative. A one-sided exercise swaps both sides together.
+- **Scope**: plan trainings on the AIWL workout generator. Out of scope: picking from a list, swapping during a running training, and syncing the swap to the backend.
 
 ### Example: bodyweight squat lane
 

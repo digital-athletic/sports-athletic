@@ -440,6 +440,7 @@
       "exerciseList": "Exercise list",
       "startTraining": "Start training",
       "startAsChecklist": "Start without guidance",
+      "swapExercise": "Swap exercise {{name}}",
       "oneSet": "1 set",
       "setCount": "{{count}} sets",
       "supportExercises": "Support exercises",

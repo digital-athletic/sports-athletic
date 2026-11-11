@@ -5,7 +5,7 @@ import { TouchableBox } from "@/theme/TouchableBox";
 import { secondsToMMSS } from "@/utils/date";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import IconPlayerPlay from "@tabler/icons-react-native/IconPlayerPlay";
+import IconPlayerPlayFilled from "@tabler/icons-react-native/IconPlayerPlayFilled";
 
 export type StartExerciseButtonProps = {
   onPress: () => void;
@@ -52,7 +52,7 @@ export const StartExerciseButton: FC<StartExerciseButtonProps> = ({
         </Text>
       )}
       <AppIcon
-        icon={IconPlayerPlay}
+        icon={IconPlayerPlayFilled}
         size={32}
         color={isResume ? colors.info : colors.primary}
         decorative

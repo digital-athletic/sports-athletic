@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 import { TrainingPlanStatusWidget } from "./TrainingPlanStatusWidget";
 import { TrainingPlanType } from "./models/TrainingPlan";
 import { isPlanEnded } from "./utils/timeUtils";
-import IconCirclePlus from "@tabler/icons-react-native/IconCirclePlus";
+import IconCirclePlusFilled from "@tabler/icons-react-native/IconCirclePlusFilled";
 
 const PLAN_STATES = {
   NO_ANAMNESIS: 0,
@@ -97,7 +97,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
         onPress={goTo}
       >
         <AppIcon
-          icon={IconCirclePlus}
+          icon={IconCirclePlusFilled}
           size={64}
           color={colors.primary}
           decorative

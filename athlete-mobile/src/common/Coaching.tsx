@@ -6,7 +6,7 @@ import { AppIcon } from "./AppIcon";
 import { Box } from "../theme/Box";
 import { useTheme } from "../theme/theme";
 import { SpeechBubble } from "./SpeechBubble";
-import IconCircleX from "@tabler/icons-react-native/IconCircleX";
+import IconCircleXFilled from "@tabler/icons-react-native/IconCircleXFilled";
 
 export type CoachingProps = {
   text: string;
@@ -51,7 +51,7 @@ export const Coaching: FC<CoachingProps> = ({ text, onDismiss }) => {
         >
           <Box paddingLeft="s">
             <AppIcon
-              icon={IconCircleX}
+              icon={IconCircleXFilled}
               size={24}
               color={theme.colors.darkGrey1}
               decorative

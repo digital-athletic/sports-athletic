@@ -6,7 +6,7 @@ import { TouchableBox } from "@/theme/TouchableBox";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import IconPlayerTrackNext from "@tabler/icons-react-native/IconPlayerTrackNext";
+import IconPlayerTrackNextFilled from "@tabler/icons-react-native/IconPlayerTrackNextFilled";
 
 export const FOOTER_HEIGHT = 80;
 
@@ -53,7 +53,7 @@ export const TrainingFooter: FC<Props> = ({
             accessibilityLabel={t("training.list.skipExercise")}
           >
             <AppIcon
-              icon={IconPlayerTrackNext}
+              icon={IconPlayerTrackNextFilled}
               size={24}
               color={colors.primary}
               decorative

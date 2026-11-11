@@ -21,10 +21,10 @@ jest.mock("expo-router", () => ({
 }));
 
 // Renders the icon as a named host node, so the test finds it in the tree.
-jest.mock("@tabler/icons-react-native/IconCirclePlus", () => ({
+jest.mock("@tabler/icons-react-native/IconCirclePlusFilled", () => ({
   __esModule: true,
   default: (props: object) =>
-    jest.requireActual("react").createElement("IconCirclePlus", props),
+    jest.requireActual("react").createElement("IconCirclePlusFilled", props),
 }));
 
 const mockImportCustomWorkout = jest.fn();
@@ -208,7 +208,7 @@ describe("AdditionalTrainingWorkoutsScreen: own source with entries", () => {
     const { container } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     expect(
-      container.queryAll((node) => node.type === "IconCirclePlus"),
+      container.queryAll((node) => node.type === "IconCirclePlusFilled"),
     ).toHaveLength(1);
   });
 

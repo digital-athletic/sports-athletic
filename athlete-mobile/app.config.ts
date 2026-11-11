@@ -63,7 +63,6 @@ export default (): ExpoConfig => ({
     policy: "appVersion",
   },
   plugins: [
-    "expo-font",
     "expo-asset",
     [
       "expo-audio",

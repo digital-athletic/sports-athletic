@@ -6,7 +6,7 @@ import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableWithoutFeedback } from "react-native";
 import { MuscleType } from "./types";
-import IconCircleX from "@tabler/icons-react-native/IconCircleX";
+import IconCircleXFilled from "@tabler/icons-react-native/IconCircleXFilled";
 
 type BodyPartsTagChipsProps = {
   tags: MuscleType[];
@@ -52,7 +52,7 @@ export const BodyPartsTagChips: FC<BodyPartsTagChipsProps> = ({
         </Text>
         {onClick && (
           <AppIcon
-            icon={IconCircleX}
+            icon={IconCircleXFilled}
             size={18}
             color={theme.colors.primary}
             decorative

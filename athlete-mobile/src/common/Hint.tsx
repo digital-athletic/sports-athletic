@@ -1,9 +1,11 @@
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme, type ThemeColor } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
+import IconAlertTriangle from "@tabler/icons-react-native/IconAlertTriangle";
+import IconInfoCircle from "@tabler/icons-react-native/IconInfoCircle";
 
 type HintType = "WARNING" | "HINT";
 
@@ -14,15 +16,15 @@ type HintProps = {
 
 const HINT_STYLES: Record<
   HintType,
-  { icon: IoniconName; iconColor: ThemeColor; background: ThemeColor }
+  { icon: AppIconSource; iconColor: ThemeColor; background: ThemeColor }
 > = {
   WARNING: {
-    icon: "warning-outline",
+    icon: IconAlertTriangle,
     iconColor: "warning",
     background: "warningTint",
   },
   HINT: {
-    icon: "information-circle-outline",
+    icon: IconInfoCircle,
     iconColor: "info",
     background: "infoTint",
   },
@@ -52,8 +54,8 @@ export const Hint: FC<HintProps> = ({ type, message }) => {
       paddingHorizontal="m"
       paddingVertical="s"
     >
-      <Ionicon
-        name={icon}
+      <AppIcon
+        icon={icon}
         size={22}
         color={colors[iconColor]}
         accessibilityLabel={accessibilityLabel}

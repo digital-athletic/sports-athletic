@@ -1,3 +1,4 @@
+import IconUser from "@tabler/icons-react-native/IconUser";
 import { fireEvent, render } from "../utils/testUtils";
 import { TextInputField } from "./TextInputField";
 
@@ -12,18 +13,20 @@ describe("<TextInputField />", () => {
     jest.clearAllMocks();
   });
 
-  it("renders correctly with Ionicon", async () => {
+  it("renders correctly with an icon", async () => {
     const { toJSON } = await render(
-      <TextInputField {...defaultProps} iconName="person" />,
+      <TextInputField {...defaultProps} icon={IconUser} />,
     );
     expect(toJSON()).toMatchSnapshot();
   });
 
-  it("hides the Ionicon from screen readers", async () => {
-    const { container } = await render(
-      <TextInputField {...defaultProps} iconName="person" />,
+  it("hides the icon from screen readers", async () => {
+    const { getByTestId } = await render(
+      <TextInputField {...defaultProps} icon={IconUser} />,
     );
-    const [icon] = container.queryAll((node) => node.type === "Ionicons");
+    const icon = getByTestId("decorative-icon", {
+      includeHiddenElements: true,
+    });
     expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 

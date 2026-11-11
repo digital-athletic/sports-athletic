@@ -37,6 +37,39 @@ jest.mock("expo-image", () => ({
   Image: "Image",
 }));
 
+// Renders each icon as a host node named after it, so the tests read which
+// icon a component draws and the props it gets.
+jest.mock("@tabler/icons-react-native/IconWeight", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconWeight", props),
+}));
+jest.mock("@tabler/icons-react-native/IconStopwatch", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconStopwatch", props),
+}));
+jest.mock("@tabler/icons-react-native/IconRepeat", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconRepeat", props),
+}));
+jest.mock("@tabler/icons-react-native/IconCircleArrowDown", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconCircleArrowDown", props),
+}));
+jest.mock("@tabler/icons-react-native/IconCircleCheck", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconCircleCheck", props),
+}));
+jest.mock("@tabler/icons-react-native/IconCircleArrowUp", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconCircleArrowUp", props),
+}));
+
 const PICTURE_URL = "https://pictures.test/exercise_pictures/squat.jpg";
 
 // Props of an open sheet on an open ended squat set, e.g.
@@ -261,9 +294,9 @@ describe("TrainingExerciseSheet: exercise picture", () => {
   });
 
   it.each([
-    ["weight", "barbell-outline"],
-    ["time", "timer-outline"],
-    ["reps", "repeat-outline"],
+    ["weight", "IconWeight"],
+    ["time", "IconStopwatch"],
+    ["reps", "IconRepeat"],
   ] as const)(
     "shows the %s icon in the placeholder",
     async (valueKind, iconName) => {
@@ -275,10 +308,9 @@ describe("TrainingExerciseSheet: exercise picture", () => {
         />,
       );
 
-      const iconNames = container
-        .queryAll((node) => node.type === "Ionicons")
-        .map((icon) => icon.props.name);
-      expect(iconNames).toContain(iconName);
+      expect(container.queryAll((node) => node.type === iconName)).toHaveLength(
+        1,
+      );
     },
   );
 
@@ -527,9 +559,15 @@ describe("TrainingExerciseSheet: feedback buttons", () => {
     return view;
   };
 
+  const FEEDBACK_ICONS = [
+    "IconCircleArrowDown",
+    "IconCircleCheck",
+    "IconCircleArrowUp",
+  ];
+
   // The icons drawn inside one feedback button.
   const feedbackIcons = (button: TestInstance) =>
-    button.queryAll((node) => node.type === "Ionicons");
+    button.queryAll((node) => FEEDBACK_ICONS.includes(String(node.type)));
 
   it("shows too hard on the left, succeeded in the middle and too easy on the right", async () => {
     const { getAllByRole } = await renderFeedbackChoice();
@@ -569,16 +607,16 @@ describe("TrainingExerciseSheet: feedback buttons", () => {
   });
 
   it.each([
-    ["Too hard", "arrow-down-circle-outline", "error"],
-    ["Succeeded", "checkmark-circle-outline", "darkGrey2"],
-    ["Too easy", "arrow-up-circle-outline", "info"],
+    ["Too hard", "IconCircleArrowDown", "error"],
+    ["Succeeded", "IconCircleCheck", "darkGrey2"],
+    ["Too easy", "IconCircleArrowUp", "info"],
   ] as const)(
     "draws the %s button with its arrow or checkmark in its color",
     async (label, iconName, color) => {
       const { getByRole } = await renderFeedbackChoice();
 
       const [icon] = feedbackIcons(getByRole("button", { name: label }));
-      expect(icon.props.name).toBe(iconName);
+      expect(icon.type).toBe(iconName);
       expect(icon.props.color).toBe(theme.colors[color]);
     },
   );

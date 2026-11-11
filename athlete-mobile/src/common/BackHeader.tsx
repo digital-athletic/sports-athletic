@@ -3,7 +3,8 @@ import { useRouter } from "expo-router";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
-import { Ionicon } from "./Ionicon";
+import { AppIcon } from "./AppIcon";
+import IconArrowLeft from "@tabler/icons-react-native/IconArrowLeft";
 
 interface BackHeaderProps {
   onBack?: () => void;
@@ -24,8 +25,8 @@ export const BackHeader: FC<BackHeaderProps> = ({ onBack, testID }) => {
       accessibilityLabel={t("common.back")}
       testID={testID}
     >
-      <Ionicon
-        name="arrow-back"
+      <AppIcon
+        icon={IconArrowLeft}
         size={30}
         color={theme.colors.black}
         decorative

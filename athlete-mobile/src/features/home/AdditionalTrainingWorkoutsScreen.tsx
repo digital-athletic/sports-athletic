@@ -9,6 +9,7 @@ import {
 } from "@/store/customWorkoutsStore";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
+import IconCirclePlusFilled from "@tabler/icons-react-native/IconCirclePlusFilled";
 
 export default function AdditionalTrainingWorkoutsScreen() {
   const { t } = useTranslation();
@@ -36,7 +37,7 @@ export default function AdditionalTrainingWorkoutsScreen() {
           headerRight: showsHeaderImport
             ? () => (
                 <HeaderIconButton
-                  iconName="add-circle"
+                  icon={IconCirclePlusFilled}
                   onPress={importCustomWorkout}
                   disabled={importing}
                   accessibilityLabel={t(

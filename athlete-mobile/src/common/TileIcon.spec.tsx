@@ -1,3 +1,4 @@
+import IconPlus from "@tabler/icons-react-native/IconPlus";
 import { fireEvent, render, screen } from "@/utils/testUtils";
 import { TileGrid } from "./TileGrid";
 import { TileIcon } from "./TileIcon";
@@ -11,7 +12,7 @@ describe("TileIcon: size", () => {
   it("takes 35 percent of the cell width on a phone", async () => {
     await render(
       <TileGrid testID="grid">
-        <TileIcon icon="add" testID="icon" />
+        <TileIcon icon={IconPlus} testID="icon" />
       </TileGrid>,
     );
 
@@ -33,7 +34,7 @@ describe("TileIcon: size", () => {
   it("grows on a tablet", async () => {
     await render(
       <TileGrid testID="grid">
-        <TileIcon icon="add" testID="icon" />
+        <TileIcon icon={IconPlus} testID="icon" />
       </TileGrid>,
     );
 
@@ -52,7 +53,7 @@ describe("TileIcon: size", () => {
   });
 
   it("keeps a 48 point icon outside a tile grid", async () => {
-    await render(<TileIcon icon="add" testID="icon" />);
+    await render(<TileIcon icon={IconPlus} testID="icon" />);
 
     expect(
       screen.getByTestId("icon", { includeHiddenElements: true }),
@@ -60,7 +61,7 @@ describe("TileIcon: size", () => {
   });
 
   it("stays hidden from screen readers", async () => {
-    await render(<TileIcon icon="add" testID="icon" />);
+    await render(<TileIcon icon={IconPlus} testID="icon" />);
 
     expect(
       screen.getByTestId("icon", { includeHiddenElements: true }),

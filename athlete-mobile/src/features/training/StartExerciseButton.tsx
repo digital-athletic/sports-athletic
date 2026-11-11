@@ -1,10 +1,11 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { secondsToMMSS } from "@/utils/date";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
+import IconPlayerPlayFilled from "@tabler/icons-react-native/IconPlayerPlayFilled";
 
 export type StartExerciseButtonProps = {
   onPress: () => void;
@@ -50,8 +51,8 @@ export const StartExerciseButton: FC<StartExerciseButtonProps> = ({
           {secondsToMMSS(resumeSeconds)}
         </Text>
       )}
-      <Ionicon
-        name="play-circle"
+      <AppIcon
+        icon={IconPlayerPlayFilled}
         size={32}
         color={isResume ? colors.info : colors.primary}
         decorative

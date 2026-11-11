@@ -22,6 +22,8 @@ import { Alert } from "@/common/Alert";
 import { ScrollView } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import IconDialpad from "@tabler/icons-react-native/IconDialpad";
+import IconScaleOutline from "@tabler/icons-react-native/IconScaleOutline";
 
 interface ExerciseInput {
   weight: string;
@@ -205,7 +207,7 @@ const ManualStrengthTestScreen: FC = () => {
               accessibilityLabel={t("training.manualStrengthTest.weightLabel", {
                 exercise: config.label,
               })}
-              iconName="scale"
+              icon={IconScaleOutline}
               onChange={(value) => updateInput(exerciseKey, "weight", value)}
               keyboardType="numeric"
             />
@@ -217,7 +219,7 @@ const ManualStrengthTestScreen: FC = () => {
               accessibilityLabel={t("training.manualStrengthTest.repsLabel", {
                 exercise: config.label,
               })}
-              iconName="keypad"
+              icon={IconDialpad}
               onChange={(value) => updateInput(exerciseKey, "reps", value)}
               keyboardType="number-pad"
             />

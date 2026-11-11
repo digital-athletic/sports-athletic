@@ -1,4 +1,4 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { type Theme } from "@/theme/theme";
@@ -10,6 +10,7 @@ import { isPauseExercise } from "./models/IdTypes";
 import { type MaxValuesType } from "./models/MaxValues";
 import { TrainingCountdown, TrainingCountdownEvent } from "./TrainingCountdown";
 import { TrainingRepetitionInput } from "./TrainingRepetitionInput";
+import IconCheck from "@tabler/icons-react-native/IconCheck";
 
 export interface TrainingNavigationProps {
   duration: number | undefined;
@@ -132,8 +133,8 @@ export const TrainingNavigation: FC<TrainingNavigationProps> = ({
           accessibilityRole="button"
           accessibilityLabel={t("training.active.a11y.finishExercise")}
         >
-          <Ionicon
-            name="checkmark"
+          <AppIcon
+            icon={IconCheck}
             size={75}
             color={theme.colors.primary}
             decorative

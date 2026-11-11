@@ -15,7 +15,7 @@ const renderIcon = async (element: ReactElement) => {
   return (type: string) => container.queryAll((node) => node.type === type);
 };
 
-describe("AppIcon: icon sets", () => {
+describe("AppIcon: rendering", () => {
   it("renders a Tabler icon in the given size and color", async () => {
     const findIcons = await renderIcon(
       <AppIcon icon={IconBarbell} size={32} color="#FF0000" />,
@@ -24,14 +24,6 @@ describe("AppIcon: icon sets", () => {
     const [icon] = findIcons("IconBarbell");
     expect(icon.props.size).toBe(32);
     expect(icon.props.color).toBe("#FF0000");
-  });
-
-  it("renders an Ionicons icon by name", async () => {
-    const findIcons = await renderIcon(<AppIcon icon="mail" />);
-
-    expect(findIcons("Ionicons").map((icon) => icon.props.name)).toContain(
-      "mail",
-    );
   });
 });
 

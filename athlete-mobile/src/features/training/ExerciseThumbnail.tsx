@@ -1,14 +1,17 @@
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
 import { type ValueKind } from "@/features/training/hooks/useTrainingListRows";
 import { Box } from "@/theme/Box";
 import { useTheme } from "@/theme/theme";
 import { Image } from "expo-image";
 import { type FC, useState } from "react";
+import IconRepeat from "@tabler/icons-react-native/IconRepeat";
+import IconStopwatch from "@tabler/icons-react-native/IconStopwatch";
+import IconWeight from "@tabler/icons-react-native/IconWeight";
 
-const VALUE_ICONS: Record<ValueKind, IoniconName> = {
-  weight: "barbell-outline",
-  time: "timer-outline",
-  reps: "repeat-outline",
+const VALUE_ICONS: Record<ValueKind, AppIconSource> = {
+  weight: IconWeight,
+  time: IconStopwatch,
+  reps: IconRepeat,
 };
 
 const HIDDEN_FROM_SCREEN_READERS = {
@@ -55,8 +58,8 @@ export const ExerciseThumbnail: FC<Props> = ({
       {...HIDDEN_FROM_SCREEN_READERS}
     >
       {valueKind && (
-        <Ionicon
-          name={VALUE_ICONS[valueKind]}
+        <AppIcon
+          icon={VALUE_ICONS[valueKind]}
           size={size * 0.4}
           color={colors.lightGrey3}
           decorative

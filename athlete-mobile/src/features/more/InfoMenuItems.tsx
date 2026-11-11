@@ -10,6 +10,14 @@ import {
 import { ListItem } from "@/features/more/ListItem";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
+import IconAccessible from "@tabler/icons-react-native/IconAccessible";
+import IconCode from "@tabler/icons-react-native/IconCode";
+import IconFileText from "@tabler/icons-react-native/IconFileText";
+import IconInfoCircle from "@tabler/icons-react-native/IconInfoCircle";
+import IconMail from "@tabler/icons-react-native/IconMail";
+import IconMessageDots from "@tabler/icons-react-native/IconMessageDots";
+import IconSettings from "@tabler/icons-react-native/IconSettings";
+import IconShieldCheck from "@tabler/icons-react-native/IconShieldCheck";
 
 const A11yMenuItems: FC = () => {
   const { t } = useTranslation();
@@ -20,7 +28,7 @@ const A11yMenuItems: FC = () => {
         <ListItem
           title={t("more.a11yStatement")}
           externalUrl={LINK_A11Y_STATEMENT}
-          icon="accessibility"
+          icon={IconAccessible}
           iconBackground="darkGrey1"
         />
       )}
@@ -28,7 +36,7 @@ const A11yMenuItems: FC = () => {
         <ListItem
           title={t("more.a11yFeedback")}
           externalUrl={LINK_A11Y_FEEDBACK}
-          icon="chatbubble-ellipses"
+          icon={IconMessageDots}
           iconBackground="darkGrey1"
         />
       )}
@@ -46,7 +54,7 @@ export const InfoMenuItems: FC = () => {
         <ListItem
           title={t("more.agb")}
           externalUrl={LINK_AGB}
-          icon="information-circle"
+          icon={IconInfoCircle}
           iconBackground="darkGrey1"
         />
       )}
@@ -54,21 +62,21 @@ export const InfoMenuItems: FC = () => {
         <ListItem
           title={t("more.privacy")}
           externalUrl={LINK_PRIVACY}
-          icon="shield-checkmark"
+          icon={IconShieldCheck}
           iconBackground="darkGrey1"
         />
       )}
       <ListItem
         title={t("more.notificationsSettings")}
         navPath="/(tabs)/(more)/notifications"
-        icon="settings"
+        icon={IconSettings}
         iconBackground="darkGrey1"
       />
       {featureFlags.contactEnabled && (
         <ListItem
           title={t("more.contact")}
           externalUrl={`mailto:${SUPPORT_EMAIL}`}
-          icon="mail"
+          icon={IconMail}
           iconBackground="darkGrey1"
         />
       )}
@@ -76,7 +84,7 @@ export const InfoMenuItems: FC = () => {
         <ListItem
           title={t("more.imprint")}
           externalUrl={LINK_IMPRINT}
-          icon="document-text"
+          icon={IconFileText}
           iconBackground="darkGrey1"
         />
       )}
@@ -84,7 +92,7 @@ export const InfoMenuItems: FC = () => {
       <ListItem
         title={t("more.thirdPartyNotices.menuItem")}
         navPath="/(tabs)/(more)/third-party-notices"
-        icon="code-slash"
+        icon={IconCode}
         iconBackground="darkGrey1"
       />
     </>

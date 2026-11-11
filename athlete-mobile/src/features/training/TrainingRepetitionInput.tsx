@@ -4,6 +4,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
+import IconDialpad from "@tabler/icons-react-native/IconDialpad";
 
 export type TrainingRepetitionInputProps = {
   repsValue: number;
@@ -52,7 +53,7 @@ export const TrainingRepetitionInput: FC<TrainingRepetitionInputProps> = ({
               ? t("training.powerTest.inputLabel", { exercise: exerciseName })
               : t("training.powerTest.placeholder")
           }
-          iconName="keypad"
+          icon={IconDialpad}
           onChange={changeReps}
           keyboardType="number-pad"
           testID={inputTestID}

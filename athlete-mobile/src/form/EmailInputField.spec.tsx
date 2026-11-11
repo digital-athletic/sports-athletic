@@ -17,8 +17,10 @@ describe("<EmailInputField />", () => {
   });
 
   it("hides the email icon from screen readers", async () => {
-    const { container } = await render(<EmailInputField {...defaultProps} />);
-    const [icon] = container.queryAll((node) => node.type === "Ionicons");
+    const { getByTestId } = await render(<EmailInputField {...defaultProps} />);
+    const icon = getByTestId("decorative-icon", {
+      includeHiddenElements: true,
+    });
     expect(icon.props.accessibilityElementsHidden).toBe(true);
   });
 

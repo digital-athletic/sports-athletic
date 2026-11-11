@@ -1,3 +1,4 @@
+import IconMail from "@tabler/icons-react-native/IconMail";
 import { Alert } from "@/common/Alert";
 import { SUPPORT_EMAIL } from "@/constants/AppConstants";
 import { Linking } from "react-native";
@@ -19,7 +20,7 @@ describe("ListItem: external link", () => {
       <ListItem
         title="Kontakt"
         externalUrl={externalUrl}
-        icon="mail"
+        icon={IconMail}
         iconBackground="primary"
       />,
     );

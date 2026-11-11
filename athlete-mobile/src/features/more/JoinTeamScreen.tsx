@@ -19,7 +19,7 @@ import { useTheme } from "@/theme/theme";
 import { Alert } from "@/common/Alert";
 import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { ListDivider } from "@/common/ListDivider";
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { Logger } from "@/services/Logger";
 import {
   type UserTeam,
@@ -27,6 +27,7 @@ import {
   acceptInvitation,
   leaveTeam,
 } from "@/services/TeamService";
+import IconChevronRight from "@tabler/icons-react-native/IconChevronRight";
 
 function errorKeyFrom(err: unknown): I18nKey {
   return err instanceof Error
@@ -187,8 +188,8 @@ export default function JoinTeamScreen() {
                     <Text variant="body" flex={1}>
                       {team.name}
                     </Text>
-                    <Ionicon
-                      name="chevron-forward"
+                    <AppIcon
+                      icon={IconChevronRight}
                       size={18}
                       color={colors.darkGrey2}
                       decorative

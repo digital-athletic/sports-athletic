@@ -1,5 +1,5 @@
 import { BackHeader } from "@/common/BackHeader";
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { PlaceType, WorkoutConstants } from "@/constants/workoutConstants";
 import { useUpdateTrainingPlan } from "@/features/training/hooks/useUpdateTrainingPlan";
 import { Logger } from "@/services/Logger";
@@ -15,6 +15,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, StyleSheet, TouchableOpacity } from "react-native";
+import IconCircleCheckFilled from "@tabler/icons-react-native/IconCircleCheckFilled";
 
 export default function EquipmentDetailsScreen() {
   const { t } = useTranslation();
@@ -161,8 +162,8 @@ export default function EquipmentDetailsScreen() {
                 accessibilityState={{ selected: isActive }}
               >
                 {isActive ? (
-                  <Ionicon
-                    name="checkmark-circle"
+                  <AppIcon
+                    icon={IconCircleCheckFilled}
                     size={28}
                     color={colors.primary}
                     decorative

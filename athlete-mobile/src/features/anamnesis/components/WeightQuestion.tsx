@@ -2,6 +2,7 @@ import { AnamnesisQuestionContainer } from "@/features/anamnesis/AnamnesisQuesti
 import { TextInputField } from "@/form/TextInputField";
 import { useTranslation } from "react-i18next";
 import { type AnamnesisQuestionProps } from "./AnamnesisQuestionProps";
+import IconScaleOutline from "@tabler/icons-react-native/IconScaleOutline";
 
 export function WeightQuestion({
   values,
@@ -19,7 +20,7 @@ export function WeightQuestion({
       <TextInputField
         value={value}
         placeholder={t("anamnesisQuestions.weight.placeholder")}
-        iconName="scale-outline"
+        icon={IconScaleOutline}
         keyboardType="decimal-pad"
         accessibilityLabel={t("anamnesisQuestions.weight.title")}
         onChange={(value) => onChangeValue("weight", value)}

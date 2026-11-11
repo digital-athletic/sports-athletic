@@ -1,14 +1,13 @@
 import type { Icon as TablerIcon } from "@tabler/icons-react-native";
 import type { FC } from "react";
 import { View } from "react-native";
-import { Ionicon, type IoniconName } from "./Ionicon";
 
 /**
- * A Tabler icon component or an Ionicons name. Import each Tabler icon from its
- * own entry point (`@tabler/icons-react-native/IconBarbell`), so the bundle
- * contains only the icons in use.
+ * A Tabler icon component. Import each icon from its own entry point
+ * (`@tabler/icons-react-native/IconBarbell`), so the bundle contains only the
+ * icons in use.
  */
-export type AppIconSource = TablerIcon | IoniconName;
+export type AppIconSource = TablerIcon;
 
 interface AppIconProps {
   icon: AppIconSource;
@@ -19,7 +18,7 @@ interface AppIconProps {
   decorative?: boolean;
 }
 
-/** Renders a Tabler icon or an Ionicons icon with the same props. */
+/** Renders a Tabler icon. */
 export const AppIcon: FC<AppIconProps> = ({
   icon,
   size,
@@ -27,18 +26,6 @@ export const AppIcon: FC<AppIconProps> = ({
   accessibilityLabel,
   decorative = false,
 }) => {
-  if (typeof icon === "string") {
-    return (
-      <Ionicon
-        name={icon}
-        size={size}
-        color={color}
-        accessibilityLabel={accessibilityLabel}
-        decorative={decorative}
-      />
-    );
-  }
-
   const Icon = icon;
 
   // On web the SVG hands its props to the DOM, so a wrapping view hides the

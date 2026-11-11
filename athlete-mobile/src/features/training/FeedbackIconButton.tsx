@@ -1,24 +1,30 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
+import IconCircleArrowDown from "@tabler/icons-react-native/IconCircleArrowDown";
+import IconCircleArrowDownFilled from "@tabler/icons-react-native/IconCircleArrowDownFilled";
+import IconCircleArrowUp from "@tabler/icons-react-native/IconCircleArrowUp";
+import IconCircleArrowUpFilled from "@tabler/icons-react-native/IconCircleArrowUpFilled";
+import IconCircleCheck from "@tabler/icons-react-native/IconCircleCheck";
+import IconCircleCheckFilled from "@tabler/icons-react-native/IconCircleCheckFilled";
 
 const FEEDBACK_ICON = {
   TOO_EASY: {
-    outline: "arrow-up-circle-outline",
-    filled: "arrow-up-circle",
+    outline: IconCircleArrowUp,
+    filled: IconCircleArrowUpFilled,
     color: "info",
   },
   SUCCEEDED: {
-    outline: "checkmark-circle-outline",
-    filled: "checkmark-circle",
+    outline: IconCircleCheck,
+    filled: IconCircleCheckFilled,
     color: "darkGrey2",
   },
   TOO_HARD: {
-    outline: "arrow-down-circle-outline",
-    filled: "arrow-down-circle",
+    outline: IconCircleArrowDown,
+    filled: IconCircleArrowDownFilled,
     color: "error",
   },
 } as const;
@@ -69,8 +75,8 @@ export const FeedbackIconButton: FC<FeedbackIconButtonProps> = ({
           {label}
         </Text>
       )}
-      <Ionicon
-        name={disabled ? icon.filled : icon.outline}
+      <AppIcon
+        icon={disabled ? icon.filled : icon.outline}
         size={size}
         color={colors[icon.color]}
         decorative

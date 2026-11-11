@@ -1,4 +1,4 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { useStatisticsExport } from "@/features/statistics/hooks/useStatisticsExport";
 import type { ExportKind } from "@/features/statistics/models/statisticsCsv";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
@@ -7,6 +7,7 @@ import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
+import IconDownload from "@tabler/icons-react-native/IconDownload";
 
 interface StatisticsExportButtonProps {
   kind: ExportKind;
@@ -39,7 +40,7 @@ export const StatisticsExportButton: FC<StatisticsExportButtonProps> = ({
       paddingVertical="xs"
       hitSlop={HIT_SLOP}
     >
-      <Ionicon name="download-outline" size={16} color={colors[color]} />
+      <AppIcon icon={IconDownload} size={16} color={colors[color]} />
       <Text variant="small" fontWeight="700" color={color} marginLeft="xs">
         {t("statistics.export.button")}
       </Text>

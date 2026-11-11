@@ -13,7 +13,7 @@ this bundled notice is the intended form of attribution; attribution on
 the individual asset is not required.
 
 Third-party assets bundled via dependencies are not covered here. They remain under their own
-respective licenses; see e.g. fontawesome and ionicons / its license for the
+respective licenses; see e.g. the Tabler icons and their license for the
 applicable terms. These are covered in the THIRD-PARTY-NOTICES files.
 
 For reference, license URLs used in this project (where applicable):

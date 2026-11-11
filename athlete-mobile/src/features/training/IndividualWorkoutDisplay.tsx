@@ -1,4 +1,4 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { TrainingPlanStatusWidget } from "./TrainingPlanStatusWidget";
 import { TrainingPlanType } from "./models/TrainingPlan";
 import { isPlanEnded } from "./utils/timeUtils";
+import IconCirclePlusFilled from "@tabler/icons-react-native/IconCirclePlusFilled";
 
 const PLAN_STATES = {
   NO_ANAMNESIS: 0,
@@ -95,8 +96,8 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
         paddingHorizontal="m"
         onPress={goTo}
       >
-        <Ionicon
-          name="add-circle"
+        <AppIcon
+          icon={IconCirclePlusFilled}
           size={64}
           color={colors.primary}
           decorative

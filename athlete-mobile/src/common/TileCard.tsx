@@ -1,4 +1,4 @@
-import { Ionicon } from "@/common/Ionicon";
+import { AppIcon } from "@/common/AppIcon";
 import { useTileWidth } from "@/common/TileGrid";
 import { Box } from "@/theme/Box";
 import { Card } from "@/theme/Card";
@@ -6,6 +6,7 @@ import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC, type PropsWithChildren } from "react";
 import { Pressable, StyleSheet } from "react-native";
+import IconChevronRight from "@tabler/icons-react-native/IconChevronRight";
 
 // Header height as a share of the cell width: 112 points on a phone.
 const HEADER_HEIGHT_SHARE = 0.67;
@@ -67,8 +68,8 @@ export const TileCard: FC<TileCardProps> = ({
           <Text variant="body" fontSize={15} fontWeight="700" flexShrink={1}>
             {title}
           </Text>
-          <Ionicon
-            name="chevron-forward"
+          <AppIcon
+            icon={IconChevronRight}
             size={14}
             color={colors.lightGrey3}
             decorative

@@ -3,6 +3,8 @@ import { ListItem } from "@/features/more/ListItem";
 import { canTakeStrengthTest } from "@/features/training/utils/strengthTestUtils";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
+import IconEdit from "@tabler/icons-react-native/IconEdit";
+import IconWeight from "@tabler/icons-react-native/IconWeight";
 
 /** Starting a strength test and entering its results; athletes under 16 get neither. */
 export const StrengthTestMenuItems: FC = () => {
@@ -18,13 +20,13 @@ export const StrengthTestMenuItems: FC = () => {
           type: "TEST_WORKOUT",
           originPath: "/(tabs)/(more)/more",
         }}
-        icon="barbell"
+        icon={IconWeight}
         iconBackground="primary"
       />
       <ListItem
         title={t("more.enterTestManually")}
         navPath="/training/manual-strength-test"
-        icon="create"
+        icon={IconEdit}
         iconBackground="primary"
       />
     </>

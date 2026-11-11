@@ -1,9 +1,10 @@
-import { Ionicon, type IoniconName } from "@/common/Ionicon";
+import { AppIcon, type AppIconSource } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { Pressable, StyleSheet } from "react-native";
+import IconCheck from "@tabler/icons-react-native/IconCheck";
 
 export type ChoiceOption = {
   value: string;
@@ -11,7 +12,7 @@ export type ChoiceOption = {
   /** Screen reader name when the visible label is a short form of it. */
   accessibilityLabel?: string;
   description?: string;
-  iconName?: IoniconName;
+  icon?: AppIconSource;
 };
 
 type ChoiceCardsProps = {
@@ -45,7 +46,7 @@ const RadioMark: FC<{ selected: boolean }> = ({ selected }) => {
       justifyContent="center"
     >
       {selected && (
-        <Ionicon name="checkmark" size={16} color={colors.white} decorative />
+        <AppIcon icon={IconCheck} size={16} color={colors.white} decorative />
       )}
     </Box>
   );
@@ -76,9 +77,9 @@ const ChoiceCard: FC<ChoiceCardProps> = ({
         },
       ]}
     >
-      {option.iconName && (
-        <Ionicon
-          name={option.iconName}
+      {option.icon && (
+        <AppIcon
+          icon={option.icon}
           size={24}
           color={selected ? colors.primary : colors.darkGrey1}
           decorative

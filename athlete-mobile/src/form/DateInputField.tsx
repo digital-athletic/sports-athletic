@@ -1,3 +1,5 @@
+import IconCalendar from "@tabler/icons-react-native/IconCalendar";
+import IconClock from "@tabler/icons-react-native/IconClock";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
@@ -46,7 +48,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
 
-  const iconName = type === "date" ? "calendar" : "time";
+  const icon = type === "date" ? IconCalendar : IconClock;
 
   // Only date pickers need the floor; time pickers have no lower bound.
   const effectiveMinimumDate =
@@ -101,7 +103,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
 
   // The native pickers do not exist on web, so web shows the value only.
   return (
-    <FieldShell iconName={iconName}>
+    <FieldShell icon={icon}>
       <Box flex={1} paddingHorizontal="s" alignItems="flex-start">
         {Platform.select({
           ios: (

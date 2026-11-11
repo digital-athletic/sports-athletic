@@ -42,8 +42,11 @@ const TrainingSuccessScreen: FC = () => {
   const router = useRouter();
   const params = useLocalSearchParams<{ aborted?: string }>();
   const aborted = parseBooleanParam(params.aborted);
-  const { exerciseList, time, activeTraining, trainingViewMode } =
-    useTrainingStore();
+  // The finished session as it was on arrival: Continue clears the store while
+  // this screen is still leaving, and the summary must stay as it is.
+  const [{ exerciseList, time, activeTraining, trainingViewMode }] = useState(
+    () => useTrainingStore.getState(),
+  );
   const exercises = getAllExercises();
   const { workoutData } = useUserWorkoutStore();
   const maxValues = workoutData.maxValues;
@@ -111,21 +114,8 @@ const TrainingSuccessScreen: FC = () => {
     trainingViewMode,
   ]);
 
-  // Clearing on unmount instead of on Continue keeps the summary rendered
-  // while the screen leaves. The id check skips a training started meanwhile.
-  const [finishedTrainingId] = useState(
-    () => useTrainingStore.getState().activeTraining?.id,
-  );
-  useEffect(
-    () => () => {
-      const { activeTraining: current, clearTraining } =
-        useTrainingStore.getState();
-      if (current?.id === finishedTrainingId) clearTraining();
-    },
-    [finishedTrainingId],
-  );
-
   const handleGoOn = useCallback(() => {
+    useTrainingStore.getState().clearTraining();
     router.replace("/(tabs)/(home)");
   }, [router]);
 

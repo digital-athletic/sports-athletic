@@ -1,6 +1,5 @@
 import HomeScreen from "../../../app/(tabs)/(home)/index";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import { useTrainingStore } from "@/features/training/trainingStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { fireEvent, render } from "@/utils/testUtils";
@@ -116,13 +115,5 @@ describe("HomeScreen: starting the plan training", () => {
       pathname: "/training/new",
       params: { category: "plan" },
     });
-  });
-
-  it("does not write a selection to the training store", async () => {
-    const { getByText } = await render(<HomeScreen />);
-
-    await fireEvent.press(getByText(START_TRAINING));
-
-    expect(useTrainingStore.getState()).not.toHaveProperty("selection");
   });
 });

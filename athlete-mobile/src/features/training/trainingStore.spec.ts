@@ -72,8 +72,6 @@ describe("useTrainingStore", () => {
   });
 
   // ============================================================================
-  // Selection Management Tests
-  // ============================================================================
 
   describe("removed selection", () => {
     it("has no selection field", () => {

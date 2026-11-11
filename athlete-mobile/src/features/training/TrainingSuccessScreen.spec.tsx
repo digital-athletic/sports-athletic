@@ -156,7 +156,7 @@ describe("TrainingSuccessScreen: leaving the screen", () => {
     useCompletedWorkoutsStore.getState().clearWorkoutHistory();
   });
 
-  it("navigates Home on Continue without clearing the session first", async () => {
+  it("clears the session and goes Home on Continue", async () => {
     const { getByText } = await render(<TrainingSuccessScreen />);
 
     await act(() => {
@@ -164,11 +164,11 @@ describe("TrainingSuccessScreen: leaving the screen", () => {
     });
 
     expect(mockReplace).toHaveBeenCalledWith("/(tabs)/(home)");
-    expect(useTrainingStore.getState().exerciseList).not.toBeNull();
-    expect(useTrainingStore.getState().activeTraining).not.toBeNull();
+    expect(useTrainingStore.getState().exerciseList).toBeNull();
+    expect(useTrainingStore.getState().activeTraining).toBeNull();
   });
 
-  it("keeps showing the summary instead of the data missing state after Continue", async () => {
+  it("keeps showing the summary after Continue cleared the session", async () => {
     const { getByText, queryByText, getByTestId } = await render(
       <TrainingSuccessScreen />,
     );
@@ -181,27 +181,17 @@ describe("TrainingSuccessScreen: leaving the screen", () => {
     expect(queryByText(/did not record all of your training data/)).toBeNull();
   });
 
-  it("clears the session when the screen unmounts", async () => {
-    const { unmount } = await render(<TrainingSuccessScreen />);
+  it("keeps showing the summary when Home clears the session while the screen leaves", async () => {
+    const { queryByText, getByTestId } = await render(
+      <TrainingSuccessScreen />,
+    );
 
-    await unmount();
-
-    expect(useTrainingStore.getState().exerciseList).toBeNull();
-    expect(useTrainingStore.getState().activeTraining).toBeNull();
-  });
-
-  it("clears nothing on unmount when another training became active meanwhile", async () => {
-    const { unmount } = await render(<TrainingSuccessScreen />);
     await act(() => {
-      useTrainingStore.setState({
-        activeTraining: { id: "workout-2", type: "PLAN" },
-      });
+      useTrainingStore.getState().clearTraining();
     });
 
-    await unmount();
-
-    expect(useTrainingStore.getState().activeTraining?.id).toBe("workout-2");
-    expect(useTrainingStore.getState().exerciseList).not.toBeNull();
+    expect(getByTestId("training-success-summary")).toBeTruthy();
+    expect(queryByText(/did not record all of your training data/)).toBeNull();
   });
 
   it("goes Home on the Android hardware back like Continue", async () => {

@@ -48,33 +48,14 @@ export function useFinishTraining() {
         ? strengthTestMaxValues
         : null;
 
+    // The push comes first: a failed push must leave nothing saved, so the
+    // session stays resumable and a retry does not store test results twice.
     try {
-      // Record end time
       setTrainingEndTime(Date.now());
-
-      // Log completion/abortion
-      if (aborted) {
-        logTrainingEvent(activeTraining, "training_aborted");
-      } else {
-        logTrainingEvent(activeTraining, "training_finished");
-      }
-
-      // Save test results if this is a test workout and not aborted
-      if (testMaxValues) {
-        Logger.logEvent("saving_max_values", { maxValues: testMaxValues });
-        saveMaxValues(testMaxValues);
-        addTestResult(testMaxValues);
-      }
-
-      // Clear temporary test results (committed or discarded)
-      setTempMaxValues(null);
-
-      // Navigate to success screen
       router.push({
         pathname: "/training/training-success",
         params: { aborted: aborted.toString() },
       });
-      return true;
     } catch (error) {
       Logger.logError(error as Error);
       Alert.alert(t("common.error"), t("common.error"));
@@ -82,6 +63,22 @@ export function useFinishTraining() {
       resetTrainingEndTime();
       return false;
     }
+
+    logTrainingEvent(
+      activeTraining,
+      aborted ? "training_aborted" : "training_finished",
+    );
+
+    // Save test results if this is a test workout and not aborted
+    if (testMaxValues) {
+      Logger.logEvent("saving_max_values", { maxValues: testMaxValues });
+      saveMaxValues(testMaxValues);
+      addTestResult(testMaxValues);
+    }
+
+    // Clear temporary test results (committed or discarded)
+    setTempMaxValues(null);
+    return true;
   };
 
   return { finishTraining };

@@ -3,6 +3,8 @@ import { BASELINE_TRAINING_STATE } from "@/features/training/utils/testFixtures"
 import { Logger } from "@/services/Logger";
 import { act, renderHook } from "@testing-library/react-native";
 import { Alert } from "react-native";
+import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
+import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useFinishTraining } from "./useFinishTraining";
 
 const mockPush = jest.fn();
@@ -96,5 +98,26 @@ describe("useFinishTraining: the push to the success screen throws", () => {
 
     expect(returned).toBe(true);
     expect(mockPush).toHaveBeenCalledTimes(2);
+  });
+
+  it("stores the test result of a strength test once when the retry succeeds", async () => {
+    useTrainingStore.setState({
+      activeTraining: { id: "workout-1", type: "TEST_WORKOUT" },
+    });
+    const resultsBefore =
+      useExerciseProgressStore.getState().testHistory.length;
+    const { result } = await renderHook(() => useFinishTraining());
+    const maxValues = useUserWorkoutStore.getState().workoutData.maxValues;
+
+    await act(() => {
+      result.current.finishTraining(false, maxValues);
+    });
+    await act(() => {
+      result.current.finishTraining(false, maxValues);
+    });
+
+    expect(useExerciseProgressStore.getState().testHistory).toHaveLength(
+      resultsBefore + 1,
+    );
   });
 });

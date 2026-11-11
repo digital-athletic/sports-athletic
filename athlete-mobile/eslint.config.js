@@ -289,6 +289,22 @@ module.exports = defineConfig([
       ],
     },
   },
+  // Expo Router bundles every .ts/.tsx file under app/ as a route, so a test
+  // there ships in the app and pulls Jest and testing-library into the Metro
+  // bundle. A test of a route file lives next to its feature in src/.
+  {
+    files: ["app/**/*.{spec,test}.{js,jsx,ts,tsx}", "app/**/__tests__/**"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "Program",
+          message:
+            "Expo Router bundles every file under app/ as a route. Move this test next to its feature in src/ and import the route by relative path.",
+        },
+      ],
+    },
+  },
   // describe/it nesting makes the size and nesting budgets meaningless in specs.
   {
     files: ["**/*.spec.{ts,tsx}", "test/**", "e2e/**", "playwright/**"],

@@ -1,5 +1,5 @@
 import { render } from "@/utils/testUtils";
-import TrainingIndex from "./index";
+import TrainingIndex from "../../../app/training/index";
 
 jest.mock("expo-router", () => {
   const { createElement } = jest.requireActual("react");

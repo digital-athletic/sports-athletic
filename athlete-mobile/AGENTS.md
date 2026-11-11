@@ -86,6 +86,7 @@ This file provides guidance to AI Agents for building high-quality React Native 
 ## File & Directory Rules
 - Route files and navigation layouts belong in the `app/` directory (Expo Router file-based routing).
 - Domain logic belongs in `src/`: feature modules in `src/features/`, Zustand stores in `src/store/`, API clients in `src/services/`.
+- No test files in `app/`. Expo Router bundles every `.ts`/`.tsx` file under `app/` as a route, so a spec there ships in the app and breaks the Metro bundle with `Unable to resolve module console`. A test of a route file lives next to its feature in `src/` and imports the route by relative path (e.g. `src/features/home/HomeScreen.spec.tsx` imports `../../../app/(tabs)/(home)/index`). ESLint rejects `*.spec.*`, `*.test.*` and `__tests__/` under `app/`, and Jest does not search `app/` for tests.
 
 ## App Store Review User
 

@@ -19,7 +19,9 @@ module.exports = {
     "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|zustand|immer))",
   ],
   rootDir: ".",
-  roots: ["<rootDir>/src", "<rootDir>/app"],
+  // app/ is no root: Expo Router bundles every file there as a route, so tests
+  // of route files live in src/ and import the route by relative path.
+  roots: ["<rootDir>/src"],
   setupFiles: ["<rootDir>/test/jestSetup.ts"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",

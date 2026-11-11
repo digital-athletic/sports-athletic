@@ -1,6 +1,6 @@
 import { render, fireEvent } from "@/utils/testUtils";
 import { BackHandler, Platform } from "react-native";
-import NewTraining from "./new";
+import NewTraining from "../../../app/training/new";
 
 const mockBack = jest.fn();
 const mockReplace = jest.fn();

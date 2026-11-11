@@ -50,7 +50,7 @@ Rejected: transferring ownership when the owner leaves. An earlier design passed
 ### Delete
 
 1. The owner confirms "Delete Team?". The dialog warns that all members leave and the step cannot be undone.
-2. The backend deletes the team, its memberships and its invite codes.
+2. The backend deletes the team, its memberships, its invite codes and its team workouts.
 3. The dashboard returns to team selection.
 
 Deleting the owner's account deletes every team the account owns.

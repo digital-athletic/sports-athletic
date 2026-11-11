@@ -2,7 +2,7 @@
 
 ## Why & What
 
-A **team** connects one trainer with the athletes whose training the trainer follows. A trainer creates a team, athletes join it, and the **owner** deletes it at the end. This spec defines team selection, creation and deletion.
+A **team** connects one trainer with the athletes whose training the trainer follows. A trainer creates a team, athletes join it, and the **owner** deletes it at the end. This spec defines team selection, creation, guidance and deletion.
 
 ## Problem
 
@@ -18,7 +18,7 @@ Rejected: transferring ownership when the owner leaves. An earlier design passed
 
 - Invite codes and joining: [Invite Codes and Joining](./invite-codes-and-joining.md)
 - Member roles, removal and leaving: [Members and Roles](./members-and-roles.md)
-- Editing a team's name or description: no such feature exists
+- Editing a team's name or description: no such feature exists. Only guidance and weekly target are editable, see [Edit guidance and weekly target](#edit-guidance-and-weekly-target)
 
 ## Rules
 
@@ -38,6 +38,14 @@ Rejected: transferring ownership when the owner leaves. An earlier design passed
    2. adds the caller as member with role owner,
    3. creates the first invite code without expiry or use limit.
 4. On success the dashboard opens the new team. On failure the user stays on team selection and sees a translated message, never the raw code.
+
+### Edit guidance and weekly target
+
+1. A team has two optional fields next to its description: **guidance**, free text such as the team training days, and a **weekly target** in training days per week. New and existing teams start with both empty.
+2. Only the owner edits them, on the team's management tab. One save writes both fields.
+3. The backend trims guidance and stores blank guidance as empty. Saving an empty field clears the stored value.
+4. The backend rejects guidance over 1,000 characters and a weekly target outside 1 to 7. A rejected save changes nothing.
+5. The athlete app shows both fields on the team info page. The weekly target is a displayed count only and does not change the athlete's training plan.
 
 ### Delete
 

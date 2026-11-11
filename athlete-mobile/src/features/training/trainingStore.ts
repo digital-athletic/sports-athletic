@@ -83,6 +83,7 @@ type Actions = {
   setTrainingViewMode: (mode: TrainingViewMode | null) => void;
   markExerciseCompleted: (index: number) => void;
   markExerciseSkipped: (index: number) => void;
+  reopenSkippedSets: (indices: number[]) => void;
 };
 
 export type TrainingState = State & Actions;
@@ -240,6 +241,17 @@ export const useTrainingStore = create<TrainingState>()(
           if (exercise) {
             exercise.skipped = true;
           }
+        }),
+      // A skip saves no progression, so clearing both flags fully undoes it.
+      reopenSkippedSets: (indices) =>
+        set((state) => {
+          indices.forEach((index) => {
+            const exercise = state.exerciseList?.[index];
+            if (exercise?.skipped) {
+              delete exercise.completed;
+              delete exercise.skipped;
+            }
+          });
         }),
     })),
     {

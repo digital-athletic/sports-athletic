@@ -31,12 +31,13 @@ jest.mock("@tabler/icons-react-native/IconRepeat", () => ({
 const PICTURE_URL = "https://pictures.test/exercise_pictures/squat.jpg";
 
 // A set summary, e.g. generateSetSummary(1, "20 kg", true) is
-// { index: 1, label: "20 kg", completed: true }.
+// { index: 1, label: "20 kg", completed: true, skipped: false }.
 const generateSetSummary = (
   index: number,
   label: string | undefined,
   completed = false,
-): ChecklistSetSummary => ({ index, label, completed });
+  skipped = false,
+): ChecklistSetSummary => ({ index, label, completed, skipped });
 
 // Props of a pending entry with three weighted sets, e.g. sets "20 kg / 35 kg / 40 kg".
 const generateItemProps = (
@@ -53,8 +54,10 @@ const generateItemProps = (
   isNext: false,
   isTest: false,
   isCompleted: false,
+  skippedCount: 0,
   repsValue: 0,
   onStart: jest.fn(),
+  onRetake: jest.fn(),
   onShowInfo: jest.fn(),
   testId: "training-list-row-0",
   ...overrides,
@@ -117,6 +120,107 @@ describe("TrainingListItem: set summary", () => {
     expect(
       getByTestId("training-list-row-0-set-2").props.accessibilityState,
     ).toMatchObject({ checked: false });
+  });
+
+  it("marks a skipped set as not checked", async () => {
+    const { getByTestId } = await render(
+      <TrainingListItem
+        {...generateItemProps({
+          sets: [generateSetSummary(0, "20 kg", true, true)],
+        })}
+      />,
+    );
+
+    expect(
+      getByTestId("training-list-row-0-set-0").props.accessibilityState,
+    ).toMatchObject({ checked: false });
+  });
+});
+
+describe("TrainingListItem: skipped exercise", () => {
+  // Three sets, all completed; the given positions were skipped.
+  const generateSkippedSets = (skippedPositions: number[]) =>
+    [0, 2, 4].map((index, position) =>
+      generateSetSummary(
+        index,
+        "20 kg",
+        true,
+        skippedPositions.includes(position),
+      ),
+    );
+
+  it("shows Skipped and the retake button instead of the checkmark when every set was skipped", async () => {
+    const { getByText, getByLabelText, queryByTestId } = await render(
+      <TrainingListItem
+        {...generateItemProps({
+          sets: generateSkippedSets([0, 1, 2]),
+          isCompleted: true,
+          skippedCount: 3,
+        })}
+      />,
+    );
+
+    expect(getByText("Skipped")).toBeTruthy();
+    expect(getByLabelText("Retake skipped sets")).toBeTruthy();
+    expect(queryByTestId("training-list-row-0-checkmark")).toBeNull();
+  });
+
+  it("states how many sets were skipped when only some were", async () => {
+    const { getByText } = await render(
+      <TrainingListItem
+        {...generateItemProps({
+          sets: generateSkippedSets([1, 2]),
+          isCompleted: true,
+          skippedCount: 2,
+        })}
+      />,
+    );
+
+    expect(getByText("2 of 3 skipped")).toBeTruthy();
+  });
+
+  it("offers Retake and Start while other sets are still open", async () => {
+    const onStart = jest.fn();
+    const onRetake = jest.fn();
+    const { getByText, getByTestId } = await render(
+      <TrainingListItem
+        {...generateItemProps({
+          sets: [
+            generateSetSummary(0, "20 kg", true, true),
+            generateSetSummary(2, "35 kg"),
+            generateSetSummary(4, "40 kg"),
+          ],
+          skippedCount: 1,
+          onStart,
+          onRetake,
+        })}
+      />,
+    );
+
+    expect(getByText("1 of 3 skipped")).toBeTruthy();
+    await fireEvent.press(getByTestId("training-list-row-0-retake"));
+    await fireEvent.press(getByTestId("training-list-row-0-start"));
+
+    expect(onRetake).toHaveBeenCalledTimes(1);
+    expect(onStart).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onRetake when Retake is pressed", async () => {
+    const onRetake = jest.fn();
+    const { getByTestId } = await render(
+      <TrainingListItem
+        {...generateItemProps({
+          sets: generateSkippedSets([0, 1, 2]),
+          isCompleted: true,
+          skippedCount: 3,
+          onRetake,
+        })}
+      />,
+    );
+
+    await fireEvent.press(getByTestId("training-list-row-0-retake"));
+
+    expect(onRetake).toHaveBeenCalledTimes(1);
   });
 });
 

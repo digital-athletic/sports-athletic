@@ -22,8 +22,9 @@ const generateEntry = (
   pictureUrl: null,
   valueKind: "reps",
   isTest: false,
-  sets: [{ index: key, label: "10 reps", completed: false }],
+  sets: [{ index: key, label: "10 reps", completed: false, skipped: false }],
   completed: false,
+  skippedCount: 0,
   firstOpenSetIndex: key,
   ...overrides,
 });
@@ -51,6 +52,7 @@ const generateRowsProps = (
   repsDraft: {},
   resumeSecondsOf: () => undefined,
   onStart: jest.fn(),
+  onRetake: jest.fn(),
   onShowInfo: jest.fn(),
   ...overrides,
 });
@@ -78,8 +80,8 @@ describe("TrainingListRows: entries", () => {
         [
           generateEntry(0, "squat", "Squat", {
             sets: [
-              { index: 0, label: "20 kg", completed: false },
-              { index: 2, label: "22.5 kg", completed: false },
+              { index: 0, label: "20 kg", completed: false, skipped: false },
+              { index: 2, label: "22.5 kg", completed: false, skipped: false },
             ],
           }),
         ],
@@ -126,6 +128,24 @@ describe("TrainingListRows: entries", () => {
       getByTestId("training-list-row-4-start-resume-time"),
     ).toHaveTextContent("00:42");
     expect(queryByTestId("training-list-row-0-start-resume-time")).toBeNull();
+  });
+
+  it("calls onRetake with the entry when Retake is pressed", async () => {
+    const onRetake = jest.fn();
+    const squat = generateEntry(0, "squat", "Squat", {
+      sets: [{ index: 0, label: "10 reps", completed: true, skipped: true }],
+      completed: true,
+      skippedCount: 1,
+      firstOpenSetIndex: null,
+    });
+    const blocks = [generateBlock([squat], null)];
+
+    const { getByTestId } = await render(
+      <TrainingListRows {...generateRowsProps({ blocks, onRetake })} />,
+    );
+    await fireEvent.press(getByTestId("training-list-row-0-retake"));
+
+    expect(onRetake).toHaveBeenCalledWith(squat);
   });
 
   it("opens the exercise information with the exercise id of the entry", async () => {

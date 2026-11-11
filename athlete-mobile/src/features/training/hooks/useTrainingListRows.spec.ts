@@ -620,6 +620,22 @@ describe("useTrainingListRows: one entry per exercise", () => {
 
     expect(result.current.blocks[0].entries[0].firstOpenSetIndex).toBeNull();
   });
+
+  it("counts and flags the skipped sets of the entry", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        generateSetEntry("1", 1, 3, { completed: true }),
+        generateSetEntry("1", 2, 3, { completed: true, skipped: true }),
+        generateSetEntry("1", 3, 3, { completed: true, skipped: true }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    const entry = result.current.blocks[0].entries[0];
+    expect(entry.skippedCount).toBe(2);
+    expect(entry.sets.map((set) => set.skipped)).toEqual([false, true, true]);
+  });
 });
 
 describe("useTrainingListRows: superset blocks", () => {

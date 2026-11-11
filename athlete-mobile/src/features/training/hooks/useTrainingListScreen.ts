@@ -30,7 +30,7 @@ export function useTrainingListScreen() {
   const { handleDiscard, isScreenFocused } = useTrainingListLifecycle({
     isEnding: isFinishing,
   });
-  const { handleStart, sheetProps, resumeSecondsOf } =
+  const { handleStart, handleRetake, sheetProps, resumeSecondsOf } =
     useTrainingExerciseSheetProps({
       rows,
       exerciseList,
@@ -59,6 +59,7 @@ export function useTrainingListScreen() {
     handleFinish,
     handleShowInfo,
     handleStart,
+    handleRetake,
     handleDiscard,
     resumeSecondsOf,
     sheetProps: { ...sheetProps, isScreenFocused },

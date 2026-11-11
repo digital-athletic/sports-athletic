@@ -5,7 +5,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(49);
+SELECT plan(52);
 
 -- Team A: T owns it, C is co-owner, M is a plain member. O belongs to no team.
 -- Team B: T2 owns it.
@@ -217,31 +217,52 @@ SELECT throws_ok($$ DELETE FROM public.team_workouts
 -- ---------------------------------------------------------------------------
 -- Delete
 -- ---------------------------------------------------------------------------
+SET LOCAL ROLE anon;
+SELECT throws_ok($$ SELECT public.delete_team_workout('55555555-5555-5555-5555-555555555551',
+    '88888888-8888-8888-8888-888888888881') $$,
+  '42501', NULL, 'delete: anon role cannot execute');
+SET LOCAL ROLE authenticated;
+
 SET LOCAL "request.jwt.claim.sub" TO '';
-SELECT throws_ok($$ SELECT public.delete_team_workout('88888888-8888-8888-8888-888888888881') $$,
+SELECT throws_ok($$ SELECT public.delete_team_workout('55555555-5555-5555-5555-555555555551',
+    '88888888-8888-8888-8888-888888888881') $$,
   'P0001', 'AUTH_REQUIRED', 'delete: no auth -> AUTH_REQUIRED');
 
 SET LOCAL "request.jwt.claim.sub" TO :'C';
-SELECT throws_ok($$ SELECT public.delete_team_workout('88888888-8888-8888-8888-888888888881') $$,
+SELECT throws_ok($$ SELECT public.delete_team_workout('55555555-5555-5555-5555-555555555551',
+    '88888888-8888-8888-8888-888888888881') $$,
   'P0001', 'NOT_TEAM_OWNER', 'delete: co-owner -> NOT_TEAM_OWNER');
 
 SET LOCAL "request.jwt.claim.sub" TO :'M';
-SELECT throws_ok($$ SELECT public.delete_team_workout('88888888-8888-8888-8888-888888888881') $$,
+SELECT throws_ok($$ SELECT public.delete_team_workout('55555555-5555-5555-5555-555555555551',
+    '88888888-8888-8888-8888-888888888881') $$,
   'P0001', 'NOT_TEAM_OWNER', 'delete: member -> NOT_TEAM_OWNER');
 
 SET LOCAL "request.jwt.claim.sub" TO :'O';
-SELECT throws_ok($$ SELECT public.delete_team_workout('88888888-8888-8888-8888-888888888881') $$,
-  'P0001', 'TEAM_WORKOUT_NOT_FOUND', 'delete: outsider -> TEAM_WORKOUT_NOT_FOUND (existence hidden)');
+SELECT throws_ok($$ SELECT public.delete_team_workout('55555555-5555-5555-5555-555555555551',
+    '88888888-8888-8888-8888-888888888881') $$,
+  'P0001', 'TEAM_NOT_FOUND', 'delete: outsider -> TEAM_NOT_FOUND (existence hidden)');
 
 SET LOCAL "request.jwt.claim.sub" TO :'T';
-SELECT throws_ok($$ SELECT public.delete_team_workout(NULL) $$,
-  'P0001', 'INVALID_REQUEST_BODY', 'delete: null id -> INVALID_REQUEST_BODY');
-SELECT throws_ok($$ SELECT public.delete_team_workout('88888888-8888-8888-8888-888888888899') $$,
-  'P0001', 'TEAM_WORKOUT_NOT_FOUND', 'delete: unknown id -> TEAM_WORKOUT_NOT_FOUND');
-SELECT throws_ok($$ SELECT public.delete_team_workout('88888888-8888-8888-8888-888888888882') $$,
-  'P0001', 'TEAM_WORKOUT_NOT_FOUND', 'delete: owner of another team -> TEAM_WORKOUT_NOT_FOUND');
+SELECT throws_ok($$ SELECT public.delete_team_workout(NULL, '88888888-8888-8888-8888-888888888881') $$,
+  'P0001', 'INVALID_REQUEST_BODY', 'delete: null team id -> INVALID_REQUEST_BODY');
+SELECT throws_ok($$ SELECT public.delete_team_workout('55555555-5555-5555-5555-555555555551', NULL) $$,
+  'P0001', 'INVALID_REQUEST_BODY', 'delete: null workout id -> INVALID_REQUEST_BODY');
+SELECT throws_ok($$ SELECT public.delete_team_workout('55555555-5555-5555-5555-555555555551',
+    '88888888-8888-8888-8888-888888888899') $$,
+  'P0001', 'TEAM_WORKOUT_NOT_FOUND', 'delete: unknown workout id -> TEAM_WORKOUT_NOT_FOUND');
+SELECT throws_ok($$ SELECT public.delete_team_workout('55555555-5555-5555-5555-555555555551',
+    '88888888-8888-8888-8888-888888888882') $$,
+  'P0001', 'TEAM_WORKOUT_NOT_FOUND', 'delete: workout of another team -> TEAM_WORKOUT_NOT_FOUND');
 
-SELECT lives_ok($$ SELECT public.delete_team_workout('88888888-8888-8888-8888-888888888881') $$,
+RESET ROLE;
+SELECT is((SELECT count(*) FROM public.team_workouts WHERE id = :'W2'), 1::bigint,
+  'delete: the workout of the other team still exists');
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claim.sub" TO :'T';
+
+SELECT lives_ok($$ SELECT public.delete_team_workout('55555555-5555-5555-5555-555555555551',
+    '88888888-8888-8888-8888-888888888881') $$,
   'delete: owner deletes a team workout');
 
 RESET ROLE;

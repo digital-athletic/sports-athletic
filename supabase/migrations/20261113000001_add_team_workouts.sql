@@ -153,54 +153,39 @@ GRANT EXECUTE ON FUNCTION public.save_team_workout(uuid, jsonb, uuid) TO authent
 -- ============================================================================
 -- 5. delete_team_workout
 -- ============================================================================
--- Errors:
+-- Deletes one workout of the team. Same owner check as save_team_workout, so a
+-- workout id of another team gives TEAM_WORKOUT_NOT_FOUND.
+--
+-- Errors, checked in this order:
 --   AUTH_REQUIRED          no caller
---   INVALID_REQUEST_BODY   p_workout_id is NULL
---   TEAM_WORKOUT_NOT_FOUND workout missing, or caller is not in its team
---                          (hides that the workout exists)
---   NOT_TEAM_OWNER         caller is a co-owner or member of its team
-CREATE FUNCTION public.delete_team_workout(p_workout_id uuid)
+--   INVALID_REQUEST_BODY   p_team_id or p_workout_id is NULL
+--   TEAM_NOT_FOUND         team missing, or caller is not in the team
+--   NOT_TEAM_OWNER         caller is a co-owner or member
+--   TEAM_WORKOUT_NOT_FOUND p_workout_id is not a workout of this team
+CREATE FUNCTION public.delete_team_workout(p_team_id uuid, p_workout_id uuid)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = ''
 AS $$
-DECLARE
-  v_team_id uuid;
 BEGIN
-  IF auth.uid() IS NULL THEN
-    RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'AUTH_REQUIRED';
-  END IF;
+  PERFORM public.assert_visible_team_owner(p_team_id);
+
   IF p_workout_id IS NULL THEN
     RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'INVALID_REQUEST_BODY';
   END IF;
 
-  SELECT team_id INTO v_team_id
-  FROM   public.team_workouts
-  WHERE  id = p_workout_id;
+  DELETE FROM public.team_workouts
+  WHERE  id = p_workout_id AND team_id = p_team_id;
 
-  IF NOT FOUND
-     OR (
-       NOT EXISTS (
-         SELECT 1 FROM public.team_members
-         WHERE team_id = v_team_id AND user_id = auth.uid()
-       )
-       AND NOT EXISTS (
-         SELECT 1 FROM public.teams
-         WHERE id = v_team_id AND owner_id = auth.uid()
-       )
-     ) THEN
+  IF NOT FOUND THEN
     RAISE EXCEPTION USING ERRCODE = 'P0001', MESSAGE = 'TEAM_WORKOUT_NOT_FOUND';
   END IF;
-
-  PERFORM public.assert_visible_team_owner(v_team_id);
-
-  DELETE FROM public.team_workouts WHERE id = p_workout_id;
 END;
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.delete_team_workout(uuid)
+REVOKE EXECUTE ON FUNCTION public.delete_team_workout(uuid, uuid)
   FROM PUBLIC, anon, service_role;
-GRANT EXECUTE ON FUNCTION public.delete_team_workout(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.delete_team_workout(uuid, uuid) TO authenticated;
 
 COMMIT;

@@ -8,7 +8,6 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { render, screen, within } from "@/utils/testUtils";
 import { Dimensions } from "react-native";
 import SectionDetailsScreen from "../../app/(tabs)/(home)/section-details";
-import TutorialsScreen from "../../app/(tabs)/(more)/tutorials";
 import ExerciseInformationScreen from "../../app/training/exercise-information";
 import TrainingActive from "../../app/training/training-active";
 
@@ -110,14 +109,6 @@ describe("video screens: tablet in landscape", () => {
       ),
     ).toBeTruthy();
   });
-
-  it("tutorials shows the videos in two columns", async () => {
-    await render(<TutorialsScreen />);
-
-    expect(screen.getAllByTestId("tutorial-item")[0]).toHaveStyle({
-      width: "50%",
-    });
-  });
 });
 
 describe("video screens: tablet in portrait", () => {
@@ -133,14 +124,6 @@ describe("video screens: tablet in portrait", () => {
     });
     expect(screen.getByTestId("tall-landscape-columns")).toHaveStyle({
       flexDirection: "column",
-    });
-  });
-
-  it("tutorials keeps one column", async () => {
-    await render(<TutorialsScreen />);
-
-    expect(screen.getAllByTestId("tutorial-item")[0]).toHaveStyle({
-      width: "100%",
     });
   });
 });

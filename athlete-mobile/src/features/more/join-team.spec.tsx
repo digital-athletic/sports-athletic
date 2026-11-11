@@ -1,4 +1,5 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react-native";
+import { Linking } from "react-native";
 import { Alert } from "@/common/Alert";
 import type { Template } from "@/schemas/aiwl.schema";
 import {
@@ -478,5 +479,28 @@ describe("JoinTeamScreen: opening the team info page", () => {
 
     expect(Alert.alert).toHaveBeenCalled();
     expect(mockPush).not.toHaveBeenCalled();
+  });
+});
+
+describe("JoinTeamScreen: trainer access link", () => {
+  afterEach(() => {
+    delete process.env.EXPO_PUBLIC_LINK_TRAINER_AREA;
+  });
+
+  it("opens the trainer area in the browser", async () => {
+    process.env.EXPO_PUBLIC_LINK_TRAINER_AREA = "https://example.com/teams";
+    const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
+
+    const { findByText } = await render(<JoinTeamScreen />);
+    await fireEvent.press(await findByText("more.joinTeam.trainerAccess"));
+
+    expect(openURL).toHaveBeenCalledWith("https://example.com/teams");
+  });
+
+  it("hides the trainer access button when the variable is unset", async () => {
+    const { findByText, queryByText } = await render(<JoinTeamScreen />);
+    await findByText("more.joinTeam.noTeams");
+
+    expect(queryByText("more.joinTeam.trainerAccess")).toBeNull();
   });
 });

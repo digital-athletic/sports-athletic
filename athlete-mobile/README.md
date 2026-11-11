@@ -195,6 +195,19 @@ EXPO_PUBLIC_REVIEW_OTP=000000
 
 When none of these variables are set, the app behaves normally with full server sync and real authentication.
 
+### Links
+
+Each variable holds the URL of a page outside the app. An unset or empty variable hides its entry.
+
+| Variable | Entry | Place |
+|----------|-------|-------|
+| `EXPO_PUBLIC_LINK_CONSENT_U16` | Consent form U16 | Top of the lower profile menu part |
+| `EXPO_PUBLIC_LINK_FEEDBACK_REPORT` | Report a bug or request a change | Top of the lower profile menu part |
+| `EXPO_PUBLIC_LINK_SURVEY` | Survey | Top of the lower profile menu part |
+| `EXPO_PUBLIC_LINK_TRAINER_AREA` | Trainer access | Button in the team management |
+| `EXPO_PUBLIC_LINK_INTRO_VIDEOS_TRAINERS` | Introduction videos for trainers | Top of the introduction videos |
+| `EXPO_PUBLIC_LINK_INTRO_VIDEOS_PLAYERS` | Introduction videos for players | Top of the introduction videos |
+
 ## Helpful Resources
 
 - [React Documentation](https://react.dev) - Core React concepts

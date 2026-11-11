@@ -7,9 +7,8 @@
  * tags its skill tree can serve in both weight variants. Second, a section takes
  * tags from one group only: the generator joins the tags of one group with OR
  * but the groups with AND, so a mixed pick such as stability with the upper body
- * and the knee finds no exercise. The table is checked in
- * athlete-mobile/src/features/customWorkouts/teamWorkoutBuilderTemplates.spec.ts,
- * which must change together with it.
+ * and the knee finds no exercise. The table follows the athlete app's skill
+ * trees and must change when they change.
  */
 import type { AiwlBlock, AiwlTemplate } from "../types/team";
 

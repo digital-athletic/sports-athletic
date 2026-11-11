@@ -115,9 +115,10 @@ describe("<EmailVerificationScreen />", () => {
     jest.spyOn(Alert, "alert").mockImplementation(() => {});
   });
 
-  it("renders the confirmation title", async () => {
-    const { getByText } = await render(<EmailVerificationScreen />);
-    expect(getByText("Confirm your email")).toBeTruthy();
+  it("renders the confirmation title as the screen headline", async () => {
+    const { getByRole, getByText } = await render(<EmailVerificationScreen />);
+    expect(getByRole("header", { name: "Confirm your email" })).toBeTruthy();
+    expect(getByText("Almost there")).toBeTruthy();
   });
 
   it("renders the confirmation message", async () => {

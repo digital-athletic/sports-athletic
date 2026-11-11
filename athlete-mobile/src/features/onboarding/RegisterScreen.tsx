@@ -1,7 +1,8 @@
+import { BackHeader } from "@/common/BackHeader";
 import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { featureFlags } from "@/config/featureFlags";
 import { LINK_AGB, LINK_PRIVACY } from "@/constants/AppConstants";
-import { DividerWithText } from "@/features/onboarding/DividerWithText";
+import { OnboardingHeadline } from "@/features/onboarding/OnboardingHeadline";
 import { PrivacyCheckbox } from "@/features/onboarding/PrivacyCheckbox";
 import { EmailInputField } from "@/form/EmailInputField";
 import { Box } from "@/theme/Box";
@@ -12,7 +13,7 @@ import { useTheme } from "@/theme/theme";
 import { useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, TouchableOpacity } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ErrorField = "email" | "privacy" | "analytics";
@@ -32,9 +33,8 @@ type Props = {
 };
 
 /**
- * RegistrationScreen Component
- *
- * Registration screen with email input and privacy checkboxes (passwordless OTP)
+ * Registration screen of the passwordless registration: the athlete enters an
+ * email address and agrees to the terms, then gets a code by email.
  */
 export const RegistrationScreen: FC<Props> = ({
   email,
@@ -50,7 +50,7 @@ export const RegistrationScreen: FC<Props> = ({
   processing,
 }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const { colors, spacing } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -65,24 +65,25 @@ export const RegistrationScreen: FC<Props> = ({
   };
 
   return (
-    <Box
-      flex={4}
-      justifyContent="flex-start"
-      alignItems="stretch"
-      style={{
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-      }}
-    >
-      <DividerWithText text={t("onboarding.registration")} />
+    <Box flex={1} backgroundColor="white" style={{ paddingTop: insets.top }}>
+      <Box paddingHorizontal="l" paddingVertical="s" alignItems="flex-start">
+        <BackHeader onBack={onBack} />
+      </Box>
 
       <ScrollBox
-        width="100%"
-        flexGrow={1}
-        showsVerticalScrollIndicator={true}
-        nestedScrollEnabled={true}
+        flex={1}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{
+          paddingVertical: spacing.l,
+          gap: spacing.xl,
+        }}
       >
-        <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
+        <Box paddingHorizontal="l" gap="xl">
+          <OnboardingHeadline
+            eyebrow={t("onboarding.registration")}
+            heading={t("onboarding.registerHeading")}
+            description={t("onboarding.registerDescription")}
+          />
           <EmailInputField
             email={email}
             title={t("onboarding.emailLabel")}
@@ -91,67 +92,59 @@ export const RegistrationScreen: FC<Props> = ({
           />
         </Box>
 
-        {featureFlags.privacyEnabled && (
-          <PrivacyCheckbox
-            checked={acceptedPrivacy}
-            showError={errorFields.includes("privacy")}
-            onCheck={onPrivacyToggle}
-            onPrivacyPress={handlePrivacyPress}
-            onAgbPress={handleAgbPress}
-            label={
-              featureFlags.termsEnabled ? "PRIVACY_FULL" : "PRIVACY_SIMPLE"
-            }
-          />
-        )}
+        {/* The checkboxes bring their own padding for the error outline. */}
+        <Box paddingHorizontal="xs" gap="xs">
+          {featureFlags.privacyEnabled && (
+            <PrivacyCheckbox
+              checked={acceptedPrivacy}
+              showError={errorFields.includes("privacy")}
+              onCheck={onPrivacyToggle}
+              onPrivacyPress={handlePrivacyPress}
+              onAgbPress={handleAgbPress}
+              label={
+                featureFlags.termsEnabled ? "PRIVACY_FULL" : "PRIVACY_SIMPLE"
+              }
+            />
+          )}
 
-        {featureFlags.analyticsConsentEnabled && (
-          <PrivacyCheckbox
-            checked={acceptedAnalytics}
-            showError={errorFields.includes("analytics")}
-            onCheck={onAnalyticsToggle}
-            onPrivacyPress={handlePrivacyPress}
-            onAgbPress={handleAgbPress}
-            label="ANONYMISED_DATA_USE"
-          />
-        )}
+          {featureFlags.analyticsConsentEnabled && (
+            <PrivacyCheckbox
+              checked={acceptedAnalytics}
+              showError={errorFields.includes("analytics")}
+              onCheck={onAnalyticsToggle}
+              onPrivacyPress={handlePrivacyPress}
+              onAgbPress={handleAgbPress}
+              label="ANONYMISED_DATA_USE"
+            />
+          )}
+        </Box>
       </ScrollBox>
 
-      {registrationError && (
-        <Box paddingHorizontal="m" paddingVertical="xs">
+      <Box
+        gap="s"
+        paddingHorizontal="l"
+        paddingTop="m"
+        borderTopWidth={StyleSheet.hairlineWidth}
+        borderTopColor="lightGrey2"
+        style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
+      >
+        {registrationError && (
           <Text
-            variant="description"
+            variant="small"
             color="error"
             accessibilityRole="alert"
             {...liveRegionProps}
           >
             {registrationError}
           </Text>
-        </Box>
-      )}
-
-      <Box alignSelf="stretch" paddingHorizontal="m" paddingVertical="s">
-        <Button onPress={onRegister} variant="primary" disabled={processing}>
+        )}
+        <Button onPress={onRegister} variant="cta" disabled={processing}>
           {processing ? (
-            <ActivityIndicator color={theme.colors.white} />
+            <ActivityIndicator color={colors.white} />
           ) : (
             t("onboarding.buttonRegister")
           )}
         </Button>
-      </Box>
-
-      <Box
-        alignSelf="center"
-        flexDirection="row"
-        justifyContent="center"
-        alignItems="center"
-        height={40}
-        paddingHorizontal="m"
-      >
-        <TouchableOpacity onPress={onBack}>
-          <Text variant="button" color="black">
-            {t("onboarding.back")}
-          </Text>
-        </TouchableOpacity>
       </Box>
     </Box>
   );

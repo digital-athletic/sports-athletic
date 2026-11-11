@@ -11,6 +11,7 @@ import { useRegistrationConsentStore } from "@/store/registrationConsentStore";
 import { getErrorCode } from "@/utils/ErrorUtils";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
+import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -19,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { Alert, StyleSheet, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackHeader } from "@/common/BackHeader";
+import { OnboardingHeadline } from "@/features/onboarding/OnboardingHeadline";
 import { KeyboardDismissArea } from "@/common/KeyboardDismissArea";
 import { liveRegionProps, useAnnounce } from "@/common/announce";
 
@@ -180,109 +182,104 @@ export function EmailVerificationScreen() {
 
   return (
     <KeyboardDismissArea>
-      <Box
-        flex={1}
-        backgroundColor="white"
-        paddingHorizontal="l"
-        style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
-      >
-        <Box paddingVertical="s">
+      <Box flex={1} backgroundColor="white" style={{ paddingTop: insets.top }}>
+        <Box paddingHorizontal="l" paddingVertical="s" alignItems="flex-start">
           <BackHeader onBack={() => router.replace("/onboarding")} />
         </Box>
 
-        <Box flex={1} justifyContent="center" alignItems="center">
-          <Text variant="title" textAlign="center" marginBottom="m">
-            {t("onboarding.confirmEmailAddressTitle")}
-          </Text>
-
-          <Text variant="body" textAlign="center" marginBottom="s">
-            {t("onboarding.confirmEmailAddressMessage")}
-          </Text>
-
-          <Text
-            variant="body"
-            textAlign="center"
-            marginBottom="l"
-            color="primary"
-          >
-            {email}
-          </Text>
-
-          <Text variant="label" textAlign="center" marginBottom="xs">
-            {t("onboarding.verificationCodeInput")}
-          </Text>
-          <Text variant="body" textAlign="center" marginBottom="s">
-            {t("onboarding.enterVerificationCode")}
-          </Text>
-
-          <TextInput
-            value={otpCode}
-            onChangeText={(text) => {
-              setOtpCode(text.replace(/[^0-9]/g, ""));
-              if (verificationError) setVerificationError(null);
-            }}
-            maxLength={OTP_LENGTH}
-            keyboardType="number-pad"
-            textContentType="oneTimeCode"
-            autoComplete="one-time-code"
-            autoCorrect={false}
-            spellCheck={false}
-            placeholder="_ _ _ _ _ _"
-            placeholderTextColor={colors.darkGrey2}
-            accessibilityLabel={t("onboarding.verificationCodeInput")}
-            style={[
-              styles.otpInput,
-              {
-                color: colors.darkGrey3,
-                backgroundColor: colors.lightGrey2,
-                borderColor: verificationError
-                  ? colors.error
-                  : colors.lightGrey2,
-                borderRadius: borderRadii.m,
-                padding: spacing.m,
-              },
-            ]}
-          />
-
-          {verificationError && (
-            <Text
-              variant="description"
-              textAlign="center"
-              marginBottom="s"
-              color="error"
-              accessibilityRole="alert"
-              {...liveRegionProps}
-            >
-              {verificationError}
+        <ScrollBox
+          flex={1}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ padding: spacing.l, gap: spacing.xl }}
+        >
+          <Box gap="s">
+            <OnboardingHeadline
+              eyebrow={t("onboarding.verifyEyebrow")}
+              heading={t("onboarding.confirmEmailAddressTitle")}
+              description={t("onboarding.confirmEmailAddressMessage")}
+            />
+            <Text variant="subtitle" color="darkGrey3" fontWeight="700">
+              {email}
             </Text>
-          )}
+          </Box>
+
+          <Box gap="s">
+            <Text variant="label">{t("onboarding.verificationCodeInput")}</Text>
+            <TextInput
+              value={otpCode}
+              onChangeText={(text) => {
+                setOtpCode(text.replace(/[^0-9]/g, ""));
+                if (verificationError) setVerificationError(null);
+              }}
+              maxLength={OTP_LENGTH}
+              keyboardType="number-pad"
+              textContentType="oneTimeCode"
+              autoComplete="one-time-code"
+              autoCorrect={false}
+              spellCheck={false}
+              placeholder="_ _ _ _ _ _"
+              placeholderTextColor={colors.darkGrey2}
+              accessibilityLabel={t("onboarding.verificationCodeInput")}
+              style={[
+                styles.otpInput,
+                {
+                  color: colors.darkGrey3,
+                  backgroundColor: colors.white,
+                  borderColor: verificationError
+                    ? colors.error
+                    : colors.lightGrey3,
+                  borderRadius: borderRadii.xl,
+                },
+              ]}
+            />
+            {verificationError ? (
+              <Text
+                variant="small"
+                color="error"
+                accessibilityRole="alert"
+                {...liveRegionProps}
+              >
+                {verificationError}
+              </Text>
+            ) : (
+              <Text variant="small" color="darkGrey1">
+                {t("onboarding.enterVerificationCode")}
+              </Text>
+            )}
+          </Box>
 
           <Button
+            variant="cta"
             onPress={handleVerifyOtp}
             disabled={verifying || otpCode.length !== OTP_LENGTH}
-            marginBottom="m"
             accessibilityRole="button"
           >
             {t("onboarding.verifyCode")}
           </Button>
+        </ScrollBox>
 
-          {resent && (
-            <Text
-              variant="description"
-              textAlign="center"
-              marginBottom="m"
-              color="successText"
-              {...liveRegionProps}
-            >
-              {t("onboarding.emailResent")}
-            </Text>
-          )}
-
+        <Box
+          gap="s"
+          paddingHorizontal="l"
+          paddingTop="m"
+          borderTopWidth={StyleSheet.hairlineWidth}
+          borderTopColor="lightGrey2"
+          style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
+        >
+          <Text
+            variant="small"
+            textAlign="center"
+            color={resent ? "successText" : "darkGrey1"}
+            {...(resent ? liveRegionProps : {})}
+          >
+            {resent
+              ? t("onboarding.emailResent")
+              : t("onboarding.noCodeReceived")}
+          </Text>
           <Button
-            variant="secondary"
+            variant="ctaOutline"
             onPress={handleResend}
             disabled={resending || cooldown > 0}
-            marginBottom="m"
             accessibilityRole="button"
           >
             {cooldown > 0
@@ -298,10 +295,10 @@ export function EmailVerificationScreen() {
 const styles = StyleSheet.create({
   otpInput: {
     width: "100%",
+    height: 64,
     fontSize: 24,
     letterSpacing: 12,
     textAlign: "center",
-    borderWidth: 1,
-    marginBottom: 15,
+    borderWidth: 1.5,
   },
 });

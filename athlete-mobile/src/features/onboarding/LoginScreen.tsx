@@ -1,3 +1,4 @@
+import { OnboardingHeadline } from "@/features/onboarding/OnboardingHeadline";
 import { EmailInputField } from "@/form/EmailInputField";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
@@ -48,15 +49,11 @@ export const LoginScreen: FC<Props> = ({
           source={require("../../../assets/img/logos/SA_dark.png")}
         />
 
-        <Box gap="s">
-          <Text variant="eyebrow">{t("onboarding.loginEyebrow")}</Text>
-          <Text variant="display" accessibilityRole="header">
-            {t("onboarding.loginHeading")}
-          </Text>
-          <Text variant="subtitle" color="darkGrey1">
-            {t("onboarding.loginDescription")}
-          </Text>
-        </Box>
+        <OnboardingHeadline
+          eyebrow={t("onboarding.loginEyebrow")}
+          heading={t("onboarding.loginHeading")}
+          description={t("onboarding.loginDescription")}
+        />
 
         <Box gap="m">
           <EmailInputField

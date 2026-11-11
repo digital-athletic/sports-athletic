@@ -72,6 +72,7 @@ type Actions = {
   setTempMaxValues: (values: MaxValuesType | null) => void;
   setTrainingStartTime: (time: number) => void;
   setTrainingEndTime: (time: number) => void;
+  resetTrainingEndTime: () => void;
   addPauseTime: (pauseTime: number) => void;
   addSkillTime: (focusArea: FocusArea, skillTime: number) => void;
   clearTraining: () => void;
@@ -180,6 +181,10 @@ export const useTrainingStore = create<TrainingState>()(
       setTrainingEndTime: (time) =>
         set((state) => {
           state.time.end = time;
+        }),
+      resetTrainingEndTime: () =>
+        set((state) => {
+          state.time.end = undefined;
         }),
       addPauseTime: (pauseTime) =>
         set((state) => {

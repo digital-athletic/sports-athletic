@@ -7,15 +7,26 @@ import {
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { act, fireEvent, render } from "../../utils/testUtils";
+import { BackHandler, Platform } from "react-native";
 
 const mockReplace = jest.fn();
 let mockSearchParams: { aborted?: string } = {};
 
-jest.mock("expo-router", () => ({
-  Stack: { Screen: () => null },
-  useRouter: () => ({ replace: mockReplace }),
-  useLocalSearchParams: () => mockSearchParams,
-}));
+jest.mock("expo-router", () => {
+  const { useEffect } = jest.requireActual("react");
+  return {
+    Stack: { Screen: () => null },
+    useRouter: () => ({ replace: mockReplace }),
+    useLocalSearchParams: () => mockSearchParams,
+    useFocusEffect: (effect: () => void | (() => void)) => {
+      useEffect(effect, [effect]);
+    },
+  };
+});
+
+const mockAddEventListener = jest
+  .spyOn(BackHandler, "addEventListener")
+  .mockReturnValue({ remove: jest.fn() });
 
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
@@ -45,7 +56,7 @@ describe("TrainingSuccessScreen: aborted training", () => {
     useExerciseProgressStore.setState({ xp: 0 });
   });
 
-  it("awards no XP, stores no workout and clears the session on Continue", async () => {
+  it("awards no XP, stores no workout and goes Home on Continue", async () => {
     const { getByText } = await render(<TrainingSuccessScreen />);
 
     await act(() => {
@@ -54,7 +65,6 @@ describe("TrainingSuccessScreen: aborted training", () => {
 
     expect(useExerciseProgressStore.getState().xp).toBe(0);
     expect(useCompletedWorkoutsStore.getState().workoutsList).toEqual([]);
-    expect(useTrainingStore.getState().exerciseList).toBeNull();
     expect(mockReplace).toHaveBeenCalledWith("/(tabs)/(home)");
   });
 });
@@ -123,5 +133,66 @@ describe("TrainingSuccessScreen: summary cards", () => {
     );
     expect(getByLabelText("Exercises: 1")).toBeTruthy();
     expect(getByLabelText(/^Duration: /)).toBeTruthy();
+  });
+});
+
+describe("TrainingSuccessScreen: leaving the screen", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSearchParams = {};
+    Platform.OS = "android";
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      activeTraining: { id: "workout-1", type: "PLAN" },
+      exerciseList: [
+        createExercise({ completed: true, set: [1, 1], repetition: 10 }),
+      ],
+      time: {
+        ...BASELINE_TRAINING_STATE.time,
+        start: 1_000,
+        end: 601_000,
+      },
+    });
+    useCompletedWorkoutsStore.getState().clearWorkoutHistory();
+  });
+
+  it("clears the session and goes Home on Continue", async () => {
+    const { getByText } = await render(<TrainingSuccessScreen />);
+
+    await act(() => {
+      fireEvent.press(getByText("Go on"));
+    });
+
+    expect(mockReplace).toHaveBeenCalledWith("/(tabs)/(home)");
+    expect(useTrainingStore.getState().exerciseList).toBeNull();
+    expect(useTrainingStore.getState().activeTraining).toBeNull();
+  });
+
+  it("still shows the summary after Continue cleared the session", async () => {
+    const { getByText, queryByText, getByTestId } = await render(
+      <TrainingSuccessScreen />,
+    );
+
+    await act(() => {
+      fireEvent.press(getByText("Go on"));
+    });
+
+    expect(getByTestId("training-success-summary")).toBeTruthy();
+    expect(queryByText(/did not record all of your training data/)).toBeNull();
+  });
+
+  it("goes Home on the Android hardware back like Continue", async () => {
+    await render(<TrainingSuccessScreen />);
+    const onHardwareBack = mockAddEventListener.mock.calls.find(
+      ([eventName]) => eventName === "hardwareBackPress",
+    )?.[1];
+
+    let handled: boolean | null | undefined;
+    await act(() => {
+      handled = onHardwareBack?.({ type: "hardwareBackPress", timeStamp: 0 });
+    });
+
+    expect(handled).toBe(true);
+    expect(mockReplace).toHaveBeenCalledWith("/(tabs)/(home)");
   });
 });

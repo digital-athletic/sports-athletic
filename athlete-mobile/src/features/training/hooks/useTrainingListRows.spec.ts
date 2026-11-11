@@ -290,6 +290,72 @@ describe("useTrainingListRows: all rows completed", () => {
   });
 });
 
+describe("useTrainingListRows: progress", () => {
+  beforeEach(() => {
+    useTrainingStore.setState(BASELINE);
+    seedMaxValues();
+    mockGetExerciseById.mockReturnValue(
+      createExerciseData({ id: "1", tags: [] }),
+    );
+  });
+
+  afterEach(() => {
+    mockGetExerciseById.mockReset();
+  });
+
+  it("is 0 while no set is completed", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1" }),
+        createExercise({ exerciseId: "1" }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.progress).toBe(0);
+  });
+
+  it("counts completed sets and ignores rests", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", completed: true }),
+        createExercise({ exerciseId: PAUSE_EXERCISE_ID, completed: true }),
+        createExercise({ exerciseId: "1" }),
+        createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
+        createExercise({ exerciseId: "1" }),
+        createExercise({ exerciseId: "1" }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.progress).toBe(0.25);
+  });
+
+  it("is 1 when every set is completed", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", completed: true }),
+        createExercise({ exerciseId: PAUSE_EXERCISE_ID }),
+        createExercise({ exerciseId: "1", completed: true }),
+      ],
+    });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.progress).toBe(1);
+  });
+
+  it("is 0 for an empty exercise list", async () => {
+    useTrainingStore.setState({ exerciseList: [] });
+
+    const { result } = await renderHook(() => useTrainingListRows());
+
+    expect(result.current.progress).toBe(0);
+  });
+});
+
 // One set of an exercise, e.g. generateSetEntry("1", 2, 3, { weight: 22.5 })
 // is { exerciseId: "1", set: [2, 3], weight: 22.5 }.
 const generateSetEntry = (

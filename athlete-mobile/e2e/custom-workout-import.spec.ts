@@ -4,7 +4,12 @@ import { expect, test } from "./fixtures";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { mockWakeLock } from "./mocks/wakeLock";
-import { BasePage, WorkoutPage } from "./pages";
+import {
+  BasePage,
+  TrainingListPage,
+  TrainingOverviewPage,
+  WorkoutPage,
+} from "./pages";
 import { getCompletedWorkouts } from "./utils/storage";
 
 const FIXTURE_DIRECTORY = path.join(__dirname, "mocks", "files");
@@ -28,6 +33,17 @@ async function importFileThrough(
   await page.getByRole("button", { name: buttonName }).click();
   const chooser = await chooserPromise;
   await chooser.setFiles(filePath);
+}
+
+/** Opens the imported workout from the "Your trainings" list as a checklist. */
+async function openImportedWorkoutAsChecklist(page: Page) {
+  await page.getByRole("button", { name: "My core", exact: true }).click();
+  await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Training Overview" }),
+  ).toBeVisible({ timeout: 15000 });
+  await new TrainingOverviewPage(page).startAsChecklist();
+  await new TrainingListPage(page).expectVisible();
 }
 
 test.describe("Custom workouts: import of own trainings", () => {
@@ -110,5 +126,41 @@ test.describe("Custom workouts: import of own trainings", () => {
     await workoutPage.returnToHome();
 
     expect(await getCompletedWorkouts(page)).toBe(startCount + 1);
+  });
+
+  test("athlete aborts an imported workout checklist twice and returns to the list it was opened from", async ({
+    page,
+  }) => {
+    test.setTimeout(90000);
+    await mockSupabaseAuth(page);
+    await mockWakeLock(page);
+    await page.clock.install();
+
+    const basePage = new BasePage(page);
+    const trainingListPage = new TrainingListPage(page);
+    await page.goto("/");
+    await basePage.expectLoggedIn();
+    await page.getByRole("button", { name: "Additional trainings" }).click();
+    await page.getByRole("button", { name: "Your trainings" }).click();
+    await importFileThrough(page, "Import training", VALID_FILE);
+    await expect(
+      page.getByRole("button", { name: "My core", exact: true }),
+    ).toBeVisible();
+
+    for (const attempt of [1, 2]) {
+      await openImportedWorkoutAsChecklist(page);
+      await trainingListPage.startRow("training-list-row-0");
+      await trainingListPage.completeSheet();
+      await trainingListPage.abort();
+
+      await expect(
+        page.getByRole("button", { name: "My core", exact: true }),
+        `the workout list shows after abort ${attempt}`,
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Import training" }),
+      ).toBeVisible();
+      await expect(page.locator('[role="progressbar"]')).toHaveCount(0);
+    }
   });
 });

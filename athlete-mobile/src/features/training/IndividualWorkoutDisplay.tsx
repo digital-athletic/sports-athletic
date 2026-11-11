@@ -10,6 +10,7 @@ import { useWindowClass } from "@/theme/useWindowClass";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TrainingPlanStatusWidget } from "./TrainingPlanStatusWidget";
+import type { TrainingCategory } from "./models/Training";
 import { TrainingPlanType } from "./models/TrainingPlan";
 import { isPlanEnded } from "./utils/timeUtils";
 import IconCirclePlusFilled from "@tabler/icons-react-native/IconCirclePlusFilled";
@@ -21,7 +22,7 @@ const PLAN_STATES = {
 };
 
 interface IndividualWorkoutDisplayProps {
-  goToTraining: (type: "QUICK" | "PREV" | "PLAN") => void;
+  goToTraining: (category: TrainingCategory) => void;
   goToAnamnesis: () => void;
   goToSeasonPhase: () => void;
   goToSectionDetails: (index: number) => void;
@@ -56,7 +57,7 @@ export const IndividualWorkoutDisplay: FC<IndividualWorkoutDisplayProps> = ({
   const planState = getPlanState(anamnesisCompleted, trainingPlan);
 
   const startButton = (
-    <Button variant="cta" onPress={() => goToTraining("PLAN")}>
+    <Button variant="cta" onPress={() => goToTraining("plan")}>
       {t("screens.home.startTraining")}
     </Button>
   );

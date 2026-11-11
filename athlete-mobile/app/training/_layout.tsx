@@ -20,6 +20,7 @@ export default function TrainingLayout() {
       }}
     >
       <Stack.Screen name="index" />
+      <Stack.Screen name="new" />
       <Stack.Screen name="training-overview" />
       {/* Phones stay in portrait: in landscape the video would push the timer,
           set and exercise name out of view. Android 16 ignores this lock on

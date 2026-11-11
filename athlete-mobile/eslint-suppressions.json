@@ -75,14 +75,6 @@
       "count": 2
     }
   },
-  "app/training/index.tsx": {
-    "complexity": {
-      "count": 1
-    },
-    "max-lines-per-function": {
-      "count": 2
-    }
-  },
   "app/training/manual-strength-test.tsx": {
     "complexity": {
       "count": 1
@@ -94,6 +86,14 @@
   "app/training/muscle-soreness.tsx": {
     "max-lines-per-function": {
       "count": 1
+    }
+  },
+  "app/training/new.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "max-lines-per-function": {
+      "count": 2
     }
   },
   "app/training/training-active.tsx": {

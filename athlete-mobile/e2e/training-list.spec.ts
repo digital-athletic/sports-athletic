@@ -203,6 +203,9 @@ test.describe("Training list: checklist session", () => {
       await trainingListPage.completeAll();
       await stepByStepWorkoutPage.returnToHome();
 
+      await expect
+        .poll(async () => (await getTrainingStorageState(page))?.exerciseList)
+        .toBeNull();
       const checklist = {
         workout: await getComparableCompletedWorkout(page),
         progress: await getComparableExerciseProgress(page),
@@ -213,7 +216,6 @@ test.describe("Training list: checklist session", () => {
       expect(checklist.workout).toEqual(stepByStep.workout);
       expect(checklist.progress).toEqual(stepByStep.progress);
       expect(checklist.profile).toEqual(stepByStep.profile);
-      expect(checklist.training.exerciseList).toBeNull();
       expect(checklist.training).toEqual(stepByStep.training);
     });
   });
@@ -510,7 +512,7 @@ test.describe("Training list: checklist session", () => {
       await trainingOverviewPage.expectVisible();
     });
 
-    test("athlete reopens the app during a checklist session and aborts the resumed training with back", async ({
+    test("athlete reopens the app during a checklist session and aborts the resumed training with back to Home", async ({
       page,
     }) => {
       test.setTimeout(60000);
@@ -535,12 +537,17 @@ test.describe("Training list: checklist session", () => {
       await trainingListPage.expectVisible();
       await trainingListPage.abort();
 
+      await workoutPage.expectLoggedIn();
       await expect(
-        page.getByRole("heading", { name: "Which workout do you start?" }),
+        page.getByRole("button", { name: "Start Training" }),
       ).toBeVisible();
+      await expect(page.locator('[role="progressbar"]')).toHaveCount(0);
       await expect
         .poll(async () => (await getTrainingStorageState(page))?.exerciseList)
         .toBeNull();
+      await expect(trainingListPage.entry("training-list-row-0")).toHaveCount(
+        0,
+      );
     });
 
     test("athlete finishes early with open sets and sees the result of an aborted training", async ({

@@ -5,6 +5,7 @@ import type { MigrationMap } from "./createMigrate";
 type LegacyTrainingState = State & {
   activeExerciseIndex?: number;
   completedExerciseIndices?: number[];
+  selection?: unknown;
 };
 
 export const trainingStoreMigrations: MigrationMap<State> = {
@@ -31,5 +32,11 @@ export const trainingStoreMigrations: MigrationMap<State> = {
           )
         : legacy.exerciseList,
     };
+  },
+  // v16 -> v17: dropped the stored training selection; the selection screen
+  // takes its category from the route.
+  16: (state) => {
+    const { selection, ...rest } = state as LegacyTrainingState;
+    return rest;
   },
 };

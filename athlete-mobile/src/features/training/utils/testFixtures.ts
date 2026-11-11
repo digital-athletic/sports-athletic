@@ -33,7 +33,6 @@ export const createExercise = (
 
 /** Baseline training store data state to reset between tests. */
 export const BASELINE_TRAINING_STATE = {
-  selection: null,
   exerciseList: null,
   progressBefore: null,
   equipment: [],

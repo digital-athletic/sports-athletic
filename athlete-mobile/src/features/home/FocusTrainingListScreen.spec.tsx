@@ -19,18 +19,6 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
-const mockSetTrainingSelection = jest.fn();
-jest.mock("@/features/training/trainingStore", () => {
-  const state = {
-    setTrainingSelection: (selection: string | null) =>
-      mockSetTrainingSelection(selection),
-  };
-  return {
-    useTrainingStore: (selector?: (s: typeof state) => unknown) =>
-      selector ? selector(state) : state,
-  };
-});
-
 const FOCUS_LABEL = "Focus-Trainings, 10-20 minutes topic specific training";
 const PREVENTION_LABEL = "Imminent Pains, Specifically improve imminent pains";
 
@@ -112,27 +100,25 @@ describe("FocusTrainingListScreen: tiles", () => {
 });
 
 describe("FocusTrainingListScreen: starting a training", () => {
-  it("selects QUICK and opens the focus training selection", async () => {
+  it("opens the focus selection through the route category", async () => {
     const { getByRole } = await render(<FocusTrainingListScreen />);
 
     await fireEvent.press(getByRole("button", { name: FOCUS_LABEL }));
 
-    expect(mockSetTrainingSelection).toHaveBeenCalledWith("QUICK");
     expect(mockPush).toHaveBeenCalledWith({
-      pathname: "/training",
-      params: { type: "QUICK" },
+      pathname: "/training/new",
+      params: { category: "focus" },
     });
   });
 
-  it("selects PREV and opens the prevention training selection", async () => {
+  it("opens the prevention selection through the route category", async () => {
     const { getByRole } = await render(<FocusTrainingListScreen />);
 
     await fireEvent.press(getByRole("button", { name: PREVENTION_LABEL }));
 
-    expect(mockSetTrainingSelection).toHaveBeenCalledWith("PREV");
     expect(mockPush).toHaveBeenCalledWith({
-      pathname: "/training",
-      params: { type: "PREV" },
+      pathname: "/training/new",
+      params: { category: "prevention" },
     });
   });
 });

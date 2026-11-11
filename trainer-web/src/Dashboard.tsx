@@ -6,6 +6,7 @@ import { ManagementTab } from "./components/ManagementTab";
 import { SettingsTab } from "./components/SettingsTab";
 import { PageLayout } from "./components/PageLayout";
 import { TabBar } from "./components/TabBar";
+import { WorkoutsTab } from "./components/workouts/WorkoutsTab";
 import { useTeam } from "./hooks/useTeam";
 import type { AssignableTeamRole } from "./types/team";
 
@@ -51,6 +52,7 @@ export const Dashboard = () => {
   const tabs = [
     { id: "management", label: t("dashboard.tabs.management") },
     { id: "evaluations", label: t("dashboard.tabs.evaluations") },
+    { id: "workouts", label: t("dashboard.tabs.workouts") },
     ...(settingsEnabled
       ? [{ id: "settings", label: t("dashboard.tabs.settings") }]
       : []),
@@ -160,6 +162,10 @@ export const Dashboard = () => {
           )}
 
           {activeTab === "evaluations" && <EvaluationsTab members={members} />}
+
+          {activeTab === "workouts" && (
+            <WorkoutsTab teamId={teamId} isOwner={!loading && isOwner} />
+          )}
 
           {activeTab === "settings" && settingsEnabled && <SettingsTab />}
         </div>

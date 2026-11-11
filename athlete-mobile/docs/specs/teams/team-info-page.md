@@ -2,15 +2,15 @@
 
 ## Why & What
 
-Athletes see the names of their teams under More, Team Management, but learn nothing about what the team expects. The **team info page** shows each team's **guidance** and **weekly target**, which the team owner writes in the trainer dashboard. Athletes read the expectations in the app instead of asking the trainer.
+An athlete in a team trains with the team on some days and alone with the app on the others. The **team info page** tells the athlete what the team expects: the **guidance** the team owner writes, for example the team training days, and the **weekly target**, the number of training days per week the owner expects. The owner writes both in the trainer dashboard; the athlete reads them in the app. This spec defines how the athlete reaches the page, when it loads, and what it shows in each state.
 
 ## Problem
 
-Tapping a team did nothing. How often the team expects athletes to train, and when the team trains together, lived only in conversations with the trainer.
+The athlete plans the week in the app, while the team's expectations come from the trainer. To plan around the team, the athlete needs to know how many training days the team asks for and which days are team sessions. The expectations change during a season, so the athlete needs the current values, never a copy from the day they joined.
 
 ## Solution
 
-Every row under Your Teams opens a read-only page for that team. The page loads the team each time it appears and shows the name, the guidance and the weekly target. The weekly target is a displayed count only and does not touch the training plan.
+Every row under Your Teams opens a read-only page for that team. The page loads the team each time it appears and shows the name, the guidance and the weekly target. The weekly target is a displayed count only; the training plan ignores it.
 
 Rejected: showing the team description. It stays a note for the trainer dashboard; guidance is the field written for athletes.
 
@@ -18,7 +18,7 @@ Rejected: showing the team description. It stays a note for the trainer dashboar
 
 - Editing guidance or weekly target in the app. Only the team owner edits them, in the trainer dashboard.
 - Using the weekly target in the training plan.
-- Home, Additional trainings: tapping a team there keeps opening its workouts.
+- Home, Additional trainings: tapping a team there opens its workouts.
 
 ## Algorithm
 

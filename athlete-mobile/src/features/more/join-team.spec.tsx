@@ -1,5 +1,10 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react-native";
 import { Alert } from "@/common/Alert";
+import type { Template } from "@/schemas/aiwl.schema";
+import {
+  listWorkoutsForTeam,
+  useCustomWorkoutsStore,
+} from "@/store/customWorkoutsStore";
 import JoinTeamScreen from "./JoinTeamScreen";
 
 const mockGetUserTeams = jest.fn();
@@ -187,10 +192,20 @@ describe("JoinTeamScreen: Leave flow", () => {
     expect(mockLeaveTeam).toHaveBeenCalledWith("team-1");
   });
 
-  it("removes team from list after successful leave", async () => {
+  it("removes team and its workouts after successful leave", async () => {
     mockGetUserTeams.mockResolvedValue([
       makeTeam({ id: "team-1", name: "Team Alpha", ownerId: "other-user" }),
+      makeTeam({ id: "team-2", name: "Team Beta", ownerId: "user-123" }),
     ]);
+    const store = useCustomWorkoutsStore.getState();
+    const template: Template = {
+      aiwl: 1,
+      id: "A",
+      name: { en: "A" },
+      blocks: [],
+    };
+    store.replaceTeamWorkouts("team-1", [template]);
+    store.replaceTeamWorkouts("team-2", [template]);
     mockLeaveTeam.mockResolvedValue(undefined);
 
     const { findByText, queryByText } = await render(<JoinTeamScreen />);
@@ -209,6 +224,9 @@ describe("JoinTeamScreen: Leave flow", () => {
     await waitFor(() => {
       expect(queryByText("Team Alpha")).toBeNull();
     });
+    const { workoutsById } = useCustomWorkoutsStore.getState();
+    expect(listWorkoutsForTeam(workoutsById, "team-1")).toHaveLength(0);
+    expect(listWorkoutsForTeam(workoutsById, "team-2")).toHaveLength(1);
   });
 
   it("shows leave error key when leaveTeam throws", async () => {

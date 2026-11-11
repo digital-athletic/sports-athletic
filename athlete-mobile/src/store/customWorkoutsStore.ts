@@ -38,6 +38,8 @@ type Actions = {
     teamId: string | null,
   ) => CustomWorkout;
   deleteOwnCustomWorkout: (id: string) => void;
+  replaceTeamWorkouts: (teamId: string, templates: Template[]) => void;
+  keepTeamWorkoutsOf: (teamIds: string[]) => void;
   clearCustomWorkouts: () => void;
   setHasHydrated: (hydrated: boolean) => void;
 };
@@ -46,6 +48,36 @@ export type CustomWorkoutsState = State & { _hasHydrated: boolean } & Actions;
 
 export const generateCustomWorkoutId = (): string =>
   `custom-${Date.now().toString(36)}${Math.random().toString(36).substring(2)}`;
+
+const removeWorkoutsWhere = (
+  state: State,
+  shouldRemove: (workout: CustomWorkout) => boolean,
+): void => {
+  for (const workout of Object.values(state.workoutsById)) {
+    if (shouldRemove(workout)) delete state.workoutsById[workout.id];
+  }
+};
+
+// importedAt counts up in server order, so the list follows that order.
+// A template id from the previous sync reuses its app id.
+const replaceTeamEntries = (
+  state: State,
+  teamId: string,
+  templates: Template[],
+): void => {
+  const appIds = new Map(
+    listWorkoutsForTeam(state.workoutsById, teamId).map((workout) => [
+      workout.template.id,
+      workout.id,
+    ]),
+  );
+  removeWorkoutsWhere(state, (workout) => workout.teamId === teamId);
+  const now = Date.now();
+  templates.forEach((template, index) => {
+    const id = appIds.get(template.id) ?? generateCustomWorkoutId();
+    state.workoutsById[id] = { id, teamId, template, importedAt: now + index };
+  });
+};
 
 export const useCustomWorkoutsStore = create<CustomWorkoutsState>()(
   persist(
@@ -83,6 +115,17 @@ export const useCustomWorkoutsStore = create<CustomWorkoutsState>()(
           delete state.workoutsById[id];
         });
       },
+
+      replaceTeamWorkouts: (teamId, templates) =>
+        set((state) => replaceTeamEntries(state, teamId, templates)),
+
+      keepTeamWorkoutsOf: (teamIds) =>
+        set((state) =>
+          removeWorkoutsWhere(
+            state,
+            ({ teamId }) => teamId !== null && !teamIds.includes(teamId),
+          ),
+        ),
 
       clearCustomWorkouts: () =>
         set((state) => {

@@ -1,5 +1,6 @@
 import {
   acceptInvitation,
+  fetchTeamWorkoutTemplates,
   getTeamInfo,
   getUserTeams,
   leaveTeam,
@@ -46,7 +47,7 @@ describe("getUserTeams", () => {
     expect(result).toEqual([]);
   });
 
-  it("returns empty array when team_members query returns an error", async () => {
+  it("rejects when team_members query returns an error", async () => {
     mockGetSession.mockResolvedValue({
       data: { session: { user: { id: "user-1" }, access_token: "tok" } },
     });
@@ -54,9 +55,7 @@ describe("getUserTeams", () => {
 
     mockFrom.mockReturnValueOnce({ select: mockSelect });
 
-    const result = await getUserTeams();
-
-    expect(result).toEqual([]);
+    await expect(getUserTeams()).rejects.toThrow();
   });
 
   it("returns empty array when team_members query returns empty array", async () => {
@@ -72,7 +71,7 @@ describe("getUserTeams", () => {
     expect(result).toEqual([]);
   });
 
-  it("returns empty array when teams query returns an error", async () => {
+  it("rejects when teams query returns an error", async () => {
     mockGetSession.mockResolvedValue({
       data: { session: { user: { id: "user-1" }, access_token: "tok" } },
     });
@@ -90,9 +89,7 @@ describe("getUserTeams", () => {
       .mockReturnValueOnce({ select: membersSelect })
       .mockReturnValueOnce({ select: teamsSelect });
 
-    const result = await getUserTeams();
-
-    expect(result).toEqual([]);
+    await expect(getUserTeams()).rejects.toThrow();
   });
 
   it("returns mapped UserTeam array on happy path with two teams", async () => {
@@ -491,6 +488,46 @@ describe("getTeamInfo", () => {
 
     await expect(getTeamInfo("team-1")).rejects.toThrow(
       "more.teamInfo.loadError",
+    );
+  });
+});
+
+describe("fetchTeamWorkoutTemplates", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const mockTeamWorkoutsQuery = (result: { data: unknown; error: unknown }) => {
+    const retry = jest.fn().mockResolvedValue(result);
+    const order = jest.fn(() => ({ retry }));
+    const eq = jest.fn(() => ({ order }));
+    const select = jest.fn(() => ({ eq }));
+    mockFrom.mockReturnValueOnce({ select });
+    return { select, eq, order, retry };
+  };
+
+  it("returns the templates of the team oldest first without retries", async () => {
+    const template = { aiwl: 1, id: "TEAM_CORE" };
+    const { select, eq, order, retry } = mockTeamWorkoutsQuery({
+      data: [{ template }],
+      error: null,
+    });
+
+    const result = await fetchTeamWorkoutTemplates("team-7");
+
+    expect(result).toEqual([template]);
+    expect(mockFrom).toHaveBeenCalledWith("team_workouts");
+    expect(select).toHaveBeenCalledWith("template");
+    expect(eq).toHaveBeenCalledWith("team_id", "team-7");
+    expect(order).toHaveBeenCalledWith("created_at", { ascending: true });
+    expect(retry).toHaveBeenCalledWith(false);
+  });
+
+  it("rejects when the query fails", async () => {
+    mockTeamWorkoutsQuery({ data: null, error: { message: "offline" } });
+
+    await expect(fetchTeamWorkoutTemplates("team-1")).rejects.toThrow(
+      "offline",
     );
   });
 });

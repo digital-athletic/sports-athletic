@@ -9,6 +9,7 @@ import { Stack, useRouter } from "expo-router";
 import { type TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/store/authStore";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { type I18nKey } from "@/i18n";
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
@@ -96,6 +97,13 @@ export default function JoinTeamScreen() {
             return leaveTeam(teamId)
               .then(() => {
                 setTeams((prev) => prev.filter((team) => team.id !== teamId));
+                useCustomWorkoutsStore
+                  .getState()
+                  .keepTeamWorkoutsOf(
+                    teams.flatMap((team) =>
+                      team.id === teamId ? [] : [team.id],
+                    ),
+                  );
               })
               .catch((err: unknown) => {
                 setLeaveErrorKey(errorKeyFrom(err));

@@ -41,18 +41,6 @@ const EQUIPMENT_VARIANTS = [
   { hasWeights: true, equipment: [WorkoutConstants.EQUIPMENT.DUMBBELL] },
 ];
 
-const parseTemplateText = (text: string): Template | undefined => {
-  const json = text.startsWith(BYTE_ORDER_MARK) ? text.slice(1) : text;
-  let data: unknown;
-  try {
-    data = JSON.parse(json);
-  } catch {
-    return undefined;
-  }
-  const result = v.safeParse(TemplateSchema, data);
-  return result.success ? result.output : undefined;
-};
-
 const isAtMost = (value: number | undefined, limit: number): boolean =>
   value === undefined || value <= limit;
 
@@ -206,13 +194,14 @@ export const isTemplateRunnable = (
   );
 };
 
-/** Strips a UTF-8 BOM, parses JSON, checks TemplateSchema, import limits, then runnability. */
-export const validateCustomWorkoutText = (
-  text: string,
+/** Checks an already parsed value against TemplateSchema, import limits, then runnability. */
+export const validateCustomWorkoutValue = (
+  data: unknown,
   skillTrees: Record<string, SkillTreeType>,
 ): CustomWorkoutValidation => {
-  const template = parseTemplateText(text);
-  if (!template) return { success: false, error: "INVALID_FORMAT" };
+  const result = v.safeParse(TemplateSchema, data);
+  if (!result.success) return { success: false, error: "INVALID_FORMAT" };
+  const template = result.output;
   if (
     !isTemplateWithinImportLimits(template) ||
     !isTemplateRunnable(template, skillTrees)
@@ -220,4 +209,19 @@ export const validateCustomWorkoutText = (
     return { success: false, error: "UNSUPPORTED_CONTENT" };
   }
   return { success: true, template };
+};
+
+/** Strips a UTF-8 BOM, parses JSON, then checks it like validateCustomWorkoutValue. */
+export const validateCustomWorkoutText = (
+  text: string,
+  skillTrees: Record<string, SkillTreeType>,
+): CustomWorkoutValidation => {
+  const json = text.startsWith(BYTE_ORDER_MARK) ? text.slice(1) : text;
+  let data: unknown;
+  try {
+    data = JSON.parse(json);
+  } catch {
+    return { success: false, error: "INVALID_FORMAT" };
+  }
+  return validateCustomWorkoutValue(data, skillTrees);
 };

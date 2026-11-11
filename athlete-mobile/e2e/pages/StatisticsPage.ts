@@ -239,12 +239,13 @@ export class StatisticsPage extends BasePage {
   }
 
   /**
-   * Verifies the Training tab is active.
+   * Verifies the Training tab of the statistics is active. The bottom tab bar
+   * has a tab with the same name, so the test ID picks the statistics tab.
    */
   async expectTrainingTabActive(): Promise<void> {
     await expect(
-      this.page.getByRole("tab", { name: "Training", exact: true }),
-    ).toBeVisible();
+      this.page.getByTestId("statistics-tab-workouts"),
+    ).toHaveAttribute("aria-selected", "true");
   }
 
   /**

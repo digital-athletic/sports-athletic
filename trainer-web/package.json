@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc -b",
+    "test": "vitest run",
     "test:e2e": "playwright test",
     "start": "node server.js",
     "generate:sbom": "node scripts/generate-sbom.mjs",
@@ -39,7 +40,8 @@
     "tailwindcss": "^4.1.17",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.3.7"
+    "vite": "^7.3.7",
+    "vitest": "^4.1.12"
   },
   "engines": {
     "node": "24.x"

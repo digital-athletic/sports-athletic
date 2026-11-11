@@ -12,7 +12,10 @@ import { ListItem } from "@/features/more/ListItem";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import IconAccessible from "@tabler/icons-react-native/IconAccessible";
+import IconBug from "@tabler/icons-react-native/IconBug";
+import IconClipboard from "@tabler/icons-react-native/IconClipboard";
 import IconCode from "@tabler/icons-react-native/IconCode";
+import IconEdit from "@tabler/icons-react-native/IconEdit";
 import IconFileText from "@tabler/icons-react-native/IconFileText";
 import IconInfoCircle from "@tabler/icons-react-native/IconInfoCircle";
 import IconMail from "@tabler/icons-react-native/IconMail";
@@ -29,7 +32,7 @@ const FormMenuItems: FC = () => {
         <ListItem
           title={t("more.consentU16")}
           externalUrl={externalLinks.consentU16}
-          icon="create"
+          icon={IconEdit}
           iconBackground="darkGrey1"
         />
       )}
@@ -37,7 +40,7 @@ const FormMenuItems: FC = () => {
         <ListItem
           title={t("more.feedbackReport")}
           externalUrl={externalLinks.feedbackReport}
-          icon="bug"
+          icon={IconBug}
           iconBackground="darkGrey1"
         />
       )}
@@ -45,7 +48,7 @@ const FormMenuItems: FC = () => {
         <ListItem
           title={t("more.survey")}
           externalUrl={externalLinks.survey}
-          icon="clipboard"
+          icon={IconClipboard}
           iconBackground="darkGrey1"
         />
       )}

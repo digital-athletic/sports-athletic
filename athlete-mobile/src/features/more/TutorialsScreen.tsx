@@ -3,6 +3,7 @@ import { ListItem } from "@/features/more/ListItem";
 import { useTutorials } from "@/features/more/useTutorials";
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
+import IconVideo from "@tabler/icons-react-native/IconVideo";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 
@@ -27,7 +28,7 @@ export default function TutorialsScreen() {
               title={tutorial.title}
               navPath="/(tabs)/(more)/tutorial/[tutorialId]"
               navParams={{ tutorialId: tutorial.id }}
-              icon="videocam"
+              icon={IconVideo}
               iconBackground="primary"
               isLast={index === tutorials.length - 1}
             />

@@ -62,6 +62,7 @@ function mapRpcError(error: { message?: string } | null): I18nKey {
   );
 }
 
+/** Rejects when a read fails, so callers never mistake a failure for no teams. */
 export async function getUserTeams(): Promise<UserTeam[]> {
   const {
     data: { session },
@@ -76,7 +77,9 @@ export async function getUserTeams(): Promise<UserTeam[]> {
     error: unknown;
   };
 
-  if (membershipsError || !memberships || memberships.length === 0) return [];
+  if (membershipsError || !memberships)
+    throw new Error("team_members read failed");
+  if (memberships.length === 0) return [];
 
   const teamIds = memberships.map((m) => m.team_id);
 
@@ -89,7 +92,7 @@ export async function getUserTeams(): Promise<UserTeam[]> {
     error: unknown;
   };
 
-  if (teamsError || !teams) return [];
+  if (teamsError || !teams) throw new Error("teams read failed");
 
   return teams.map((t) => ({ id: t.id, name: t.name, ownerId: t.owner_id }));
 }
@@ -151,4 +154,23 @@ export async function leaveTeam(teamId: string): Promise<void> {
   if (error) {
     throw new Error(mapRpcError(error));
   }
+}
+
+/** Raw templates of the team's workouts, oldest first; rejects when the query fails. */
+export async function fetchTeamWorkoutTemplates(
+  teamId: string,
+): Promise<unknown[]> {
+  const { data, error } = (await supabase
+    .from("team_workouts")
+    .select("template")
+    .eq("team_id", teamId)
+    .order("created_at", { ascending: true })
+    // Offline, the default retries wait 1s, 2s and 4s before the list falls back to the last sync.
+    .retry(false)) as {
+    data: { template: unknown }[] | null;
+    error: { message: string } | null;
+  };
+
+  if (!data) throw new Error(error?.message);
+  return data.map((row) => row.template);
 }

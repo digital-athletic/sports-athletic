@@ -68,7 +68,7 @@ flowchart TD
 | placesStore | `places-storage` | Equipment lists for HOME, STUDIO, HALL, OUTSIDE. Equipment filters exercise selection during generation. |
 | exerciseProgressStore | `exercise-progress-storage` | Per-exercise data (reps, weight, feedback) per skill in `exerciseProgress`, per-branch level, cumulative totals, XP and derived level, and max-strength test history. `exerciseData` keeps one record per exercise from the skill that wrote it last; only the legacy generator reads it. Version 20 copied each `exerciseData` record into `exerciseProgress` under the skill it names. |
 | completedWorkoutsStore | `completed-workouts-storage` | Workout history with full exercise snapshots and pre-calculated aggregates, a lightweight `workoutsList` index, and archived training plans. |
-| customWorkoutsStore | `custom-workouts-storage` | Imported AIWL templates keyed by app id, local only. |
+| customWorkoutsStore | `custom-workouts-storage` | AIWL templates keyed by app id. Imported templates have `teamId` null and exist only on the device. Team workouts have `teamId` set and copy the `team_workouts` rows of the last sync that pass the import rules. Each tap on the team tile replaces them. The athlete cannot delete team workouts; logout or leaving the team removes them. |
 | syncQueueStore | `sync-queue-storage` | Persistent queue of sync operations to Supabase with status, retry count (max 5), and a 500-item cap. |
 | trainingStore | `training-storage` | In-progress session: live exercise list, feedback, timers, active index. Cleared when the session finishes. (`src/features/training/`) |
 | userDataBackupStore | `user-data-backup-storage` | Per-user profile snapshots keyed by userId. Saved on logout, restored on next sign-in. |

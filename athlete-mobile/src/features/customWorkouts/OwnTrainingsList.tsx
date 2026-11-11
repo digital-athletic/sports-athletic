@@ -1,8 +1,7 @@
 import { Alert } from "@/common/Alert";
-import { SwipeToDeleteRow } from "@/common/SwipeToDeleteRow";
 import { readLocalizedTemplateName } from "@/data/loadTemplates";
+import { CustomWorkoutRow } from "@/features/customWorkouts/CustomWorkoutRow";
 import { EmptyTrainingListMessage } from "@/features/customWorkouts/EmptyTrainingListMessage";
-import { ColumnListRow } from "@/features/training/ColumnListRow";
 import {
   listWorkoutsForTeam,
   useCustomWorkoutsStore,
@@ -10,7 +9,6 @@ import {
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { TouchableBox } from "@/theme/TouchableBox";
-import { router } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -44,38 +42,6 @@ const EmptyOwnTrainings: FC<OwnTrainingsListProps> = ({
     </EmptyTrainingListMessage>
   );
 };
-
-type CustomWorkoutRowProps = {
-  workoutId: string;
-  name: string;
-  deleteLabel: string;
-  onDelete: () => void;
-};
-
-const CustomWorkoutRow: FC<CustomWorkoutRowProps> = ({
-  workoutId,
-  name,
-  deleteLabel,
-  onDelete,
-}) => (
-  <SwipeToDeleteRow deleteLabel={deleteLabel} onDelete={onDelete}>
-    <ColumnListRow
-      title={name}
-      onPress={() =>
-        router.navigate({
-          pathname: "/training/muscle-soreness",
-          params: { type: workoutId },
-        })
-      }
-      accessibilityActions={[{ name: "delete", label: deleteLabel }]}
-      onAccessibilityAction={({ nativeEvent }) => {
-        if (nativeEvent.actionName === "delete") {
-          onDelete();
-        }
-      }}
-    />
-  </SwipeToDeleteRow>
-);
 
 export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
   onImport,
@@ -124,8 +90,10 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
             key={workout.id}
             workoutId={workout.id}
             name={name}
-            deleteLabel={deleteLabel}
-            onDelete={() => confirmDeleteTraining(workout.id, name)}
+            deleteAction={{
+              label: deleteLabel,
+              onDelete: () => confirmDeleteTraining(workout.id, name),
+            }}
           />
         );
       })}

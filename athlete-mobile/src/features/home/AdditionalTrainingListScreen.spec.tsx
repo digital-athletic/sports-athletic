@@ -1,6 +1,11 @@
 import i18n from "@/i18n";
 import { Logger } from "@/services/Logger";
+import type { Template } from "@/schemas/aiwl.schema";
 import { type UserTeam } from "@/services/TeamService";
+import {
+  listWorkoutsForTeam,
+  useCustomWorkoutsStore,
+} from "@/store/customWorkoutsStore";
 import { act, fireEvent, render, waitFor, within } from "@/utils/testUtils";
 import AdditionalTrainingListScreen from "./AdditionalTrainingListScreen";
 
@@ -207,6 +212,44 @@ describe("AdditionalTrainingListScreen: entries", () => {
   });
 });
 
+describe("AdditionalTrainingListScreen: team workouts", () => {
+  const template: Template = {
+    aiwl: 1,
+    id: "A",
+    name: { en: "A" },
+    blocks: [],
+  };
+  const countTeamWorkouts = (teamId: string): number =>
+    listWorkoutsForTeam(useCustomWorkoutsStore.getState().workoutsById, teamId)
+      .length;
+
+  beforeEach(() => {
+    const store = useCustomWorkoutsStore.getState();
+    store.clearCustomWorkouts();
+    store.replaceTeamWorkouts("team-1", [template]);
+    store.replaceTeamWorkouts("team-2", [template]);
+  });
+
+  it("drops the workouts of teams the athlete left after loading the teams", async () => {
+    mockGetUserTeams.mockResolvedValue([generateTeam({ id: "team-2" })]);
+
+    const { findByText } = await render(<AdditionalTrainingListScreen />);
+
+    await findByText("Team Alpha");
+    expect(countTeamWorkouts("team-1")).toBe(0);
+    expect(countTeamWorkouts("team-2")).toBe(1);
+  });
+
+  it("keeps the team workouts when the teams cannot be loaded", async () => {
+    mockGetUserTeams.mockRejectedValue(new Error("offline"));
+
+    await render(<AdditionalTrainingListScreen />);
+
+    await waitFor(() => expect(Logger.logError).toHaveBeenCalled());
+    expect(countTeamWorkouts("team-1")).toBe(1);
+  });
+});
+
 describe("AdditionalTrainingListScreen: loading", () => {
   it("shows the own trainings entry and a loading indicator while teams load", async () => {
     mockGetUserTeams.mockReturnValue(new Promise(() => {}));
@@ -244,8 +287,10 @@ describe("AdditionalTrainingListScreen: navigation", () => {
     });
   });
 
-  it("pushes the workouts screen with the team name when a team entry is pressed", async () => {
-    mockGetUserTeams.mockResolvedValue([generateTeam({ name: "Team Alpha" })]);
+  it("pushes the workouts screen with the team name and id when a team entry is pressed", async () => {
+    mockGetUserTeams.mockResolvedValue([
+      generateTeam({ id: "team-1", name: "Team Alpha" }),
+    ]);
 
     const { findByText } = await render(<AdditionalTrainingListScreen />);
 
@@ -254,7 +299,7 @@ describe("AdditionalTrainingListScreen: navigation", () => {
     expect(mockPush).toHaveBeenCalledTimes(1);
     expect(mockPush).toHaveBeenCalledWith({
       pathname: "/additional-training-workouts",
-      params: { title: "Team Alpha", source: "team" },
+      params: { title: "Team Alpha", source: "team", teamId: "team-1" },
     });
   });
 });

@@ -91,6 +91,8 @@
         "subtitle": "Deine eigenen Trainings und die Trainings deiner Teams.",
         "ownTrainings": "Deine Trainings",
         "loadingTeams": "Teams werden geladen",
+        "loadingTrainings": "Trainings werden geladen",
+        "offlineNote": "Du bist offline. Die Liste zeigt die Trainings der letzten Synchronisierung.",
         "noWorkouts": "Aktuell sind keine Workouts verfügbar",
         "importTraining": "Training importieren",
         "deleteTrainingTitle": "Training löschen?",

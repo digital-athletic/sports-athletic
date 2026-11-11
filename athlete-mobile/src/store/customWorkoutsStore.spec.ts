@@ -433,6 +433,95 @@ describe("customWorkoutsStore: imported trainings", () => {
     });
   });
 
+  describe("replaceTeamWorkouts", () => {
+    it("lists exactly the given templates for the team in the given order", () => {
+      const store = useCustomWorkoutsStore.getState();
+
+      store.replaceTeamWorkouts("team-1", [
+        generateCustomTemplate({ id: "B" }),
+        generateCustomTemplate({ id: "A" }),
+      ]);
+
+      const { workoutsById } = useCustomWorkoutsStore.getState();
+      expect(
+        listWorkoutsForTeam(workoutsById, "team-1").map((w) => w.template.id),
+      ).toEqual(["B", "A"]);
+    });
+
+    it("removes a team workout the templates no longer contain", () => {
+      const store = useCustomWorkoutsStore.getState();
+      store.replaceTeamWorkouts("team-1", [
+        generateCustomTemplate({ id: "A" }),
+        generateCustomTemplate({ id: "B" }),
+      ]);
+
+      store.replaceTeamWorkouts("team-1", [
+        generateCustomTemplate({ id: "A" }),
+      ]);
+
+      const { workoutsById } = useCustomWorkoutsStore.getState();
+      expect(
+        listWorkoutsForTeam(workoutsById, "team-1").map((w) => w.template.id),
+      ).toEqual(["A"]);
+    });
+
+    it("reuses the app id of a template that is returned again", () => {
+      const store = useCustomWorkoutsStore.getState();
+      store.replaceTeamWorkouts("team-1", [
+        generateCustomTemplate({ id: "A" }),
+      ]);
+      const [first] = listWorkoutsForTeam(
+        useCustomWorkoutsStore.getState().workoutsById,
+        "team-1",
+      );
+
+      store.replaceTeamWorkouts("team-1", [
+        generateCustomTemplate({ id: "A", name: { en: "Renamed" } }),
+      ]);
+
+      const [second] = listWorkoutsForTeam(
+        useCustomWorkoutsStore.getState().workoutsById,
+        "team-1",
+      );
+      expect(second.id).toBe(first.id);
+      expect(second.template.name.en).toBe("Renamed");
+    });
+
+    it("leaves own workouts and the workouts of other teams unchanged", () => {
+      const store = useCustomWorkoutsStore.getState();
+      store.saveCustomWorkout(generateCustomTemplate({ id: "OWN" }), null);
+      store.replaceTeamWorkouts("team-2", [
+        generateCustomTemplate({ id: "OTHER" }),
+      ]);
+
+      store.replaceTeamWorkouts("team-1", []);
+
+      const { workoutsById } = useCustomWorkoutsStore.getState();
+      expect(listWorkoutsForTeam(workoutsById, null)).toHaveLength(1);
+      expect(listWorkoutsForTeam(workoutsById, "team-2")).toHaveLength(1);
+    });
+  });
+
+  describe("keepTeamWorkoutsOf", () => {
+    it("removes the workouts of teams missing from the list and leaves own workouts", () => {
+      const store = useCustomWorkoutsStore.getState();
+      store.saveCustomWorkout(generateCustomTemplate({ id: "OWN" }), null);
+      store.replaceTeamWorkouts("team-1", [
+        generateCustomTemplate({ id: "A" }),
+      ]);
+      store.replaceTeamWorkouts("team-2", [
+        generateCustomTemplate({ id: "B" }),
+      ]);
+
+      store.keepTeamWorkoutsOf(["team-2"]);
+
+      const { workoutsById } = useCustomWorkoutsStore.getState();
+      expect(listWorkoutsForTeam(workoutsById, "team-1")).toHaveLength(0);
+      expect(listWorkoutsForTeam(workoutsById, "team-2")).toHaveLength(1);
+      expect(listWorkoutsForTeam(workoutsById, null)).toHaveLength(1);
+    });
+  });
+
   describe("generateCustomWorkoutId", () => {
     it("returns a custom prefixed base36 id", () => {
       expect(generateCustomWorkoutId()).toMatch(/^custom-[0-9a-z]+$/);

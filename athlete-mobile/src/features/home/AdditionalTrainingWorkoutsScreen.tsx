@@ -1,6 +1,7 @@
 import { HeaderIconButton } from "@/common/HeaderIconButton";
 import { EmptyTrainingListMessage } from "@/features/customWorkouts/EmptyTrainingListMessage";
 import { OwnTrainingsList } from "@/features/customWorkouts/OwnTrainingsList";
+import { TeamTrainingsList } from "@/features/customWorkouts/TeamTrainingsList";
 import { useImportCustomWorkout } from "@/features/customWorkouts/useImportCustomWorkout";
 import {
   listWorkoutsForTeam,
@@ -19,6 +20,10 @@ export default function AdditionalTrainingWorkoutsScreen() {
       ? params.title
       : t("screens.home.additionalTrainings.title");
   const isOwnSource = params.source === "own";
+  const teamId =
+    params.source === "team" && typeof params.teamId === "string"
+      ? params.teamId
+      : "";
   const showsHeaderImport =
     isOwnSource && listWorkoutsForTeam(workoutsById, null).length > 0;
 
@@ -47,6 +52,8 @@ export default function AdditionalTrainingWorkoutsScreen() {
           onImport={importCustomWorkout}
           importing={importing}
         />
+      ) : teamId ? (
+        <TeamTrainingsList key={teamId} teamId={teamId} />
       ) : (
         <EmptyTrainingListMessage />
       )}

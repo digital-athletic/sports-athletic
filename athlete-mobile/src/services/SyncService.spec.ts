@@ -193,6 +193,7 @@ describe("syncExerciseData", () => {
     const payload: UserExerciseDataType = {
       exerciseId: "ex-3",
       workoutId: "workout-99",
+      position: 2,
       skill: "SWR1",
       repetition: 10,
       weight: 80,
@@ -215,6 +216,7 @@ describe("syncExerciseData", () => {
         user_id: TEST_USER_ID,
         exercise_id: "ex-3",
         workout_id: "workout-99",
+        position: 2,
         repetition: 10,
         weight: 80,
         duration: 30,
@@ -236,7 +238,23 @@ describe("syncExerciseData", () => {
     );
   });
 
-  it("upserts on user, exercise, workout and skill", async () => {
+  it("upserts on user, workout, exercise and position", async () => {
+    const payload = {
+      exerciseId: "118",
+      skill: "SWR1" as const,
+      workoutId: "w-42",
+      position: 3,
+    };
+
+    await syncExerciseData(payload, TEST_USER_ID);
+
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ workout_id: "w-42", position: 3 }),
+      { onConflict: "user_id,workout_id,exercise_id,position" },
+    );
+  });
+
+  it("defaults position to 0 when the payload has none", async () => {
     const payload = {
       exerciseId: "118",
       skill: "SWR1" as const,
@@ -245,9 +263,10 @@ describe("syncExerciseData", () => {
 
     await syncExerciseData(payload, TEST_USER_ID);
 
-    expect(mockUpsert).toHaveBeenCalledWith(expect.any(Object), {
-      onConflict: "user_id,exercise_id,workout_id,skill",
-    });
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({ position: 0 }),
+      expect.any(Object),
+    );
   });
 
   it("defaults workout_id to 'legacy' when workoutId is missing", async () => {
@@ -279,6 +298,7 @@ describe("syncExerciseData", () => {
         user_id: TEST_USER_ID,
         exercise_id: "ex-5",
         workout_id: "workout-7",
+        position: 0,
         repetition: null,
         weight: null,
         duration: null,
@@ -434,6 +454,33 @@ describe("processSingleItem", () => {
       expect.objectContaining({
         status: "FAILED",
         error: expect.stringContaining("DB error"),
+      }),
+    );
+  });
+});
+
+describe("processSingleItem: exercise position bounds", () => {
+  it("marks an EXERCISE_DATA item failed when the position exceeds the workout size", async () => {
+    useSyncQueueStore.getState().enqueue({
+      type: "EXERCISE_DATA",
+      referenceId: "ex-1",
+      payload: {
+        exerciseId: "ex-1",
+        skill: "SWR1",
+        workoutId: "workout-1",
+        position: 1001,
+      },
+      ownerUserId: TEST_USER_ID,
+    });
+
+    const item = useSyncQueueStore.getState().queue[0];
+    await processSingleItem(item, TEST_USER_ID);
+
+    expect(mockFrom).not.toHaveBeenCalled();
+    expect(useSyncQueueStore.getState().queue[0]).toEqual(
+      expect.objectContaining({
+        status: "FAILED",
+        error: "Invalid payload data",
       }),
     );
   });

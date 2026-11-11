@@ -19,6 +19,10 @@ export type MaxForceRepetitionsDataType = v.InferOutput<
 export const UserExerciseDataSchema = v.looseObject({
   exerciseId: v.string(),
   workoutId: v.optional(v.pipe(v.string(), v.minLength(1), v.maxLength(100))),
+  /** Index of the entry in the workout list; keys the row on the server. */
+  position: v.optional(
+    v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(1000)),
+  ),
   repetition: v.optional(v.number()),
   weight: v.optional(v.number()),
   /** Consecutive too hard ratings; a session without a rating leaves it unchanged. */

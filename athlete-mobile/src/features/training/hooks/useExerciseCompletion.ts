@@ -312,7 +312,7 @@ export function useExerciseCompletion() {
 
           if (leftExercise) {
             // A later return to this exercise starts from its start values.
-            resetExercise(id, { skill, branchId }, activeTraining?.id);
+            resetExercise(id, { skill, branchId }, activeTraining?.id, index);
           } else {
             let newWeight = weight;
             let newDuration = duration ? duration : undefined;
@@ -336,6 +336,7 @@ export function useExerciseCompletion() {
                 feedback: feedbackOverride ?? { difficulty: adjustment },
               },
               activeTraining?.id,
+              index,
             );
           }
         }
@@ -479,6 +480,7 @@ export function useExerciseCompletion() {
                   feedback: { difficulty: null },
                 },
                 activeTraining?.id,
+                index,
               );
               Logger.logEvent(
                 "exercise_weight_" +
@@ -492,7 +494,7 @@ export function useExerciseCompletion() {
               updateBranchLevel(levelUp, branchId, id, skill, ageGroup)
             ) {
               // A later return to this exercise starts from its start values.
-              resetExercise(id, { skill, branchId }, activeTraining?.id);
+              resetExercise(id, { skill, branchId }, activeTraining?.id, index);
             } else if (levelUp || levelDown) {
               // No other exercise found: keep the values, but the feedback
               // must not trigger a second level change.
@@ -513,6 +515,7 @@ export function useExerciseCompletion() {
                   feedback: { difficulty: null },
                 },
                 activeTraining?.id,
+                index,
               );
             } else {
               // No boundary change: feedback is preserved so TrainingGenerator
@@ -541,6 +544,7 @@ export function useExerciseCompletion() {
                   feedback: { difficulty: feedback },
                 },
                 activeTraining?.id,
+                index,
               );
             }
           }

@@ -185,9 +185,10 @@ SET LOCAL "request.jwt.claim.sub" TO :'C';
 SELECT is((SELECT count(*) FROM public.team_workouts WHERE team_id = :'TEAM'), 3::bigint,
   'read: co-owner reads the team''s workouts');
 
+-- All three are drafts; team_workout_status.test.sql tests published workouts.
 SET LOCAL "request.jwt.claim.sub" TO :'M';
-SELECT is((SELECT count(*) FROM public.team_workouts WHERE team_id = :'TEAM'), 3::bigint,
-  'read: member reads the team''s workouts');
+SELECT is((SELECT count(*) FROM public.team_workouts WHERE team_id = :'TEAM'), 0::bigint,
+  'read: member reads no drafts of the team');
 SELECT is((SELECT count(*) FROM public.team_workouts WHERE team_id = :'TEAM2'), 0::bigint,
   'read: member reads nothing of another team');
 

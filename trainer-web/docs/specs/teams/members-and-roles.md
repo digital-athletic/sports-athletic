@@ -31,8 +31,11 @@ The owner promotes a member to co-owner and demotes back. A co-owner sees athlet
 | See athlete training data | yes | yes | no |
 | Read guidance and weekly target | yes | yes | yes |
 | Edit guidance and weekly target | yes | no | no |
-| Read team workouts | yes | yes | yes |
+| Read published team workouts | yes | yes | yes |
+| Read draft team workouts | yes | yes | no |
+| Download team workouts as JSON | yes | yes | no |
 | Create, change, delete team workouts | yes | no | no |
+| Publish a draft, move a workout back to draft | yes | no | no |
 | Leave team | no | yes | yes |
 | Delete team | yes | no | no |
 
@@ -60,6 +63,14 @@ The dashboard decides "owner" from the team's owner field. A co-owner sees the s
 1. Members and co-owners see "Leave Team" and confirm.
 2. The backend refuses the owner with "Team owners cannot leave. Delete the team instead."
 3. On success the dashboard returns to team selection.
+
+### Team workout status
+
+1. Each team workout is a draft or published. The builder saves a new workout as a draft; saving a change leaves the status unchanged.
+2. The list marks drafts with a "Draft" badge. The owner publishes a draft or moves a published workout back to draft.
+3. The backend returns drafts to the owner and co-owners only, so the athlete app never syncs a draft. A workout moved back to draft disappears from the app on the athlete's next tap on the team tile.
+4. Workouts saved before the status existed are published.
+5. "Download JSON" saves the stored AIWL template, pretty-printed, as a file named after the workout, e.g. "tuesday-stability.json". The app's "Your trainings" import accepts the file unchanged.
 
 ### Owner checks
 

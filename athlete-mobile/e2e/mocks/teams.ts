@@ -2,8 +2,11 @@ import { type Page, type Route } from "@playwright/test";
 
 type MockTeam = { id: string; name: string };
 
-/** Same columns as the select in fetchTeamWorkoutTemplates. */
-export type TeamWorkoutRow = { template: unknown };
+/** The app selects only `template`; the mock applies the app's `status` filter. */
+export type TeamWorkoutRow = {
+  template: unknown;
+  status?: "draft" | "published";
+};
 
 export type TeamWorkoutsServer = {
   /** Rows the next team_workouts request returns. */
@@ -49,7 +52,13 @@ export async function mockTeamWithWorkouts(
     const hold = pendingHold;
     pendingHold = null;
     if (hold) await hold;
-    await fulfillJson(route, rows);
+    // Answers like the server answers the owner, who also reads drafts.
+    const url = new URL(route.request().url());
+    const onlyPublished = url.searchParams.get("status") === "eq.published";
+    await fulfillJson(
+      route,
+      rows.filter((row) => !onlyPublished || row.status !== "draft"),
+    );
   });
 
   return {

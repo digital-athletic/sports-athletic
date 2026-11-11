@@ -55,6 +55,8 @@ export type MockTeamWorkout = {
   id: string;
   team_id: string;
   template: Record<string, unknown>;
+  /** Defaults to "published", like a row saved before drafts existed. */
+  status?: "draft" | "published";
 };
 
 /** Makes an RPC fail; the string is the ErrorCode the app maps back. */
@@ -274,6 +276,7 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
           .filter((workout) => teamId === null || workout.team_id === teamId)
           .map((workout) => ({
             ...workout,
+            status: workout.status ?? "published",
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           })),
@@ -344,16 +347,46 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
     }
 
     // Answers with the row the request describes, the way the database does:
-    // a new workout gets an id, and the template carries the row id.
+    // a new workout gets an id and is a draft, the template carries the row
+    // id, and a changed workout retains the status of its fixture row.
     if (name === "save_team_workout") {
       const id: string =
         body.p_workout_id ?? "44444444-4444-4444-8444-444444444444";
+      const stored = teamWorkouts.find((workout) => workout.id === id);
       const now = new Date().toISOString();
       return route.fulfill(
         json({
           id,
           team_id: body.p_team_id,
           template: { ...body.p_template, id },
+          status:
+            body.p_workout_id === null
+              ? "draft"
+              : (stored?.status ?? "published"),
+          created_at: now,
+          updated_at: now,
+        }),
+      );
+    }
+
+    // Answers with the fixture row of the workout and the requested status.
+    // Like the database, finds the workout only within the requested team.
+    if (name === "set_team_workout_status") {
+      const stored = teamWorkouts.find(
+        (workout) =>
+          workout.id === body.p_workout_id &&
+          workout.team_id === body.p_team_id,
+      );
+      if (!stored) {
+        return route.fulfill(
+          json(postgrestError("TEAM_WORKOUT_NOT_FOUND"), 400),
+        );
+      }
+      const now = new Date().toISOString();
+      return route.fulfill(
+        json({
+          ...stored,
+          status: body.p_status,
           created_at: now,
           updated_at: now,
         }),

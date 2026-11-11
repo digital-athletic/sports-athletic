@@ -113,6 +113,13 @@ export interface TeamWorkout {
   id: string;
   team_id: string;
   template: unknown;
+  status: TeamWorkoutStatus;
   created_at: string;
   updated_at: string;
 }
+
+/**
+ * Members, and with them the athlete app, read published workouts only. The
+ * owner and co-owners read drafts too.
+ */
+export type TeamWorkoutStatus = "draft" | "published";

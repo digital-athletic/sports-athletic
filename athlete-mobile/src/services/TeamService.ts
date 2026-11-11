@@ -164,6 +164,8 @@ export async function fetchTeamWorkoutTemplates(
     .from("team_workouts")
     .select("template")
     .eq("team_id", teamId)
+    // RLS hides drafts from members; this filter also hides them from the owner and co-owners.
+    .eq("status", "published")
     .order("created_at", { ascending: true })
     // Offline, the default retries wait 1s, 2s and 4s before the list falls back to the last sync.
     .retry(false)) as {

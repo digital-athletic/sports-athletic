@@ -500,13 +500,17 @@ describe("fetchTeamWorkoutTemplates", () => {
   const mockTeamWorkoutsQuery = (result: { data: unknown; error: unknown }) => {
     const retry = jest.fn().mockResolvedValue(result);
     const order = jest.fn(() => ({ retry }));
-    const eq = jest.fn(() => ({ order }));
+    const filter: { eq: jest.Mock; order: jest.Mock } = {
+      eq: jest.fn(() => filter),
+      order,
+    };
+    const { eq } = filter;
     const select = jest.fn(() => ({ eq }));
     mockFrom.mockReturnValueOnce({ select });
     return { select, eq, order, retry };
   };
 
-  it("returns the templates of the team oldest first without retries", async () => {
+  it("returns the published templates of the team oldest first without retries", async () => {
     const template = { aiwl: 1, id: "TEAM_CORE" };
     const { select, eq, order, retry } = mockTeamWorkoutsQuery({
       data: [{ template }],
@@ -519,6 +523,7 @@ describe("fetchTeamWorkoutTemplates", () => {
     expect(mockFrom).toHaveBeenCalledWith("team_workouts");
     expect(select).toHaveBeenCalledWith("template");
     expect(eq).toHaveBeenCalledWith("team_id", "team-7");
+    expect(eq).toHaveBeenCalledWith("status", "published");
     expect(order).toHaveBeenCalledWith("created_at", { ascending: true });
     expect(retry).toHaveBeenCalledWith(false);
   });

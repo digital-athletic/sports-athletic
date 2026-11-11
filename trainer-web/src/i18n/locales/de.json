@@ -235,11 +235,17 @@
   },
   "workouts": {
     "title": "Team-Workouts",
-    "description": "Workouts, die deine Athleten in der App starten können.",
+    "description": "Veröffentlichte Workouts erscheinen in der App deiner Athleten. Neue Workouts sind zuerst Entwürfe, die nur du und deine Co-Eigentümer sehen.",
     "new": "Neues Workout",
     "edit": "Bearbeiten",
     "empty": "Dieses Team hat noch keine Workouts.",
     "emptyOwner": "Dieses Team hat noch keine Workouts. Erstelle das erste.",
+    "publish": "Veröffentlichen",
+    "moveToDraft": "Zurück zu Entwurf",
+    "download": "JSON herunterladen",
+    "status": {
+      "draft": "Entwurf"
+    },
     "deleteConfirmTitle": "Workout löschen?",
     "deleteConfirmMessage": "„{{name}}“ wird für das ganze Team entfernt.",
     "list": {

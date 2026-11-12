@@ -95,6 +95,7 @@
         "offlineNote": "You are offline. The list shows the trainings of the last sync.",
         "noWorkouts": "Currently no workouts available",
         "importTraining": "Import training",
+        "deleteTraining": "Delete {{name}}",
         "deleteTrainingTitle": "Delete training?",
         "deleteTrainingMessage": "{{name}} will be removed from your trainings. You can import it again from its file.",
         "importErrorTitle": "Import failed",

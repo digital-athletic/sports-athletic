@@ -1,5 +1,7 @@
+import { TileGrid } from "@/common/TileGrid";
 import { readLocalizedTemplateName } from "@/data/loadTemplates";
-import { CustomWorkoutRow } from "@/features/customWorkouts/CustomWorkoutRow";
+import { CustomWorkoutTile } from "@/features/customWorkouts/CustomWorkoutTile";
+import { detectCustomWorkoutFocus } from "@/features/customWorkouts/customWorkoutFocus";
 import { EmptyTrainingListMessage } from "@/features/customWorkouts/EmptyTrainingListMessage";
 import {
   listWorkoutsForTeam,
@@ -8,6 +10,7 @@ import {
 import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
 import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
@@ -24,20 +27,16 @@ const OfflineNote: FC = () => {
   const { t } = useTranslation();
 
   return (
-    <Box backgroundColor="lightGrey1" paddingHorizontal="m" paddingTop="m">
-      <Text variant="body" color="darkGrey1" accessibilityRole="text">
-        {t("screens.home.additionalTrainings.offlineNote")}
-      </Text>
-    </Box>
+    <Text variant="body" color="darkGrey1" accessibilityRole="text">
+      {t("screens.home.additionalTrainings.offlineNote")}
+    </Text>
   );
 };
 
-/**
- * The team's workouts from the device, synced on mount, i.e. on every tap on
- * the team tile; callers key the list by team id. Athletes cannot delete them.
- */
-export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
-  const { t, i18n } = useTranslation();
+/** Syncs the team's workouts on mount and reports how the sync ended. */
+const useTeamWorkoutsSync = (
+  teamId: string,
+): "loading" | TeamWorkoutsSyncResult => {
   const [status, setStatus] = useState<"loading" | TeamWorkoutsSyncResult>(
     "loading",
   );
@@ -50,6 +49,17 @@ export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
       cancelled = true;
     };
   }, [teamId]);
+  return status;
+};
+
+/**
+ * The team's workouts from the device, synced on mount, i.e. on every tap on
+ * the team tile; callers key the list by team id. Athletes cannot delete them.
+ */
+export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
+  const { t, i18n } = useTranslation();
+  const { spacing } = useTheme();
+  const status = useTeamWorkoutsSync(teamId);
   const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
   const workouts = listWorkoutsForTeam(workoutsById, teamId);
 
@@ -70,12 +80,20 @@ export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
     );
   }
 
-  const offlineNote = status === "offline" ? <OfflineNote /> : null;
+  const isOffline = status === "offline";
 
   if (workouts.length === 0) {
     return (
       <>
-        {offlineNote}
+        {isOffline && (
+          <Box
+            backgroundColor="lightGrey1"
+            paddingHorizontal="m"
+            paddingTop="m"
+          >
+            <OfflineNote />
+          </Box>
+        )}
         <EmptyTrainingListMessage />
       </>
     );
@@ -84,18 +102,25 @@ export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
   return (
     <ScrollBox
       flex={1}
-      backgroundColor="lightGrey1"
+      backgroundColor="white"
       contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ padding: spacing.l, gap: spacing.m }}
       testID="team-trainings-list"
     >
-      {offlineNote}
-      {workouts.map((workout) => (
-        <CustomWorkoutRow
-          key={workout.id}
-          workoutId={workout.id}
-          name={readLocalizedTemplateName(workout.template.name, i18n.language)}
-        />
-      ))}
+      {isOffline && <OfflineNote />}
+      <TileGrid testID="team-trainings-grid">
+        {workouts.map((workout) => (
+          <CustomWorkoutTile
+            key={workout.id}
+            workoutId={workout.id}
+            focus={detectCustomWorkoutFocus(workout.template)}
+            name={readLocalizedTemplateName(
+              workout.template.name,
+              i18n.language,
+            )}
+          />
+        ))}
+      </TileGrid>
     </ScrollBox>
   );
 };

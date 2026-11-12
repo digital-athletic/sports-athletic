@@ -66,7 +66,7 @@ const TrainingList: FC<TrainingListProps> = () => {
           borderTopWidth={1}
           borderTopColor="lightGrey1"
         >
-          <Box marginBottom="m" borderRadius="round" overflow="hidden">
+          <Box marginBottom="m">
             <TrainingProgressBar progress={progress} />
           </Box>
           <Button

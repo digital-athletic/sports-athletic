@@ -15,6 +15,7 @@ import {
   type SectionDraft,
   type WorkoutDraft,
 } from "../../utils/workoutBuilder";
+import { downloadWorkoutFile } from "../../utils/workoutFile";
 import { Button } from "../Button";
 import { ConfirmModal } from "../ConfirmModal";
 import { ErrorMessage } from "../ErrorMessage";
@@ -25,6 +26,8 @@ interface WorkoutsTabProps {
   teamId: string | null;
   /** Only the owner writes and changes the status. */
   isOwner: boolean;
+  /** True for the owner and co-owners; members only see the list. */
+  canDownload: boolean;
 }
 
 type Editing = { workoutId: string | null; draft: WorkoutDraft };
@@ -35,7 +38,11 @@ const keysFor = (workoutId: string): (() => string) => {
   return () => `${workoutId}-${next++}`;
 };
 
-export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
+export function WorkoutsTab({
+  teamId,
+  isOwner,
+  canDownload,
+}: WorkoutsTabProps) {
   const { t } = useTranslation();
   const {
     workouts,
@@ -50,17 +57,6 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
   const [deleting, setDeleting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [statusChanging, setStatusChanging] = useState<string | null>(null);
-  // The team id ties the notice to its team, so a team switch hides it.
-  const [published, setPublished] = useState<{
-    teamId: string | null;
-    name: string;
-  } | null>(null);
-
-  /** Hides the error and the publish notice of the previous action. */
-  const clearNotices = () => {
-    setActionError(null);
-    setPublished(null);
-  };
 
   const sectionLabel = (section: SectionDraft): string => {
     const skill = t(`workouts.skills.${section.skill}`);
@@ -73,6 +69,9 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
     return `${skillWithTags} · ${amount}`;
   };
 
+  const bookendLabel = (part: "warmUp" | "coolDown", count: number): string =>
+    `${t(`workouts.builder.${part}`)} · ${t("workouts.list.exercises", { count })}`;
+
   const handleSave = async (
     template: AiwlTemplate,
     workoutId: string | null,
@@ -84,7 +83,7 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
   const handleDelete = async () => {
     if (!toDelete) return;
     setDeleting(true);
-    clearNotices();
+    setActionError(null);
     try {
       await deleteWorkout(toDelete.id);
     } catch (err) {
@@ -95,20 +94,14 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
     }
   };
 
-  const bookendLabel = (part: "warmUp" | "coolDown", count: number): string =>
-    `${t(`workouts.builder.${part}`)} · ${t("workouts.list.exercises", { count })}`;
-
   const handleStatusChange = async (
-    workout: TeamWorkout,
+    workoutId: string,
     status: TeamWorkoutStatus,
   ) => {
-    setStatusChanging(workout.id);
-    clearNotices();
+    setStatusChanging(workoutId);
+    setActionError(null);
     try {
-      await setWorkoutStatus(workout.id, status);
-      if (status === "published") {
-        setPublished({ teamId, name: readTemplateName(workout.template) });
-      }
+      await setWorkoutStatus(workoutId, status);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t("common.error"));
     } finally {
@@ -142,7 +135,7 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
           <Button
             data-testid="workout-new"
             onClick={() => {
-              clearNotices();
+              setActionError(null);
               setEditing({ workoutId: null, draft: createEmptyDraft() });
             }}
           >
@@ -153,15 +146,6 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
 
       {error && <ErrorMessage message={error} />}
       {actionError && <ErrorMessage message={actionError} />}
-      {published?.teamId === teamId && (
-        <p
-          role="status"
-          data-testid="workout-published-notice"
-          className="rounded bg-green-50 p-3 text-sm text-green-800"
-        >
-          {t("workouts.publishedNotice", { name: published.name })}
-        </p>
-      )}
 
       {workouts.length === 0 ? (
         <p
@@ -222,44 +206,55 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
                     </ol>
                   )}
                 </div>
-                {isOwner && (
+                {canDownload && (
                   <div className="flex flex-wrap gap-2">
                     <Button
                       variant="secondary"
-                      data-testid={
-                        isDraft ? "workout-publish" : "workout-unpublish"
-                      }
-                      isLoading={statusChanging === workout.id}
-                      onClick={() =>
-                        handleStatusChange(
-                          workout,
-                          isDraft ? "published" : "draft",
-                        )
-                      }
+                      data-testid="workout-download"
+                      onClick={() => downloadWorkoutFile(workout.template)}
                     >
-                      {isDraft
-                        ? t("workouts.publish")
-                        : t("workouts.moveToDraft")}
+                      {t("workouts.download")}
                     </Button>
-                    {draft && (
+                    {isOwner && (
+                      <Button
+                        variant="secondary"
+                        data-testid={
+                          isDraft ? "workout-publish" : "workout-unpublish"
+                        }
+                        isLoading={statusChanging === workout.id}
+                        onClick={() =>
+                          handleStatusChange(
+                            workout.id,
+                            isDraft ? "published" : "draft",
+                          )
+                        }
+                      >
+                        {isDraft
+                          ? t("workouts.publish")
+                          : t("workouts.moveToDraft")}
+                      </Button>
+                    )}
+                    {isOwner && draft && (
                       <Button
                         variant="secondary"
                         data-testid="workout-edit"
                         onClick={() => {
-                          clearNotices();
+                          setActionError(null);
                           setEditing({ workoutId: workout.id, draft });
                         }}
                       >
                         {t("workouts.edit")}
                       </Button>
                     )}
-                    <Button
-                      variant="danger"
-                      data-testid="workout-delete"
-                      onClick={() => setToDelete(workout)}
-                    >
-                      {t("common.delete")}
-                    </Button>
+                    {isOwner && (
+                      <Button
+                        variant="danger"
+                        data-testid="workout-delete"
+                        onClick={() => setToDelete(workout)}
+                      >
+                        {t("common.delete")}
+                      </Button>
+                    )}
                   </div>
                 )}
               </li>

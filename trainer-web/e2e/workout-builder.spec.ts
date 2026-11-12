@@ -126,7 +126,7 @@ test.describe("Workout builder", () => {
     await workouts.expectNoWorkouts();
   });
 
-  test("an owner saves a new workout as a draft, publishes it and moves it back to draft", async ({
+  test("an owner saves a new workout as a draft, publishes it, moves it back to draft and downloads it", async ({
     page,
   }) => {
     const draft: MockTeamWorkout = { ...SAVED, status: "draft" };
@@ -163,7 +163,6 @@ test.describe("Workout builder", () => {
       p_status: "published",
     });
     await workouts.expectPublished("Tuesday stability");
-    await workouts.expectPublishedNotice("Tuesday stability");
 
     await mockSupabase(page, {
       trainerGrantedAt: TRAINER,
@@ -178,10 +177,13 @@ test.describe("Workout builder", () => {
       p_status: "draft",
     });
     await workouts.expectDraft("Tuesday stability");
-    await workouts.expectNoPublishedNotice();
+
+    const file = await workouts.download("Tuesday stability");
+    expect(file.fileName).toBe("tuesday-stability.json");
+    expect(file.text).toBe(JSON.stringify(SAVED.template, null, 2));
   });
 
-  test("an owner builds a workout with warm-up, a knee and hip prevention section and cool-down, then publishes it", async ({
+  test("an owner builds a workout with warm-up, a knee and hip prevention section and cool-down", async ({
     page,
   }) => {
     const blocks = [
@@ -239,16 +241,10 @@ test.describe("Workout builder", () => {
     expect(await saved).toMatchObject({ p_template: { blocks } });
     await workouts.expectBuilderClosed();
 
-    await workouts.publish("Knee care");
-    await workouts.expectPublishedNotice("Knee care");
-
     await workouts.editWorkout("Knee care");
     await workouts.expectBookendTicked("warm-up", 4);
     await workouts.expectBookendTicked("cool-down", 3);
     await workouts.expectSectionSkills(["PREV"]);
-
-    await workouts.cancel();
-    await workouts.expectNoPublishedNotice();
   });
 
   test("a saved workout with an unknown section opens in the builder without that section", async ({
@@ -386,7 +382,9 @@ test.describe("Workout builder", () => {
     await expect(page.getByTestId("workout-builder")).toBeVisible();
   });
 
-  test("a co-owner sees drafts without edit actions", async ({ page }) => {
+  test("a co-owner sees drafts without edit actions and downloads them", async ({
+    page,
+  }) => {
     const coOwned = {
       ...TEAM,
       owner_id: OTHER_OWNER,
@@ -404,9 +402,12 @@ test.describe("Workout builder", () => {
 
     await workouts.expectDraft("Tuesday stability");
     await workouts.expectNoEditActions();
+
+    const file = await workouts.download("Tuesday stability");
+    expect(file.fileName).toBe("tuesday-stability.json");
   });
 
-  test("a member sees the published workouts without edit actions", async ({
+  test("a member sees the published workouts without edit or download actions", async ({
     page,
   }) => {
     const joined = {
@@ -426,5 +427,6 @@ test.describe("Workout builder", () => {
 
     await workouts.expectPublished("Tuesday stability");
     await workouts.expectNoEditActions();
+    await workouts.expectNoDownload();
   });
 });

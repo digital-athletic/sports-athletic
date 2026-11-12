@@ -113,7 +113,6 @@ export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
           <CustomWorkoutTile
             key={workout.id}
             workoutId={workout.id}
-            isDraft={workout.isDraft}
             focus={detectCustomWorkoutFocus(workout.template)}
             name={readLocalizedTemplateName(
               workout.template.name,

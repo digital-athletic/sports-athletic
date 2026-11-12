@@ -1,6 +1,6 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
-import { fetchTeamWorkouts, type TeamWorkoutRow } from "@/services/TeamService";
 import type { Template } from "@/schemas/aiwl.schema";
+import { fetchTeamWorkoutTemplates } from "@/services/TeamService";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { validateCustomWorkoutValue } from "./validateCustomWorkout";
 
@@ -13,23 +13,17 @@ export type TeamWorkoutsSyncResult = "synced" | "offline";
 export const syncTeamWorkouts = async (
   teamId: string,
 ): Promise<TeamWorkoutsSyncResult> => {
-  let rows: TeamWorkoutRow[];
+  let values: unknown[];
   try {
-    rows = await fetchTeamWorkouts(teamId);
+    values = await fetchTeamWorkoutTemplates(teamId);
   } catch {
     return "offline";
   }
   const skillTrees = getAllSkillTrees();
-  const templates: Template[] = [];
-  const draftTemplateIds: string[] = [];
-  for (const row of rows) {
-    const validation = validateCustomWorkoutValue(row.template, skillTrees);
-    if (!validation.success) continue;
-    templates.push(validation.template);
-    if (row.isDraft) draftTemplateIds.push(validation.template.id);
-  }
-  useCustomWorkoutsStore
-    .getState()
-    .replaceTeamWorkouts(teamId, templates, draftTemplateIds);
+  const templates = values.flatMap((value): Template[] => {
+    const validation = validateCustomWorkoutValue(value, skillTrees);
+    return validation.success ? [validation.template] : [];
+  });
+  useCustomWorkoutsStore.getState().replaceTeamWorkouts(teamId, templates);
   return "synced";
 };

@@ -156,29 +156,23 @@ export async function leaveTeam(teamId: string): Promise<void> {
   }
 }
 
-export type TeamWorkoutRow = { template: unknown; isDraft: boolean };
-
-/**
- * The team's workouts with their raw templates, oldest first; rejects when the
- * query fails. RLS returns drafts to the owner and co-owners only.
- */
-export async function fetchTeamWorkouts(
+/** Raw templates of the team's workouts, oldest first; rejects when the query fails. */
+export async function fetchTeamWorkoutTemplates(
   teamId: string,
-): Promise<TeamWorkoutRow[]> {
+): Promise<unknown[]> {
   const { data, error } = (await supabase
     .from("team_workouts")
-    .select("template, status")
+    .select("template")
     .eq("team_id", teamId)
+    // RLS hides drafts from members; this filter also hides them from the owner and co-owners.
+    .eq("status", "published")
     .order("created_at", { ascending: true })
     // Offline, the default retries wait 1s, 2s and 4s before the list falls back to the last sync.
     .retry(false)) as {
-    data: { template: unknown; status: string }[] | null;
+    data: { template: unknown }[] | null;
     error: { message: string } | null;
   };
 
   if (!data) throw new Error(error?.message);
-  return data.map((row) => ({
-    template: row.template,
-    isDraft: row.status === "draft",
-  }));
+  return data.map((row) => row.template);
 }

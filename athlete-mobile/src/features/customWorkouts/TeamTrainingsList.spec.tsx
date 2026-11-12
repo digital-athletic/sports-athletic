@@ -5,14 +5,11 @@ import { TeamTrainingsList } from "./TeamTrainingsList";
 
 jest.mock("expo-router", () => ({ router: { navigate: jest.fn() } }));
 
-const mockFetchTeamWorkouts = jest.fn();
+const mockFetchTeamWorkoutTemplates = jest.fn();
 jest.mock("@/services/TeamService", () => ({
-  fetchTeamWorkouts: (teamId: string) => mockFetchTeamWorkouts(teamId),
+  fetchTeamWorkoutTemplates: (teamId: string) =>
+    mockFetchTeamWorkoutTemplates(teamId),
 }));
-
-// The rows as TeamService returns them, e.g. [{ template, isDraft: false }].
-const asPublished = (...templates: unknown[]) =>
-  templates.map((template) => ({ template, isDraft: false }));
 
 // e.g. { aiwl: 1, id: "TEAM_CORE", name: { en: "Team core" }, blocks: [{ kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2 }] }] }
 const generateTeamTemplate = (overrides: Partial<Template> = {}): Template => ({
@@ -34,15 +31,10 @@ beforeEach(() => {
 
 describe("TeamTrainingsList", () => {
   it("shows one tile per team workout on a tile grid", async () => {
-    mockFetchTeamWorkouts.mockResolvedValue(
-      asPublished(
-        generateTeamTemplate(),
-        generateTeamTemplate({
-          id: "TEAM_SPRINT",
-          name: { en: "Team sprint" },
-        }),
-      ),
-    );
+    mockFetchTeamWorkoutTemplates.mockResolvedValue([
+      generateTeamTemplate(),
+      generateTeamTemplate({ id: "TEAM_SPRINT", name: { en: "Team sprint" } }),
+    ]);
 
     const { findByRole, getAllByTestId } = await render(
       <TeamTrainingsList teamId="team-1" />,
@@ -54,9 +46,7 @@ describe("TeamTrainingsList", () => {
   });
 
   it("shows no delete button on a team workout", async () => {
-    mockFetchTeamWorkouts.mockResolvedValue(
-      asPublished(generateTeamTemplate()),
-    );
+    mockFetchTeamWorkoutTemplates.mockResolvedValue([generateTeamTemplate()]);
 
     const { findByRole, queryByRole } = await render(
       <TeamTrainingsList teamId="team-1" />,
@@ -66,34 +56,13 @@ describe("TeamTrainingsList", () => {
     expect(queryByRole("button", { name: "Delete Team core" })).toBeNull();
   });
 
-  it("marks a draft and leaves a published workout unmarked", async () => {
-    mockFetchTeamWorkouts.mockResolvedValue([
-      { template: generateTeamTemplate(), isDraft: false },
-      {
-        template: generateTeamTemplate({
-          id: "TEAM_SPRINT",
-          name: { en: "Team sprint" },
-        }),
-        isDraft: true,
-      },
-    ]);
-
-    const { findByRole, getAllByText } = await render(
-      <TeamTrainingsList teamId="team-1" />,
-    );
-
-    expect(
-      await findByRole("button", { name: "Team sprint, Draft" }),
-    ).toBeTruthy();
-    expect(await findByRole("button", { name: "Team core" })).toBeTruthy();
-    expect(getAllByText("Draft")).toHaveLength(1);
-  });
-
   it("shows the offline note above the tiles of the last sync", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateTeamTemplate(), "team-1");
-    mockFetchTeamWorkouts.mockRejectedValue(new Error("Failed to fetch"));
+    mockFetchTeamWorkoutTemplates.mockRejectedValue(
+      new Error("Failed to fetch"),
+    );
 
     const { findByText, getByRole } = await render(
       <TeamTrainingsList teamId="team-1" />,
@@ -104,7 +73,9 @@ describe("TeamTrainingsList", () => {
   });
 
   it("shows the empty message and the offline note without a previous sync", async () => {
-    mockFetchTeamWorkouts.mockRejectedValue(new Error("Failed to fetch"));
+    mockFetchTeamWorkoutTemplates.mockRejectedValue(
+      new Error("Failed to fetch"),
+    );
 
     const { findByText } = await render(<TeamTrainingsList teamId="team-1" />);
 

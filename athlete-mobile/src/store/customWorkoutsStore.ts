@@ -12,8 +12,6 @@ export type CustomWorkout = {
   teamId: string | null;
   template: Template;
   importedAt: number;
-  /** True for a team draft, which only the owner and co-owners receive. */
-  isDraft?: boolean;
 };
 
 export type State = { workoutsById: Record<string, CustomWorkout> };
@@ -40,12 +38,7 @@ type Actions = {
     teamId: string | null,
   ) => CustomWorkout;
   deleteOwnCustomWorkout: (id: string) => void;
-  /** `draftTemplateIds` names the templates that are drafts, e.g. ["TEAM_CORE"]. */
-  replaceTeamWorkouts: (
-    teamId: string,
-    templates: Template[],
-    draftTemplateIds?: string[],
-  ) => void;
+  replaceTeamWorkouts: (teamId: string, templates: Template[]) => void;
   keepTeamWorkoutsOf: (teamIds: string[]) => void;
   clearCustomWorkouts: () => void;
   setHasHydrated: (hydrated: boolean) => void;
@@ -71,7 +64,6 @@ const replaceTeamEntries = (
   state: State,
   teamId: string,
   templates: Template[],
-  draftTemplateIds: string[] = [],
 ): void => {
   const appIds = new Map(
     listWorkoutsForTeam(state.workoutsById, teamId).map((workout) => [
@@ -83,13 +75,7 @@ const replaceTeamEntries = (
   const now = Date.now();
   templates.forEach((template, index) => {
     const id = appIds.get(template.id) ?? generateCustomWorkoutId();
-    state.workoutsById[id] = {
-      id,
-      teamId,
-      template,
-      importedAt: now + index,
-      ...(draftTemplateIds.includes(template.id) && { isDraft: true }),
-    };
+    state.workoutsById[id] = { id, teamId, template, importedAt: now + index };
   });
 };
 
@@ -130,8 +116,8 @@ export const useCustomWorkoutsStore = create<CustomWorkoutsState>()(
         });
       },
 
-      replaceTeamWorkouts: (...args) =>
-        set((state) => replaceTeamEntries(state, ...args)),
+      replaceTeamWorkouts: (teamId, templates) =>
+        set((state) => replaceTeamEntries(state, teamId, templates)),
 
       keepTeamWorkoutsOf: (teamIds) =>
         set((state) =>

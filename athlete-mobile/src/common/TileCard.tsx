@@ -24,8 +24,6 @@ export const useTileCardHeaderHeight = (): number => {
 
 type TileCardProps = PropsWithChildren<{
   title: string;
-  /** Read out in place of the title, e.g. "Team sprint, Draft". */
-  accessibilityLabel?: string;
   onPress: () => void;
   testID?: string;
 }>;
@@ -36,7 +34,6 @@ type TileCardProps = PropsWithChildren<{
  */
 export const TileCard: FC<TileCardProps> = ({
   title,
-  accessibilityLabel,
   onPress,
   testID,
   children,
@@ -49,7 +46,7 @@ export const TileCard: FC<TileCardProps> = ({
       onPress={onPress}
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
       accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel ?? title}
+      accessibilityLabel={title}
       testID={testID}
     >
       <Card variant="outlined" flex={1} overflow="hidden">

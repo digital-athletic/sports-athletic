@@ -235,13 +235,14 @@
   },
   "workouts": {
     "title": "Team workouts",
-    "description": "Published workouts appear in your athletes' app. New workouts start as drafts. Only you and your co-owners see a draft, and you can test it in the app.",
+    "description": "Published workouts appear in your athletes' app. New workouts start as drafts, which only you and your co-owners see.",
     "new": "New workout",
     "edit": "Edit",
     "empty": "This team has no workouts yet.",
     "emptyOwner": "This team has no workouts yet. Create the first one.",
     "publish": "Publish",
     "moveToDraft": "Move to draft",
+    "download": "Download JSON",
     "status": {
       "draft": "Draft"
     },
@@ -314,7 +315,6 @@
       "PREVENTION_SPINE": "Spine",
       "PREVENTION_ANKLE": "Ankle",
       "PREVENTION_WRIST_ELBOW": "Wrist and elbow"
-    },
-    "publishedNotice": "\"{{name}}\" is published and assigned to the team's athletes."
+    }
   }
 }

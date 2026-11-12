@@ -5,14 +5,11 @@ import {
 } from "@/store/customWorkoutsStore";
 import { syncTeamWorkouts } from "./syncTeamWorkouts";
 
-const mockFetchTeamWorkouts = jest.fn();
+const mockFetchTeamWorkoutTemplates = jest.fn();
 jest.mock("@/services/TeamService", () => ({
-  fetchTeamWorkouts: (teamId: string) => mockFetchTeamWorkouts(teamId),
+  fetchTeamWorkoutTemplates: (teamId: string) =>
+    mockFetchTeamWorkoutTemplates(teamId),
 }));
-
-// The rows as TeamService returns them, e.g. [{ template, isDraft: false }].
-const asPublished = (...templates: unknown[]) =>
-  templates.map((template) => ({ template, isDraft: false }));
 
 // e.g. { aiwl: 1, id: "TEAM_CORE", name: { en: "Team core" }, blocks: [{ kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2 }] }] }
 const generateTeamTemplate = (overrides: Partial<Template> = {}): Template => ({
@@ -40,12 +37,10 @@ afterEach(() => {
 
 describe("syncTeamWorkouts", () => {
   it("stores the valid workouts for the team and reports synced", async () => {
-    mockFetchTeamWorkouts.mockResolvedValue(
-      asPublished(
-        generateTeamTemplate({ id: "A" }),
-        generateTeamTemplate({ id: "B" }),
-      ),
-    );
+    mockFetchTeamWorkoutTemplates.mockResolvedValue([
+      generateTeamTemplate({ id: "A" }),
+      generateTeamTemplate({ id: "B" }),
+    ]);
 
     const result = await syncTeamWorkouts("team-1");
 
@@ -53,41 +48,17 @@ describe("syncTeamWorkouts", () => {
     expect(listTeamTemplateIds("team-1")).toEqual(["A", "B"]);
   });
 
-  it("stores which workouts are drafts", async () => {
-    mockFetchTeamWorkouts.mockResolvedValue([
-      { template: generateTeamTemplate({ id: "A" }), isDraft: false },
-      { template: generateTeamTemplate({ id: "B" }), isDraft: true },
-    ]);
-
-    await syncTeamWorkouts("team-1");
-
-    const drafts = listWorkoutsForTeam(
-      useCustomWorkoutsStore.getState().workoutsById,
-      "team-1",
-    ).map((workout) => [workout.template.id, workout.isDraft === true]);
-    expect(drafts).toEqual([
-      ["A", false],
-      ["B", true],
-    ]);
-  });
-
   it("leaves out a workout that fails the import rules", async () => {
-    mockFetchTeamWorkouts.mockResolvedValue(
-      asPublished(
-        generateTeamTemplate({ id: "A" }),
-        generateTeamTemplate({
-          id: "UNKNOWN_SKILL",
-          blocks: [
-            {
-              kind: "picks",
-              skill: "NO_SKILL",
-              picks: [{ tags: [], count: 2 }],
-            },
-          ],
-        }),
-        { aiwl: 1, id: "BROKEN" },
-      ),
-    );
+    mockFetchTeamWorkoutTemplates.mockResolvedValue([
+      generateTeamTemplate({ id: "A" }),
+      generateTeamTemplate({
+        id: "UNKNOWN_SKILL",
+        blocks: [
+          { kind: "picks", skill: "NO_SKILL", picks: [{ tags: [], count: 2 }] },
+        ],
+      }),
+      { aiwl: 1, id: "BROKEN" },
+    ]);
 
     await syncTeamWorkouts("team-1");
 
@@ -95,11 +66,13 @@ describe("syncTeamWorkouts", () => {
   });
 
   it("reports offline and leaves the last sync in place when the fetch fails", async () => {
-    mockFetchTeamWorkouts.mockResolvedValueOnce(
-      asPublished(generateTeamTemplate({ id: "A" })),
-    );
+    mockFetchTeamWorkoutTemplates.mockResolvedValueOnce([
+      generateTeamTemplate({ id: "A" }),
+    ]);
     await syncTeamWorkouts("team-1");
-    mockFetchTeamWorkouts.mockRejectedValueOnce(new Error("Failed to fetch"));
+    mockFetchTeamWorkoutTemplates.mockRejectedValueOnce(
+      new Error("Failed to fetch"),
+    );
 
     const result = await syncTeamWorkouts("team-1");
 

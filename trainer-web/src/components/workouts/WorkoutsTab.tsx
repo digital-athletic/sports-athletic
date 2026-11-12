@@ -95,7 +95,10 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
     }
   };
 
-  const bookendLabel = (part: "warmUp" | "coolDown", count: number): string =>
+  const fixedSectionLabel = (
+    part: "warmUp" | "coolDown",
+    count: number,
+  ): string =>
     `${t(`workouts.builder.${part}`)} · ${t("workouts.list.exercises", { count })}`;
 
   const handleStatusChange = async (
@@ -202,7 +205,7 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
                     <ol className="mt-1 text-sm text-gray-600">
                       {draft.warmUp.enabled && (
                         <li data-testid="workout-warm-up-line">
-                          {bookendLabel("warmUp", draft.warmUp.amount)}
+                          {fixedSectionLabel("warmUp", draft.warmUp.amount)}
                         </li>
                       )}
                       {draft.sections.map((section) => (
@@ -216,7 +219,7 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
                       ))}
                       {draft.coolDown.enabled && (
                         <li data-testid="workout-cool-down-line">
-                          {bookendLabel("coolDown", draft.coolDown.amount)}
+                          {fixedSectionLabel("coolDown", draft.coolDown.amount)}
                         </li>
                       )}
                     </ol>

@@ -456,7 +456,7 @@ describe("templateToDraft", () => {
     ]);
   });
 
-  const bookend = (skill: string, count: number) => ({
+  const fixedSection = (skill: string, count: number) => ({
     kind: "picks",
     skill,
     picks: [{ tags: [], count }],
@@ -473,22 +473,22 @@ describe("templateToDraft", () => {
   it.each([
     [
       "only a warm-up",
-      [bookend("WU", 4)],
+      [fixedSection("WU", 4)],
       { warmUp: 4, coolDown: false, sections: [] },
     ],
     [
       "only a cool-down",
-      [bookend("CD", 3)],
+      [fixedSection("CD", 3)],
       { warmUp: false, coolDown: 3, sections: [] },
     ],
     [
       "a warm-up and a cool-down without sections",
-      [bookend("WU", 4), bookend("CD", 3)],
+      [fixedSection("WU", 4), fixedSection("CD", 3)],
       { warmUp: 4, coolDown: 3, sections: [] },
     ],
     [
       "a cool-down first and a warm-up last",
-      [bookend("CD", 3), picks("GKS"), bookend("WU", 4)],
+      [fixedSection("CD", 3), picks("GKS"), fixedSection("WU", 4)],
       { warmUp: false, coolDown: false, sections: ["GKS"] },
     ],
     [

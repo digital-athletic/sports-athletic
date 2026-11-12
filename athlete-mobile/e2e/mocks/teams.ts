@@ -2,7 +2,7 @@ import { type Page, type Route } from "@playwright/test";
 
 type MockTeam = { id: string; name: string };
 
-/** The app selects only `template`; the mock applies the app's `status` filter. */
+/** A row as the app selects it: the template and the status. */
 export type TeamWorkoutRow = {
   template: unknown;
   status?: "draft" | "published";
@@ -31,6 +31,8 @@ const fulfillJson = (route: Route, body: unknown) =>
 export async function mockTeamWithWorkouts(
   page: Page,
   team: MockTeam,
+  // Row level security returns drafts to the owner and co-owners ("staff") only.
+  reader: "member" | "staff" = "member",
 ): Promise<TeamWorkoutsServer> {
   let rows: TeamWorkoutRow[] = [];
   let offline = false;
@@ -52,12 +54,9 @@ export async function mockTeamWithWorkouts(
     const hold = pendingHold;
     pendingHold = null;
     if (hold) await hold;
-    // Answers like the server answers the owner, who also reads drafts.
-    const url = new URL(route.request().url());
-    const onlyPublished = url.searchParams.get("status") === "eq.published";
     await fulfillJson(
       route,
-      rows.filter((row) => !onlyPublished || row.status !== "draft"),
+      rows.filter((row) => reader === "staff" || row.status !== "draft"),
     );
   });
 

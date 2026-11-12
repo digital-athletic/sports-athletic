@@ -1089,6 +1089,7 @@ describe("PlanGenerator", () => {
         20: [
           { tags: ["REGION_UPPER_BODY"], count: 2 },
           { tags: ["REGION_LOWER_BODY"], count: 2 },
+          { tags: ["SKILL_SAS"], count: 1 },
         ],
         25: [
           { tags: ["REGION_UPPER_BODY"], count: 2 },

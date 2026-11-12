@@ -221,6 +221,28 @@ const readSetRepetitions = (
   return { level: checkedLevel, repetitions };
 };
 
+/**
+ * Returns the repetitions of each working set of a level for an athlete without
+ * history: the first step of each set's ladder. Adolescents and adults share
+ * one table, so the function uses the adult table for both.
+ *
+ * readStartWorkingRepetitions("PROFESSIONAL") → [3, 3, 2, 2]
+ */
+export const readStartWorkingRepetitions = (levelTag: LevelTag): number[] => {
+  const table =
+    WorkoutConstants.MAX_STRENGTH_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT.ADULT?.[
+      levelTag
+    ] ?? {};
+  return readLevelSets(levelTag).map((_, setIndex) => {
+    const { weightPercentage, level } = readFirstStep(
+      table,
+      levelTag,
+      setIndex,
+    );
+    return readSetRepetitions(table, weightPercentage, level).repetitions;
+  });
+};
+
 const readBufferTable = (athlete: UserType): BufferTable => {
   const ageRepetitions =
     WorkoutConstants.MAX_STRENGTH_REPETITIONS_PER_AGE_LEVEL_AND_WEIGHT[

@@ -1,5 +1,5 @@
 import type { SetTuple } from "@/common/types/SetTuple";
-import { WorkoutConstants } from "@/constants/workoutConstants";
+import { type LevelTag, WorkoutConstants } from "@/constants/workoutConstants";
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import {
   PAUSE_EXERCISE_ID,
@@ -36,10 +36,10 @@ import {
 import { roundWeight } from "../exerciseValues/weightRounding";
 
 const WARM_UP_WEIGHT_PERCENTAGES = [50, 75];
-const WARM_UP_REST_SECONDS = 60;
-const LAST_WORKING_SET_REST_SECONDS = 120;
-const BEFORE_SUPPORT_REST_SECONDS = 30;
-const BETWEEN_SUPPORT_SETS_REST_SECONDS = 60;
+export const WARM_UP_REST_SECONDS = 60;
+export const LAST_WORKING_SET_REST_SECONDS = 120;
+export const BEFORE_SUPPORT_REST_SECONDS = 30;
+export const BETWEEN_SUPPORT_SETS_REST_SECONDS = 60;
 
 /** The rests between two working sets, in seconds. */
 interface WorkingSetRests {
@@ -55,6 +55,16 @@ const DEFAULT_WORKING_SET_RESTS: WorkingSetRests = {
   afterSupport: 30,
   withoutSupport: 180,
 };
+
+/**
+ * Returns the rests between two working sets of a level.
+ *
+ * readWorkingSetRests("PROFESSIONAL") → { afterSupport: 90, withoutSupport: 240 }
+ */
+export const readWorkingSetRests = (level: LevelTag): WorkingSetRests =>
+  level === WorkoutConstants.LEVELS.PROFESSIONAL
+    ? PROFESSIONAL_WORKING_SET_RESTS
+    : DEFAULT_WORKING_SET_RESTS;
 
 interface MaxStrengthContext {
   skill: SkillCode;
@@ -223,10 +233,7 @@ export const buildMaxStrengthSetList: SkillSetListBuilder = (
     maxValues:
       requireWorkoutData(input.athlete).maxValues ?? DEFAULT_MAX_VALUES,
     weightedShare: readWeightedSupportShare(input),
-    workingSetRests:
-      getUserLevel(input.athlete) === WorkoutConstants.LEVELS.PROFESSIONAL
-        ? PROFESSIONAL_WORKING_SET_RESTS
-        : DEFAULT_WORKING_SET_RESTS,
+    workingSetRests: readWorkingSetRests(getUserLevel(input.athlete)),
   };
   const exerciseMap = createExerciseMap(input.exerciseCatalog);
   const setList: GeneratedSetListEntry[] = [];

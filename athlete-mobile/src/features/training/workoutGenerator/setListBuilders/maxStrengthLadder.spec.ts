@@ -14,6 +14,7 @@ import type {
 import type { MaxForceRepetitionsDataType } from "@/schemas/sync.schema";
 import type { UserType } from "@/schemas/user.schema";
 import {
+  readStartWorkingRepetitions,
   readMaxTrainingRepetitions,
   readMaxTrainingWeights,
 } from "./maxStrengthLadder";
@@ -417,4 +418,16 @@ describe("maxStrengthLadder: buffer table", () => {
       "75x6",
     ]);
   });
+});
+
+describe("maxStrengthLadder: start working repetitions", () => {
+  it.each<[LevelTag, number[]]>([
+    ["PROFESSIONAL", [3, 3, 2, 2]],
+    ["ADVANCED", [5, 2, 2]],
+  ])(
+    "returns the repetitions of each working set of %s without history",
+    (level, expected) => {
+      expect(readStartWorkingRepetitions(level)).toEqual(expected);
+    },
+  );
 });

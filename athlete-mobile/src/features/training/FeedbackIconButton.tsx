@@ -20,7 +20,7 @@ const FEEDBACK_ICON = {
   SUCCEEDED: {
     outline: IconCircleCheck,
     filled: IconCircleCheckFilled,
-    color: "darkGrey2",
+    color: "onSurfaceVariant",
   },
   TOO_HARD: {
     outline: IconCircleArrowDown,
@@ -71,7 +71,7 @@ export const FeedbackIconButton: FC<FeedbackIconButtonProps> = ({
       testID={testId}
     >
       {label && (
-        <Text variant="small" color="darkGrey1">
+        <Text variant="small" color="onSurfaceVariant">
           {label}
         </Text>
       )}

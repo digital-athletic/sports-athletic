@@ -45,7 +45,7 @@ export const ExerciseInfoPanel: FC<Props> = ({
     <Box
       paddingVertical="m"
       borderBottomWidth={1}
-      borderBottomColor="lightGrey2"
+      borderBottomColor="outlineVariant"
     >
       {/* Sets */}
       <Box flexDirection="row" minHeight={75}>
@@ -54,7 +54,7 @@ export const ExerciseInfoPanel: FC<Props> = ({
           justifyContent="center"
           alignItems="center"
           borderRightWidth={1}
-          borderRightColor="lightGrey2"
+          borderRightColor="outlineVariant"
           paddingHorizontal="s"
         >
           {exercise?.set && (
@@ -65,7 +65,7 @@ export const ExerciseInfoPanel: FC<Props> = ({
                   total: exercise.set?.[1],
                 })}
               </Text>
-              <Text variant="small" color="darkGrey1">
+              <Text variant="small" color="onSurfaceVariant">
                 {t("training.active.sets", {
                   count: exercise.set?.[1],
                 })}
@@ -80,7 +80,7 @@ export const ExerciseInfoPanel: FC<Props> = ({
           justifyContent="center"
           alignItems="center"
           borderRightWidth={1}
-          borderRightColor="lightGrey2"
+          borderRightColor="outlineVariant"
           paddingHorizontal="s"
           gap="m"
         >
@@ -90,7 +90,7 @@ export const ExerciseInfoPanel: FC<Props> = ({
               return (
                 <Box alignItems="center">
                   <Text variant="largeTitle">{value}</Text>
-                  <Text variant="small" color="darkGrey1">
+                  <Text variant="small" color="onSurfaceVariant">
                     {unit}
                   </Text>
                 </Box>
@@ -103,7 +103,7 @@ export const ExerciseInfoPanel: FC<Props> = ({
                   ? t("training.active.maxReps")
                   : exercise.repetition}
               </Text>
-              <Text variant="small" color="darkGrey1">
+              <Text variant="small" color="onSurfaceVariant">
                 {t("training.active.repetitions")}
               </Text>
             </Box>

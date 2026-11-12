@@ -262,23 +262,23 @@ describe("TrainingExerciseSheet: heading", () => {
 });
 
 describe("TrainingExerciseSheet: light design on a device in dark mode", () => {
-  it("paints the sheet in the light background color of the app", async () => {
+  it("paints the sheet in the surface color of the app theme", async () => {
     const { getByTestId } = await render(
       <TrainingExerciseSheet {...generateSheetProps()} />,
     );
 
     expect(getByTestId("training-list-sheet").props.containerColor).toBe(
-      theme.colors.white,
+      theme.colors.surface,
     );
   });
 
-  it("gives native sheet content the dark text color of the app", async () => {
+  it("gives native sheet content the text color of the app theme", async () => {
     const { getByTestId } = await render(
       <TrainingExerciseSheet {...generateSheetProps()} />,
     );
 
     expect(getByTestId("training-list-sheet").props.contentColor).toBe(
-      theme.colors.darkGrey3,
+      theme.colors.onSurface,
     );
   });
 
@@ -709,7 +709,7 @@ describe("TrainingExerciseSheet: feedback buttons", () => {
 
   it.each([
     ["Too hard", "IconCircleArrowDown", "error"],
-    ["Succeeded", "IconCircleCheck", "darkGrey2"],
+    ["Succeeded", "IconCircleCheck", "onSurfaceVariant"],
     ["Too easy", "IconCircleArrowUp", "info"],
   ] as const)(
     "draws the %s button with its arrow or checkmark in its color",

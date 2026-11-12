@@ -38,8 +38,8 @@ export const CheckBox: FC<CheckBoxProps> = ({
         height={iconSize}
         borderRadius="s"
         borderWidth={1}
-        borderColor={checked ? "primary" : "darkGrey1"}
-        backgroundColor={checked ? "primary" : "lightGrey2"}
+        borderColor={checked ? "primary" : "onSurfaceVariant"}
+        backgroundColor={checked ? "primary" : "surfaceContainerHigh"}
         justifyContent="center"
         alignItems="center"
       >
@@ -47,7 +47,7 @@ export const CheckBox: FC<CheckBoxProps> = ({
           <AppIcon
             icon={IconCheck}
             size={iconSize}
-            color={theme.colors.white}
+            color={theme.colors.onPrimary}
             decorative
           />
         )}

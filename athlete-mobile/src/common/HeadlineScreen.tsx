@@ -37,11 +37,11 @@ const Footer: FC<{ action: Action }> = ({ action }) => {
 
   return (
     <Box
-      backgroundColor="white"
+      backgroundColor="surface"
       paddingHorizontal="l"
       paddingTop="m"
       borderTopWidth={StyleSheet.hairlineWidth}
-      borderTopColor="lightGrey2"
+      borderTopColor="outlineVariant"
       style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
     >
       <Button variant="cta" onPress={action.onPress} disabled={action.disabled}>
@@ -80,12 +80,12 @@ export const HeadlineScreen: FC<HeadlineScreenProps> = ({
           headerTitle: () => (step ? <StepProgress {...step} /> : null),
           headerTitleAlign: "center",
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: colors.white },
+          headerStyle: { backgroundColor: colors.surface },
           headerLeft: () => <BackHeader onBack={onBack} />,
           headerRight: () => headerRight,
         }}
       />
-      <Box flex={1} backgroundColor="white">
+      <Box flex={1} backgroundColor="surface">
         <ScrollBox
           flex={1}
           contentInsetAdjustmentBehavior="automatic"
@@ -98,7 +98,7 @@ export const HeadlineScreen: FC<HeadlineScreenProps> = ({
               {heading}
             </Text>
             {description && (
-              <Text variant="subtitle" color="darkGrey1">
+              <Text variant="subtitle" color="onSurfaceVariant">
                 {description}
               </Text>
             )}

@@ -47,7 +47,7 @@ const TrainingList: FC<TrainingListProps> = () => {
       <TrainingListHeader onBack={handleDiscard} />
       <Box
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         style={{ paddingBottom: insets.bottom }}
       >
         <TrainingListRows
@@ -64,7 +64,7 @@ const TrainingList: FC<TrainingListProps> = () => {
           paddingHorizontal="l"
           paddingVertical="m"
           borderTopWidth={1}
-          borderTopColor="lightGrey1"
+          borderTopColor="surfaceContainerLow"
         >
           <Box marginBottom="m" borderRadius="round" overflow="hidden">
             <TrainingProgressBar progress={progress} />

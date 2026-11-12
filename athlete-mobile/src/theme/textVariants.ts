@@ -1,14 +1,14 @@
 export const textVariants = {
   defaults: {
     fontSize: 16,
-    color: "darkGrey3",
+    color: "onSurface",
   },
 
   // Page titles
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "darkGrey3",
+    color: "onSurface",
     marginBottom: "s",
   },
 
@@ -18,7 +18,7 @@ export const textVariants = {
       tablet: 32,
     },
     fontWeight: "bold",
-    color: "darkGrey3",
+    color: "onSurface",
     marginBottom: "xs",
   },
 
@@ -28,7 +28,7 @@ export const textVariants = {
     lineHeight: 36,
     fontWeight: "800",
     letterSpacing: -0.5,
-    color: "darkGrey3",
+    color: "onSurface",
   },
 
   // Small uppercase line above a headline
@@ -37,21 +37,21 @@ export const textVariants = {
     fontWeight: "700",
     letterSpacing: 1,
     textTransform: "uppercase",
-    color: "darkGrey1",
+    color: "onSurfaceVariant",
   },
 
   // Visible label of a form field
   fieldLabel: {
     fontSize: 17,
     fontWeight: "700",
-    color: "darkGrey3",
+    color: "onSurface",
   },
 
   // Section titles
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "darkGrey3",
+    color: "onSurface",
     marginBottom: "s",
   },
 
@@ -59,32 +59,32 @@ export const textVariants = {
   sectionLabel: {
     fontSize: 16,
     fontWeight: "700",
-    color: "darkGrey3",
+    color: "onSurface",
   },
 
   // Card titles
   cardTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "darkGrey3",
+    color: "onSurface",
     marginBottom: "s",
   },
 
   // Body text
   body: {
     fontSize: 16,
-    color: "darkGrey3",
+    color: "onSurface",
   },
 
   // Subtitle/Description
   subtitle: {
     fontSize: 16,
-    color: "darkGrey2",
+    color: "onSurfaceVariant",
   },
 
   description: {
     fontSize: 16,
-    color: "darkGrey2",
+    color: "onSurfaceVariant",
     textAlign: "center",
     marginBottom: "xl",
   },
@@ -92,7 +92,7 @@ export const textVariants = {
   // Card description
   cardDescription: {
     fontSize: 14,
-    color: "darkGrey2",
+    color: "onSurfaceVariant",
     marginBottom: "m",
   },
 
@@ -100,7 +100,7 @@ export const textVariants = {
   button: {
     fontSize: 16,
     fontWeight: "600",
-    color: "white",
+    color: "onPrimary",
   },
 
   buttonSecondary: {
@@ -112,19 +112,19 @@ export const textVariants = {
   // Labels
   label: {
     fontSize: 16,
-    color: "darkGrey2",
+    color: "onSurfaceVariant",
   },
 
   // Small text
   small: {
     fontSize: 14,
-    color: "darkGrey2",
+    color: "onSurfaceVariant",
   },
 
   // Extra small text
   xSmall: {
     fontSize: 12,
-    color: "darkGrey2",
+    color: "onSurfaceVariant",
   },
 
   // Tab labels
@@ -151,6 +151,6 @@ export const textVariants = {
     fontFamily: "System",
     fontSize: 15,
     lineHeight: 24,
-    color: "darkGrey1",
+    color: "onSurfaceVariant",
   },
 } as const;

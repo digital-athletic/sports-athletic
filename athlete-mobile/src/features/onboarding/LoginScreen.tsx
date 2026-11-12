@@ -37,7 +37,7 @@ export const LoginScreen: FC<Props> = ({
   const insets = useSafeAreaInsets();
 
   return (
-    <Box flex={1} backgroundColor="white" style={{ paddingTop: insets.top }}>
+    <Box flex={1} backgroundColor="surface" style={{ paddingTop: insets.top }}>
       <ScrollBox
         flex={1}
         keyboardShouldPersistTaps="handled"
@@ -64,7 +64,7 @@ export const LoginScreen: FC<Props> = ({
           />
           <Button onPress={onLogin} variant="cta" disabled={processing}>
             {processing ? (
-              <ActivityIndicator color={colors.white} />
+              <ActivityIndicator color={colors.onPrimary} />
             ) : (
               t("onboarding.sendCode")
             )}
@@ -77,10 +77,10 @@ export const LoginScreen: FC<Props> = ({
         paddingHorizontal="l"
         paddingTop="m"
         borderTopWidth={StyleSheet.hairlineWidth}
-        borderTopColor="lightGrey2"
+        borderTopColor="outlineVariant"
         style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
       >
-        <Text variant="small" color="darkGrey1" textAlign="center">
+        <Text variant="small" color="onSurfaceVariant" textAlign="center">
           {t("onboarding.noAccountYet")}
         </Text>
         <Button onPress={onSignup} variant="ctaOutline">

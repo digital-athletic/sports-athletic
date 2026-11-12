@@ -44,7 +44,20 @@ type ColorRole =
   | "inverseOnSurface"
   | "inversePrimary"
   | "scrim"
-  | "shadow";
+  | "shadow"
+  // Custom colors, see https://m3.material.io/styles/color/advanced/define-new-colors
+  | "success"
+  | "onSuccess"
+  | "successContainer"
+  | "onSuccessContainer"
+  | "warning"
+  | "onWarning"
+  | "warningContainer"
+  | "onWarningContainer"
+  | "info"
+  | "onInfo"
+  | "infoContainer"
+  | "onInfoContainer";
 
 type ColorRoles = Record<ColorRole, string>;
 
@@ -101,6 +114,21 @@ const lightRoles: ColorRoles = {
   inversePrimary: "#FFB4AA",
   scrim: "#000000",
   shadow: "#000000",
+
+  // Placeholders until the Theme Builder export: successContainer,
+  // onWarningContainer, onInfoContainer
+  success: "#34C759",
+  onSuccess: "#FFF",
+  successContainer: "#E3F7E8",
+  onSuccessContainer: "#1E7B34",
+  warning: "#FF9500",
+  onWarning: "#FFF",
+  warningContainer: "#FFF3E0",
+  onWarningContainer: "#663E00",
+  info: "#007AFF",
+  onInfo: "#FFF",
+  infoContainer: "#EAF3FF",
+  onInfoContainer: "#00458F",
 };
 
 // Material Theme Builder export (seed #C71B1B, color match), dark scheme
@@ -155,57 +183,38 @@ const darkRoles: ColorRoles = {
   inversePrimary: "#BD1115",
   scrim: "#000000",
   shadow: "#000000",
-};
 
-// Old keys kept until every screen uses the roles directly
-const legacyAliases = (roles: ColorRoles) => ({
-  primaryDark: roles.onPrimaryContainer,
-  primaryTint: roles.primaryContainer,
-  white: roles.surface,
-  lightGrey1: roles.surfaceContainerLow,
-  // Track of a pill toggle, between lightGrey1 and lightGrey2
-  surfaceSubtle: roles.surfaceContainer,
-  lightGrey2: roles.outlineVariant,
-  lightGrey3: roles.outline,
-  darkGrey1: roles.onSurfaceVariant,
-  darkGrey3: roles.onSurface,
-});
+  // Light values until the Theme Builder export
+  success: "#34C759",
+  onSuccess: "#FFF",
+  successContainer: "#E3F7E8",
+  onSuccessContainer: "#1E7B34",
+  warning: "#FF9500",
+  onWarning: "#FFF",
+  warningContainer: "#FFF3E0",
+  onWarningContainer: "#663E00",
+  info: "#007AFF",
+  onInfo: "#FFF",
+  infoContainer: "#EAF3FF",
+  onInfoContainer: "#00458F",
+};
 
 // Colors without a matching role, identical in both schemes
 const unassignedColors = {
-  primaryMuted: "#E38D8D",
-  black: "#000",
   transparent: "transparent",
-  overlay: "rgba(0, 0, 0, 0.8)",
-  darkGrey2: "#555555",
-  iosTitleBorder: "#EFEFF4",
+  // Content on photos, video and scrim
+  white: "#FFF",
 
-  // Social colors
-  facebookBlue: "#3B5998",
-  googleRed: "#CF472E",
-  settingsSwitchGreen: "#34C759",
-
-  // Test colors
+  // Test series in the charts
   squad: "#000000",
   deadlift: "#9B59B6",
   benchPress: "#6DC33F",
   rowing: "#4791DE",
   shoulderPress: "#F46E70",
-
-  // Status colors
-  success: "#34C759",
-  successText: "#1E7B34",
-  warning: "#FF9500",
-  info: "#007AFF",
-
-  // Subtle status backgrounds (tints)
-  warningTint: "#FFF3E0",
-  infoTint: "#EAF3FF",
 };
 
 const buildColors = (roles: ColorRoles) => ({
   ...roles,
-  ...legacyAliases(roles),
   ...unassignedColors,
 });
 

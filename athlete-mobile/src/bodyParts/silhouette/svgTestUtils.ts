@@ -49,5 +49,5 @@ export const SELECTED_FILL = {
 export const UNSELECTED_FILL = { type: 0, payload: processColor("#7c7c7c") };
 export const SECONDARY_FILL = {
   type: 0,
-  payload: processColor(theme.colors.primaryMuted),
+  payload: processColor(theme.colors.inversePrimary),
 };

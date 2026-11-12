@@ -68,7 +68,7 @@ export const CustomWorkoutTile: FC<CustomWorkoutTileProps> = ({
             width={DELETE_BUTTON_SIZE}
             height={DELETE_BUTTON_SIZE}
             borderRadius="round"
-            backgroundColor="white"
+            backgroundColor="surfaceContainerLowest"
             alignItems="center"
             justifyContent="center"
             hitSlop={DELETE_HIT_SLOP}
@@ -78,7 +78,7 @@ export const CustomWorkoutTile: FC<CustomWorkoutTileProps> = ({
             <AppIcon
               icon={IconTrash}
               size={20}
-              color={colors.darkGrey1}
+              color={colors.onSurfaceVariant}
               decorative
             />
           </TouchableBox>

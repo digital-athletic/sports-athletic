@@ -64,7 +64,7 @@ export const SportTile: FC<SportTileProps> = ({
         flex={1}
         borderRadius="l"
         overflow="hidden"
-        backgroundColor="darkGrey2"
+        backgroundColor="onSurfaceVariant"
       >
         {sportImage && (
           <Image
@@ -95,7 +95,7 @@ export const SportTile: FC<SportTileProps> = ({
             <AppIcon
               icon={IconCheck}
               size={18}
-              color={colors.white}
+              color={colors.onPrimary}
               decorative
             />
           </Box>

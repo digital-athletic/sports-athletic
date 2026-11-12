@@ -17,7 +17,7 @@ export default function IndexScreen() {
   const { t } = useTranslation();
   return (
     <ScrollView>
-      <Box flexGrow={1} padding="l" backgroundColor="lightGrey1">
+      <Box flexGrow={1} padding="l" backgroundColor="surfaceContainerLow">
         <Text
           variant="title"
           textAlign="center"
@@ -85,7 +85,7 @@ export default function IndexScreen() {
             <Box flexDirection="row" flexWrap="wrap" gap="s">
               <Link href="/test">
                 <Box
-                  backgroundColor="lightGrey2"
+                  backgroundColor="surfaceContainerHigh"
                   padding="s"
                   borderRadius="m"
                   minWidth={80}
@@ -96,7 +96,7 @@ export default function IndexScreen() {
               </Link>
               <Link href="/webview">
                 <Box
-                  backgroundColor="lightGrey2"
+                  backgroundColor="surfaceContainerHigh"
                   padding="s"
                   borderRadius="m"
                   minWidth={80}

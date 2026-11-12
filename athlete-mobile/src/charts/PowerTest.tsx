@@ -1,16 +1,17 @@
 import { usePowerTestData } from "@/features/statistics/hooks/usePowerTestData";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { Box } from "@/theme/Box";
+import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useWindowDimensions } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import {
   LINE_CHART_AXIS,
-  LINE_CHART_COLORS,
   LINE_CHART_DATA,
   LINE_CHART_LABELS,
   LINE_CHART_SIZING,
   LINE_CHART_STYLE,
+  lineChartColors,
 } from "./lineChartConfig";
 import {
   calculateSpacing,
@@ -30,6 +31,7 @@ interface PowerTestChartProps {
 export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
   const { chartData } = usePowerTestData({ scale });
   const { width: screenWidth } = useWindowDimensions();
+  const chartColors = lineChartColors(useTheme().colors);
 
   // Chart width with right margin
   const chartWidth = screenWidth - 100;
@@ -75,11 +77,11 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
         spacing={spacing}
         endSpacing={0}
         // Line colors
-        color={LINE_CHART_COLORS.squad}
-        color2={LINE_CHART_COLORS.deadlift}
-        color3={LINE_CHART_COLORS.benchPress}
-        color4={LINE_CHART_COLORS.rowing}
-        color5={LINE_CHART_COLORS.shoulderPress}
+        color={chartColors.squad}
+        color2={chartColors.deadlift}
+        color3={chartColors.benchPress}
+        color4={chartColors.rowing}
+        color5={chartColors.shoulderPress}
         // Line styling
         thickness={LINE_CHART_STYLE.thickness}
         thickness2={LINE_CHART_STYLE.thickness}
@@ -95,7 +97,7 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
         hideDataPoints4
         hideDataPoints5
         yAxisTextStyle={{
-          color: LINE_CHART_COLORS.axisText,
+          color: chartColors.axisText,
           fontSize: LINE_CHART_AXIS.fontSize,
         }}
         yAxisLabelSuffix={LINE_CHART_AXIS.yAxisSuffix}
@@ -103,17 +105,17 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
         yAxisLabelWidth={LINE_CHART_SIZING.yAxisLabelWidth}
         // X-axis labels are embedded in data items via label and showXAxisIndex
         xAxisLabelTextStyle={{
-          color: LINE_CHART_COLORS.axisText,
+          color: chartColors.axisText,
           fontSize: LINE_CHART_AXIS.fontSize,
           marginLeft: 10,
         }}
         labelsExtraHeight={30}
-        xAxisColor={LINE_CHART_COLORS.axisLine}
-        yAxisColor={LINE_CHART_COLORS.axisLine}
+        xAxisColor={chartColors.axisLine}
+        yAxisColor={chartColors.axisLine}
         // Grid configuration
         showVerticalLines={LINE_CHART_AXIS.showVerticalLines}
         rulesType="solid"
-        rulesColor={LINE_CHART_COLORS.grid}
+        rulesColor={chartColors.grid}
         rulesThickness={LINE_CHART_AXIS.rulesThickness}
         // Y-axis scale configuration
         maxValue={yAxisMax}

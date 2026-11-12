@@ -7,7 +7,7 @@ type Props = {
 
 export const TrainingProgressBar: FC<Props> = ({ progress }) => {
   return (
-    <Box height={4} backgroundColor="lightGrey1">
+    <Box height={4} backgroundColor="surfaceContainerLow">
       <Box
         testID="training-progress-bar-fill"
         height="100%"

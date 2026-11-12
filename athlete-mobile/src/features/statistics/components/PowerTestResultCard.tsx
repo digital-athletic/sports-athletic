@@ -95,7 +95,7 @@ export const PowerTestResultCard: FC<PowerTestResultCardProps> = ({
         <AppIcon
           icon={expanded ? IconChevronUp : IconChevronDown}
           size={20}
-          color={colors.darkGrey1}
+          color={colors.onSurfaceVariant}
           decorative
         />
       </Pressable>
@@ -103,7 +103,7 @@ export const PowerTestResultCard: FC<PowerTestResultCardProps> = ({
       {expanded && (
         <Box
           borderTopWidth={1}
-          borderColor="lightGrey2"
+          borderColor="outlineVariant"
           paddingHorizontal="m"
           paddingVertical="xs"
         >

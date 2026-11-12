@@ -73,7 +73,7 @@ export const ExerciseMuscleSilhouettePair: FC<
               },
               {
                 regions: resolveExerciseRegions(secondaryTags, side),
-                color: "primaryMuted",
+                color: "inversePrimary",
               },
             ]}
             width={width}

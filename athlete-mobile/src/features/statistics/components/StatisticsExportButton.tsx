@@ -25,7 +25,7 @@ export const StatisticsExportButton: FC<StatisticsExportButtonProps> = ({
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { canExport, exportCsv } = useStatisticsExport({ kind, scale });
-  const color = canExport ? "primary" : "lightGrey3";
+  const color = canExport ? "primary" : "outline";
 
   return (
     <TouchableBox

@@ -17,11 +17,11 @@ export default function TutorialsScreen() {
       <Stack.Screen options={{ title: t("more.introductionVideos") }} />
       <ScrollBox
         flex={1}
-        backgroundColor="lightGrey2"
+        backgroundColor="surfaceContainerHigh"
         contentInsetAdjustmentBehavior="automatic"
       >
         <IntroVideoLinks />
-        <Box backgroundColor="white" paddingTop="s">
+        <Box backgroundColor="surfaceContainerLowest" paddingTop="s">
           {tutorials.map((tutorial, index) => (
             <ListItem
               key={tutorial.id}

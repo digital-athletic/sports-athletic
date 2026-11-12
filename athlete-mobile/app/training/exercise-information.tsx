@@ -102,7 +102,7 @@ const EquipmentList: FC<EquipmentListProps> = ({ tags }) => {
     .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
   return (
-    <Box padding="l" borderTopWidth={1} borderTopColor="lightGrey1">
+    <Box padding="l" borderTopWidth={1} borderTopColor="surfaceContainerLow">
       <Text variant="cardTitle" marginBottom="s">
         {t("equipment.title")}
       </Text>
@@ -130,7 +130,7 @@ const DescriptionsList: FC<DescriptionsListProps> = ({ description }) => {
   if (!descriptions || descriptions.length === 0) return null;
 
   return (
-    <Box padding="l" borderTopWidth={1} borderTopColor="lightGrey1">
+    <Box padding="l" borderTopWidth={1} borderTopColor="surfaceContainerLow">
       <Text variant="cardTitle" marginBottom="s">
         {t("training.exerciseInformation.exerciseHints")}
       </Text>

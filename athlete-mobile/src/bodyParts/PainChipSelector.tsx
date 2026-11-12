@@ -55,7 +55,7 @@ export const PainChipSelector: FC<PainChipSelectorProps> = ({
 
   return (
     <Box gap="m">
-      <Text variant="subtitle" color="darkGrey1">
+      <Text variant="subtitle" color="onSurfaceVariant">
         {t("common.bodyParts.selectHurtingParts")}
       </Text>
       <Box flexDirection="row" flexWrap="wrap" gap="s">

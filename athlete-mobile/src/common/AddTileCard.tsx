@@ -31,7 +31,7 @@ export const AddTileCard: FC<AddTileCardProps> = ({
         styles.tile,
         {
           minHeight: headerHeight + TILE_CARD_FOOTER_HEIGHT,
-          borderColor: colors.lightGrey3,
+          borderColor: colors.outline,
           borderRadius: borderRadii.xl,
           padding: spacing.m,
           gap: spacing.s,

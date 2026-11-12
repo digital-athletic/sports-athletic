@@ -137,7 +137,7 @@ const TrainingSuccessScreen: FC = () => {
           gestureEnabled: false,
         }}
       />
-      <Box flex={1} backgroundColor="white">
+      <Box flex={1} backgroundColor="surface">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           {isTestWorkout ? (
             <Box flex={1} paddingVertical="m">

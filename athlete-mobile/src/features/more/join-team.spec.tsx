@@ -75,7 +75,7 @@ jest.mock("@/theme/Button", () => ({
 
 jest.mock("@/theme/theme", () => ({
   useTheme: () => ({
-    colors: { lightGrey2: "#f5f5f5", darkGrey3: "#333333" },
+    colors: { surfaceContainerHigh: "#f5f5f5", onSurface: "#333333" },
     spacing: {},
   }),
 }));

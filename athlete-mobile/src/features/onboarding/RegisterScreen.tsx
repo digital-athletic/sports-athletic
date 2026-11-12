@@ -65,7 +65,7 @@ export const RegistrationScreen: FC<Props> = ({
   };
 
   return (
-    <Box flex={1} backgroundColor="white" style={{ paddingTop: insets.top }}>
+    <Box flex={1} backgroundColor="surface" style={{ paddingTop: insets.top }}>
       <Box paddingHorizontal="l" paddingVertical="s" alignItems="flex-start">
         <BackHeader onBack={onBack} />
       </Box>
@@ -125,7 +125,7 @@ export const RegistrationScreen: FC<Props> = ({
         paddingHorizontal="l"
         paddingTop="m"
         borderTopWidth={StyleSheet.hairlineWidth}
-        borderTopColor="lightGrey2"
+        borderTopColor="outlineVariant"
         style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
       >
         {registrationError && (
@@ -140,7 +140,7 @@ export const RegistrationScreen: FC<Props> = ({
         )}
         <Button onPress={onRegister} variant="cta" disabled={processing}>
           {processing ? (
-            <ActivityIndicator color={colors.white} />
+            <ActivityIndicator color={colors.onPrimary} />
           ) : (
             t("onboarding.buttonRegister")
           )}

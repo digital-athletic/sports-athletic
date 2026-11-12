@@ -86,7 +86,7 @@ export function ConsentScreen() {
   return (
     <Box
       flex={1}
-      backgroundColor="white"
+      backgroundColor="surface"
       paddingHorizontal="l"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
     >

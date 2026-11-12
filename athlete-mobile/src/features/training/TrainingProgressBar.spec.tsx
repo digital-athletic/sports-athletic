@@ -35,6 +35,7 @@ jest.mock("@expo/ui/jetpack-compose", () => {
 
 jest.mock("@expo/ui/jetpack-compose/modifiers", () => ({
   fillMaxWidth: () => ({ fillMaxWidth: true }),
+  testID: (tag: string) => ({ testID: tag }),
 }));
 
 describe("TrainingProgressBar: iOS", () => {
@@ -72,9 +73,7 @@ describe("TrainingProgressBar: Android", () => {
     [1.4, 1],
   ])("shows progress %p as progress %p", async (progress, expected) => {
     await render(<AndroidTrainingProgressBar progress={progress} />);
-    expect(screen.getByTestId("native-progress").props.progress).toBe(
-      expected,
-    );
+    expect(screen.getByTestId("native-progress").props.progress).toBe(expected);
   });
 
   it("uses the primary color on a light grey track", async () => {
@@ -82,4 +81,12 @@ describe("TrainingProgressBar: Android", () => {
     const indicator = screen.getByTestId("native-progress");
     expect(indicator.props.color).toBe(theme.colors.primary);
     expect(indicator.props.trackColor).toBe(theme.colors.lightGrey2);
-  });});
+  });
+
+  it("tags the native indicator with the progress bar testID", async () => {
+    await render(<AndroidTrainingProgressBar progress={0.5} />);
+    expect(
+      screen.getByTestId("native-progress").props.modifiers,
+    ).toContainEqual({ testID: "training-progress-bar" });
+  });
+});

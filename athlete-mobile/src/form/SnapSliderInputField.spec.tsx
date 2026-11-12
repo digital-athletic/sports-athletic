@@ -1,3 +1,4 @@
+import { theme } from "../theme/theme";
 import { fireEvent, render } from "../utils/testUtils";
 
 import { SnapSliderInputField } from "./SnapSliderInputField";
@@ -72,6 +73,21 @@ describe("SnapSliderInputField", () => {
 
     expect(onChange).toHaveBeenCalledWith(3);
     expect(getByLabelText("slider").props.value).toBe(2);
+  });
+
+  it("draws the unfilled track in a color of the light design", async () => {
+    const { getByLabelText } = await render(
+      <SnapSliderInputField
+        startItem={0}
+        sliderOptions={sliderOptions}
+        onChange={jest.fn()}
+        accessibilityLabel="slider"
+      />,
+    );
+
+    expect(getByLabelText("slider").props.maximumTrackTintColor).toBe(
+      theme.colors.lightGrey2,
+    );
   });
 
   it("marks the label of the selected option as selected", async () => {

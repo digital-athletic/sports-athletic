@@ -85,7 +85,13 @@ export const TrainingExerciseStats: FC<Props> = ({
   }
 
   return (
-    <Host matchContents style={{ alignSelf: "center" }}>
+    // The app has a light design only, so the tiles ignore a device in dark mode.
+    <Host
+      matchContents
+      colorScheme="light"
+      style={{ alignSelf: "center" }}
+      testID="training-list-sheet-stats"
+    >
       <Row spacing={8} alignment="center">
         {targetReps !== undefined && (
           <StatTile

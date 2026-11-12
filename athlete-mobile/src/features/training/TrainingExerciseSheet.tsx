@@ -6,6 +6,7 @@ import { type SheetRestControl } from "@/features/training/utils/checklistRest";
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
+import { useTheme } from "@/theme/theme";
 import { BottomSheet, RNHostView } from "@expo/ui";
 import { type FC } from "react";
 import { useWindowDimensions } from "react-native";
@@ -296,22 +297,30 @@ export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
   sessionKey,
   isScreenFocused,
   ...contentProps
-}) => (
-  <BottomSheet
-    isPresented={isPresented}
-    onDismiss={contentProps.onDismiss}
-    contentPadding={0}
-    testID="training-list-sheet"
-  >
-    {row && (
-      <RNHostView matchContents={{ vertical: true }}>
-        <TrainingExerciseSheetContent
-          key={sessionKey}
-          row={row}
-          isTimerActive={isPresented && isScreenFocused}
-          {...contentProps}
-        />
-      </RNHostView>
-    )}
-  </BottomSheet>
-);
+}) => {
+  const { colors } = useTheme();
+
+  // The native sheet follows the dark mode of the device by default, while
+  // the app has a light design only, so the sheet colors are set explicitly.
+  return (
+    <BottomSheet
+      isPresented={isPresented}
+      onDismiss={contentProps.onDismiss}
+      contentPadding={0}
+      containerColor={colors.white}
+      contentColor={colors.darkGrey3}
+      testID="training-list-sheet"
+    >
+      {row && (
+        <RNHostView matchContents={{ vertical: true }}>
+          <TrainingExerciseSheetContent
+            key={sessionKey}
+            row={row}
+            isTimerActive={isPresented && isScreenFocused}
+            {...contentProps}
+          />
+        </RNHostView>
+      )}
+    </BottomSheet>
+  );
+};

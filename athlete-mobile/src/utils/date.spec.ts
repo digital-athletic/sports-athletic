@@ -10,6 +10,7 @@ import {
   dateToHHMM,
   HHMMToDate,
   getDateOneYearFromNow,
+  formatPlannedMinutes,
   secondsToMMSS,
 } from "./date";
 
@@ -270,6 +271,16 @@ describe("date utils", () => {
     it("handles end of day", () => {
       const date = new Date(2024, 0, 1, 23, 59);
       expect(dateToHHMM(date)).toBe("23:59");
+    });
+  });
+
+  describe("formatPlannedMinutes", () => {
+    it("formats whole minutes without seconds", () => {
+      expect(formatPlannedMinutes(1800)).toBe("30");
+    });
+
+    it("formats a remainder of seconds as mm:ss", () => {
+      expect(formatPlannedMinutes(630)).toBe("10:30");
     });
   });
 

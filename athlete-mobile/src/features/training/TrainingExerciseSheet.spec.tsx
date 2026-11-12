@@ -49,6 +49,16 @@ jest.mock("@tabler/icons-react-native/IconStopwatch", () => ({
   default: (props: object) =>
     jest.requireActual("react").createElement("IconStopwatch", props),
 }));
+jest.mock("@tabler/icons-react-native/IconClock", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconClock", props),
+}));
+jest.mock("@tabler/icons-react-native/IconHeartbeat", () => ({
+  __esModule: true,
+  default: (props: object) =>
+    jest.requireActual("react").createElement("IconHeartbeat", props),
+}));
 jest.mock("@tabler/icons-react-native/IconRepeat", () => ({
   __esModule: true,
   default: (props: object) =>
@@ -168,6 +178,46 @@ describe("TrainingExerciseSheet: heading", () => {
     expect(getByText("each 12.50")).toBeTruthy();
   });
 
+  it("shows the planned duration and the heart rate band of a steady run as tiles", async () => {
+    const { getByTestId, container } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({
+            targetDuration: 1800,
+            heartRateBand: { low: 125, high: 144 },
+          }),
+        })}
+      />,
+    );
+
+    const durationTile = getByTestId("training-list-sheet-duration");
+    expect(within(durationTile).getByText("30")).toBeTruthy();
+    expect(within(durationTile).getByText("min")).toBeTruthy();
+    const heartRateTile = getByTestId("training-list-sheet-heart-rate");
+    expect(within(heartRateTile).getByText("125 - 144")).toBeTruthy();
+    expect(within(heartRateTile).getByText("bpm")).toBeTruthy();
+    expect(
+      container.queryAll((node) => node.type === "IconClock"),
+    ).toHaveLength(1);
+    expect(
+      container.queryAll((node) => node.type === "IconHeartbeat"),
+    ).toHaveLength(1);
+  });
+
+  it("shows a planned duration with a remainder of seconds as minutes and seconds", async () => {
+    const { getByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({ targetDuration: 630 }),
+        })}
+      />,
+    );
+
+    expect(
+      within(getByTestId("training-list-sheet-duration")).getByText("10:30"),
+    ).toBeTruthy();
+  });
+
   it("shows no tiles for a row without reps or weight", async () => {
     const { queryByTestId } = await render(
       <TrainingExerciseSheet {...generateSheetProps()} />,
@@ -175,6 +225,8 @@ describe("TrainingExerciseSheet: heading", () => {
 
     expect(queryByTestId("training-list-sheet-reps")).toBeNull();
     expect(queryByTestId("training-list-sheet-weight")).toBeNull();
+    expect(queryByTestId("training-list-sheet-duration")).toBeNull();
+    expect(queryByTestId("training-list-sheet-heart-rate")).toBeNull();
   });
 
   it("shows a large timer for a timed row and a small one for an open ended row", async () => {

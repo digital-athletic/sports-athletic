@@ -464,6 +464,9 @@
       "setKilos": "{{weight}} kg",
       "weightUnit": "kg",
       "setSeconds": "{{count}} s",
+      "setMinutes": "{{minutes}} min",
+      "minutesUnit": "min",
+      "heartRateUnit": "Puls",
       "setReps": "{{count}} Wdh.",
       "a11y": {
         "nextExercise": "Nächste Übung"

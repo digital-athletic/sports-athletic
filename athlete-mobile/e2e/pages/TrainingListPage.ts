@@ -107,6 +107,20 @@ export class TrainingListPage extends BasePage {
     return this.page.getByTestId("training-list-sheet-timer");
   }
 
+  /** Tile with the planned duration of a steady run. */
+  get sheetDurationTile() {
+    return this.page.getByTestId("training-list-sheet-duration");
+  }
+
+  /** Tile with the heart rate band of a steady run. */
+  get sheetHeartRateTile() {
+    return this.page.getByTestId("training-list-sheet-heart-rate");
+  }
+
+  async completeOpenSet() {
+    await this.sheetNextButton.click({ timeout: 3000 });
+  }
+
   /** Holds the set timer and waits until the button offers Resume. */
   async holdTimer() {
     await this.sheetPauseButton.click({ timeout: 3000 });

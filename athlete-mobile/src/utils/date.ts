@@ -153,6 +153,15 @@ export const secondsToMMSS = (totalSeconds: number): string => {
 };
 
 /**
+ * Formats a planned duration in minutes, e.g. 1800 -> "30". A remainder of
+ * seconds shows as mm:ss, e.g. 630 -> "10:30".
+ */
+export const formatPlannedMinutes = (totalSeconds: number): string =>
+  totalSeconds % 60 === 0
+    ? String(totalSeconds / 60)
+    : secondsToMMSS(totalSeconds);
+
+/**
  * Creates a Date with today's date and the specified time (HH:mm format).
  */
 export const HHMMToDate = (time: string): Date => {

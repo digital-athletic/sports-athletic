@@ -1,11 +1,11 @@
 /**
- * The workout builder's model: a draft of a name, an optional warm-up and
- * cool-down, and sections, with its validation and the conversion between a
- * draft and an AIWL template.
+ * The workout builder's model. A draft contains a name, an optional warm-up,
+ * an optional cool-down and sections. This file validates a draft and converts
+ * it to and from an AIWL template.
  *
- * Every draft that validates converts into a template the athlete app imports:
- * each skill in the table below offers only the tags its skill tree can serve
- * in both weight variants. Prevention areas belong to the prevention section,
+ * Every draft that validates converts into a template the athlete app imports,
+ * because each skill in the table below offers only the tags its skill tree
+ * can serve in both weight variants. Prevention areas belong to the prevention section,
  * which offers no body region. The table follows the athlete app's skill trees
  * and must change when they change.
  */
@@ -54,10 +54,10 @@ const cardio = (id: string): BuilderSkill => ({
 const UPPER_AND_LOWER = ["REGION_UPPER_BODY", "REGION_LOWER_BODY"] as const;
 
 /**
- * The fixed list of skills, in the order the builder offers them. Warm-up and
- * cool-down are missing: they are the draft's two checkboxes. Zone 1 has two
- * trees: CARDIO_1_SHORT with 10 second sprints and CARDIO_1_LAKTAT with 30
- * second intervals.
+ * The fixed list of skills, in the order the builder offers them. The list
+ * omits warm-up and cool-down, which are the draft's two checkboxes. Zone 1
+ * has two trees: CARDIO_1_SHORT with 10 second sprints and CARDIO_1_LAKTAT
+ * with 30 second intervals.
  */
 export const BUILDER_SKILLS: readonly BuilderSkill[] = [
   picks("MOB", [...UPPER_AND_LOWER, "REGION_CORE"]),
@@ -146,14 +146,8 @@ export const createEmptyDraft = (): WorkoutDraft => ({
 export const findBuilderSkill = (id: string): BuilderSkill | undefined =>
   BUILDER_SKILLS.find((skill) => skill.id === id);
 
-const isRegionTag = (tag: string): tag is RegionTag =>
-  (REGION_TAGS as readonly string[]).includes(tag);
-
 const isPreventionTag = (tag: string): tag is PreventionTag =>
   (PREVENTION_TAGS as readonly string[]).includes(tag);
-
-const isBuilderTag = (tag: unknown): tag is BuilderTag =>
-  typeof tag === "string" && (isRegionTag(tag) || isPreventionTag(tag));
 
 /** The group a skill's tags belong to, also the translation key of its label. */
 export const tagGroupOf = (skill: BuilderSkill): "regions" | "prevention" =>
@@ -240,7 +234,7 @@ const validateSection = (section: SectionDraft): DraftError[] => {
   if (!isAmountInRange(section.amount, skill.kind)) {
     errors.push({ code: "AMOUNT_OUT_OF_RANGE", sectionKey: section.key });
   }
-  if (!section.tags.every((tag) => skill.tags.includes(tag))) {
+  if (!section.tags.every((tag) => isTagSelectable(section, tag))) {
     errors.push({ code: "TAG_NOT_ALLOWED", sectionKey: section.key });
   }
   return errors;
@@ -310,6 +304,9 @@ export const draftToTemplate = (
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
+const isPositiveInteger = (value: unknown): value is number =>
+  Number.isInteger(value) && Number(value) >= 1;
+
 /** The English name of a stored template, or "" when it has none. */
 export const readTemplateName = (template: unknown): string => {
   if (!isRecord(template) || !isRecord(template.name)) return "";
@@ -317,7 +314,10 @@ export const readTemplateName = (template: unknown): string => {
   return typeof name === "string" ? name : "";
 };
 
-/** The exercise count of a single pick, e.g. [{ tags: [], count: 5 }] → 5. */
+/**
+ * The only pick of a picks block. Undefined when the block has no pick or
+ * several, or when the count is no whole number from 1 up.
+ */
 const readSinglePick = (
   block: Record<string, unknown>,
 ): { tags: unknown; count: number } | undefined => {
@@ -325,7 +325,7 @@ const readSinglePick = (
   if (block.kind !== "picks" || !Array.isArray(picksList)) return undefined;
   if (picksList.length !== 1) return undefined;
   const [pick]: unknown[] = picksList;
-  if (!isRecord(pick) || typeof pick.count !== "number") return undefined;
+  if (!isRecord(pick) || !isPositiveInteger(pick.count)) return undefined;
   return { tags: pick.tags, count: pick.count };
 };
 
@@ -337,20 +337,21 @@ const blockToSection = (
   const skill = findBuilderSkill(block.skill);
   if (!skill) return undefined;
   if (block.kind === "duration" && skill.kind === "duration") {
-    if (typeof block.duration !== "number" || block.duration % 60 !== 0) {
-      return undefined;
-    }
-    return { key, skill: skill.id, tags: [], amount: block.duration / 60 };
+    const minutes =
+      typeof block.duration === "number" ? block.duration / 60 : undefined;
+    if (!isPositiveInteger(minutes)) return undefined;
+    return { key, skill: skill.id, tags: [], amount: minutes };
   }
   if (skill.kind !== "picks") return undefined;
   const pick = readSinglePick(block);
   if (!pick || !Array.isArray(pick.tags)) return undefined;
-  const tags: unknown[] = pick.tags;
-  if (!tags.every(isBuilderTag)) return undefined;
+  const stored: unknown[] = pick.tags;
+  // A stored tag the skill does not offer is dropped, like an unknown block.
+  const tags = skill.tags.filter((tag) => stored.includes(tag));
   return { key, skill: skill.id, tags, amount: pick.count };
 };
 
-/** Reads the block as a warm-up or cool-down when it carries that skill. */
+/** Reads the block as a warm-up or cool-down when the block's skill is `skill`. */
 const blockToBookend = (
   block: unknown,
   skill: string,
@@ -374,10 +375,7 @@ export const templateToDraft = (
   const blocks: unknown[] = template.blocks;
   const empty = createEmptyDraft();
   const warmUp = blockToBookend(blocks[0], WARM_UP_SKILL);
-  const coolDown =
-    blocks.length > 1
-      ? blockToBookend(blocks.at(-1), COOL_DOWN_SKILL)
-      : undefined;
+  const coolDown = blockToBookend(blocks.at(-1), COOL_DOWN_SKILL);
   const middle = blocks.slice(warmUp ? 1 : 0, coolDown ? -1 : undefined);
   return {
     name: readTemplateName(template),

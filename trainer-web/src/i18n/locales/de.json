@@ -235,7 +235,7 @@
   },
   "workouts": {
     "title": "Team-Workouts",
-    "description": "Veröffentlichte Workouts erscheinen in der App deiner Athleten. Neue Workouts sind zuerst Entwürfe: Nur du und deine Begleiter*innen sehen sie, auch in der App zum Testen.",
+    "description": "Veröffentlichte Workouts erscheinen in der App deiner Athleten. Neue Workouts sind zuerst Entwürfe. Einen Entwurf sehen nur du und deine Begleiter*innen, und ihr könnt ihn in der App testen.",
     "new": "Neues Workout",
     "edit": "Bearbeiten",
     "empty": "Dieses Team hat noch keine Workouts.",
@@ -280,10 +280,10 @@
       "NAME_REQUIRED": "Gib einen Namen ein.",
       "NAME_TOO_LONG": "Der Name darf höchstens {{max}} Zeichen haben.",
       "SECTION_REQUIRED": "Füge mindestens einen Abschnitt hinzu.",
-      "TOO_MANY_SECTIONS": "Ein Workout darf höchstens {{max}} Abschnitte haben.",
+      "TOO_MANY_SECTIONS": "Ein Workout darf höchstens {{max}} Abschnitte haben, Warm-up und Cooldown mitgezählt.",
       "UNKNOWN_SKILL": "Abschnitt {{number}}: Wähle ein Training.",
       "AMOUNT_OUT_OF_RANGE": "Abschnitt {{number}}: Gib {{min}} bis {{max}} {{unit}} ein.",
-      "TAG_NOT_ALLOWED": "Abschnitt {{number}}: Diese Auswahl passt nicht zum Training.",
+      "TAG_NOT_ALLOWED": "Abschnitt {{number}}: Das Training bietet den gewählten Bereich nicht an.",
       "WARM_UP_OUT_OF_RANGE": "Warm-up: Gib {{min}} bis {{max}} Übungen ein.",
       "COOL_DOWN_OUT_OF_RANGE": "Cooldown: Gib {{min}} bis {{max}} Übungen ein."
     },

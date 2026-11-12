@@ -5,6 +5,7 @@ import {
   MAX_SECTIONS,
   PREVENTION_TAGS,
   REGION_TAGS,
+  changeSectionSkill,
   createEmptyDraft,
   createSection,
   draftToTemplate,
@@ -309,6 +310,31 @@ describe("tags", () => {
   });
 });
 
+describe("changeSectionSkill", () => {
+  it("drops the prevention areas when prevention becomes another training", () => {
+    const prev = section("PREV", 5, ["PREVENTION_KNEE_HIP"]);
+    expect(changeSectionSkill(prev, "GKS").tags).toEqual([]);
+  });
+
+  it("keeps the body regions the new training also offers", () => {
+    const gks = section("GKS", 5, ["REGION_UPPER_BODY", "REGION_FULL_BODY"]);
+    expect(changeSectionSkill(gks, "MOB").tags).toEqual(["REGION_UPPER_BODY"]);
+  });
+
+  it("keeps the exercise count between two exercise trainings", () => {
+    expect(changeSectionSkill(section("GKS", 8), "MOB").amount).toBe(8);
+  });
+
+  it("resets the amount when exercises become minutes", () => {
+    expect(changeSectionSkill(section("GKS", 8), "CARDIO_2").amount).toBe(20);
+  });
+
+  it("leaves the section unchanged for an unknown training", () => {
+    const gks = section("GKS", 8);
+    expect(changeSectionSkill(gks, "NOPE")).toBe(gks);
+  });
+});
+
 describe("templateToDraft", () => {
   it("reads a saved template back into the same sections", () => {
     const draft: WorkoutDraft = {
@@ -384,16 +410,20 @@ describe("templateToDraft", () => {
       },
     ],
     [
-      "a pick with a tag the builder does not know",
-      {
-        kind: "picks",
-        skill: "GKS",
-        picks: [{ tags: ["EQUIPMENT_BAND"], count: 3 }],
-      },
-    ],
-    [
       "a pick without a count",
       { kind: "picks", skill: "GKS", picks: [{ tags: [] }] },
+    ],
+    [
+      "a pick with no exercise",
+      { kind: "picks", skill: "GKS", picks: [{ tags: [], count: 0 }] },
+    ],
+    [
+      "a pick with a fraction of exercises",
+      { kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2.5 }] },
+    ],
+    [
+      "a duration of zero",
+      { kind: "duration", skill: "CARDIO_2", duration: 0 },
     ],
   ])("drops %s and reads the other sections", (_label, block) => {
     const template = {
@@ -403,5 +433,80 @@ describe("templateToDraft", () => {
     expect(
       templateToDraft(template, keys())?.sections.map((s) => s.skill),
     ).toEqual(["MOB", "GKS"]);
+  });
+
+  it("drops the tags the training does not offer and reads the section", () => {
+    const template = {
+      ...base,
+      blocks: [
+        {
+          kind: "picks",
+          skill: "MOB",
+          picks: [
+            {
+              tags: ["PREVENTION_KNEE_HIP", "REGION_CORE", "EQUIPMENT_BAND"],
+              count: 3,
+            },
+          ],
+        },
+      ],
+    };
+    expect(templateToDraft(template, keys())?.sections).toEqual([
+      section("MOB", 3, ["REGION_CORE"], "k0"),
+    ]);
+  });
+
+  const bookend = (skill: string, count: number) => ({
+    kind: "picks",
+    skill,
+    picks: [{ tags: [], count }],
+  });
+  const ticks = (blocks: unknown[]) => {
+    const draft = templateToDraft({ ...base, blocks }, keys());
+    return {
+      warmUp: draft?.warmUp.enabled && draft.warmUp.amount,
+      coolDown: draft?.coolDown.enabled && draft.coolDown.amount,
+      sections: draft?.sections.map((s) => s.skill),
+    };
+  };
+
+  it.each([
+    [
+      "only a warm-up",
+      [bookend("WU", 4)],
+      { warmUp: 4, coolDown: false, sections: [] },
+    ],
+    [
+      "only a cool-down",
+      [bookend("CD", 3)],
+      { warmUp: false, coolDown: 3, sections: [] },
+    ],
+    [
+      "a warm-up and a cool-down without sections",
+      [bookend("WU", 4), bookend("CD", 3)],
+      { warmUp: 4, coolDown: 3, sections: [] },
+    ],
+    [
+      "a cool-down first and a warm-up last",
+      [bookend("CD", 3), picks("GKS"), bookend("WU", 4)],
+      { warmUp: false, coolDown: false, sections: ["GKS"] },
+    ],
+    [
+      "a warm-up with two picks",
+      [
+        {
+          kind: "picks",
+          skill: "WU",
+          picks: [
+            { tags: [], count: 2 },
+            { tags: [], count: 3 },
+          ],
+        },
+        picks("GKS"),
+      ],
+      { warmUp: false, coolDown: false, sections: ["GKS"] },
+    ],
+  ])("reads %s", (_label, blocks, expected) => {
+    expect(ticks(blocks)).toEqual(expected);
   });
 });

@@ -33,7 +33,7 @@ type CustomWorkoutTileProps = {
   workoutId: string;
   name: string;
   focus: CustomWorkoutFocus;
-  /** Marks the tile as "Draft"; the mark is also read out after the name. */
+  /** Marks the tile as "Draft". A screen reader reads the mark after the name. */
   isDraft?: boolean;
   /** Without it the tile has no delete button. */
   deleteAction?: { label: string; onDelete: () => void };

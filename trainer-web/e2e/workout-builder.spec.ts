@@ -164,7 +164,6 @@ test.describe("Workout builder", () => {
     });
     await workouts.expectPublished("Tuesday stability");
     await workouts.expectPublishedNotice("Tuesday stability");
-    await workouts.expectNoDownload();
 
     await mockSupabase(page, {
       trainerGrantedAt: TRAINER,
@@ -179,6 +178,7 @@ test.describe("Workout builder", () => {
       p_status: "draft",
     });
     await workouts.expectDraft("Tuesday stability");
+    await workouts.expectNoPublishedNotice();
   });
 
   test("an owner builds a workout with warm-up, a knee and hip prevention section and cool-down, then publishes it", async ({
@@ -246,6 +246,9 @@ test.describe("Workout builder", () => {
     await workouts.expectBookendTicked("warm-up", 4);
     await workouts.expectBookendTicked("cool-down", 3);
     await workouts.expectSectionSkills(["PREV"]);
+
+    await workouts.cancel();
+    await workouts.expectNoPublishedNotice();
   });
 
   test("a saved workout with an unknown section opens in the builder without that section", async ({
@@ -383,9 +386,7 @@ test.describe("Workout builder", () => {
     await expect(page.getByTestId("workout-builder")).toBeVisible();
   });
 
-  test("a co-owner sees drafts without edit or download actions", async ({
-    page,
-  }) => {
+  test("a co-owner sees drafts without edit actions", async ({ page }) => {
     const coOwned = {
       ...TEAM,
       owner_id: OTHER_OWNER,
@@ -403,10 +404,9 @@ test.describe("Workout builder", () => {
 
     await workouts.expectDraft("Tuesday stability");
     await workouts.expectNoEditActions();
-    await workouts.expectNoDownload();
   });
 
-  test("a member sees the published workouts without edit or download actions", async ({
+  test("a member sees the published workouts without edit actions", async ({
     page,
   }) => {
     const joined = {
@@ -426,6 +426,5 @@ test.describe("Workout builder", () => {
 
     await workouts.expectPublished("Tuesday stability");
     await workouts.expectNoEditActions();
-    await workouts.expectNoDownload();
   });
 });

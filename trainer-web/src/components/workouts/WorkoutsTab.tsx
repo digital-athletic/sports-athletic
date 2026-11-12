@@ -50,7 +50,17 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
   const [deleting, setDeleting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [statusChanging, setStatusChanging] = useState<string | null>(null);
-  const [publishedName, setPublishedName] = useState<string | null>(null);
+  // The team id ties the notice to its team, so a team switch hides it.
+  const [published, setPublished] = useState<{
+    teamId: string | null;
+    name: string;
+  } | null>(null);
+
+  /** Hides the error and the publish notice of the previous action. */
+  const clearNotices = () => {
+    setActionError(null);
+    setPublished(null);
+  };
 
   const sectionLabel = (section: SectionDraft): string => {
     const skill = t(`workouts.skills.${section.skill}`);
@@ -74,7 +84,7 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
   const handleDelete = async () => {
     if (!toDelete) return;
     setDeleting(true);
-    setActionError(null);
+    clearNotices();
     try {
       await deleteWorkout(toDelete.id);
     } catch (err) {
@@ -93,12 +103,11 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
     status: TeamWorkoutStatus,
   ) => {
     setStatusChanging(workout.id);
-    setActionError(null);
-    setPublishedName(null);
+    clearNotices();
     try {
       await setWorkoutStatus(workout.id, status);
       if (status === "published") {
-        setPublishedName(readTemplateName(workout.template));
+        setPublished({ teamId, name: readTemplateName(workout.template) });
       }
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t("common.error"));
@@ -133,7 +142,7 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
           <Button
             data-testid="workout-new"
             onClick={() => {
-              setActionError(null);
+              clearNotices();
               setEditing({ workoutId: null, draft: createEmptyDraft() });
             }}
           >
@@ -144,13 +153,13 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
 
       {error && <ErrorMessage message={error} />}
       {actionError && <ErrorMessage message={actionError} />}
-      {publishedName !== null && (
+      {published?.teamId === teamId && (
         <p
           role="status"
           data-testid="workout-published-notice"
           className="rounded bg-green-50 p-3 text-sm text-green-800"
         >
-          {t("workouts.publishedNotice", { name: publishedName })}
+          {t("workouts.publishedNotice", { name: published.name })}
         </p>
       )}
 
@@ -237,7 +246,7 @@ export function WorkoutsTab({ teamId, isOwner }: WorkoutsTabProps) {
                         variant="secondary"
                         data-testid="workout-edit"
                         onClick={() => {
-                          setActionError(null);
+                          clearNotices();
                           setEditing({ workoutId: workout.id, draft });
                         }}
                       >

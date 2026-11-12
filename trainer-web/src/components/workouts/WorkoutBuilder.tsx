@@ -153,12 +153,8 @@ export function WorkoutBuilder({
         testId: `workout-error-${error.code}`,
         message: t(key, {
           ...AMOUNT_RANGES.picks,
-          max:
-            error.code === "NAME_TOO_LONG"
-              ? MAX_NAME_LENGTH
-              : error.code === "TOO_MANY_SECTIONS"
-                ? MAX_SECTIONS
-                : AMOUNT_RANGES.picks.max,
+          ...(error.code === "NAME_TOO_LONG" && { max: MAX_NAME_LENGTH }),
+          ...(error.code === "TOO_MANY_SECTIONS" && { max: MAX_SECTIONS }),
         }),
       };
     }

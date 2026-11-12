@@ -63,10 +63,6 @@ export class WorkoutsPage {
     ).toHaveCount(0);
   }
 
-  async expectNoDownload() {
-    await expect(this.page.getByTestId("workout-download")).toHaveCount(0);
-  }
-
   /** The confirmation that a published workout is assigned to the athletes. */
   async expectPublishedNotice(name: string) {
     await expect(
@@ -74,7 +70,13 @@ export class WorkoutsPage {
     ).toContainText(name);
   }
 
-  /** Ticks the warm-up ("warm-up") or cool-down ("cool-down") and sets its exercise count. */
+  async expectNoPublishedNotice() {
+    await expect(this.page.getByTestId("workout-published-notice")).toHaveCount(
+      0,
+    );
+  }
+
+  /** Ticks the warm-up or the cool-down and sets its exercise count. */
   async tickBookend(part: "warm-up" | "cool-down", amount: number) {
     await this.page.getByTestId(`workout-${part}`).check();
     await this.page.getByTestId(`workout-${part}-amount`).fill(String(amount));
@@ -176,6 +178,10 @@ export class WorkoutsPage {
 
   async removeSection(index: number) {
     await this.section(index).getByTestId("section-remove").click();
+  }
+
+  async cancel() {
+    await this.page.getByTestId("workout-cancel").click();
   }
 
   async save() {

@@ -235,7 +235,7 @@
   },
   "workouts": {
     "title": "Team workouts",
-    "description": "Published workouts appear in your athletes' app. New workouts start as drafts: only you and your co-owners see them, in the app too, for testing.",
+    "description": "Published workouts appear in your athletes' app. New workouts start as drafts. Only you and your co-owners see a draft, and you can test it in the app.",
     "new": "New workout",
     "edit": "Edit",
     "empty": "This team has no workouts yet.",
@@ -280,10 +280,10 @@
       "NAME_REQUIRED": "Enter a name.",
       "NAME_TOO_LONG": "The name can have at most {{max}} characters.",
       "SECTION_REQUIRED": "Add at least one section.",
-      "TOO_MANY_SECTIONS": "A workout can have at most {{max}} sections.",
+      "TOO_MANY_SECTIONS": "A workout can have at most {{max}} sections, including warm-up and cool-down.",
       "UNKNOWN_SKILL": "Section {{number}}: choose a training.",
       "AMOUNT_OUT_OF_RANGE": "Section {{number}}: enter {{min}} to {{max}} {{unit}}.",
-      "TAG_NOT_ALLOWED": "Section {{number}}: this selection does not fit the training.",
+      "TAG_NOT_ALLOWED": "Section {{number}}: the training does not offer the selected area.",
       "WARM_UP_OUT_OF_RANGE": "Warm-up: enter {{min}} to {{max}} exercises.",
       "COOL_DOWN_OUT_OF_RANGE": "Cool-down: enter {{min}} to {{max}} exercises."
     },

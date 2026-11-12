@@ -106,6 +106,37 @@ test.describe("Training list: checklist session", () => {
     });
   });
 
+  test.describe("Device in dark mode", () => {
+    test.use({
+      profile: createCompletedProfile(),
+      signedIn: true,
+      colorScheme: "dark",
+    });
+
+    test("athlete opens the exercise sheet and sees it in the light design", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      await workoutPage.startWorkout("Tuesday");
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+      await trainingListPage.startRow("training-list-row-0");
+
+      expect(await trainingListPage.sheetBackgroundColor()).toBe(
+        "rgb(255, 255, 255)",
+      );
+    });
+  });
+
   test.describe("Rest after a set", () => {
     test.use({ profile: createCompletedProfile(), signedIn: true });
 

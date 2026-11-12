@@ -187,6 +187,21 @@ export class TrainingListPage extends BasePage {
     return this.page.getByTestId(`training-list-skill-${key}`);
   }
 
+  /** Background color the open sheet is painted in, e.g. "rgb(255, 255, 255)". */
+  async sheetBackgroundColor() {
+    await expect(this.sheetSet).toBeVisible();
+    return this.sheet.evaluate((element) => {
+      const transparent = "rgba(0, 0, 0, 0)";
+      let node: Element | null = element;
+      while (node) {
+        const { backgroundColor } = getComputedStyle(node);
+        if (backgroundColor !== transparent) return backgroundColor;
+        node = node.parentElement;
+      }
+      return transparent;
+    });
+  }
+
   /** Test id of the set the open sheet shows, e.g. "training-list-sheet-set-4". */
   async currentSheetSet() {
     await expect(this.sheetSet).toBeVisible();

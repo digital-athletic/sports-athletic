@@ -12,19 +12,32 @@ import { type SheetRest, type SheetRestControl } from "./utils/checklistRest";
 
 // A real sheet keeps its children while it animates closed, so the mock
 // renders them regardless of isPresented. Native layout and text map to
-// their React Native counterparts.
+// their React Native counterparts, which keep the color props readable.
 jest.mock("@expo/ui", () => {
   const { createElement } = jest.requireActual("react");
   const { Text, View } = jest.requireActual("react-native");
   const Layout = ({
     children,
     testID,
+    colorScheme,
   }: {
     children?: ReactNode;
     testID?: string;
-  }) => createElement(View, { testID }, children);
+    colorScheme?: string;
+  }) => createElement(View, { testID, colorScheme }, children);
   return {
-    BottomSheet: ({ children }: { children?: ReactNode }) => children,
+    BottomSheet: ({
+      children,
+      testID,
+      containerColor,
+      contentColor,
+    }: {
+      children?: ReactNode;
+      testID?: string;
+      containerColor?: string;
+      contentColor?: string;
+    }) =>
+      createElement(View, { testID, containerColor, contentColor }, children),
     RNHostView: ({ children }: { children: ReactNode }) => children,
     Host: Layout,
     Row: Layout,
@@ -245,6 +258,42 @@ describe("TrainingExerciseSheet: heading", () => {
     expect(getByTestId("training-list-sheet-timer")).toHaveStyle({
       fontSize: 16,
     });
+  });
+});
+
+describe("TrainingExerciseSheet: light design on a device in dark mode", () => {
+  it("paints the sheet in the light background color of the app", async () => {
+    const { getByTestId } = await render(
+      <TrainingExerciseSheet {...generateSheetProps()} />,
+    );
+
+    expect(getByTestId("training-list-sheet").props.containerColor).toBe(
+      theme.colors.white,
+    );
+  });
+
+  it("gives native sheet content the dark text color of the app", async () => {
+    const { getByTestId } = await render(
+      <TrainingExerciseSheet {...generateSheetProps()} />,
+    );
+
+    expect(getByTestId("training-list-sheet").props.contentColor).toBe(
+      theme.colors.darkGrey3,
+    );
+  });
+
+  it("fixes the native target tiles to the light color scheme", async () => {
+    const { getByTestId } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({
+          row: generateChecklistRow({ targetReps: 10 }),
+        })}
+      />,
+    );
+
+    expect(getByTestId("training-list-sheet-stats").props.colorScheme).toBe(
+      "light",
+    );
   });
 });
 

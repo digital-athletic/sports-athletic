@@ -158,6 +158,32 @@ describe("OwnTrainingsList: entries", () => {
     expect(queryByRole("button", { name: IMPORT_LABEL })).toBeNull();
   });
 
+  it("shows the icon of the training's focus on the tile", async () => {
+    const { saveCustomWorkout } = useCustomWorkoutsStore.getState();
+    saveCustomWorkout(generateCustomTemplate(), null);
+    saveCustomWorkout(
+      generateCustomTemplate({
+        id: "MY_RUN",
+        name: { en: "My run" },
+        blocks: [{ kind: "duration", skill: "CARDIO_2", duration: 1200 }],
+      }),
+      null,
+    );
+
+    const { getAllByTestId } = await render(
+      <OwnTrainingsList onImport={jest.fn()} importing={false} />,
+    );
+
+    // The icons are decorative, so they are hidden from screen readers.
+    const hidden = { includeHiddenElements: true };
+    expect(
+      getAllByTestId("custom-workout-icon-stability", hidden),
+    ).toHaveLength(1);
+    expect(getAllByTestId("custom-workout-icon-cardio", hidden)).toHaveLength(
+      1,
+    );
+  });
+
   it("shows the english name in english", async () => {
     useCustomWorkoutsStore
       .getState()

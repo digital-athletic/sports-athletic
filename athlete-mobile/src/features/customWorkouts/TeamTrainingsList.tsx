@@ -1,6 +1,7 @@
 import { TileGrid } from "@/common/TileGrid";
 import { readLocalizedTemplateName } from "@/data/loadTemplates";
 import { CustomWorkoutTile } from "@/features/customWorkouts/CustomWorkoutTile";
+import { detectCustomWorkoutFocus } from "@/features/customWorkouts/customWorkoutFocus";
 import { EmptyTrainingListMessage } from "@/features/customWorkouts/EmptyTrainingListMessage";
 import {
   listWorkoutsForTeam,
@@ -112,6 +113,7 @@ export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
           <CustomWorkoutTile
             key={workout.id}
             workoutId={workout.id}
+            focus={detectCustomWorkoutFocus(workout.template)}
             name={readLocalizedTemplateName(
               workout.template.name,
               i18n.language,

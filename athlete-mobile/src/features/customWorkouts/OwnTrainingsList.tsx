@@ -2,6 +2,7 @@ import { Alert } from "@/common/Alert";
 import { TileGrid } from "@/common/TileGrid";
 import { readLocalizedTemplateName } from "@/data/loadTemplates";
 import { CustomWorkoutTile } from "@/features/customWorkouts/CustomWorkoutTile";
+import { detectCustomWorkoutFocus } from "@/features/customWorkouts/customWorkoutFocus";
 import { EmptyTrainingListMessage } from "@/features/customWorkouts/EmptyTrainingListMessage";
 import {
   listWorkoutsForTeam,
@@ -94,6 +95,7 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
             <CustomWorkoutTile
               key={workout.id}
               workoutId={workout.id}
+              focus={detectCustomWorkoutFocus(workout.template)}
               name={name}
               deleteAction={{
                 label: t("screens.home.additionalTrainings.deleteTraining", {

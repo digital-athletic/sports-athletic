@@ -4,11 +4,14 @@ import { type Block, type Template } from "@/schemas/aiwl.schema";
 export const TRAINING_TIMES = [15, 30, 45, 60] as const;
 export type TrainingTime = (typeof TRAINING_TIMES)[number];
 
+export const GENERATED_TRAINING_FOCUSES = [
+  "hypertrophy",
+  "explosive",
+  "mobility",
+  "cardio",
+] as const;
 export type GeneratedTrainingFocus =
-  | "hypertrophy"
-  | "explosive"
-  | "mobility"
-  | "cardio";
+  (typeof GENERATED_TRAINING_FOCUSES)[number];
 export type GeneratedTrainingRegion =
   | "upperBody"
   | "lowerBody"
@@ -18,7 +21,7 @@ export type GeneratedTrainingRegion =
 export type GeneratedTrainingInput = {
   minutes: TrainingTime;
   focus: GeneratedTrainingFocus;
-  /** Ignored for cardio. The full body lifts the restriction to regions. */
+  /** Regions the focus offers; ignored for cardio. The full body stands alone. */
   regions: GeneratedTrainingRegion[];
 };
 
@@ -84,7 +87,7 @@ const buildRegionPicks = (
   const tags = regions.flatMap((region) =>
     region === "fullBody" ? [] : [REGION_TAGS[region]],
   );
-  if (regions.includes("fullBody") || tags.length === 0) {
+  if (tags.length === 0) {
     return [{ tags: [], count }];
   }
   const trained = tags.slice(0, count);
@@ -100,17 +103,14 @@ const buildMainBlock = (
   { focus, regions }: GeneratedTrainingInput,
   minutes: number,
 ): Block => {
-  const { skill, regions: offered } = FOCUS_SKILLS[focus];
+  const { skill } = FOCUS_SKILLS[focus];
   if (focus === "cardio") {
     return { kind: "duration", skill, duration: Math.round(minutes) * 60 };
   }
   return {
     kind: "picks",
     skill,
-    picks: buildRegionPicks(
-      regions.filter((region) => offered.includes(region)),
-      countExercises(minutes, skill),
-    ),
+    picks: buildRegionPicks(regions, countExercises(minutes, skill)),
   };
 };
 

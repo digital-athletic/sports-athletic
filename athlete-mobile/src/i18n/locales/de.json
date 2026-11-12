@@ -118,13 +118,6 @@
           "cardio": "Ausdauer"
         },
         "regions": "Regionen",
-        "regionNames": {
-          "upperBody": "Oberkörper",
-          "lowerBody": "Unterkörper",
-          "core": "Rumpf",
-          "fullBody": "Ganzkörper"
-        },
-        "generate": "Training generieren",
         "trainingName": "{{focus}} {{minutes}} Min."
       },
       "focusTrainings": {

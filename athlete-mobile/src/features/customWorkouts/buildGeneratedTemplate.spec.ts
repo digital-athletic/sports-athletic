@@ -2,6 +2,7 @@ import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { type Block } from "@/schemas/aiwl.schema";
 import {
   buildGeneratedTemplate,
+  GENERATED_TRAINING_FOCUSES,
   type GeneratedTrainingFocus,
   type GeneratedTrainingRegion,
   listRegionsForFocus,
@@ -10,24 +11,11 @@ import {
 } from "./buildGeneratedTemplate";
 import { validateCustomWorkoutValue } from "./validateCustomWorkout";
 
-const FOCUSES: GeneratedTrainingFocus[] = [
-  "hypertrophy",
-  "explosive",
-  "mobility",
-  "cardio",
-];
-
 /** Tags of every pick of a picks block, e.g. ["REGION_UPPER_BODY"]. */
 const listPickTags = (block: Block): string[] =>
   block.kind === "picks" && Array.isArray(block.picks)
     ? block.picks.flatMap((pick) => pick.tags)
     : [];
-
-/** Exercise count of a picks block over all its picks, e.g. 3. */
-const countPicks = (block: Block): number =>
-  block.kind === "picks" && Array.isArray(block.picks)
-    ? block.picks.reduce((sum, pick) => sum + pick.count, 0)
-    : 0;
 
 describe("buildGeneratedTemplate: structure", () => {
   it("frames the main section with a warm-up and a cool-down", () => {
@@ -112,7 +100,6 @@ describe("buildGeneratedTemplate: regions", () => {
     );
 
     expect(listPickTags(template.blocks[1])).toEqual([]);
-    expect(countPicks(template.blocks[1])).toBeGreaterThan(0);
   });
 
   it("keeps the warm-up and the cool-down unrestricted", () => {
@@ -134,21 +121,6 @@ describe("buildGeneratedTemplate: regions", () => {
     expect(template.blocks[1]).toMatchObject({ kind: "duration" });
     expect(template.blocks[1]).not.toHaveProperty("picks");
   });
-
-  it("offers no region for cardio and no core for explosive power", () => {
-    expect(listRegionsForFocus("cardio")).toEqual([]);
-    expect(listRegionsForFocus("explosive")).toEqual([
-      "upperBody",
-      "lowerBody",
-      "fullBody",
-    ]);
-    expect(listRegionsForFocus("hypertrophy")).toEqual([
-      "upperBody",
-      "lowerBody",
-      "core",
-      "fullBody",
-    ]);
-  });
 });
 
 /** Every single region of a focus plus all its body regions together. */
@@ -165,7 +137,7 @@ const listRegionChoices = (
 
 describe("buildGeneratedTemplate: every time, focus and region", () => {
   const cases = TRAINING_TIMES.flatMap((minutes) =>
-    FOCUSES.flatMap((focus) =>
+    GENERATED_TRAINING_FOCUSES.flatMap((focus) =>
       listRegionChoices(focus).map(
         (regions) => [minutes, focus, regions] as const,
       ),

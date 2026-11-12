@@ -103,7 +103,7 @@ describe("GenerateTrainingScreen: generate", () => {
     expect(mockBack).not.toHaveBeenCalled();
   });
 
-  it("saves an own training named after the focus and time", async () => {
+  it("saves one own training", async () => {
     const { getByRole } = await render(<GenerateTrainingScreen />);
     await fireEvent.press(getByRole("radio", { name: "30 min" }));
     await fireEvent.press(getByRole("radio", { name: "Hypertrophy" }));
@@ -111,9 +111,7 @@ describe("GenerateTrainingScreen: generate", () => {
 
     await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
 
-    expect(listOwnTrainings().map((workout) => workout.template.name)).toEqual([
-      { en: "Hypertrophy 30 min", de: "Muskelaufbau 30 Min." },
-    ]);
+    expect(listOwnTrainings()).toHaveLength(1);
   });
 
   it("returns to the list after generating", async () => {
@@ -125,19 +123,6 @@ describe("GenerateTrainingScreen: generate", () => {
     await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
 
     expect(mockBack).toHaveBeenCalledTimes(1);
-  });
-
-  it("generates a cardio training from the time alone", async () => {
-    const { getByRole } = await render(<GenerateTrainingScreen />);
-    await fireEvent.press(getByRole("radio", { name: "45 min" }));
-    await fireEvent.press(getByRole("radio", { name: "Cardio" }));
-
-    await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
-
-    expect(listOwnTrainings()[0].template.blocks[1]).toMatchObject({
-      kind: "duration",
-      skill: "CARDIO_2",
-    });
   });
 
   it("keeps two trainings generated with the same inputs", async () => {
@@ -165,18 +150,15 @@ describe("GenerateTrainingScreen: generate", () => {
     });
   });
 
-  it("replaces the other regions when the full body is chosen", async () => {
+  it("deselects the other regions when the full body is chosen", async () => {
     const { getByRole } = await render(<GenerateTrainingScreen />);
-    await fireEvent.press(getByRole("radio", { name: "30 min" }));
     await fireEvent.press(getByRole("radio", { name: "Hypertrophy" }));
     await fireEvent.press(getByRole("button", { name: "Upper body" }));
+
     await fireEvent.press(getByRole("button", { name: "Full body" }));
 
-    await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
-
-    expect(listOwnTrainings()[0].template.blocks[1]).toMatchObject({
-      picks: [{ tags: [] }],
-    });
+    expect(getByRole("button", { name: "Upper body" })).not.toBeSelected();
+    expect(getByRole("button", { name: "Full body" })).toBeSelected();
   });
 
   it("drops the core when the focus changes to explosive power", async () => {

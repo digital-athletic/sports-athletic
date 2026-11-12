@@ -118,13 +118,6 @@
           "cardio": "Cardio"
         },
         "regions": "Regions",
-        "regionNames": {
-          "upperBody": "Upper body",
-          "lowerBody": "Lower body",
-          "core": "Core",
-          "fullBody": "Full body"
-        },
-        "generate": "Generate training",
         "trainingName": "{{focus}} {{minutes}} min"
       },
       "focusTrainings": {

@@ -1,6 +1,7 @@
 import { HeadlineScreen } from "@/common/HeadlineScreen";
 import {
   buildGeneratedTemplate,
+  GENERATED_TRAINING_FOCUSES,
   type GeneratedTrainingFocus,
   type GeneratedTrainingRegion,
   listRegionsForFocus,
@@ -19,12 +20,12 @@ import { router } from "expo-router";
 import { type FC, type PropsWithChildren, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const FOCUSES: GeneratedTrainingFocus[] = [
-  "hypertrophy",
-  "explosive",
-  "mobility",
-  "cardio",
-];
+const REGION_LABEL_KEYS = {
+  upperBody: "region.UPPER_BODY",
+  lowerBody: "region.LOWER_BODY",
+  core: "region.CORE",
+  fullBody: "region.FULL_BODY",
+} as const satisfies Record<GeneratedTrainingRegion, string>;
 
 const FormSection: FC<PropsWithChildren<{ label: string }>> = ({
   label,
@@ -83,7 +84,9 @@ const useTrainingForm = (): TrainingForm => {
     changeMinutes: (value) =>
       setMinutes(TRAINING_TIMES.find((time) => String(time) === value) ?? null),
     changeFocus: (value) => {
-      const next = FOCUSES.find((candidate) => candidate === value);
+      const next = GENERATED_TRAINING_FOCUSES.find(
+        (candidate) => candidate === value,
+      );
       if (!next) return;
       const offered = listRegionsForFocus(next);
       setFocus(next);
@@ -116,7 +119,7 @@ export default function GenerateTrainingScreen() {
       heading={t("screens.home.generateTraining.title")}
       description={t("screens.home.generateTraining.subtitle")}
       action={{
-        label: t("screens.home.generateTraining.generate"),
+        label: t("screens.home.generateTraining.title"),
         onPress: form.generate,
         disabled: !form.isComplete,
       }}
@@ -138,7 +141,7 @@ export default function GenerateTrainingScreen() {
         <FormSection label={t("screens.home.generateTraining.focus")}>
           <ChoiceChips
             accessibilityLabel={t("screens.home.generateTraining.focus")}
-            options={FOCUSES.map((value) => ({
+            options={GENERATED_TRAINING_FOCUSES.map((value) => ({
               value,
               label: t(`screens.home.generateTraining.focuses.${value}`),
             }))}
@@ -152,9 +155,7 @@ export default function GenerateTrainingScreen() {
               {form.offeredRegions.map((region) => (
                 <Chip
                   key={region}
-                  label={t(
-                    `screens.home.generateTraining.regionNames.${region}`,
-                  )}
+                  label={t(REGION_LABEL_KEYS[region])}
                   selected={form.regions.includes(region)}
                   onPress={() => form.toggleRegion(region)}
                 />

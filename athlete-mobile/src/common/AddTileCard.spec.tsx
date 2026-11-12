@@ -2,17 +2,12 @@ import { fireEvent, render, screen } from "@/utils/testUtils";
 import { AddTileCard } from "./AddTileCard";
 
 describe("AddTileCard", () => {
-  it("announces a button with the label", async () => {
+  it("shows the label and announces it as a button", async () => {
     await render(<AddTileCard label="Generate training" onPress={jest.fn()} />);
 
     expect(
       screen.getByRole("button", { name: "Generate training" }),
     ).toBeTruthy();
-  });
-
-  it("shows the label", async () => {
-    await render(<AddTileCard label="Generate training" onPress={jest.fn()} />);
-
     expect(screen.getByText("Generate training")).toBeTruthy();
   });
 

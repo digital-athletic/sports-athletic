@@ -1,13 +1,13 @@
 import { AppIcon } from "@/common/AppIcon";
-import { useTileCardHeaderHeight } from "@/common/TileCard";
+import {
+  TILE_CARD_FOOTER_HEIGHT,
+  useTileCardHeaderHeight,
+} from "@/common/TileCard";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { Pressable, StyleSheet } from "react-native";
 import IconPlus from "@tabler/icons-react-native/IconPlus";
-
-// Height of the name row of a tile card with a one-line name.
-const TILE_CARD_FOOTER_HEIGHT = 52;
 
 type AddTileCardProps = {
   label: string;

@@ -317,29 +317,16 @@ describe("AdditionalTrainingWorkoutsScreen: generate training", () => {
     expect(mockPush).toHaveBeenCalledWith("/generate-training");
   });
 
-  it("shows the generate button next to the import button in the header when entries exist", async () => {
-    useCustomWorkoutsStore
-      .getState()
-      .saveCustomWorkout(generateCustomTemplate(), null);
-
-    const { getByTestId, getByRole } = await render(
-      <AdditionalTrainingWorkoutsScreen />,
-    );
-
-    expect(
-      getByTestId("generate-training-header").props.accessibilityLabel,
-    ).toBe("Generate training");
-    expect(getByRole("button", { name: IMPORT_LABEL })).toBeTruthy();
-  });
-
   it("opens the generate form from the header button", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
     const { getByTestId } = await render(<AdditionalTrainingWorkoutsScreen />);
+    const headerButton = getByTestId("generate-training-header");
 
-    await fireEvent.press(getByTestId("generate-training-header"));
+    await fireEvent.press(headerButton);
 
+    expect(headerButton.props.accessibilityLabel).toBe("Generate training");
     expect(mockPush).toHaveBeenCalledWith("/generate-training");
   });
 

@@ -22,7 +22,7 @@ export const DataExportSection: FC = () => {
         </Text>
       </Box>
 
-      <Box backgroundColor="white" paddingVertical="s">
+      <Box backgroundColor="surface" paddingVertical="s">
         <ListItem
           title={t("more.account.dataExport.download")}
           icon={IconDownload}

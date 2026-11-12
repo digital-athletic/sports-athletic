@@ -85,19 +85,19 @@ export const TrainingCountdown: FC<Props> = ({
     seconds: Math.max(spokenSeconds, 0),
   });
 
-  let countdownColorKey: "primary" | "white" = "primary";
+  let countdownColorKey: "primary" | "onPrimary" = "primary";
   let labelText = "";
-  let backgroundColor: "white" | "primary" = "white";
+  let backgroundColor: "surface" | "primary" = "surface";
 
   if (isPause) {
     // Pause exercise
     backgroundColor = "primary";
-    countdownColorKey = "white";
+    countdownColorKey = "onPrimary";
     labelText = t("training.active.pause.label");
   } else if (isPausedState) {
     // Manual pause
     backgroundColor = "primary";
-    countdownColorKey = "white";
+    countdownColorKey = "onPrimary";
     labelText = t("training.active.pause.goOn");
   } else if (isFirstDurationInTraining && elapsed < 4) {
     labelText = t("training.active.controls.clickToPause");
@@ -116,7 +116,7 @@ export const TrainingCountdown: FC<Props> = ({
       }
       accessibilityValue={{ text: spokenText }}
     >
-      <Box flex={elapsed} backgroundColor="lightGrey3" zIndex={2} />
+      <Box flex={elapsed} backgroundColor="outline" zIndex={2} />
       <Box flex={remainingInt} backgroundColor={backgroundColor} zIndex={2} />
       <Box
         position="absolute"

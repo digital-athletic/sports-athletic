@@ -20,10 +20,10 @@ export const FieldShell: FC<FieldShellProps> = ({
     <Box
       flexDirection="row"
       alignItems="center"
-      backgroundColor="white"
+      backgroundColor="surfaceContainerLowest"
       borderRadius="xl"
       borderWidth={1.5}
-      borderColor={focused ? "primary" : "lightGrey2"}
+      borderColor={focused ? "primary" : "outlineVariant"}
       minHeight={56}
       paddingLeft={icon ? "m" : "none"}
     >
@@ -31,7 +31,7 @@ export const FieldShell: FC<FieldShellProps> = ({
         <AppIcon
           icon={icon}
           size={22}
-          color={focused ? colors.primary : colors.darkGrey1}
+          color={focused ? colors.primary : colors.onSurfaceVariant}
           decorative
         />
       )}

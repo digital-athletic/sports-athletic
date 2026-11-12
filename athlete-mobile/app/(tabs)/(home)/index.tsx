@@ -118,7 +118,7 @@ export default function HomeScreen() {
       />
       <ScrollBox
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top }}
         testID="home-scroll"
       >
@@ -136,7 +136,7 @@ export default function HomeScreen() {
           <Box flex={isShortLandscape ? 2 : undefined} padding="l">
             <Card
               variant="outlined"
-              backgroundColor="lightGrey1"
+              backgroundColor="surfaceContainerLow"
               padding="l"
               flexGrow={1}
             >

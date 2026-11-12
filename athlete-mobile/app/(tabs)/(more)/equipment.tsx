@@ -76,14 +76,14 @@ export default function EquipmentScreen() {
       />
       <ScrollBox
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         contentInsetAdjustmentBehavior="automatic"
       >
-        <Box backgroundColor="white">
+        <Box backgroundColor="surface">
           <Box paddingTop="s" paddingHorizontal="m">
             <Coaching text={t("equipment.coachMessage")} />
           </Box>
-          <Box borderTopWidth={1} borderTopColor="lightGrey2" marginTop="s" />
+          <Box borderTopWidth={1} borderTopColor="outlineVariant" marginTop="s" />
           <PlaceSelection
             selectPlace={handleSelectPlace}
             places={places}

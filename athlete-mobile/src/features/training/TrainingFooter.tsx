@@ -37,9 +37,9 @@ export const TrainingFooter: FC<Props> = ({
       bottom={0}
       left={0}
       right={0}
-      backgroundColor="lightGrey1"
+      backgroundColor="surfaceContainerLow"
       borderTopWidth={1}
-      borderTopColor={"lightGrey2"}
+      borderTopColor="outlineVariant"
       onLayout={(event) => onHeightChange?.(event.nativeEvent.layout.height)}
     >
       <Box style={{ paddingBottom: insets.bottom }} padding="m">

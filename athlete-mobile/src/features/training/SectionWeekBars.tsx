@@ -41,17 +41,17 @@ export const SectionWeekBars: FC<SectionWeekBarsProps> = ({
         return "primary";
       } else if (activeWeek > -1 && activeWeek < sectionWeeksCount) {
         // Passed week
-        return "darkGrey2";
+        return "onSurfaceVariant";
       }
     }
 
     // Passed week (before active week)
     if (weekIndex < activeWeek) {
-      return "darkGrey2";
+      return "onSurfaceVariant";
     }
 
     // Default: not yet reached
-    return "lightGrey2";
+    return "surfaceContainerHigh";
   };
 
   const weeks = Array.from({ length: sectionWeeksCount });

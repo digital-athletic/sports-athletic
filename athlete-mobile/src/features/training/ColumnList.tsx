@@ -49,9 +49,9 @@ const TileThumbnail: FC<{ item: TileData; size: number }> = ({
     <Box
       width={size}
       height={size}
-      backgroundColor="white"
+      backgroundColor="surfaceContainerLowest"
       borderWidth={1}
-      borderColor="lightGrey2"
+      borderColor="outlineVariant"
       testID="tile-thumbnail-placeholder"
     />
   );

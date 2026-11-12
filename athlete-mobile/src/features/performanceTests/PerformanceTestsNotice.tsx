@@ -47,7 +47,7 @@ export const PerformanceTestsNotice: FC<Props> = ({ kind, onRetry }) => {
   return (
     <Card
       variant="outlined"
-      backgroundColor="lightGrey1"
+      backgroundColor="surfaceContainerLow"
       padding="l"
       testID={`performance-tests-${kind === "empty" ? "empty" : "not-found"}`}
     >

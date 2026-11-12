@@ -14,7 +14,7 @@ export const TrainingProgressBar: FC<TrainingProgressBarProps> = ({
     <Box
       testID={TRAINING_PROGRESS_BAR_TEST_ID}
       height={4}
-      backgroundColor="lightGrey1"
+      backgroundColor="surfaceContainerLow"
     >
       <Box
         testID="training-progress-bar-fill"

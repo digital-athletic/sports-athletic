@@ -32,7 +32,7 @@ export const ProgressBar: FC<Props> = ({
       height={barHeight}
       backgroundColor="primary"
       borderRightWidth={1}
-      borderRightColor="lightGrey2"
+      borderRightColor="outlineVariant"
     />
   ));
 
@@ -43,9 +43,9 @@ export const ProgressBar: FC<Props> = ({
         key={`empty_${i}`}
         flex={1}
         height={barHeight}
-        backgroundColor="lightGrey1"
+        backgroundColor="surfaceContainerLow"
         borderRightWidth={1}
-        borderRightColor="lightGrey2"
+        borderRightColor="outlineVariant"
       />
     ),
   );
@@ -57,7 +57,7 @@ export const ProgressBar: FC<Props> = ({
       flexDirection="row"
       height={barHeight}
       borderBottomWidth={1}
-      borderBottomColor="lightGrey3"
+      borderBottomColor="outline"
       marginTop="xs"
     >
       {filledBars}

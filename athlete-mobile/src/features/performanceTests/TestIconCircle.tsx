@@ -20,7 +20,7 @@ export const TestIconCircle: FC<Props> = ({ category }) => {
       width={circleSize}
       height={circleSize}
       borderRadius="round"
-      backgroundColor="primaryTint"
+      backgroundColor="primaryContainer"
       alignItems="center"
       justifyContent="center"
       testID={`performance-test-icon-${categoryIconName(category)}`}

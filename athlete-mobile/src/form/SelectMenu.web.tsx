@@ -21,9 +21,9 @@ export const SelectMenu: FC<SelectMenuProps> = ({
         minHeight: 34,
         padding: "0 12px",
         borderRadius: 17,
-        border: `1.5px solid ${colors.lightGrey2}`,
-        backgroundColor: colors.white,
-        color: colors.darkGrey3,
+        border: `1.5px solid ${colors.outlineVariant}`,
+        backgroundColor: colors.surface,
+        color: colors.onSurface,
         // The font stack of react-native-web Text, so the select matches the app text.
         fontFamily:
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',

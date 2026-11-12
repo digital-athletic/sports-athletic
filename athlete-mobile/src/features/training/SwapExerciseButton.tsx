@@ -59,7 +59,7 @@ export const SwapExerciseButton: FC<SwapExerciseButtonProps> = ({
       <AppIcon
         icon={IconSwitchHorizontal}
         size={24}
-        color={swappable ? colors.darkGrey2 : colors.lightGrey3}
+        color={swappable ? colors.onSurfaceVariant : colors.outline}
       />
     </TouchableBox>
   );

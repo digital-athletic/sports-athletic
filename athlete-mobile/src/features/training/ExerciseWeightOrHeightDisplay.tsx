@@ -51,7 +51,7 @@ export const ExerciseWeightOrHeightDisplay: FC<Props> = ({
           {isDumbbellExercise ? t("training.active.2x") : null}
           {exerciseWeight}
         </Text>
-        <Text variant="small" color="darkGrey1">
+        <Text variant="small" color="onSurfaceVariant">
           {t("training.active.weightIn")}
         </Text>
       </>
@@ -60,7 +60,7 @@ export const ExerciseWeightOrHeightDisplay: FC<Props> = ({
     return (
       <>
         <Text variant="largeTitle">{height}</Text>
-        <Text variant="small" color="darkGrey1">
+        <Text variant="small" color="onSurfaceVariant">
           {t("training.active.cmHigh")}
         </Text>
       </>

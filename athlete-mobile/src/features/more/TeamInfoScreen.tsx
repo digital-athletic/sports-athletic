@@ -20,11 +20,15 @@ export default function TeamInfoScreen() {
       <Stack.Screen options={{ title: t("more.teamInfo.title") }} />
       <ScrollBox
         flex={1}
-        backgroundColor="lightGrey2"
+        backgroundColor="surfaceContainerHigh"
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: 20 }}
       >
-        <Box backgroundColor="white" borderRadius="l" padding="l">
+        <Box
+          backgroundColor="surfaceContainerLowest"
+          borderRadius="l"
+          padding="l"
+        >
           {state.status === "loading" && (
             <ActivityIndicator
               testID="team-info-loading"

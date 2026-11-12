@@ -17,7 +17,7 @@ export const SegmentedControl = <T extends string>({
     <View
       accessibilityRole="tablist"
       accessibilityLabel={accessibilityLabel}
-      style={[styles.track, { backgroundColor: colors.surfaceSubtle }]}
+      style={[styles.track, { backgroundColor: colors.surfaceContainer }]}
     >
       {options.map((option) => {
         const selected = option.value === value;
@@ -36,8 +36,8 @@ export const SegmentedControl = <T extends string>({
               selected && [
                 styles.selected,
                 {
-                  backgroundColor: colors.white,
-                  shadowColor: colors.darkGrey3,
+                  backgroundColor: colors.surfaceContainerLowest,
+                  shadowColor: colors.shadow,
                 },
               ],
             ]}
@@ -45,7 +45,7 @@ export const SegmentedControl = <T extends string>({
             <Text
               variant="body"
               fontWeight={selected ? "700" : "500"}
-              color={selected ? "primary" : "darkGrey2"}
+              color={selected ? "primary" : "onSurfaceVariant"}
               numberOfLines={1}
             >
               {option.label}

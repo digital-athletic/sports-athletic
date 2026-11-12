@@ -1,4 +1,4 @@
-import { colors } from "@/theme/colors";
+import { type Theme } from "@/theme/theme";
 
 /** Chart sizing configuration */
 export const LINE_CHART_SIZING = {
@@ -20,8 +20,8 @@ export const LINE_CHART_DATA = {
   stepValue: 20,
 } as const;
 
-/** Chart color configuration */
-export const LINE_CHART_COLORS = {
+/** Chart colors for the active theme */
+export const lineChartColors = (colors: Theme["colors"]) => ({
   /** Squat line color (black) */
   squad: colors.squad,
   /** Deadlift line color (purple) */
@@ -33,12 +33,12 @@ export const LINE_CHART_COLORS = {
   /** Shoulder Press line color (pink) */
   shoulderPress: colors.shoulderPress,
   /** Grid/rules line color */
-  grid: colors.lightGrey2,
+  grid: colors.outlineVariant,
   /** Axis label text color */
-  axisText: colors.darkGrey2,
+  axisText: colors.onSurfaceVariant,
   /** Axis line color */
-  axisLine: colors.black,
-} as const;
+  axisLine: colors.onSurface,
+});
 
 /** Line styling configuration */
 export const LINE_CHART_STYLE = {

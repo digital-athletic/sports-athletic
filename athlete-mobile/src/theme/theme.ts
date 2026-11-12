@@ -33,10 +33,10 @@ export const theme = createTheme({
 
   cardVariants: {
     defaults: {
-      backgroundColor: "white",
+      backgroundColor: "surfaceContainerLowest",
       padding: "l",
       borderRadius: "l",
-      shadowColor: "darkGrey3",
+      shadowColor: "shadow",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
@@ -44,10 +44,10 @@ export const theme = createTheme({
     },
 
     elevated: {
-      backgroundColor: "white",
+      backgroundColor: "surfaceContainerLowest",
       padding: "l",
       borderRadius: "l",
-      shadowColor: "darkGrey3",
+      shadowColor: "shadow",
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.15,
       shadowRadius: 8,
@@ -55,7 +55,7 @@ export const theme = createTheme({
     },
 
     flat: {
-      backgroundColor: "white",
+      backgroundColor: "surfaceContainerLowest",
       padding: "l",
       borderRadius: "m",
     },
@@ -63,10 +63,10 @@ export const theme = createTheme({
     // Bordered card of the redesigned screens, matching the choice cards.
     // The defaults add padding and a shadow, so this variant resets both.
     outlined: {
-      backgroundColor: "white",
+      backgroundColor: "surfaceContainerLowest",
       padding: "none",
       borderWidth: 1.5,
-      borderColor: "lightGrey2",
+      borderColor: "outlineVariant",
       borderRadius: "xl",
       shadowOpacity: 0,
       elevation: 0,
@@ -93,7 +93,7 @@ export const theme = createTheme({
 
     // Second action next to a cta
     ctaOutline: {
-      backgroundColor: "white",
+      backgroundColor: "surface",
       paddingHorizontal: "l",
       minHeight: 56,
       borderRadius: "round",
@@ -104,7 +104,7 @@ export const theme = createTheme({
     },
 
     secondary: {
-      backgroundColor: "white",
+      backgroundColor: "surface",
       padding: "m",
       borderRadius: "m",
       alignItems: "center",
@@ -120,7 +120,7 @@ export const theme = createTheme({
     },
 
     quickAction: {
-      backgroundColor: "lightGrey1",
+      backgroundColor: "surfaceContainerLow",
       padding: "s",
       borderRadius: "m",
       minWidth: 100,
@@ -130,23 +130,23 @@ export const theme = createTheme({
 
   inputVariants: {
     defaults: {
-      backgroundColor: "lightGrey2",
+      backgroundColor: "surfaceContainerHigh",
       borderWidth: 1,
-      borderColor: "lightGrey2",
+      borderColor: "surfaceContainerHigh",
       borderRadius: "m",
       padding: "m",
       fontSize: 16,
-      color: "darkGrey3",
+      color: "onSurface",
     },
 
     focused: {
-      backgroundColor: "lightGrey2",
+      backgroundColor: "surfaceContainerHigh",
       borderWidth: 1,
       borderColor: "primary",
       borderRadius: "m",
       padding: "m",
       fontSize: 16,
-      color: "darkGrey3",
+      color: "onSurface",
     },
   },
 });

@@ -1,6 +1,7 @@
 import type { UserSkills } from "@/features/statistics/models/WorkoutsData";
 import type { FocusArea } from "@/schemas/sync.schema";
 import { Box } from "@/theme/Box";
+import { useTheme } from "@/theme/theme";
 import { getHexagonPoints } from "@/utils/geometry";
 import { Image } from "expo-image";
 import { type FC } from "react";
@@ -9,7 +10,7 @@ import { StyleSheet, View } from "react-native";
 import { RadarChart as GiftedRadarChart } from "react-native-gifted-charts";
 import Svg, { Polygon } from "react-native-svg";
 import {
-  RADAR_CHART_COLORS,
+  radarChartColors,
   RADAR_CHART_DATA,
   RADAR_CHART_LABEL_CONFIG,
   RADAR_CHART_LAYOUT,
@@ -27,6 +28,7 @@ type RadarChartProps = {
  */
 export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
   const { t } = useTranslation();
+  const chartColors = radarChartColors(useTheme().colors);
 
   const percentages = calculatePercentages(userSkills);
 
@@ -49,7 +51,7 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
   // Label config - all centered at their positions with dark text
   const labelConfigArray = SKILL_ORDER.map(() => ({
     fontSize: RADAR_CHART_LABEL_CONFIG.fontSize,
-    stroke: RADAR_CHART_COLORS.labelText,
+    stroke: chartColors.labelText,
     textAnchor: RADAR_CHART_LABEL_CONFIG.textAnchor,
   }));
 
@@ -77,19 +79,19 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
           labelsPositionOffset={RADAR_CHART_DATA.labelsPositionOffset}
           circular={true}
           polygonConfig={{
-            stroke: RADAR_CHART_COLORS.primary,
+            stroke: chartColors.primary,
             strokeWidth: 3,
-            fill: RADAR_CHART_COLORS.polygonFill,
+            fill: chartColors.polygonFill,
           }}
           gridConfig={{
-            stroke: RADAR_CHART_COLORS.grid,
+            stroke: chartColors.grid,
             strokeWidth: 1,
             strokeDashArray: [4, 4],
             fill: "transparent",
             showGradient: false,
           }}
           asterLinesConfig={{
-            stroke: RADAR_CHART_COLORS.grid,
+            stroke: chartColors.grid,
             strokeWidth: 1,
             strokeDashArray: [4, 4],
           }}
@@ -112,8 +114,8 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
           >
             <Polygon
               points={getHexagonPoints(RADAR_CHART_SIZING.logoBorderSize)}
-              fill={RADAR_CHART_COLORS.logoBackground}
-              stroke={RADAR_CHART_COLORS.primary}
+              fill={chartColors.logoBackground}
+              stroke={chartColors.primary}
               strokeWidth={2}
             />
           </Svg>

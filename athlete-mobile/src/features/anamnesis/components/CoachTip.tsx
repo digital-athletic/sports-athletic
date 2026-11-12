@@ -11,9 +11,9 @@ export const CoachTip: FC<{ text: string }> = ({ text }) => (
     gap="m"
     padding="m"
     borderRadius="xl"
-    backgroundColor="lightGrey1"
+    backgroundColor="surfaceContainerLow"
     borderWidth={1}
-    borderColor="lightGrey2"
+    borderColor="outlineVariant"
   >
     <Image
       source={require("../../../../assets/img/coach/face.png")}
@@ -23,7 +23,7 @@ export const CoachTip: FC<{ text: string }> = ({ text }) => (
       importantForAccessibility="no-hide-descendants"
     />
     <Box flex={1}>
-      <Text variant="small" color="darkGrey3">
+      <Text variant="small" color="onSurface">
         {text}
       </Text>
     </Box>

@@ -43,16 +43,16 @@ export default function MoreScreen() {
         options={{
           title: t("screens.more.title"),
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: colors.white },
+          headerStyle: { backgroundColor: colors.surface },
         }}
       />
       <ScrollBox
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         contentInsetAdjustmentBehavior="automatic"
       >
         {hasTestAccess && (
-          <Box backgroundColor="white" paddingVertical="s">
+          <Box backgroundColor="surface" paddingVertical="s">
             <ListItem
               title={t("more.testPersonas")}
               navPath="/test"
@@ -63,7 +63,7 @@ export default function MoreScreen() {
           </Box>
         )}
 
-        <Box backgroundColor="white" paddingVertical="s">
+        <Box backgroundColor="surface" paddingVertical="s">
           <ListItem
             title={t("more.myProfile")}
             navPath="/(more)/anamnesis/userprofile"
@@ -125,15 +125,15 @@ export default function MoreScreen() {
         </Box>
 
         {/* Separates the account actions from the menu above. */}
-        <Box height={10} backgroundColor="lightGrey2" />
+        <Box height={10} backgroundColor="surfaceContainerHigh" />
 
-        <Box backgroundColor="white" paddingVertical="s">
+        <Box backgroundColor="surface" paddingVertical="s">
           <InfoMenuItems />
 
           <ListItem
             title={t("more.logout")}
             icon={IconLogout}
-            iconBackground="darkGrey1"
+            iconBackground="onSurfaceVariant"
             onPress={logout}
             isLast
           />
@@ -146,7 +146,7 @@ export default function MoreScreen() {
             left={0}
             right={0}
             bottom={0}
-            backgroundColor="black"
+            backgroundColor="scrim"
             opacity={0.5}
             justifyContent="center"
             alignItems="center"

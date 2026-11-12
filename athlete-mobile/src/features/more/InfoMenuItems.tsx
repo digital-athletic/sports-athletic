@@ -33,7 +33,7 @@ const FormMenuItems: FC = () => {
           title={t("more.consentU16")}
           externalUrl={externalLinks.consentU16}
           icon={IconEdit}
-          iconBackground="darkGrey1"
+          iconBackground="onSurfaceVariant"
         />
       )}
       {externalLinks.feedbackReport !== "" && (
@@ -41,7 +41,7 @@ const FormMenuItems: FC = () => {
           title={t("more.feedbackReport")}
           externalUrl={externalLinks.feedbackReport}
           icon={IconBug}
-          iconBackground="darkGrey1"
+          iconBackground="onSurfaceVariant"
         />
       )}
       {externalLinks.survey !== "" && (
@@ -49,7 +49,7 @@ const FormMenuItems: FC = () => {
           title={t("more.survey")}
           externalUrl={externalLinks.survey}
           icon={IconClipboard}
-          iconBackground="darkGrey1"
+          iconBackground="onSurfaceVariant"
         />
       )}
     </>
@@ -66,7 +66,7 @@ const A11yMenuItems: FC = () => {
           title={t("more.a11yStatement")}
           externalUrl={LINK_A11Y_STATEMENT}
           icon={IconAccessible}
-          iconBackground="darkGrey1"
+          iconBackground="onSurfaceVariant"
         />
       )}
       {featureFlags.a11yFeedbackEnabled && (
@@ -74,7 +74,7 @@ const A11yMenuItems: FC = () => {
           title={t("more.a11yFeedback")}
           externalUrl={LINK_A11Y_FEEDBACK}
           icon={IconMessageDots}
-          iconBackground="darkGrey1"
+          iconBackground="onSurfaceVariant"
         />
       )}
     </>
@@ -93,7 +93,7 @@ export const InfoMenuItems: FC = () => {
           title={t("more.agb")}
           externalUrl={LINK_AGB}
           icon={IconInfoCircle}
-          iconBackground="darkGrey1"
+          iconBackground="onSurfaceVariant"
         />
       )}
       {featureFlags.privacyEnabled && (
@@ -101,21 +101,21 @@ export const InfoMenuItems: FC = () => {
           title={t("more.privacy")}
           externalUrl={LINK_PRIVACY}
           icon={IconShieldCheck}
-          iconBackground="darkGrey1"
+          iconBackground="onSurfaceVariant"
         />
       )}
       <ListItem
         title={t("more.notificationsSettings")}
         navPath="/(tabs)/(more)/notifications"
         icon={IconSettings}
-        iconBackground="darkGrey1"
+        iconBackground="onSurfaceVariant"
       />
       {featureFlags.contactEnabled && (
         <ListItem
           title={t("more.contact")}
           externalUrl={`mailto:${SUPPORT_EMAIL}`}
           icon={IconMail}
-          iconBackground="darkGrey1"
+          iconBackground="onSurfaceVariant"
         />
       )}
       {featureFlags.imprintEnabled && (
@@ -123,7 +123,7 @@ export const InfoMenuItems: FC = () => {
           title={t("more.imprint")}
           externalUrl={LINK_IMPRINT}
           icon={IconFileText}
-          iconBackground="darkGrey1"
+          iconBackground="onSurfaceVariant"
         />
       )}
       <A11yMenuItems />
@@ -131,7 +131,7 @@ export const InfoMenuItems: FC = () => {
         title={t("more.thirdPartyNotices.menuItem")}
         navPath="/(tabs)/(more)/third-party-notices"
         icon={IconCode}
-        iconBackground="darkGrey1"
+        iconBackground="onSurfaceVariant"
       />
     </>
   );

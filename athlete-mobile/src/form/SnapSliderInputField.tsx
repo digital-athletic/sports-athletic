@@ -49,7 +49,7 @@ export const SnapSliderInputField: FC<Props> = ({
       <Box marginTop="s" paddingHorizontal="m">
         <Slider
           accessibilityLabel={accessibilityLabel}
-          maximumTrackTintColor={colors.lightGrey2}
+          maximumTrackTintColor={colors.surfaceContainerHigh}
           maximumValue={Math.max(0, sliderOptions.length - 1)}
           minimumTrackTintColor={colors.primary}
           minimumValue={0}

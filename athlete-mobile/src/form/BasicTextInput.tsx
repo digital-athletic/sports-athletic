@@ -22,11 +22,11 @@ export const BasicTextInput: FC<BasicTextInputProps> = ({
     <TextInput
       value={value}
       onChangeText={onChangeText}
-      placeholderTextColor={colors.darkGrey2}
+      placeholderTextColor={colors.onSurfaceVariant}
       style={[
         styles.inputField,
         {
-          color: colors.darkGrey3,
+          color: colors.onSurface,
           paddingHorizontal: spacing.m,
         },
         style,

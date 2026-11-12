@@ -44,12 +44,12 @@ const FilledFace: FC<ButtonFaceProps> = ({ resumeTime, testId }) => {
       <AppIcon
         icon={IconPlayerPlayFilled}
         size={16}
-        color={colors.white}
+        color={colors.onPrimary}
         decorative
       />
       <Text
         variant="body"
-        color="white"
+        color="onPrimary"
         fontWeight="600"
         testID={resumeTime ? `${testId}-resume-time` : undefined}
       >
@@ -68,7 +68,7 @@ const QuietFace: FC<ButtonFaceProps> = ({ resumeTime, testId }) => {
       {resumeTime && (
         <Text
           variant="small"
-          color="darkGrey1"
+          color="onSurfaceVariant"
           testID={`${testId}-resume-time`}
         >
           {resumeTime}
@@ -79,9 +79,9 @@ const QuietFace: FC<ButtonFaceProps> = ({ resumeTime, testId }) => {
         height={BUTTON_SIZE}
         justifyContent="center"
         alignItems="center"
-        backgroundColor="primaryTint"
+        backgroundColor="primaryContainer"
         borderWidth={1.5}
-        borderColor="primaryMuted"
+        borderColor="inversePrimary"
         borderRadius="round"
       >
         <AppIcon

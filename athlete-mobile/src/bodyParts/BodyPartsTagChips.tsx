@@ -40,13 +40,15 @@ export const BodyPartsTagChips: FC<BodyPartsTagChipsProps> = ({
         marginBottom="s"
         borderRadius="round"
         borderWidth={1.5}
-        borderColor={onClick ? "primary" : "lightGrey2"}
-        backgroundColor={onClick ? "primaryTint" : "white"}
+        borderColor={onClick ? "primary" : "outlineVariant"}
+        backgroundColor={
+          onClick ? "primaryContainer" : "surfaceContainerLowest"
+        }
       >
         <Text
           variant="small"
           fontWeight="600"
-          color={onClick ? "primary" : "darkGrey3"}
+          color={onClick ? "primary" : "onSurface"}
         >
           {t(`muscles.${tag}`)}
         </Text>

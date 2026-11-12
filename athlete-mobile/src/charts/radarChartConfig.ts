@@ -1,4 +1,4 @@
-import { colors } from "@/theme/colors";
+import { type Theme } from "@/theme/theme";
 
 /** Chart sizing configuration */
 export const RADAR_CHART_SIZING = {
@@ -36,32 +36,28 @@ export const RADAR_CHART_DATA = {
   labelsPositionOffset: 15,
 } as const;
 
-/**
- * Creates polygon fill color with specified opacity.
- * Uses primary color as base.
- */
-const createPrimaryWithOpacity = (opacity: number): string => {
-  // Convert hex #C71B1B to rgba
-  const hex = colors.primary.replace("#", "");
+// The polygon's opacity prop would dim its stroke too, so the fill carries the alpha
+const withOpacity = (hexColor: string, opacity: number): string => {
+  const hex = hexColor.replace("#", "");
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
 
-/** Chart color configuration */
-export const RADAR_CHART_COLORS = {
+/** Chart colors for the active theme */
+export const radarChartColors = (colors: Theme["colors"]) => ({
   /** Primary stroke color */
   primary: colors.primary,
   /** Polygon fill with transparency */
-  polygonFill: createPrimaryWithOpacity(0.3),
+  polygonFill: withOpacity(colors.primary, 0.3),
   /** Grid line color */
-  grid: colors.lightGrey3,
+  grid: colors.outline,
   /** Label text color */
-  labelText: colors.darkGrey3,
+  labelText: colors.onSurface,
   /** Logo background color */
-  logoBackground: colors.white,
-} as const;
+  logoBackground: colors.surfaceContainerLowest,
+});
 
 /** Static label configuration for all 6 skills */
 export const RADAR_CHART_LABEL_CONFIG = {

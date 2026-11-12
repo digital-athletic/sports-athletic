@@ -26,7 +26,7 @@ export const ValueStatusPill: FC<Props> = ({ status }) => {
       paddingHorizontal="s"
       paddingVertical="xs"
       borderRadius="round"
-      backgroundColor="surfaceSubtle"
+      backgroundColor="surfaceContainer"
     >
       <Box
         width={8}
@@ -37,7 +37,7 @@ export const ValueStatusPill: FC<Props> = ({ status }) => {
       <Text
         variant="xSmall"
         fontSize={{ phone: 12, tablet: 15 }}
-        color="darkGrey3"
+        color="onSurface"
       >
         {t(`more.performanceTests.status.${status}`)}
       </Text>

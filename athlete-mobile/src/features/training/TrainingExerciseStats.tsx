@@ -29,7 +29,7 @@ const StatTile: FC<StatTileProps> = ({ icon, value, caption, testID }) => {
       spacing={6}
       testID={testID}
       style={{
-        backgroundColor: colors.lightGrey2,
+        backgroundColor: colors.surfaceContainerHigh,
         borderRadius: 12,
         paddingHorizontal: 12,
         paddingVertical: 6,
@@ -44,11 +44,11 @@ const StatTile: FC<StatTileProps> = ({ icon, value, caption, testID }) => {
         />
       </RNHostView>
       <Text
-        textStyle={{ fontSize: 18, fontWeight: "600", color: colors.darkGrey3 }}
+        textStyle={{ fontSize: 18, fontWeight: "600", color: colors.onSurface }}
       >
         {value}
       </Text>
-      <Text textStyle={{ fontSize: 14, color: colors.darkGrey1 }}>
+      <Text textStyle={{ fontSize: 14, color: colors.onSurfaceVariant }}>
         {caption}
       </Text>
     </Row>

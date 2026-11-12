@@ -42,7 +42,7 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
       paddingBottom="xs"
       marginRight="m"
       onPress={onPress}
-      backgroundColor={isActive ? "primaryTint" : "white"}
+      backgroundColor={isActive ? "primaryContainer" : "surfaceContainerLowest"}
       borderRadius="l"
     >
       <Box flex={3} justifyContent="center" alignSelf="stretch">
@@ -59,7 +59,7 @@ export const TrainingSectionTile: FC<TrainingSectionTileProps> = ({
           variant="xSmall"
           textAlign="center"
           fontWeight={isActive ? "700" : "400"}
-          color={isActive ? "primary" : "darkGrey3"}
+          color={isActive ? "primary" : "onSurface"}
         >
           {t(`training.sections.${section.type}`)}
         </Text>

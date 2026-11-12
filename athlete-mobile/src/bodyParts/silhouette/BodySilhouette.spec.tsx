@@ -75,7 +75,7 @@ describe("BodySilhouette: highlight color resolution", () => {
       side: "BACK",
       highlights: [
         { regions: ["GLUTES_LEFT"], color: "primary" },
-        { regions: ["GLUTES_RIGHT"], color: "primaryMuted" },
+        { regions: ["GLUTES_RIGHT"], color: "inversePrimary" },
       ],
     });
 
@@ -91,7 +91,7 @@ describe("BodySilhouette: highlight color resolution", () => {
       side: "BACK",
       highlights: [
         { regions: ["GLUTES_LEFT"], color: "primary" },
-        { regions: ["GLUTES_LEFT"], color: "primaryMuted" },
+        { regions: ["GLUTES_LEFT"], color: "inversePrimary" },
       ],
     });
 

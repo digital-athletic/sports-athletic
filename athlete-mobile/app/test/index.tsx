@@ -10,7 +10,7 @@ export default function TestScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="white"
+      backgroundColor="surface"
     >
       <Text variant="title">Test Menu</Text>
       <Text variant="description">

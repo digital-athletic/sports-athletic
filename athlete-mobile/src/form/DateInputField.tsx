@@ -81,7 +81,7 @@ const WebDateInput: FC<WebDateInputProps> = ({
       style={{
         border: "none",
         background: "transparent",
-        color: colors.darkGrey3,
+        color: colors.onSurface,
         fontFamily: "system-ui",
         fontSize: textVariants.body.fontSize,
         // The full width moves the browser's picker button to the right edge.
@@ -157,7 +157,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   };
 
   const displayValue = (
-    <Text variant="body" color="darkGrey3">
+    <Text variant="body" color="onSurface">
       {getDisplayValue()}
     </Text>
   );

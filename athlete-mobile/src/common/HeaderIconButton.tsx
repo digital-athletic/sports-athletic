@@ -36,7 +36,7 @@ export const HeaderIconButton: FC<HeaderIconButtonProps> = ({
       accessibilityLabel={accessibilityLabel}
       testID={testID}
     >
-      <AppIcon icon={icon} size={28} color={theme.colors.black} decorative />
+      <AppIcon icon={icon} size={28} color={theme.colors.onSurface} decorative />
     </TouchableBox>
   );
 };

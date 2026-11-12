@@ -29,7 +29,7 @@ const OfflineNote: FC = () => {
   const { t } = useTranslation();
 
   return (
-    <Text variant="body" color="darkGrey1" accessibilityRole="text">
+    <Text variant="body" color="onSurfaceVariant" accessibilityRole="text">
       {t("screens.home.additionalTrainings.offlineNote")}
     </Text>
   );
@@ -89,7 +89,7 @@ export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
     return (
       <Box
         flex={1}
-        backgroundColor="lightGrey1"
+        backgroundColor="surfaceContainerLow"
         justifyContent="center"
         alignItems="center"
       >
@@ -109,7 +109,7 @@ export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
       <>
         {isOffline && (
           <Box
-            backgroundColor="lightGrey1"
+            backgroundColor="surfaceContainerLow"
             paddingHorizontal="m"
             paddingTop="m"
           >
@@ -124,7 +124,7 @@ export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
   return (
     <ScrollBox
       flex={1}
-      backgroundColor="white"
+      backgroundColor="surface"
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ padding: spacing.l, gap: spacing.m }}
       testID="team-trainings-list"

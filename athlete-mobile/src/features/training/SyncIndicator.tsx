@@ -2,7 +2,7 @@ import { Alert } from "@/common/Alert";
 import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { useTheme } from "@shopify/restyle";
+import { useTheme } from "@/theme/theme";
 import { useEffect, useRef, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native";
@@ -131,6 +131,11 @@ export const SyncIndicator: FC = () => {
 
   return (
     <Box style={styles.overlayContainer}>
+      <Box
+        style={StyleSheet.absoluteFill}
+        backgroundColor="surface"
+        opacity={0.6}
+      />
       <Box style={styles.loadingContainer}>
         {synchronization.updating && (
           <Box
@@ -155,6 +160,7 @@ export const SyncIndicator: FC = () => {
           />
         )}
         <Text
+          color="onSurface"
           style={styles.updateText}
           {...(spokenText === null ? {} : liveRegionProps)}
         >
@@ -174,7 +180,6 @@ const styles = StyleSheet.create({
     left: 0,
     width: "100%",
     minHeight: 30,
-    backgroundColor: "rgba(255,255,255,0.6)",
     justifyContent: "center",
     alignItems: "stretch",
     zIndex: 99999999,
@@ -193,6 +198,5 @@ const styles = StyleSheet.create({
   },
   updateText: {
     fontSize: 12,
-    color: "#000",
   },
 });

@@ -20,7 +20,7 @@ const NoticeListItem: FC<{ item: Notice }> = ({ item }) => {
     <Box>
       <Box paddingHorizontal="l" paddingVertical="s">
         <Text variant="body">{item.name}</Text>
-        <Text variant="small" color="darkGrey2">
+        <Text variant="small" color="onSurfaceVariant">
           {t("more.thirdPartyNotices.versionAndLicense", {
             version: item.version,
             license: item.license,
@@ -42,13 +42,13 @@ export default function ThirdPartyNoticesScreen() {
           title: t("more.thirdPartyNotices.title"),
         }}
       />
-      <Box flex={1} backgroundColor="white">
+      <Box flex={1} backgroundColor="surface">
         <FlatList
           data={NOTICES}
           keyExtractor={(item) => `${item.name}@${item.version}`}
           renderItem={({ item }) => <NoticeListItem item={item} />}
           ListHeaderComponent={
-            <Text variant="body" color="darkGrey3" padding="l">
+            <Text variant="body" color="onSurface" padding="l">
               {t("more.thirdPartyNotices.intro")}
             </Text>
           }

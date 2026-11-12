@@ -52,10 +52,10 @@ const TileBadge: FC<{ label: string }> = ({ label }) => (
     paddingHorizontal="s"
     paddingVertical="xs"
     borderRadius="s"
-    backgroundColor="white"
+    backgroundColor="surfaceContainerLowest"
     pointerEvents="none"
   >
-    <Text variant="body" fontSize={12} fontWeight="700" color="darkGrey1">
+    <Text variant="body" fontSize={12} fontWeight="700" color="onSurfaceVariant">
       {label}
     </Text>
   </Box>
@@ -75,14 +75,14 @@ const TileActionButton: FC<{
       width={ACTION_BUTTON_SIZE}
       height={ACTION_BUTTON_SIZE}
       borderRadius="round"
-      backgroundColor="white"
+      backgroundColor="surfaceContainerLowest"
       alignItems="center"
       justifyContent="center"
       hitSlop={ACTION_HIT_SLOP}
       accessibilityRole="button"
       accessibilityLabel={label}
     >
-      <AppIcon icon={icon} size={20} color={colors.darkGrey1} decorative />
+      <AppIcon icon={icon} size={20} color={colors.onSurfaceVariant} decorative />
     </TouchableBox>
   );
 };

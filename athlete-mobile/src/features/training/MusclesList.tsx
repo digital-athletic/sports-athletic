@@ -26,7 +26,7 @@ export const MusclesList: FC<MusclesListProps> = ({ tags }) => {
     <Box
       padding="l"
       borderTopWidth={1}
-      borderTopColor="lightGrey1"
+      borderTopColor="surfaceContainerLow"
       testID="muscles-trained-section"
     >
       <Text variant="cardTitle" marginBottom="s">

@@ -2,7 +2,7 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { BASELINE_TRAINING_STATE } from "@/features/training/utils/testFixtures";
 import { Logger } from "@/services/Logger";
 import { act, renderHook } from "@testing-library/react-native";
-import { Alert } from "react-native";
+import { Alert } from "@/common/Alert";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useFinishTraining } from "./useFinishTraining";

@@ -38,6 +38,11 @@ jest.mock("@/config/featureFlags", () => ({
   },
 }));
 
+jest.mock("@/constants/AppConstants", () => ({
+  ...jest.requireActual("@/constants/AppConstants"),
+  LINK_PRIVACY: "https://example.com/privacy",
+}));
+
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -67,6 +72,16 @@ describe("ConsentScreen", () => {
     await render(<ConsentScreen />);
 
     expect(screen.getByRole("button", { name: "Continue" })).toBeTruthy();
+  });
+
+  it("shows the privacy policy on the WebView route in the native app", async () => {
+    await render(<ConsentScreen />);
+
+    await fireEvent.press(screen.getByText("privacy policy"));
+
+    expect(mockPush).toHaveBeenCalledWith(
+      "/webview?url=https%3A%2F%2Fexample.com%2Fprivacy",
+    );
   });
 
   it("shows error when submitting without accepting privacy", async () => {

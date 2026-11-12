@@ -14,7 +14,8 @@ import { useTheme } from "@/theme/theme";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, StyleSheet, TouchableOpacity } from "react-native";
+import { Alert } from "@/common/Alert";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import IconCircleCheckFilled from "@tabler/icons-react-native/IconCircleCheckFilled";
 
 export default function EquipmentDetailsScreen() {

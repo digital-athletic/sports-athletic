@@ -316,6 +316,21 @@ describe("loadSkillCatalog: real file", () => {
     );
   });
 
+  // The PREV tree needs a dumbbell, so a place without weights needs PREVKG.
+  it.each([
+    "PREV",
+    "PREVKNEE",
+    "PREVSHOULDER",
+    "PREVANKLE",
+    "PREVSPINE",
+    "PREVWRIST",
+  ])("reads the weighted and the bodyweight prevention tree for %s", (code) => {
+    expect(entryOf(code).skillTree).toEqual({
+      withWeights: ["PREV", "PREVKG"],
+      withoutWeights: ["PREV", "PREVKG"],
+    });
+  });
+
   it.each(TIMING_CODES)("names no skill tree for %s", (code) => {
     expect(entryOf(code).skillTree).toBeUndefined();
   });

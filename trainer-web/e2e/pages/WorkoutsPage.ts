@@ -63,8 +63,54 @@ export class WorkoutsPage {
     ).toHaveCount(0);
   }
 
-  async expectNoDownload() {
-    await expect(this.page.getByTestId("workout-download")).toHaveCount(0);
+  /** The confirmation that a published workout is assigned to the athletes. */
+  async expectPublishedNotice(name: string) {
+    await expect(
+      this.page.getByTestId("workout-published-notice"),
+    ).toContainText(name);
+  }
+
+  async expectNoPublishedNotice() {
+    await expect(this.page.getByTestId("workout-published-notice")).toHaveCount(
+      0,
+    );
+  }
+
+  /** Ticks the warm-up or the cool-down and sets its exercise count. */
+  async tickFixedSection(part: "warm-up" | "cool-down", amount: number) {
+    await this.page.getByTestId(`workout-${part}`).check();
+    await this.page.getByTestId(`workout-${part}-amount`).fill(String(amount));
+  }
+
+  async expectFixedSectionTicked(
+    part: "warm-up" | "cool-down",
+    amount: number,
+  ) {
+    await expect(this.page.getByTestId(`workout-${part}`)).toBeChecked();
+    await expect(this.page.getByTestId(`workout-${part}-amount`)).toHaveValue(
+      String(amount),
+    );
+  }
+
+  /** The skill codes the training list of a section offers. */
+  async offeredSkills(index: number): Promise<string[]> {
+    return this.section(index)
+      .getByTestId("section-skill")
+      .locator("option")
+      .evaluateAll((options) =>
+        options.map((option) => option.getAttribute("value") ?? ""),
+      );
+  }
+
+  /** The tag codes a section offers. */
+  async offeredTags(index: number): Promise<string[]> {
+    return this.section(index)
+      .locator('[data-testid^="section-tag-"]')
+      .evaluateAll((inputs) =>
+        inputs.map((input) =>
+          (input.getAttribute("data-testid") ?? "").replace("section-tag-", ""),
+        ),
+      );
   }
 
   async publish(name: string) {
@@ -73,22 +119,6 @@ export class WorkoutsPage {
 
   async moveToDraft(name: string) {
     await this.workout(name).getByTestId("workout-unpublish").click();
-  }
-
-  /** Downloads the workout and returns the file name and the file text. */
-  async download(name: string): Promise<{ fileName: string; text: string }> {
-    const downloadEvent = this.page.waitForEvent("download");
-    await this.workout(name).getByTestId("workout-download").click();
-    const download = await downloadEvent;
-    const stream = await download.createReadStream();
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) {
-      chunks.push(Buffer.from(chunk));
-    }
-    return {
-      fileName: download.suggestedFilename(),
-      text: Buffer.concat(chunks).toString("utf8"),
-    };
   }
 
   async startNewWorkout() {
@@ -151,6 +181,10 @@ export class WorkoutsPage {
 
   async removeSection(index: number) {
     await this.section(index).getByTestId("section-remove").click();
+  }
+
+  async cancel() {
+    await this.page.getByTestId("workout-cancel").click();
   }
 
   async save() {

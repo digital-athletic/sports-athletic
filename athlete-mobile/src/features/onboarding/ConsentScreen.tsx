@@ -6,16 +6,16 @@ import { useUserSettingsStore } from "@/store/userSettingsStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PrivacyCheckbox } from "./PrivacyCheckbox";
+import { useOpenLegalLink } from "./useOpenLegalLink";
 
 /** Blocking consent screen shown to pre-registration users who have not yet accepted privacy policy. */
 export function ConsentScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
+  const { openLegalLink } = useOpenLegalLink("/webview");
   const insets = useSafeAreaInsets();
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [analyticsAccepted, setAnalyticsAccepted] = useState(false);
@@ -39,17 +39,8 @@ export function ConsentScreen() {
     showSaveError ? t("onboarding.errorMessageConsentSaveFailed") : null,
   );
 
-  const handlePrivacyPress = () => {
-    if (LINK_PRIVACY) {
-      router.push(`/webview?url=${encodeURIComponent(LINK_PRIVACY)}`);
-    }
-  };
-
-  const handleAgbPress = () => {
-    if (LINK_AGB) {
-      router.push(`/webview?url=${encodeURIComponent(LINK_AGB)}`);
-    }
-  };
+  const handlePrivacyPress = () => openLegalLink(LINK_PRIVACY);
+  const handleAgbPress = () => openLegalLink(LINK_AGB);
 
   const handleAccept = () => {
     if (submitting) return;

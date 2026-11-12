@@ -93,6 +93,7 @@
         "loadingTeams": "Loading teams",
         "loadingTrainings": "Loading trainings",
         "offlineNote": "You are offline. The list shows the trainings of the last sync.",
+        "draft": "Draft",
         "noWorkouts": "Currently no workouts available",
         "importTraining": "Import training",
         "deleteTraining": "Delete {{name}}",
@@ -507,6 +508,12 @@
       "finishEarly": {
         "question": "Finish training early?",
         "explanation": "Not all sets are done. The training ends incomplete."
+      },
+      "share": {
+        "label": "Share the workout as text",
+        "copied": "The workout is copied. You can paste it into your notes.",
+        "setNumber": "Set {{number}}",
+        "title": "Workout"
       }
     },
     "active": {

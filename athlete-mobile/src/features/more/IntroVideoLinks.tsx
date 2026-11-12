@@ -23,7 +23,11 @@ export const IntroVideoLinks: FC = () => {
   if (links.length === 0) return null;
 
   return (
-    <Box backgroundColor="surfaceContainerLowest" paddingTop="s" marginBottom="s">
+    <Box
+      backgroundColor="surfaceContainerLowest"
+      paddingTop="s"
+      marginBottom="s"
+    >
       {links.map((link, index) => (
         <ListItem
           key={link.url}

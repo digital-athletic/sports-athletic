@@ -182,7 +182,11 @@ export function EmailVerificationScreen() {
 
   return (
     <KeyboardDismissArea>
-      <Box flex={1} backgroundColor="surface" style={{ paddingTop: insets.top }}>
+      <Box
+        flex={1}
+        backgroundColor="surface"
+        style={{ paddingTop: insets.top }}
+      >
         <Box paddingHorizontal="l" paddingVertical="s" alignItems="flex-start">
           <BackHeader onBack={() => router.replace("/onboarding")} />
         </Box>

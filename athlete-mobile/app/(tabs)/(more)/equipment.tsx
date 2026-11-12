@@ -83,7 +83,11 @@ export default function EquipmentScreen() {
           <Box paddingTop="s" paddingHorizontal="m">
             <Coaching text={t("equipment.coachMessage")} />
           </Box>
-          <Box borderTopWidth={1} borderTopColor="outlineVariant" marginTop="s" />
+          <Box
+            borderTopWidth={1}
+            borderTopColor="outlineVariant"
+            marginTop="s"
+          />
           <PlaceSelection
             selectPlace={handleSelectPlace}
             places={places}

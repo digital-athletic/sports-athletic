@@ -7,9 +7,13 @@ import {
   listWorkoutsForTeam,
   useCustomWorkoutsStore,
 } from "@/store/customWorkoutsStore";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Box } from "@/theme/Box";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import IconCirclePlusFilled from "@tabler/icons-react-native/IconCirclePlusFilled";
+import IconSparkles from "@tabler/icons-react-native/IconSparkles";
+
+const openGenerateTraining = () => router.push("/generate-training");
 
 export default function AdditionalTrainingWorkoutsScreen() {
   const { t } = useTranslation();
@@ -25,7 +29,8 @@ export default function AdditionalTrainingWorkoutsScreen() {
     params.source === "team" && typeof params.teamId === "string"
       ? params.teamId
       : "";
-  const showsHeaderImport =
+  // The empty list offers both actions itself.
+  const showsHeaderActions =
     isOwnSource && listWorkoutsForTeam(workoutsById, null).length > 0;
 
   return (
@@ -34,22 +39,33 @@ export default function AdditionalTrainingWorkoutsScreen() {
         options={{
           title,
           headerShown: true,
-          headerRight: showsHeaderImport
+          headerRight: showsHeaderActions
             ? () => (
-                <HeaderIconButton
-                  icon={IconCirclePlusFilled}
-                  onPress={importCustomWorkout}
-                  disabled={importing}
-                  accessibilityLabel={t(
-                    "screens.home.additionalTrainings.importTraining",
-                  )}
-                />
+                <Box flexDirection="row" alignItems="center" gap="s">
+                  <HeaderIconButton
+                    icon={IconSparkles}
+                    onPress={openGenerateTraining}
+                    accessibilityLabel={t(
+                      "screens.home.generateTraining.title",
+                    )}
+                    testID="generate-training-header"
+                  />
+                  <HeaderIconButton
+                    icon={IconCirclePlusFilled}
+                    onPress={importCustomWorkout}
+                    disabled={importing}
+                    accessibilityLabel={t(
+                      "screens.home.additionalTrainings.importTraining",
+                    )}
+                  />
+                </Box>
               )
             : undefined,
         }}
       />
       {isOwnSource ? (
         <OwnTrainingsList
+          onGenerate={openGenerateTraining}
           onImport={importCustomWorkout}
           importing={importing}
         />

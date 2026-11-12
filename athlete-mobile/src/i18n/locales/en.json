@@ -105,6 +105,21 @@
           "readFailed": "The file could not be read or is too large. Choose a smaller file and try again."
         }
       },
+      "generateTraining": {
+        "title": "Generate training",
+        "subtitle": "Choose a time, a focus and the regions. The app builds a training for you.",
+        "time": "Training time",
+        "minutes": "{{minutes}} min",
+        "focus": "Main focus",
+        "focuses": {
+          "hypertrophy": "Hypertrophy",
+          "explosive": "Explosive power",
+          "mobility": "Mobility",
+          "cardio": "Cardio"
+        },
+        "regions": "Regions",
+        "trainingName": "{{focus}} {{minutes}} min"
+      },
       "focusTrainings": {
         "title": "Focus & Prevention",
         "subtitle": "Short trainings next to your plan. Pick what you need today."

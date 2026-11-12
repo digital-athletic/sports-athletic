@@ -1,3 +1,4 @@
+import { AddTileCard } from "@/common/AddTileCard";
 import { Alert } from "@/common/Alert";
 import { TileGrid } from "@/common/TileGrid";
 import { readLocalizedTemplateName } from "@/data/loadTemplates";
@@ -8,74 +9,95 @@ import {
   listWorkoutsForTeam,
   useCustomWorkoutsStore,
 } from "@/store/customWorkoutsStore";
+import { Box } from "@/theme/Box";
+import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
-import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 
 type OwnTrainingsListProps = {
+  onGenerate: () => void;
   onImport: () => void;
   importing: boolean;
 };
 
+/** Empty list: the message with the two ways to add a training. */
 const EmptyOwnTrainings: FC<OwnTrainingsListProps> = ({
+  onGenerate,
   onImport,
   importing,
 }) => {
   const { t } = useTranslation();
+  const generateLabel = t("screens.home.generateTraining.title");
   const importLabel = t("screens.home.additionalTrainings.importTraining");
 
   return (
     <EmptyTrainingListMessage>
-      <TouchableBox
-        onPress={onImport}
-        disabled={importing}
-        accessibilityState={{ disabled: importing }}
-        marginTop="m"
-        padding="s"
-        accessibilityRole="button"
-        accessibilityLabel={importLabel}
-      >
-        <Text variant="body" color="primary" textDecorationLine="underline">
+      <Box alignSelf="stretch" gap="s" marginTop="l">
+        <Button
+          variant="cta"
+          onPress={onGenerate}
+          accessibilityLabel={generateLabel}
+        >
+          {generateLabel}
+        </Button>
+        <Button
+          variant="ctaOutline"
+          onPress={onImport}
+          disabled={importing}
+          accessibilityState={{ disabled: importing }}
+          accessibilityLabel={importLabel}
+        >
           {importLabel}
-        </Text>
-      </TouchableBox>
+        </Button>
+      </Box>
     </EmptyTrainingListMessage>
   );
 };
 
-export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
-  onImport,
-  importing,
-}) => {
-  const { t, i18n } = useTranslation();
-  const { spacing } = useTheme();
-  const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
+/** Asks for confirmation, then deletes the own training. */
+const useConfirmDeleteTraining = () => {
+  const { t } = useTranslation();
   const deleteOwnCustomWorkout = useCustomWorkoutsStore(
     (state) => state.deleteOwnCustomWorkout,
   );
-  const workouts = listWorkoutsForTeam(workoutsById, null);
-  const deleteLabel = t("common.delete");
 
-  if (workouts.length === 0) {
-    return <EmptyOwnTrainings onImport={onImport} importing={importing} />;
-  }
-
-  const confirmDeleteTraining = (id: string, name: string) =>
+  return (id: string, name: string) =>
     Alert.alert(
       t("screens.home.additionalTrainings.deleteTrainingTitle"),
       t("screens.home.additionalTrainings.deleteTrainingMessage", { name }),
       [
         { text: t("common.cancel"), style: "cancel" },
         {
-          text: deleteLabel,
+          text: t("common.delete"),
           style: "destructive",
           onPress: () => deleteOwnCustomWorkout(id),
         },
       ],
     );
+};
+
+export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
+  onGenerate,
+  onImport,
+  importing,
+}) => {
+  const { t, i18n } = useTranslation();
+  const { spacing } = useTheme();
+  const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
+  const confirmDeleteTraining = useConfirmDeleteTraining();
+  const workouts = listWorkoutsForTeam(workoutsById, null);
+
+  if (workouts.length === 0) {
+    return (
+      <EmptyOwnTrainings
+        onGenerate={onGenerate}
+        onImport={onImport}
+        importing={importing}
+      />
+    );
+  }
 
   return (
     <ScrollBox
@@ -106,6 +128,11 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
             />
           );
         })}
+        <AddTileCard
+          label={t("screens.home.generateTraining.title")}
+          onPress={onGenerate}
+          testID="generate-training-tile"
+        />
       </TileGrid>
     </ScrollBox>
   );

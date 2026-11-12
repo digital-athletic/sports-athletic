@@ -11,6 +11,8 @@ import IconChevronRight from "@tabler/icons-react-native/IconChevronRight";
 // Header height as a share of the cell width: 112 points on a phone.
 const HEADER_HEIGHT_SHARE = 0.67;
 const HEADER_HEIGHT_OUTSIDE_GRID = 112;
+/** Height of the name row below the header, for a one-line name. */
+export const TILE_CARD_FOOTER_HEIGHT = 52;
 
 /** Height of the grey header of a tile card, scaled with its grid cell. */
 export const useTileCardHeaderHeight = (): number => {

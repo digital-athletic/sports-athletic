@@ -41,7 +41,9 @@ const openSupersetChecklist = async (page: Page) => {
   const chooserPromise = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: "Import training" }).click();
   await (await chooserPromise).setFiles(SUPERSET_WORKOUT_FILE);
-  await page.getByRole("button", { name: "Superset check" }).click();
+  await page
+    .getByRole("button", { name: "Superset check", exact: true })
+    .click();
   await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
   await expect(
     page.getByRole("heading", { name: "Training Overview" }),

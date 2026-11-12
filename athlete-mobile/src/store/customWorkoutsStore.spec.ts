@@ -448,6 +448,60 @@ describe("customWorkoutsStore: imported trainings", () => {
       ).toEqual(["B", "A"]);
     });
 
+    const listDraftMarks = (teamId: string): [string, boolean][] =>
+      listWorkoutsForTeam(
+        useCustomWorkoutsStore.getState().workoutsById,
+        teamId,
+      ).map((w) => [w.template.id, w.isDraft === true]);
+
+    it("marks exactly the named templates as drafts", () => {
+      const store = useCustomWorkoutsStore.getState();
+
+      store.replaceTeamWorkouts(
+        "team-1",
+        [
+          generateCustomTemplate({ id: "A" }),
+          generateCustomTemplate({ id: "B" }),
+        ],
+        ["B"],
+      );
+
+      expect(listDraftMarks("team-1")).toEqual([
+        ["A", false],
+        ["B", true],
+      ]);
+    });
+
+    it("marks no workout without draft ids", () => {
+      const store = useCustomWorkoutsStore.getState();
+
+      store.replaceTeamWorkouts("team-1", [
+        generateCustomTemplate({ id: "A" }),
+      ]);
+
+      const [workout] = listWorkoutsForTeam(
+        useCustomWorkoutsStore.getState().workoutsById,
+        "team-1",
+      );
+      expect(workout).not.toHaveProperty("isDraft");
+    });
+
+    it("moves the draft mark when a draft is published and a published workout becomes a draft", () => {
+      const store = useCustomWorkoutsStore.getState();
+      const templates = [
+        generateCustomTemplate({ id: "A" }),
+        generateCustomTemplate({ id: "B" }),
+      ];
+      store.replaceTeamWorkouts("team-1", templates, ["A"]);
+
+      store.replaceTeamWorkouts("team-1", templates, ["B"]);
+
+      expect(listDraftMarks("team-1")).toEqual([
+        ["A", false],
+        ["B", true],
+      ]);
+    });
+
     it("removes a team workout the templates no longer contain", () => {
       const store = useCustomWorkoutsStore.getState();
       store.replaceTeamWorkouts("team-1", [

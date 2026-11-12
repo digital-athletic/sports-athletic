@@ -63,8 +63,17 @@ export class WorkoutsPage {
     ).toHaveCount(0);
   }
 
-  async expectNoDownload() {
-    await expect(this.page.getByTestId("workout-download")).toHaveCount(0);
+  /** The confirmation that a published workout is assigned to the athletes. */
+  async expectPublishedNotice(name: string) {
+    await expect(
+      this.page.getByTestId("workout-published-notice"),
+    ).toContainText(name);
+  }
+
+  async expectNoPublishedNotice() {
+    await expect(this.page.getByTestId("workout-published-notice")).toHaveCount(
+      0,
+    );
   }
 
   /** Ticks the warm-up or the cool-down and sets its exercise count. */
@@ -107,22 +116,6 @@ export class WorkoutsPage {
 
   async moveToDraft(name: string) {
     await this.workout(name).getByTestId("workout-unpublish").click();
-  }
-
-  /** Downloads the workout and returns the file name and the file text. */
-  async download(name: string): Promise<{ fileName: string; text: string }> {
-    const downloadEvent = this.page.waitForEvent("download");
-    await this.workout(name).getByTestId("workout-download").click();
-    const download = await downloadEvent;
-    const stream = await download.createReadStream();
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) {
-      chunks.push(Buffer.from(chunk));
-    }
-    return {
-      fileName: download.suggestedFilename(),
-      text: Buffer.concat(chunks).toString("utf8"),
-    };
   }
 
   async startNewWorkout() {
@@ -185,6 +178,10 @@ export class WorkoutsPage {
 
   async removeSection(index: number) {
     await this.section(index).getByTestId("section-remove").click();
+  }
+
+  async cancel() {
+    await this.page.getByTestId("workout-cancel").click();
   }
 
   async save() {

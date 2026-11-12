@@ -235,14 +235,13 @@
   },
   "workouts": {
     "title": "Team-Workouts",
-    "description": "Veröffentlichte Workouts erscheinen in der App deiner Athleten. Neue Workouts sind zuerst Entwürfe, die nur du und deine Begleiter*innen sehen.",
+    "description": "Veröffentlichte Workouts erscheinen in der App deiner Athleten. Neue Workouts sind zuerst Entwürfe. Einen Entwurf sehen nur du und deine Begleiter*innen, und ihr könnt ihn in der App testen.",
     "new": "Neues Workout",
     "edit": "Bearbeiten",
     "empty": "Dieses Team hat noch keine Workouts.",
     "emptyOwner": "Dieses Team hat noch keine Workouts. Erstelle das erste.",
     "publish": "Veröffentlichen",
     "moveToDraft": "Zurück zu Entwurf",
-    "download": "JSON herunterladen",
     "status": {
       "draft": "Entwurf"
     },
@@ -315,6 +314,7 @@
       "PREVENTION_SPINE": "Wirbelsäule",
       "PREVENTION_ANKLE": "Sprunggelenk",
       "PREVENTION_WRIST_ELBOW": "Handgelenk und Ellbogen"
-    }
+    },
+    "publishedNotice": "„{{name}}“ ist veröffentlicht und den Spieler*innen des Teams zugewiesen."
   }
 }

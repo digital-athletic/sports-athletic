@@ -46,10 +46,6 @@ export const Dashboard = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const isCoOwner = members.some(
-    (member) => member.user_id === currentUserId && member.role === "co_owner",
-  );
-
   const settingsEnabled =
     import.meta.env.VITE_FEATURE_FLAG_DEBUG_SETTINGS_TAB_ENABLED === "true";
 
@@ -168,11 +164,7 @@ export const Dashboard = () => {
           {activeTab === "evaluations" && <EvaluationsTab members={members} />}
 
           {activeTab === "workouts" && (
-            <WorkoutsTab
-              teamId={teamId}
-              isOwner={!loading && isOwner}
-              canDownload={!loading && (isOwner || isCoOwner)}
-            />
+            <WorkoutsTab teamId={teamId} isOwner={!loading && isOwner} />
           )}
 
           {activeTab === "settings" && settingsEnabled && <SettingsTab />}

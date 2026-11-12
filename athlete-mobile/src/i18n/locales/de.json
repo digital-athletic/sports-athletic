@@ -93,6 +93,7 @@
         "loadingTeams": "Teams werden geladen",
         "loadingTrainings": "Trainings werden geladen",
         "offlineNote": "Du bist offline. Die Liste zeigt die Trainings der letzten Synchronisierung.",
+        "draft": "Entwurf",
         "noWorkouts": "Aktuell sind keine Workouts verfügbar",
         "importTraining": "Training importieren",
         "deleteTraining": "{{name}} löschen",

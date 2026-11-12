@@ -154,12 +154,7 @@ export default function JoinTeamScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: 20 }}
       >
-        <Box
-          backgroundColor="surfaceContainerLowest"
-          borderRadius="l"
-          padding="l"
-          marginBottom="m"
-        >
+        <Box {...CARD_PROPS} marginBottom="m">
           <Text variant="sectionTitle">{t("more.joinTeam.yourTeams")}</Text>
           {teamsLoading ? (
             <ActivityIndicator testID="teams-loading-indicator" />
@@ -230,11 +225,7 @@ export default function JoinTeamScreen() {
           )}
         </Box>
 
-        <Box
-          backgroundColor="surfaceContainerLowest"
-          borderRadius="l"
-          padding="l"
-        >
+        <Box {...CARD_PROPS}>
           <Text variant="sectionTitle">{t("more.joinTeam.joinSection")}</Text>
           <Text variant="label" marginBottom="xs">
             {t("more.joinTeam.codeLabel")}
@@ -296,6 +287,12 @@ export default function JoinTeamScreen() {
     </>
   );
 }
+
+const CARD_PROPS = {
+  backgroundColor: "surfaceContainerLowest",
+  borderRadius: "l",
+  padding: "l",
+} as const;
 
 const styles = StyleSheet.create({
   teamRow: {

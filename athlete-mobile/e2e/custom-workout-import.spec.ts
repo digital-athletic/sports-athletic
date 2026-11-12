@@ -180,7 +180,8 @@ test.describe("Custom workouts: import of own trainings", () => {
 
     const tile = page.getByRole("button", { name: "My core", exact: true });
     await expect(tile).toBeVisible();
-    await expect(page.getByTestId("own-trainings-grid-cell")).toHaveCount(1);
+    // The training and the add tile.
+    await expect(page.getByTestId("own-trainings-grid-cell")).toHaveCount(2);
 
     await page.getByRole("button", { name: "Delete My core" }).click();
     await expect(page.getByText("Delete training?")).toBeVisible();

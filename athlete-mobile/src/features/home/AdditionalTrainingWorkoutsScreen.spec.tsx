@@ -7,8 +7,12 @@ import AdditionalTrainingWorkoutsScreen from "./AdditionalTrainingWorkoutsScreen
 const mockUseLocalSearchParams = jest.fn();
 const mockStackScreen = jest.fn();
 const mockNavigate = jest.fn();
+const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
-  router: { navigate: (...args: unknown[]) => mockNavigate(...args) },
+  router: {
+    navigate: (...args: unknown[]) => mockNavigate(...args),
+    push: (...args: unknown[]) => mockPush(...args),
+  },
   useLocalSearchParams: () => mockUseLocalSearchParams(),
   Stack: {
     Screen: (props: {
@@ -122,11 +126,13 @@ describe("AdditionalTrainingWorkoutsScreen: own source without entries", () => {
     expect(mockImportCustomWorkout).toHaveBeenCalledTimes(1);
   });
 
-  it("sets no header right button", async () => {
-    await render(<AdditionalTrainingWorkoutsScreen />);
+  it("shows no import button in the header", async () => {
+    const { queryAllByRole } = await render(
+      <AdditionalTrainingWorkoutsScreen />,
+    );
 
-    const options = mockStackScreen.mock.calls[0][0].options;
-    expect(options.headerRight).toBeUndefined();
+    // The one import button is the link of the empty message.
+    expect(queryAllByRole("button", { name: IMPORT_LABEL })).toHaveLength(1);
   });
 
   it("marks the import training link as disabled while an import runs", async () => {
@@ -294,5 +300,76 @@ describe("AdditionalTrainingWorkoutsScreen: team source", () => {
 
     const options = mockStackScreen.mock.calls[0][0].options;
     expect(options.headerRight).toBeUndefined();
+  });
+});
+
+describe("AdditionalTrainingWorkoutsScreen: generate training", () => {
+  it("shows a generate button in the header of the own trainings without entries", async () => {
+    mockUseLocalSearchParams.mockReturnValue({
+      title: "Your trainings",
+      source: "own",
+    });
+
+    const { getByTestId } = await render(<AdditionalTrainingWorkoutsScreen />);
+
+    expect(
+      getByTestId("generate-training-header").props.accessibilityLabel,
+    ).toBe("Generate training");
+  });
+
+  it("shows the generate button next to the import button when entries exist", async () => {
+    mockUseLocalSearchParams.mockReturnValue({
+      title: "Your trainings",
+      source: "own",
+    });
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
+
+    const { getByTestId, getByRole } = await render(
+      <AdditionalTrainingWorkoutsScreen />,
+    );
+
+    expect(getByTestId("generate-training-header")).toBeTruthy();
+    expect(getByRole("button", { name: IMPORT_LABEL })).toBeTruthy();
+  });
+
+  it("opens the generate form from the header button", async () => {
+    mockUseLocalSearchParams.mockReturnValue({
+      title: "Your trainings",
+      source: "own",
+    });
+    const { getByTestId } = await render(<AdditionalTrainingWorkoutsScreen />);
+
+    await fireEvent.press(getByTestId("generate-training-header"));
+
+    expect(mockPush).toHaveBeenCalledWith("/generate-training");
+  });
+
+  it("opens the generate form from the add tile", async () => {
+    mockUseLocalSearchParams.mockReturnValue({
+      title: "Your trainings",
+      source: "own",
+    });
+    const { getByTestId } = await render(<AdditionalTrainingWorkoutsScreen />);
+
+    await fireEvent.press(getByTestId("generate-training-tile"));
+
+    expect(mockPush).toHaveBeenCalledWith("/generate-training");
+  });
+
+  it("shows no generate button for a team", async () => {
+    mockUseLocalSearchParams.mockReturnValue({
+      title: "Team Alpha",
+      source: "team",
+      teamId: "team-1",
+    });
+
+    const { queryByTestId } = await render(
+      <AdditionalTrainingWorkoutsScreen />,
+    );
+
+    expect(queryByTestId("generate-training-header")).toBeNull();
+    expect(queryByTestId("generate-training-tile")).toBeNull();
   });
 });

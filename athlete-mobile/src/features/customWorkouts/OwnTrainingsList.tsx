@@ -1,3 +1,4 @@
+import { AddTileCard } from "@/common/AddTileCard";
 import { Alert } from "@/common/Alert";
 import { TileGrid } from "@/common/TileGrid";
 import { readLocalizedTemplateName } from "@/data/loadTemplates";
@@ -15,15 +16,16 @@ import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 
-type OwnTrainingsListProps = {
+type ImportProps = {
   onImport: () => void;
   importing: boolean;
 };
 
-const EmptyOwnTrainings: FC<OwnTrainingsListProps> = ({
-  onImport,
-  importing,
-}) => {
+type OwnTrainingsListProps = ImportProps & {
+  onGenerate: () => void;
+};
+
+const EmptyOwnTrainings: FC<ImportProps> = ({ onImport, importing }) => {
   const { t } = useTranslation();
   const importLabel = t("screens.home.additionalTrainings.importTraining");
 
@@ -46,43 +48,45 @@ const EmptyOwnTrainings: FC<OwnTrainingsListProps> = ({
   );
 };
 
-export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
-  onImport,
-  importing,
-}) => {
-  const { t, i18n } = useTranslation();
-  const { spacing } = useTheme();
-  const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
+/** Asks for confirmation, then deletes the own training. */
+const useConfirmDeleteTraining = () => {
+  const { t } = useTranslation();
   const deleteOwnCustomWorkout = useCustomWorkoutsStore(
     (state) => state.deleteOwnCustomWorkout,
   );
-  const workouts = listWorkoutsForTeam(workoutsById, null);
-  const deleteLabel = t("common.delete");
 
-  if (workouts.length === 0) {
-    return <EmptyOwnTrainings onImport={onImport} importing={importing} />;
-  }
-
-  const confirmDeleteTraining = (id: string, name: string) =>
+  return (id: string, name: string) =>
     Alert.alert(
       t("screens.home.additionalTrainings.deleteTrainingTitle"),
       t("screens.home.additionalTrainings.deleteTrainingMessage", { name }),
       [
         { text: t("common.cancel"), style: "cancel" },
         {
-          text: deleteLabel,
+          text: t("common.delete"),
           style: "destructive",
           onPress: () => deleteOwnCustomWorkout(id),
         },
       ],
     );
+};
+
+export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
+  onGenerate,
+  onImport,
+  importing,
+}) => {
+  const { t, i18n } = useTranslation();
+  const { spacing } = useTheme();
+  const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
+  const confirmDeleteTraining = useConfirmDeleteTraining();
+  const workouts = listWorkoutsForTeam(workoutsById, null);
 
   return (
     <ScrollBox
       flex={1}
       backgroundColor="white"
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ padding: spacing.l }}
+      contentContainerStyle={{ padding: spacing.l, gap: spacing.l }}
       testID="own-trainings-list"
     >
       <TileGrid testID="own-trainings-grid">
@@ -106,7 +110,15 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
             />
           );
         })}
+        <AddTileCard
+          label={t("screens.home.generateTraining.title")}
+          onPress={onGenerate}
+          testID="generate-training-tile"
+        />
       </TileGrid>
+      {workouts.length === 0 && (
+        <EmptyOwnTrainings onImport={onImport} importing={importing} />
+      )}
     </ScrollBox>
   );
 };

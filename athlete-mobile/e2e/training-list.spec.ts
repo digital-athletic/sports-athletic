@@ -266,12 +266,47 @@ test.describe("Training list: checklist session", () => {
         "training-list-sheet-set-8",
       ]);
       await trainingListPage.expectAllRowsCompleted();
-      await expect(
-        trainingListPage.nextArrow("training-list-row-2"),
-      ).toHaveCount(0);
-      await expect(
-        trainingListPage.nextArrow("training-list-row-4"),
-      ).toHaveCount(0);
+    });
+
+    test("athlete starts the next exercise with the filled button, then another exercise with a quiet button", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const trainingListPage = await openSupersetChecklist(page);
+      const warmUp = trainingListPage.startFor("training-list-row-0");
+      const firstOfSuperset = trainingListPage.startFor("training-list-row-2");
+      const secondOfSuperset = trainingListPage.startFor("training-list-row-4");
+
+      // The warm up comes first: its button is the only filled one.
+      await expect(warmUp).toHaveAccessibleName("Start next exercise");
+      await expect(warmUp).toHaveText("Start");
+      await expect(page.getByText("Start", { exact: true })).toHaveCount(1);
+      await expect(firstOfSuperset).toHaveAccessibleName("Start exercise");
+      await expect(secondOfSuperset).toHaveAccessibleName("Start exercise");
+
+      await warmUp.click({ timeout: 3000 });
+      await trainingListPage.completeSheetSet();
+      await trainingListPage.dismissSheet();
+
+      await expect(firstOfSuperset).toHaveAccessibleName("Start next exercise");
+      await expect(secondOfSuperset).toHaveAccessibleName("Start exercise");
+
+      // Out of order: the quiet button starts the second superset exercise.
+      await secondOfSuperset.click({ timeout: 3000 });
+      expect(await trainingListPage.currentSheetSet()).toBe(
+        "training-list-sheet-set-4",
+      );
+      await trainingListPage.completeSheetSet();
+      await trainingListPage.dismissSheet();
+
+      // The set after the completed one belongs to the first superset exercise.
+      await expect(firstOfSuperset).toHaveAccessibleName("Start next exercise");
+      await expect(secondOfSuperset).toHaveAccessibleName("Start exercise");
+      await expect(page.getByText("Start", { exact: true })).toHaveCount(1);
     });
 
     test("athlete holds a timed set, the countdown stands still, then resumes and completes it with Next", async ({

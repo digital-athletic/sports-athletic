@@ -455,7 +455,9 @@
     "list": {
       "title": "Training Checklist",
       "skipExercise": "Skip exercise",
+      "start": "Start",
       "startExercise": "Start exercise",
+      "startNextExercise": "Start next exercise",
       "continueExercise": "Continue exercise at {{time}}",
       "retakeExercise": "Retake skipped sets",
       "skipped": "Skipped",
@@ -468,9 +470,6 @@
       "minutesUnit": "min",
       "heartRateUnit": "bpm",
       "setReps": "{{count}} reps",
-      "a11y": {
-        "nextExercise": "Next exercise"
-      },
       "finishTraining": "Finish Training",
       "rest": {
         "skip": "Skip rest",

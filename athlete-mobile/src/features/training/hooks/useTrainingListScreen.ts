@@ -6,21 +6,34 @@ import { useTrainingListReps } from "@/features/training/hooks/useTrainingListRe
 import { useTrainingListRows } from "@/features/training/hooks/useTrainingListRows";
 import { useTrainingListTiming } from "@/features/training/hooks/useTrainingListTiming";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { findUpcomingSetIndex } from "@/features/training/utils/checklistEntries";
+import { findFeaturedEntryKey } from "@/features/training/utils/featuredEntry";
 import { useRouter } from "expo-router";
+
+function useShowExerciseInfo() {
+  const router = useRouter();
+
+  return (exerciseId: string) => {
+    router.push({
+      pathname: "/training/exercise-information",
+      params: { exerciseId },
+    });
+  };
+}
 
 /**
  * Composes the list-view (checklist) screen's logic from its focused
  * sub-hooks: entries per exercise, per-set completion, reps drafts, the
- * exercise sheet, and screen lifecycle.
+ * exercise sheet, the featured exercise, and screen lifecycle.
  */
 export function useTrainingListScreen() {
-  const router = useRouter();
+  const handleShowInfo = useShowExerciseInfo();
   const exerciseList = useTrainingStore((s) => s.exerciseList);
   const hasHydrated = useTrainingStore((s) => s._hasHydrated);
 
   const { rows, blocks, allCompleted, progress } = useTrainingListRows();
   const completion = useTrainingListCompletion();
-  const { repsDraft, setRepsForRow, handleSubmitReps } = useTrainingListReps();
+  const reps = useTrainingListReps({ onSetFinished: completion.markFinished });
   const timing = useTrainingListTiming();
   const { isFinishing, handleFinish } = useTrainingListFinish({
     allCompleted,
@@ -34,27 +47,27 @@ export function useTrainingListScreen() {
     useTrainingExerciseSheetProps({
       rows,
       exerciseList,
-      repsDraft,
+      repsDraft: reps.repsDraft,
       timing,
-      onChangeReps: setRepsForRow,
-      onSubmitReps: handleSubmitReps,
+      onChangeReps: reps.setRepsForRow,
+      onSubmitReps: reps.handleSubmitReps,
       onComplete: completion.handleComplete,
       onRestEnd: completion.handleRestEnd,
       onSkip: completion.handleSkip,
     });
 
-  const handleShowInfo = (exerciseId: string) => {
-    router.push({
-      pathname: "/training/exercise-information",
-      params: { exerciseId },
-    });
-  };
+  const featuredEntryKey = findFeaturedEntryKey(
+    blocks,
+    findUpcomingSetIndex(exerciseList ?? [], completion.lastFinishedIndex),
+    resumeSecondsOf,
+  );
 
   return {
     hasHydrated,
     exerciseList,
-    repsDraft,
+    repsDraft: reps.repsDraft,
     blocks,
+    featuredEntryKey,
     progress,
     isFinishing,
     handleFinish,

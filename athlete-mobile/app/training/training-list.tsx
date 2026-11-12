@@ -26,6 +26,7 @@ const TrainingList: FC<TrainingListProps> = () => {
     exerciseList,
     repsDraft,
     blocks,
+    featuredEntryKey,
     progress,
     isFinishing,
     handleFinish,
@@ -53,6 +54,7 @@ const TrainingList: FC<TrainingListProps> = () => {
           blocks={blocks}
           exerciseList={exerciseList}
           repsDraft={repsDraft}
+          featuredEntryKey={featuredEntryKey}
           resumeSecondsOf={resumeSecondsOf}
           onStart={handleStart}
           onRetake={handleRetake}

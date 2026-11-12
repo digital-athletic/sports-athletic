@@ -13,6 +13,8 @@ export type TrainingListRowsProps = {
   blocks: ChecklistEntryBlock[];
   exerciseList: UserExerciseDataType[] | null;
   repsDraft: Record<number, number>;
+  /** Key of the one exercise whose start button is filled, if any. */
+  featuredEntryKey: number | null;
   /** Saved timer value of a set that resumes when opened. */
   resumeSecondsOf: (setIndex: number) => number | undefined;
   onStart: (entry: ChecklistEntry) => void;
@@ -22,14 +24,13 @@ export type TrainingListRowsProps = {
 
 type EntryProps = Omit<TrainingListRowsProps, "blocks"> & {
   entry: ChecklistEntry;
-  isNext: boolean;
 };
 
 const Entry: FC<EntryProps> = ({
   entry,
-  isNext,
   exerciseList,
   repsDraft,
+  featuredEntryKey,
   resumeSecondsOf,
   onStart,
   onRetake,
@@ -45,7 +46,7 @@ const Entry: FC<EntryProps> = ({
       pictureUrl={entry.pictureUrl}
       valueKind={entry.valueKind}
       sets={entry.sets}
-      isNext={isNext}
+      isFeatured={entry.key === featuredEntryKey}
       isTest={entry.isTest}
       isCompleted={entry.completed}
       skippedCount={entry.skippedCount}
@@ -67,8 +68,13 @@ type BlockProps = Omit<TrainingListRowsProps, "blocks"> & {
   block: ChecklistEntryBlock;
 };
 
-const Block: FC<BlockProps> = ({ block, ...entryProps }) =>
-  block.isSuperset ? (
+const Block: FC<BlockProps> = ({ block, ...entryProps }) => {
+  const entries = block.entries.map((entry) => (
+    <Entry key={entry.key} entry={entry} {...entryProps} />
+  ));
+  if (!block.isSuperset) return entries;
+
+  return (
     <Box
       testID={`training-list-superset-${block.key}`}
       borderWidth={1}
@@ -77,25 +83,15 @@ const Block: FC<BlockProps> = ({ block, ...entryProps }) =>
       paddingHorizontal="m"
       marginVertical="s"
     >
-      {block.entries.map((entry) => (
-        <Entry
-          key={entry.key}
-          entry={entry}
-          isNext={entry.key === block.nextEntryKey}
-          {...entryProps}
-        />
-      ))}
+      {entries}
     </Box>
-  ) : (
-    block.entries.map((entry) => (
-      <Entry key={entry.key} entry={entry} isNext={false} {...entryProps} />
-    ))
   );
+};
 
 /**
  * Scrollable body of the checklist: one TrainingListItem per exercise. As in
  * the overview, a skill title starts wherever the skill changes. A superset
- * shares a framed box, and an arrow marks the exercise whose set comes next.
+ * shares a framed box. The featured exercise shows the one filled start button.
  */
 export const TrainingListRows: FC<TrainingListRowsProps> = ({
   blocks,

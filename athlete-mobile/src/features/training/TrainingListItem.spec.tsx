@@ -51,7 +51,7 @@ const generateItemProps = (
     generateSetSummary(2, "35 kg"),
     generateSetSummary(4, "40 kg"),
   ],
-  isNext: false,
+  isFeatured: false,
   isTest: false,
   isCompleted: false,
   skippedCount: 0,
@@ -403,30 +403,6 @@ describe("TrainingListItem: exercise picture", () => {
     expect(onShowInfo).toHaveBeenCalledTimes(1);
   });
 
-  it.each([
-    ["a picture", PICTURE_URL],
-    ["no picture", null],
-  ])(
-    "renders the picture slot before the next arrow of a next row with %s",
-    async (_label, pictureUrl) => {
-      const { getByTestId } = await render(
-        <TrainingListItem
-          {...generateItemProps({ pictureUrl, isNext: true })}
-        />,
-      );
-
-      const slot = getByTestId("training-list-row-0-picture-placeholder", {
-        includeHiddenElements: true,
-      });
-      const arrow = getByTestId("training-list-row-0-next-arrow");
-      const rowChildren = arrow.parent?.children ?? [];
-      const pictureAt = rowChildren.indexOf(slot.parent!);
-      const arrowAt = rowChildren.indexOf(arrow);
-      expect(pictureAt).toBeGreaterThanOrEqual(0);
-      expect(arrowAt).toBeGreaterThan(pictureAt);
-    },
-  );
-
   it("dims the picture of a completed row", async () => {
     const { getByTestId } = await render(
       <TrainingListItem
@@ -438,17 +414,6 @@ describe("TrainingListItem: exercise picture", () => {
       includeHiddenElements: true,
     });
     expect(StyleSheet.flatten(slot.parent?.props.style).opacity).toBe(0.5);
-  });
-
-  it("keeps the next arrow at full opacity on a completed next row", async () => {
-    const { getByTestId } = await render(
-      <TrainingListItem
-        {...generateItemProps({ isNext: true, isCompleted: true })}
-      />,
-    );
-
-    const arrow = getByTestId("training-list-row-0-next-arrow");
-    expect(StyleSheet.flatten(arrow.props.style)?.opacity ?? 1).toBe(1);
   });
 });
 
@@ -498,29 +463,5 @@ describe("TrainingListItem: placeholder icon", () => {
     );
 
     expect(findValueIconNames(container)).toEqual(["IconWeight"]);
-  });
-});
-
-describe("TrainingListItem: next arrow", () => {
-  it("shows the arrow with an accessible name for the next entry", async () => {
-    const { getByTestId, getByLabelText } = await render(
-      <TrainingListItem {...generateItemProps({ isNext: true })} />,
-    );
-
-    expect(getByTestId("training-list-row-0-next-arrow")).toBeTruthy();
-    expect(getByLabelText("Next exercise")).toBeTruthy();
-  });
-
-  it("removes the arrow once the entry is no longer next", async () => {
-    const { getByTestId, queryByTestId, rerender } = await render(
-      <TrainingListItem {...generateItemProps({ isNext: true })} />,
-    );
-    expect(getByTestId("training-list-row-0-next-arrow")).toBeTruthy();
-
-    await rerender(
-      <TrainingListItem {...generateItemProps({ isNext: false })} />,
-    );
-
-    expect(queryByTestId("training-list-row-0-next-arrow")).toBeNull();
   });
 });

@@ -9,6 +9,8 @@ import { RetakeExerciseButton } from "./RetakeExerciseButton";
 import { StartExerciseButton } from "./StartExerciseButton";
 
 export type TrainingListItemActionsProps = {
+  /** True for the one exercise whose start button is filled. */
+  isFeatured: boolean;
   isTest: boolean;
   isCompleted: boolean;
   skippedCount: number;
@@ -37,6 +39,7 @@ const checkLabel = (
  * The timer/feedback/reps flow happens in the TrainingExerciseSheet.
  */
 export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
+  isFeatured,
   isTest,
   isCompleted,
   skippedCount,
@@ -48,19 +51,21 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
   testId,
 }) => {
   const { t } = useTranslation();
+  const startButton = (
+    <StartExerciseButton
+      isFeatured={isFeatured}
+      onPress={onStart}
+      resumeSeconds={resumeSeconds}
+      testId={`${testId}-start`}
+    />
+  );
 
   // The skipped note itself sits under the set summary in TrainingListItem.
   if (skippedCount > 0) {
     return (
       <Box flexDirection="row" alignItems="center" gap="m">
         <RetakeExerciseButton onPress={onRetake} testId={`${testId}-retake`} />
-        {!isCompleted && (
-          <StartExerciseButton
-            onPress={onStart}
-            resumeSeconds={resumeSeconds}
-            testId={`${testId}-start`}
-          />
-        )}
+        {!isCompleted && startButton}
       </Box>
     );
   }
@@ -82,11 +87,7 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
           testId={`${testId}-checkmark`}
         />
       ) : (
-        <StartExerciseButton
-          onPress={onStart}
-          resumeSeconds={resumeSeconds}
-          testId={`${testId}-start`}
-        />
+        startButton
       )}
     </Box>
   );

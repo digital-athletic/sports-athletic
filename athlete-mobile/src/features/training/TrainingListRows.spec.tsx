@@ -29,18 +29,16 @@ const generateEntry = (
   ...overrides,
 });
 
-// A block of entries, e.g. generateBlock([squatEntry, lungeEntry], 0) is a
-// warm-up superset block keyed by its first entry whose next entry is the squat.
+// A block of entries, e.g. generateBlock([squatEntry, lungeEntry]) is a
+// warm-up superset block keyed by its first entry, the squat.
 const generateBlock = (
   entries: ChecklistEntry[],
-  nextEntryKey: number | null,
   skill = "WU",
 ): ChecklistEntryBlock => ({
   key: entries[0].key,
   skill,
   isSuperset: entries.length > 1,
   entries,
-  nextEntryKey,
 });
 
 // Props of the list body, e.g. generateRowsProps({ blocks }) renders those blocks.
@@ -50,6 +48,7 @@ const generateRowsProps = (
   blocks: [],
   exerciseList: [],
   repsDraft: {},
+  featuredEntryKey: null,
   resumeSecondsOf: () => undefined,
   onStart: jest.fn(),
   onRetake: jest.fn(),
@@ -60,8 +59,8 @@ const generateRowsProps = (
 describe("TrainingListRows: entries", () => {
   it("renders one row per exercise entry keyed by its first set", async () => {
     const blocks = [
-      generateBlock([generateEntry(0, "squat", "Squat")], 0),
-      generateBlock([generateEntry(4, "plank", "Plank")], 4),
+      generateBlock([generateEntry(0, "squat", "Squat")]),
+      generateBlock([generateEntry(4, "plank", "Plank")]),
     ];
 
     const { getByTestId, getByText } = await render(
@@ -76,17 +75,14 @@ describe("TrainingListRows: entries", () => {
 
   it("shows the set summary of an entry joined with slashes", async () => {
     const blocks = [
-      generateBlock(
-        [
-          generateEntry(0, "squat", "Squat", {
-            sets: [
-              { index: 0, label: "20 kg", completed: false, skipped: false },
-              { index: 2, label: "22.5 kg", completed: false, skipped: false },
-            ],
-          }),
-        ],
-        0,
-      ),
+      generateBlock([
+        generateEntry(0, "squat", "Squat", {
+          sets: [
+            { index: 0, label: "20 kg", completed: false, skipped: false },
+            { index: 2, label: "22.5 kg", completed: false, skipped: false },
+          ],
+        }),
+      ]),
     ];
 
     const { getByText } = await render(
@@ -99,7 +95,7 @@ describe("TrainingListRows: entries", () => {
   it("calls onStart with the entry when Start is pressed", async () => {
     const onStart = jest.fn();
     const squat = generateEntry(0, "squat", "Squat");
-    const blocks = [generateBlock([squat], 0)];
+    const blocks = [generateBlock([squat])];
 
     const { getByTestId } = await render(
       <TrainingListRows {...generateRowsProps({ blocks, onStart })} />,
@@ -111,8 +107,8 @@ describe("TrainingListRows: entries", () => {
 
   it("shows the saved time of the first open set of an entry", async () => {
     const blocks = [
-      generateBlock([generateEntry(0, "squat", "Squat")], 0),
-      generateBlock([generateEntry(4, "plank", "Plank")], 4),
+      generateBlock([generateEntry(0, "squat", "Squat")]),
+      generateBlock([generateEntry(4, "plank", "Plank")]),
     ];
 
     const { getByTestId, queryByTestId } = await render(
@@ -138,7 +134,7 @@ describe("TrainingListRows: entries", () => {
       skippedCount: 1,
       firstOpenSetIndex: null,
     });
-    const blocks = [generateBlock([squat], null)];
+    const blocks = [generateBlock([squat])];
 
     const { getByTestId } = await render(
       <TrainingListRows {...generateRowsProps({ blocks, onRetake })} />,
@@ -150,7 +146,7 @@ describe("TrainingListRows: entries", () => {
 
   it("opens the exercise information with the exercise id of the entry", async () => {
     const onShowInfo = jest.fn();
-    const blocks = [generateBlock([generateEntry(0, "squat", "Squat")], 0)];
+    const blocks = [generateBlock([generateEntry(0, "squat", "Squat")])];
 
     const { getByText } = await render(
       <TrainingListRows {...generateRowsProps({ blocks, onShowInfo })} />,
@@ -164,9 +160,9 @@ describe("TrainingListRows: entries", () => {
 describe("TrainingListRows: skill titles", () => {
   it("shows the skill name above the first block of each skill", async () => {
     const blocks = [
-      generateBlock([generateEntry(0, "jog", "Jog")], 0, "WU"),
-      generateBlock([generateEntry(2, "hop", "Hop")], 2, "WU"),
-      generateBlock([generateEntry(4, "stretch", "Stretch")], 4, "MOB"),
+      generateBlock([generateEntry(0, "jog", "Jog")], "WU"),
+      generateBlock([generateEntry(2, "hop", "Hop")], "WU"),
+      generateBlock([generateEntry(4, "stretch", "Stretch")], "MOB"),
     ];
 
     const { getByTestId, queryByTestId } = await render(
@@ -180,9 +176,9 @@ describe("TrainingListRows: skill titles", () => {
 
   it("shows the skill name again when the skill returns after another one", async () => {
     const blocks = [
-      generateBlock([generateEntry(0, "jog", "Jog")], 0, "WU"),
-      generateBlock([generateEntry(2, "stretch", "Stretch")], 2, "MOB"),
-      generateBlock([generateEntry(4, "hop", "Hop")], 4, "WU"),
+      generateBlock([generateEntry(0, "jog", "Jog")], "WU"),
+      generateBlock([generateEntry(2, "stretch", "Stretch")], "MOB"),
+      generateBlock([generateEntry(4, "hop", "Hop")], "WU"),
     ];
 
     const { getAllByText } = await render(
@@ -196,7 +192,6 @@ describe("TrainingListRows: skill titles", () => {
     const blocks = [
       generateBlock(
         [generateEntry(0, "plank", "Plank"), generateEntry(2, "bird", "Bird")],
-        0,
         "GKS",
       ),
     ];
@@ -212,7 +207,7 @@ describe("TrainingListRows: skill titles", () => {
 
   it("shows the skill code when the skill has no translation", async () => {
     const blocks = [
-      generateBlock([generateEntry(0, "jog", "Jog")], 0, "CUSTOM_SKILL"),
+      generateBlock([generateEntry(0, "jog", "Jog")], "CUSTOM_SKILL"),
     ];
 
     const { getByTestId } = await render(
@@ -226,18 +221,16 @@ describe("TrainingListRows: skill titles", () => {
 });
 
 describe("TrainingListRows: superset blocks", () => {
-  const generateSupersetBlocks = (nextEntryKey: number | null) => [
-    generateBlock(
-      [generateEntry(0, "squat", "Squat"), generateEntry(2, "lunge", "Lunge")],
-      nextEntryKey,
-    ),
+  const supersetBlocks = [
+    generateBlock([
+      generateEntry(0, "squat", "Squat"),
+      generateEntry(2, "lunge", "Lunge"),
+    ]),
   ];
 
   it("frames a superset block under its first entry key", async () => {
     const { getByTestId } = await render(
-      <TrainingListRows
-        {...generateRowsProps({ blocks: generateSupersetBlocks(0) })}
-      />,
+      <TrainingListRows {...generateRowsProps({ blocks: supersetBlocks })} />,
     );
 
     expect(getByTestId("training-list-superset-0")).toBeTruthy();
@@ -245,9 +238,7 @@ describe("TrainingListRows: superset blocks", () => {
 
   it("puts both exercises of the superset inside the frame", async () => {
     const { getByTestId } = await render(
-      <TrainingListRows
-        {...generateRowsProps({ blocks: generateSupersetBlocks(0) })}
-      />,
+      <TrainingListRows {...generateRowsProps({ blocks: supersetBlocks })} />,
     );
 
     const frame = getByTestId("training-list-superset-0");
@@ -257,7 +248,7 @@ describe("TrainingListRows: superset blocks", () => {
   });
 
   it("frames no block that holds a single exercise", async () => {
-    const blocks = [generateBlock([generateEntry(0, "squat", "Squat")], 0)];
+    const blocks = [generateBlock([generateEntry(0, "squat", "Squat")])];
 
     const { getByTestId, queryByTestId } = await render(
       <TrainingListRows {...generateRowsProps({ blocks })} />,
@@ -266,38 +257,63 @@ describe("TrainingListRows: superset blocks", () => {
     expect(getByTestId("training-list-row-0")).toBeTruthy();
     expect(queryByTestId("training-list-superset-0")).toBeNull();
   });
+});
 
-  it("shows the arrow only on the entry that comes next", async () => {
-    const { getByTestId, queryByTestId } = await render(
+describe("TrainingListRows: the filled start button", () => {
+  const blocks = [
+    generateBlock([generateEntry(0, "squat", "Squat")]),
+    generateBlock([
+      generateEntry(2, "press", "Press"),
+      generateEntry(4, "lunge", "Lunge"),
+    ]),
+  ];
+
+  it("shows the Start text only on the featured exercise", async () => {
+    const { getByTestId, getAllByText } = await render(
       <TrainingListRows
-        {...generateRowsProps({ blocks: generateSupersetBlocks(2) })}
+        {...generateRowsProps({ blocks, featuredEntryKey: 4 })}
       />,
     );
 
-    expect(getByTestId("training-list-row-2-next-arrow")).toBeTruthy();
-    expect(queryByTestId("training-list-row-0-next-arrow")).toBeNull();
+    expect(getAllByText("Start")).toHaveLength(1);
+    expect(getByTestId("training-list-row-4-start")).toHaveTextContent("Start");
   });
 
-  it("shows no arrow when the superset has no next entry", async () => {
-    const { getByTestId, queryByTestId } = await render(
+  it("names the featured button as the start of the next exercise", async () => {
+    const { getByTestId } = await render(
       <TrainingListRows
-        {...generateRowsProps({ blocks: generateSupersetBlocks(null) })}
+        {...generateRowsProps({ blocks, featuredEntryKey: 4 })}
       />,
     );
 
-    expect(getByTestId("training-list-superset-0")).toBeTruthy();
-    expect(queryByTestId("training-list-row-0-next-arrow")).toBeNull();
-    expect(queryByTestId("training-list-row-2-next-arrow")).toBeNull();
+    expect(getByTestId("training-list-row-4-start")).toHaveAccessibleName(
+      "Start next exercise",
+    );
+    expect(getByTestId("training-list-row-0-start")).toHaveAccessibleName(
+      "Start exercise",
+    );
   });
 
-  it("shows no arrow for an exercise outside a superset", async () => {
-    const blocks = [generateBlock([generateEntry(0, "squat", "Squat")], 0)];
-
-    const { getByTestId, queryByTestId } = await render(
-      <TrainingListRows {...generateRowsProps({ blocks })} />,
+  it("shows no Start text when no exercise is featured", async () => {
+    const { queryByText } = await render(
+      <TrainingListRows
+        {...generateRowsProps({ blocks, featuredEntryKey: null })}
+      />,
     );
 
-    expect(getByTestId("training-list-row-0")).toBeTruthy();
-    expect(queryByTestId("training-list-row-0-next-arrow")).toBeNull();
+    expect(queryByText("Start")).toBeNull();
+  });
+
+  it("starts an exercise from its quiet button", async () => {
+    const onStart = jest.fn();
+
+    const { getByTestId } = await render(
+      <TrainingListRows
+        {...generateRowsProps({ blocks, featuredEntryKey: 4, onStart })}
+      />,
+    );
+    await fireEvent.press(getByTestId("training-list-row-2-start"));
+
+    expect(onStart).toHaveBeenCalledWith(blocks[1].entries[0]);
   });
 });

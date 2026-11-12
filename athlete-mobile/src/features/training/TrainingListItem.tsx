@@ -1,4 +1,3 @@
-import { AppIcon } from "@/common/AppIcon";
 import {
   type ChecklistSetSummary,
   type ValueKind,
@@ -6,21 +5,19 @@ import {
 import { type DifficultyFeedbackType } from "@/schemas/generator.schema";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { Fragment, type FC } from "react";
 import { useTranslation } from "react-i18next";
 import { ExerciseThumbnail } from "./ExerciseThumbnail";
 import { TrainingListItemActions } from "./TrainingListItemActions";
-import IconArrowRight from "@tabler/icons-react-native/IconArrowRight";
 
 export type TrainingListItemProps = {
   displayName: string;
   pictureUrl: string | null;
   valueKind: ValueKind | null;
   sets: ChecklistSetSummary[];
-  /** True for the entry of a superset whose set comes next. */
-  isNext: boolean;
+  /** True for the one exercise whose start button is filled. */
+  isFeatured: boolean;
   isTest: boolean;
   isCompleted: boolean;
   skippedCount: number;
@@ -87,26 +84,6 @@ const SkippedNote: FC<{
   );
 };
 
-const NextArrow: FC<{ testId: string }> = ({ testId }) => {
-  const { t } = useTranslation();
-  const { colors } = useTheme();
-
-  return (
-    <Box
-      accessible
-      accessibilityLabel={t("training.list.a11y.nextExercise")}
-      testID={`${testId}-next-arrow`}
-    >
-      <AppIcon
-        icon={IconArrowRight}
-        size={20}
-        color={colors.primary}
-        decorative
-      />
-    </Box>
-  );
-};
-
 const EntryDetails: FC<{
   displayName: string;
   sets: ChecklistSetSummary[];
@@ -136,7 +113,6 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
   pictureUrl,
   valueKind,
   sets,
-  isNext,
   isCompleted,
   skippedCount,
   onShowInfo,
@@ -152,7 +128,7 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
       borderBottomColor="lightGrey2"
       paddingVertical="m"
     >
-      <Box flexDirection="row" alignItems="center">
+      <Box flexDirection="row" alignItems="center" gap="s">
         <TouchableBox
           flex={1}
           flexDirection="row"
@@ -168,7 +144,6 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
               testID={`${testId}-picture`}
             />
           </Box>
-          {isNext && <NextArrow testId={testId} />}
           <Box flex={1} opacity={dimOpacity}>
             <EntryDetails
               displayName={displayName}

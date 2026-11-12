@@ -6,6 +6,7 @@ import {
 
 describe("TrainingListItemActions: accessible names", () => {
   const baseProps: TrainingListItemActionsProps = {
+    isFeatured: false,
     isTest: false,
     isCompleted: false,
     skippedCount: 0,

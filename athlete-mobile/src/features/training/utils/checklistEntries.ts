@@ -93,7 +93,7 @@ export function groupChecklistEntries(
  * none are given.
  */
 export function findFirstOpenSetIndex(
-  exerciseList: UserExerciseDataType[],
+  exerciseList: readonly UserExerciseDataType[],
   setIndices: number[] = exerciseList.map((_, index) => index),
 ): number | null {
   return setIndices.find((index) => isOpenSet(exerciseList[index])) ?? null;
@@ -119,4 +119,20 @@ export function findNextOpenSetIndex(
     if (isOpenSet(exerciseList[index])) return index;
   }
   return null;
+}
+
+/**
+ * The set that comes next: the first open set at or after the set finished
+ * last, so a set reopened by a retake comes next again. Falls back to the first
+ * open set of the list when no set is finished yet or none is open from there.
+ */
+export function findUpcomingSetIndex(
+  exerciseList: readonly UserExerciseDataType[],
+  lastFinishedIndex: number | null,
+): number | null {
+  const nextIndex =
+    lastFinishedIndex === null
+      ? null
+      : findNextOpenSetIndex(exerciseList, lastFinishedIndex - 1);
+  return nextIndex ?? findFirstOpenSetIndex(exerciseList);
 }

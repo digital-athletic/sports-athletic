@@ -30,7 +30,7 @@ const generateEntry = (
 });
 
 // A block of entries, e.g. generateBlock([squatEntry, lungeEntry]) is a
-// warm-up superset block keyed by its first entry whose next entry is the squat.
+// warm-up superset block keyed by its first entry, the squat.
 const generateBlock = (
   entries: ChecklistEntry[],
   skill = "WU",
@@ -304,7 +304,7 @@ describe("TrainingListRows: the filled start button", () => {
     expect(queryByText("Start")).toBeNull();
   });
 
-  it("still starts an exercise from its quiet button", async () => {
+  it("starts an exercise from its quiet button", async () => {
     const onStart = jest.fn();
 
     const { getByTestId } = await render(

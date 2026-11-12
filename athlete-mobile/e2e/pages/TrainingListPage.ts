@@ -93,7 +93,7 @@ export class TrainingListPage extends BasePage {
     return this.page.getByTestId(`training-list-sheet-${suffix}`);
   }
 
-  /** The start button of a row; its accessible name tells filled from quiet. */
+  /** Start button of a row. Only the filled one is named "Start next exercise". */
   startFor(testId: string) {
     return this.page.getByTestId(`${testId}-start`);
   }

@@ -16,8 +16,7 @@ export const isRowCompleted = (index: number) =>
 /**
  * Complete/skip handlers for a checklist row, guarding against
  * double-applying progression for an already-completed row. A skipped row
- * runs no progression. lastFinishedIndex is the set finished last, from
- * which the checklist derives the set that comes next.
+ * runs no progression.
  */
 export function useTrainingListCompletion() {
   const markExerciseCompleted = useTrainingStore(
@@ -25,6 +24,7 @@ export function useTrainingListCompletion() {
   );
   const markExerciseSkipped = useTrainingStore((s) => s.markExerciseSkipped);
   const { saveExerciseAndBranchData, handleFeedback } = useExerciseCompletion();
+  // The checklist derives the set that comes next from the set finished last.
   const [lastFinishedIndex, setLastFinishedIndex] = useState<number | null>(
     null,
   );

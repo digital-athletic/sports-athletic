@@ -122,8 +122,8 @@ export function findNextOpenSetIndex(
 }
 
 /**
- * The set that comes next: the first open set from the set finished last on,
- * which is that set itself once a retake reopens it. Falls back to the first
+ * The set that comes next: the first open set at or after the set finished
+ * last, so a set reopened by a retake comes next again. Falls back to the first
  * open set of the list when no set is finished yet or none is open from there.
  */
 export function findUpcomingSetIndex(

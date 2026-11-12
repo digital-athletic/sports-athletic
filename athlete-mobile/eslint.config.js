@@ -192,7 +192,7 @@ module.exports = defineConfig([
     },
   },
   {
-    files: ["src/common/Alert.tsx"],
+    files: ["src/common/Alert.tsx", "src/common/Alert.spec.ts"],
     rules: {
       "no-restricted-imports": "off",
     },

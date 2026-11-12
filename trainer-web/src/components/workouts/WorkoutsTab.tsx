@@ -8,6 +8,7 @@ import type {
 } from "../../types/team";
 import {
   AMOUNT_UNITS,
+  createEmptyDraft,
   readTemplateName,
   sectionKind,
   templateToDraft,
@@ -30,8 +31,6 @@ interface WorkoutsTabProps {
 }
 
 type Editing = { workoutId: string | null; draft: WorkoutDraft };
-
-const EMPTY_DRAFT: WorkoutDraft = { name: "", sections: [] };
 
 /** Section keys that stay the same across renders, e.g. "<id>-0", "<id>-1". */
 const keysFor = (workoutId: string): (() => string) => {
@@ -69,6 +68,9 @@ export function WorkoutsTab({
     });
     return `${skillWithTags} · ${amount}`;
   };
+
+  const bookendLabel = (part: "warmUp" | "coolDown", count: number): string =>
+    `${t(`workouts.builder.${part}`)} · ${t("workouts.list.exercises", { count })}`;
 
   const handleSave = async (
     template: AiwlTemplate,
@@ -134,7 +136,7 @@ export function WorkoutsTab({
             data-testid="workout-new"
             onClick={() => {
               setActionError(null);
-              setEditing({ workoutId: null, draft: EMPTY_DRAFT });
+              setEditing({ workoutId: null, draft: createEmptyDraft() });
             }}
           >
             + {t("workouts.new")}
@@ -182,6 +184,11 @@ export function WorkoutsTab({
                   </div>
                   {draft && (
                     <ol className="mt-1 text-sm text-gray-600">
+                      {draft.warmUp.enabled && (
+                        <li data-testid="workout-warm-up-line">
+                          {bookendLabel("warmUp", draft.warmUp.amount)}
+                        </li>
+                      )}
                       {draft.sections.map((section) => (
                         <li
                           key={section.key}
@@ -191,6 +198,11 @@ export function WorkoutsTab({
                           {sectionLabel(section)}
                         </li>
                       ))}
+                      {draft.coolDown.enabled && (
+                        <li data-testid="workout-cool-down-line">
+                          {bookendLabel("coolDown", draft.coolDown.amount)}
+                        </li>
+                      )}
                     </ol>
                   )}
                 </div>

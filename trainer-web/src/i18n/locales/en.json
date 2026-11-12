@@ -274,31 +274,36 @@
         "regions": "Body regions (optional)",
         "prevention": "Prevention areas (optional)"
       },
-      "tagGroupHint": "A section focuses on body regions or on prevention areas, not both."
+      "warmUp": "Warm-up",
+      "coolDown": "Cool-down / stretching"
     },
     "errors": {
       "NAME_REQUIRED": "Enter a name.",
       "NAME_TOO_LONG": "The name can have at most {{max}} characters.",
       "SECTION_REQUIRED": "Add at least one section.",
-      "TOO_MANY_SECTIONS": "A workout can have at most {{max}} sections.",
+      "TOO_MANY_SECTIONS": "A workout can have at most {{max}} sections, including warm-up and cool-down.",
       "UNKNOWN_SKILL": "Section {{number}}: choose a training.",
       "AMOUNT_OUT_OF_RANGE": "Section {{number}}: enter {{min}} to {{max}} {{unit}}.",
-      "TAG_NOT_ALLOWED": "Section {{number}}: choose body regions or prevention areas, not both."
+      "TAG_NOT_ALLOWED": "Section {{number}}: the training does not offer the selected area.",
+      "WARM_UP_OUT_OF_RANGE": "Warm-up: enter {{min}} to {{max}} exercises.",
+      "COOL_DOWN_OUT_OF_RANGE": "Cool-down: enter {{min}} to {{max}} exercises."
     },
     "skills": {
-      "WU": "Warm-up",
       "MOB": "Mobility",
-      "GKS": "Stability",
+      "GKS": "Full-body stability",
+      "BAS": "Leg axis stability",
       "PREV": "Prevention",
-      "SWR1": "Hypertrophy",
-      "SK": "Explosive power",
+      "SWR1": "Hypertrophy / muscle building",
+      "SK": "Explosive strength",
       "PLYO_MEDIUM": "Plyometrics",
-      "CD": "Cool-down",
-      "CARDIO_1_LAKTAT": "Cardio zone 1",
-      "CARDIO_2": "Cardio zone 2",
-      "CARDIO_3": "Cardio zone 3",
-      "CARDIO_4": "Cardio zone 4",
-      "CARDIO_5": "Cardio zone 5"
+      "WUSKSA": "Speed warm-up",
+      "BR": "Foam rolling",
+      "CARDIO_1_SHORT": "Cardio zone 1: sprint intervals (5 to 10 s work / 80 s rest)",
+      "CARDIO_1_LAKTAT": "Cardio zone 1: lactate intervals (30 s work / 4 min rest)",
+      "CARDIO_2": "Cardio zone 2: interval training 1 (1 min work / 1 min rest)",
+      "CARDIO_3": "Cardio zone 3: interval training 2 (2 min work / 1 min rest)",
+      "CARDIO_4": "Cardio zone 4: base endurance",
+      "CARDIO_5": "Cardio zone 5: recovery run"
     },
     "tags": {
       "REGION_UPPER_BODY": "Upper body",

@@ -133,6 +133,15 @@ const OLD_GENERATOR_IMPORT_PATTERNS = [
   ),
 ];
 
+// Alerts go through the wrapper, which picks the dialog per platform.
+const REACT_NATIVE_ALERT_PATHS = [
+  {
+    name: "react-native",
+    importNames: ["Alert"],
+    message: 'Use Alert from "@/common/Alert" instead.',
+  },
+];
+
 // Bans the paths for require, jest.requireActual, import() and import types.
 const restrictModuleLoads = (pathRegex, message) =>
   Object.entries(PATH_FIELD_BY_IMPORT_SYNTAX).map(([syntax, pathField]) => ({
@@ -147,7 +156,10 @@ const createNewGeneratorBlock = (folder, extraPatterns, extraLoads) => ({
     "@typescript-eslint/no-require-imports": "error",
     "no-restricted-imports": [
       "error",
-      { patterns: [...OLD_GENERATOR_IMPORT_PATTERNS, ...extraPatterns] },
+      {
+        paths: REACT_NATIVE_ALERT_PATHS,
+        patterns: [...OLD_GENERATOR_IMPORT_PATTERNS, ...extraPatterns],
+      },
     ],
     "no-restricted-syntax": [
       "error",
@@ -175,6 +187,13 @@ module.exports = defineConfig([
       // The React Compiler silently skips code these rules flag, leaving it unmemoized.
       "react-hooks/todo": "error",
       "react-hooks/unsupported-syntax": "error",
+      "no-restricted-imports": ["error", { paths: REACT_NATIVE_ALERT_PATHS }],
+    },
+  },
+  {
+    files: ["src/common/Alert.tsx", "src/common/Alert.spec.ts"],
+    rules: {
+      "no-restricted-imports": "off",
     },
   },
   {
@@ -263,6 +282,7 @@ module.exports = defineConfig([
       "no-restricted-imports": [
         "error",
         {
+          paths: REACT_NATIVE_ALERT_PATHS,
           patterns: [
             {
               regex: NEW_CODE_PATH,

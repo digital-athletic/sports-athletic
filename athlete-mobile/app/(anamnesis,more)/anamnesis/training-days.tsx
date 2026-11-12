@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { Loading } from "@/common/Loading";
 import { SkipHeader } from "@/common/SkipHeader";
 import {
@@ -21,7 +22,6 @@ import { getUserTagValue } from "@/utils/tagUtils";
 import { RoutePath, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 
 const DAY_KEYS = [
   "monday",

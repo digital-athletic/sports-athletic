@@ -5,7 +5,8 @@ import { type ThemeColor } from "@/theme/theme";
 import { useRouter } from "expo-router";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
+import { Alert } from "./Alert";
 
 interface SkipHeaderProps {
   alertTitle: I18nKey;

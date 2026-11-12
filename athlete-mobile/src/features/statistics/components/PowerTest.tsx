@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
@@ -8,7 +9,6 @@ import { Text } from "@/theme/Text";
 import { useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 import { usePowerTestData } from "../hooks/usePowerTestData";
 import { PowerTestChartCard } from "./PowerTestChartCard";
 import { PowerTestResultCard } from "./PowerTestResultCard";

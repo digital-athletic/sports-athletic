@@ -1,3 +1,4 @@
+import { Alert } from "@/common/Alert";
 import { useAnnounce } from "@/common/announce";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
@@ -24,7 +25,7 @@ import { Text } from "@/theme/Text";
 import { RoutePath, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Image, StyleSheet } from "react-native";
+import { Image, StyleSheet } from "react-native";
 
 const TIME_PER_STAGE = 1000; // 1 second per stage
 

@@ -1,10 +1,11 @@
+import { Alert } from "@/common/Alert";
 import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@shopify/restyle";
 import { useEffect, useRef, type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { useSynchronizationStore } from "./synchronizationStore";
 
 // The failure Alert already speaks, so the failed state stays silent here.

@@ -177,6 +177,31 @@ describe("picksBlockResolution: speed warm-up, max strength and plyometrics", ()
   );
 });
 
+describe("picksBlockResolution: general prevention with weights", () => {
+  it.each([
+    "PREVENTION_SHOULDER",
+    "PREVENTION_KNEE_HIP",
+    "PREVENTION_SPINE",
+    "PREVENTION_ANKLE",
+    "PREVENTION_WRIST_ELBOW",
+  ])("draws %s from the weighted and the bodyweight tree", (tag) => {
+    const trees = getAllSkillTrees();
+    const block = generatePicksBlock("PREV", {
+      picks: [{ tags: [tag], count: 1 }],
+    });
+
+    const { blocks } = resolvePicksBlocks(
+      generateTemplate([block], { id: "SYN", name: { en: "SYN" } }),
+      { equipment: WEIGHTS, skillCatalog: loadSkillCatalog() },
+      trees,
+    );
+
+    const ids = Object.keys(blocks[0].pool);
+    expect(ids.some((id) => id in trees.PREV)).toBe(true);
+    expect(ids.some((id) => id in trees.PREVKG)).toBe(true);
+  });
+});
+
 describe("picksBlockResolution: block values", () => {
   it("reads the defaults from the given skill catalog", () => {
     expect(

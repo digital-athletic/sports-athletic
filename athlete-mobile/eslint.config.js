@@ -24,6 +24,13 @@ const DOC_COMMENT_CONTEXTS = [
   "TSMethodSignature",
 ];
 
+const ALERT_IMPORT_BAN = {
+  name: "react-native",
+  importNames: ["Alert"],
+  message:
+    "Import Alert from @/common/Alert. The react-native Alert shows nothing on web.",
+};
+
 // Old generator code that the new workout generator must not import. The
 // regexes anchor on the path segment, so they match the alias and every
 // relative path, with or without a ".ts" or "/index" suffix. A mixed utils
@@ -147,7 +154,13 @@ const createNewGeneratorBlock = (folder, extraPatterns, extraLoads) => ({
     "@typescript-eslint/no-require-imports": "error",
     "no-restricted-imports": [
       "error",
-      { patterns: [...OLD_GENERATOR_IMPORT_PATTERNS, ...extraPatterns] },
+      {
+        // This rule replaces the global no-restricted-imports rule for these
+        // files. A global ban that should also apply here, like
+        // ALERT_IMPORT_BAN, must be listed again below.
+        paths: [ALERT_IMPORT_BAN],
+        patterns: [...OLD_GENERATOR_IMPORT_PATTERNS, ...extraPatterns],
+      },
     ],
     "no-restricted-syntax": [
       "error",
@@ -172,9 +185,16 @@ module.exports = defineConfig([
   {
     rules: {
       "@typescript-eslint/no-require-imports": "off",
+      "no-restricted-imports": ["error", { paths: [ALERT_IMPORT_BAN] }],
       // The React Compiler silently skips code these rules flag, leaving it unmemoized.
       "react-hooks/todo": "error",
       "react-hooks/unsupported-syntax": "error",
+    },
+  },
+  {
+    files: ["src/common/Alert.tsx"],
+    rules: {
+      "no-restricted-imports": "off",
     },
   },
   {
@@ -263,6 +283,10 @@ module.exports = defineConfig([
       "no-restricted-imports": [
         "error",
         {
+          // This rule replaces the global no-restricted-imports rule for these
+          // files. A global ban that should also apply here, like
+          // ALERT_IMPORT_BAN, must be listed again below.
+          paths: [ALERT_IMPORT_BAN],
           patterns: [
             {
               regex: NEW_CODE_PATH,

@@ -17,6 +17,15 @@ const TEAM = {
   members: [{ user_id: MOCK_USER.id, role: "owner" as const }],
 };
 
+const SAVED_BLOCKS = [
+  {
+    kind: "picks",
+    skill: "GKS",
+    picks: [{ tags: ["REGION_UPPER_BODY"], count: 5 }],
+  },
+  { kind: "duration", skill: "CARDIO_2", duration: 1200 },
+];
+
 const SAVED: MockTeamWorkout = {
   id: "44444444-4444-4444-8444-444444444444",
   team_id: TEAM.id,
@@ -24,14 +33,7 @@ const SAVED: MockTeamWorkout = {
     aiwl: 1,
     id: "44444444-4444-4444-8444-444444444444",
     name: { en: "Tuesday stability" },
-    blocks: [
-      {
-        kind: "picks",
-        skill: "GKS",
-        picks: [{ tags: ["REGION_UPPER_BODY"], count: 5 }],
-      },
-      { kind: "duration", skill: "CARDIO_2", duration: 1200 },
-    ],
+    blocks: SAVED_BLOCKS,
   },
 };
 
@@ -99,7 +101,7 @@ test.describe("Workout builder", () => {
       p_template: {
         aiwl: 1,
         name: { en: "Tuesday stability" },
-        blocks: SAVED.template.blocks,
+        blocks: SAVED_BLOCKS,
       },
     });
 
@@ -124,7 +126,7 @@ test.describe("Workout builder", () => {
     await workouts.expectNoWorkouts();
   });
 
-  test("an owner saves a new workout as a draft, publishes it, moves it back to draft and downloads it", async ({
+  test("an owner saves a new workout as a draft, publishes it and moves it back to draft", async ({
     page,
   }) => {
     const draft: MockTeamWorkout = { ...SAVED, status: "draft" };
@@ -161,6 +163,7 @@ test.describe("Workout builder", () => {
       p_status: "published",
     });
     await workouts.expectPublished("Tuesday stability");
+    await workouts.expectPublishedNotice("Tuesday stability");
 
     await mockSupabase(page, {
       trainerGrantedAt: TRAINER,
@@ -175,10 +178,117 @@ test.describe("Workout builder", () => {
       p_status: "draft",
     });
     await workouts.expectDraft("Tuesday stability");
+    await workouts.expectNoPublishedNotice();
+  });
 
-    const file = await workouts.download("Tuesday stability");
-    expect(file.fileName).toBe("tuesday-stability.json");
-    expect(file.text).toBe(JSON.stringify(SAVED.template, null, 2));
+  test("an owner builds a workout with warm-up, a knee and hip prevention section and cool-down, then publishes it", async ({
+    page,
+  }) => {
+    const blocks = [
+      { kind: "picks", skill: "WU", picks: [{ tags: [], count: 4 }] },
+      {
+        kind: "picks",
+        skill: "PREV",
+        picks: [{ tags: ["PREVENTION_KNEE_HIP"], count: 6 }],
+      },
+      { kind: "picks", skill: "CD", picks: [{ tags: [], count: 3 }] },
+    ];
+    const draft: MockTeamWorkout = {
+      ...SAVED,
+      status: "draft",
+      template: { ...SAVED.template, name: { en: "Knee care" }, blocks },
+    };
+    await mockSupabase(page, {
+      trainerGrantedAt: TRAINER,
+      teams: [TEAM],
+      teamWorkouts: [],
+    });
+    const workouts = await openWorkouts(page);
+
+    await workouts.startNewWorkout();
+    await workouts.fillName("Knee care");
+    await workouts.tickFixedSection("warm-up", 4);
+    await workouts.tickFixedSection("cool-down", 3);
+    await workouts.addSection({
+      skill: "PREV",
+      tags: ["PREVENTION_KNEE_HIP"],
+      amount: 6,
+    });
+
+    const offered = await workouts.offeredSkills(0);
+    expect(offered).not.toContain("WU");
+    expect(offered).not.toContain("CD");
+    expect(offered).toEqual(
+      expect.arrayContaining(["BAS", "BR", "WUSKSA", "CARDIO_1_SHORT"]),
+    );
+    expect(await workouts.offeredTags(0)).toEqual([
+      "PREVENTION_SHOULDER",
+      "PREVENTION_KNEE_HIP",
+      "PREVENTION_SPINE",
+      "PREVENTION_ANKLE",
+      "PREVENTION_WRIST_ELBOW",
+    ]);
+
+    await mockSupabase(page, {
+      trainerGrantedAt: TRAINER,
+      teams: [TEAM],
+      teamWorkouts: [draft],
+    });
+    const saved = nextRpcBody(page, "save_team_workout");
+    await workouts.save();
+    expect(await saved).toMatchObject({ p_template: { blocks } });
+    await workouts.expectBuilderClosed();
+
+    await workouts.publish("Knee care");
+    await workouts.expectPublishedNotice("Knee care");
+
+    await workouts.editWorkout("Knee care");
+    await workouts.expectFixedSectionTicked("warm-up", 4);
+    await workouts.expectFixedSectionTicked("cool-down", 3);
+    await workouts.expectSectionSkills(["PREV"]);
+
+    await workouts.cancel();
+    await workouts.expectNoPublishedNotice();
+  });
+
+  test("a saved workout with an unknown section opens in the builder without that section", async ({
+    page,
+  }) => {
+    const withUnknown: MockTeamWorkout = {
+      ...SAVED,
+      template: {
+        ...SAVED.template,
+        blocks: [
+          SAVED_BLOCKS[0],
+          { kind: "picks", skill: "NOPE", picks: [{ tags: [], count: 2 }] },
+          SAVED_BLOCKS[1],
+        ],
+      },
+    };
+    await mockSupabase(page, {
+      trainerGrantedAt: TRAINER,
+      teams: [TEAM],
+      teamWorkouts: [withUnknown],
+    });
+    const workouts = await openWorkouts(page);
+
+    await workouts.editWorkout("Tuesday stability");
+    await workouts.expectSectionSkills(["GKS", "CARDIO_2"]);
+  });
+
+  test("every section other than prevention offers body regions only", async ({
+    page,
+  }) => {
+    await mockSupabase(page, { trainerGrantedAt: TRAINER, teams: [TEAM] });
+    const workouts = await openWorkouts(page);
+
+    await workouts.startNewWorkout();
+    await workouts.addSection({ skill: "MOB", amount: 4 });
+    expect(await workouts.offeredTags(0)).toEqual([
+      "REGION_UPPER_BODY",
+      "REGION_LOWER_BODY",
+      "REGION_CORE",
+    ]);
   });
 
   test("a cardio section asks for minutes and every other section for exercises", async ({
@@ -232,12 +342,12 @@ test.describe("Workout builder", () => {
 
     await workouts.editWorkout("Tuesday stability");
     await workouts.expectSectionSkills(["GKS", "CARDIO_2"]);
-    await workouts.addSection({ skill: "WU", amount: 3 });
+    await workouts.addSection({ skill: "BAS", amount: 3 });
     await workouts.moveSectionUp(2);
     await workouts.moveSectionUp(1);
-    await workouts.expectSectionSkills(["WU", "GKS", "CARDIO_2"]);
+    await workouts.expectSectionSkills(["BAS", "GKS", "CARDIO_2"]);
     await workouts.removeSection(1);
-    await workouts.expectSectionSkills(["WU", "CARDIO_2"]);
+    await workouts.expectSectionSkills(["BAS", "CARDIO_2"]);
 
     const saved = nextRpcBody(page, "save_team_workout");
     await workouts.save();
@@ -247,7 +357,7 @@ test.describe("Workout builder", () => {
       p_template: {
         id: SAVED.id,
         blocks: [
-          { kind: "picks", skill: "WU", picks: [{ tags: [], count: 3 }] },
+          { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 3 }] },
           { kind: "duration", skill: "CARDIO_2", duration: 1200 },
         ],
       },
@@ -276,9 +386,7 @@ test.describe("Workout builder", () => {
     await expect(page.getByTestId("workout-builder")).toBeVisible();
   });
 
-  test("a co-owner sees drafts without edit actions and downloads them", async ({
-    page,
-  }) => {
+  test("a co-owner sees drafts without edit actions", async ({ page }) => {
     const coOwned = {
       ...TEAM,
       owner_id: OTHER_OWNER,
@@ -296,12 +404,9 @@ test.describe("Workout builder", () => {
 
     await workouts.expectDraft("Tuesday stability");
     await workouts.expectNoEditActions();
-
-    const file = await workouts.download("Tuesday stability");
-    expect(file.fileName).toBe("tuesday-stability.json");
   });
 
-  test("a member sees the published workouts without edit or download actions", async ({
+  test("a member sees the published workouts without edit actions", async ({
     page,
   }) => {
     const joined = {
@@ -321,6 +426,5 @@ test.describe("Workout builder", () => {
 
     await workouts.expectPublished("Tuesday stability");
     await workouts.expectNoEditActions();
-    await workouts.expectNoDownload();
   });
 });

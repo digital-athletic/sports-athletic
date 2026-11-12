@@ -559,3 +559,35 @@ describe("isTemplateRunnable: cardio duration blocks", () => {
     expect(isTemplateRunnable(template, {})).toBe(false);
   });
 });
+
+// The sections the trainer dashboard's workout builder writes; the generator
+// runs each with and without weights.
+describe("validateCustomWorkoutText: workout builder sections", () => {
+  const picks = (skill: string, tags: string[] = []) => ({
+    kind: "picks",
+    skill,
+    picks: [{ tags, count: 5 }],
+  });
+
+  it.each([
+    ["leg axis stability", picks("BAS")],
+    ["foam rolling for the lower body", picks("BR", ["REGION_LOWER_BODY"])],
+    ["a speed warm-up", picks("WUSKSA", ["REGION_UPPER_BODY"])],
+    [
+      "zone 1 sprint intervals",
+      { kind: "duration", skill: "CARDIO_1_SHORT", duration: 600 },
+    ],
+    ["prevention for knee and hip", picks("PREV", ["PREVENTION_KNEE_HIP"])],
+  ])("accepts %s between a warm-up and a cool-down", (_label, block) => {
+    const text = JSON.stringify({
+      aiwl: 1,
+      id: "BUILDER",
+      name: { en: "Builder workout" },
+      blocks: [picks("WU"), block, picks("CD")],
+    });
+
+    expect(validateCustomWorkoutText(text, getAllSkillTrees()).success).toBe(
+      true,
+    );
+  });
+});

@@ -8,7 +8,7 @@ import { Text } from "@/theme/Text";
 import { useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
+import { Alert } from "@/common/Alert";
 import { usePowerTestData } from "../hooks/usePowerTestData";
 import { PowerTestChartCard } from "./PowerTestChartCard";
 import { PowerTestResultCard } from "./PowerTestResultCard";

@@ -34,3 +34,15 @@ Terms of the trainer dashboard. Training terms such as workout, focus and points
 | Period | Zeitraum | | Rolling window an evaluation covers: last week, last month, last year, total. |
 | Points | Punkte | XP | Experience points the athlete earned in a workout. |
 | Training type | Trainingsart | PLAN, QUICK, PREV | Plan workout, short workout or prevention workout. The dashboard labels the column "Training Phase". |
+
+## Workouts
+
+| Term | German | Code | Meaning |
+|---|---|---|---|
+| Team workout | Team-Workout | team_workouts | Workout the owner builds for the team from sections. The athlete app lists it under the team's trainings. |
+| Draft | Entwurf | draft | State of a new team workout. Only the owner and the co-owners see a draft, in the dashboard and in the athlete app. |
+| Published | Veröffentlicht | published | State of a team workout after the owner publishes it. Every team member sees it in the athlete app. |
+| Section | Abschnitt | | One part of a team workout: a training with a number of exercises, or with minutes for cardio. The owner orders the sections freely. |
+| Fixed section | Warm-up, Cooldown / Stretching | WU, CD | The warm-up or the cool-down. A checkbox adds it with an exercise count. The warm-up is the first part of the workout, the cool-down the last. |
+| Body region | Körperregion | REGION_* | Optional focus of a section, for example upper body. Every section except prevention offers body regions. |
+| Prevention area | Präventionsbereich | PREVENTION_* | Optional focus of the prevention section, for example knee and hip. No other section offers prevention areas. |

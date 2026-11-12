@@ -5,8 +5,8 @@ import {
   AMOUNT_UNITS,
   BUILDER_SKILLS,
   findBuilderSkill,
-  isTagSelectable,
   sectionKind,
+  tagGroupOf,
   type BuilderTag,
   type SectionDraft,
 } from "../../utils/workoutBuilder";
@@ -43,10 +43,7 @@ export function WorkoutSectionEditor({
   const unit = AMOUNT_UNITS[kind];
   const range = AMOUNT_RANGES[kind];
   const skill = findBuilderSkill(section.skill);
-  const tagGroups = [
-    { id: "regions", tags: skill?.regionTags ?? [] },
-    { id: "prevention", tags: skill?.preventionTags ?? [] },
-  ].filter((group) => group.tags.length > 0);
+  const tags = skill?.tags ?? [];
 
   return (
     <li
@@ -142,47 +139,36 @@ export function WorkoutSectionEditor({
         </div>
       </div>
 
-      {tagGroups.length > 0 && (
-        <div className="mt-3 space-y-2">
-          {tagGroups.map((group) => (
-            <fieldset key={group.id}>
-              <legend className="mb-1 text-sm font-medium text-gray-700">
-                {t(`workouts.builder.tagGroups.${group.id}`)}
-              </legend>
-              <div className="flex flex-wrap gap-2">
-                {group.tags.map((tag) => {
-                  const checked = section.tags.includes(tag);
-                  const disabled = !checked && !isTagSelectable(section, tag);
-                  return (
-                    <label
-                      key={tag}
-                      className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors ${
-                        checked
-                          ? "border-red-600 bg-red-50 text-red-700"
-                          : "border-gray-300 text-gray-700"
-                      } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
-                    >
-                      <input
-                        type="checkbox"
-                        data-testid={`section-tag-${tag}`}
-                        className="accent-red-600"
-                        checked={checked}
-                        disabled={disabled}
-                        onChange={() => onTagToggle(tag)}
-                      />
-                      {t(`workouts.tags.${tag}`)}
-                    </label>
-                  );
-                })}
-              </div>
-            </fieldset>
-          ))}
-          {tagGroups.length > 1 && (
-            <p className="text-xs text-gray-500">
-              {t("workouts.builder.tagGroupHint")}
-            </p>
-          )}
-        </div>
+      {skill && tags.length > 0 && (
+        <fieldset className="mt-3">
+          <legend className="mb-1 text-sm font-medium text-gray-700">
+            {t(`workouts.builder.tagGroups.${tagGroupOf(skill)}`)}
+          </legend>
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag) => {
+              const checked = section.tags.includes(tag);
+              return (
+                <label
+                  key={tag}
+                  className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors ${
+                    checked
+                      ? "border-red-600 bg-red-50 text-red-700"
+                      : "border-gray-300 text-gray-700"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    data-testid={`section-tag-${tag}`}
+                    className="accent-red-600"
+                    checked={checked}
+                    onChange={() => onTagToggle(tag)}
+                  />
+                  {t(`workouts.tags.${tag}`)}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
       )}
     </li>
   );

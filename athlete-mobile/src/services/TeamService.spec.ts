@@ -1,6 +1,6 @@
 import {
   acceptInvitation,
-  fetchTeamWorkoutTemplates,
+  fetchTeamWorkouts,
   getTeamInfo,
   getUserTeams,
   leaveTeam,
@@ -492,7 +492,7 @@ describe("getTeamInfo", () => {
   });
 });
 
-describe("fetchTeamWorkoutTemplates", () => {
+describe("fetchTeamWorkouts", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -510,20 +510,27 @@ describe("fetchTeamWorkoutTemplates", () => {
     return { select, eq, order, retry };
   };
 
-  it("returns the published templates of the team oldest first without retries", async () => {
+  it("returns every readable workout of the team with its draft mark, oldest first without retries", async () => {
     const template = { aiwl: 1, id: "TEAM_CORE" };
+    const draft = { aiwl: 1, id: "TEAM_DRAFT" };
     const { select, eq, order, retry } = mockTeamWorkoutsQuery({
-      data: [{ template }],
+      data: [
+        { template, status: "published" },
+        { template: draft, status: "draft" },
+      ],
       error: null,
     });
 
-    const result = await fetchTeamWorkoutTemplates("team-7");
+    const result = await fetchTeamWorkouts("team-7");
 
-    expect(result).toEqual([template]);
+    expect(result).toEqual([
+      { template, isDraft: false },
+      { template: draft, isDraft: true },
+    ]);
     expect(mockFrom).toHaveBeenCalledWith("team_workouts");
-    expect(select).toHaveBeenCalledWith("template");
+    expect(select).toHaveBeenCalledWith("template, status");
+    expect(eq).toHaveBeenCalledTimes(1);
     expect(eq).toHaveBeenCalledWith("team_id", "team-7");
-    expect(eq).toHaveBeenCalledWith("status", "published");
     expect(order).toHaveBeenCalledWith("created_at", { ascending: true });
     expect(retry).toHaveBeenCalledWith(false);
   });
@@ -531,8 +538,6 @@ describe("fetchTeamWorkoutTemplates", () => {
   it("rejects when the query fails", async () => {
     mockTeamWorkoutsQuery({ data: null, error: { message: "offline" } });
 
-    await expect(fetchTeamWorkoutTemplates("team-1")).rejects.toThrow(
-      "offline",
-    );
+    await expect(fetchTeamWorkouts("team-1")).rejects.toThrow("offline");
   });
 });

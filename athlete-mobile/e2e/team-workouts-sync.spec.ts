@@ -121,4 +121,23 @@ test.describe("Team workouts: sync on a team tile", () => {
       page.getByRole("button", { name: "Team sprint" }),
     ).toBeVisible();
   });
+
+  test("a co-owner sees the team's draft marked as a draft", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+    const server = await mockTeamWithWorkouts(page, TEAM, "staff");
+    server.setRows([TEAM_CORE_ROW, TEAM_DRAFT_ROW]);
+
+    await page.goto("/");
+    await new BasePage(page).expectLoggedIn();
+    await openTeamTile(page);
+
+    await expect(
+      page.getByRole("button", { name: "Team draft, Draft" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Team core", exact: true }),
+    ).toBeVisible();
+  });
 });

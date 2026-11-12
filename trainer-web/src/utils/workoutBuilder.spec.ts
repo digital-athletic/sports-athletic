@@ -5,6 +5,7 @@ import {
   MAX_SECTIONS,
   PREVENTION_TAGS,
   REGION_TAGS,
+  createEmptyDraft,
   createSection,
   draftToTemplate,
   isTagSelectable,
@@ -33,7 +34,7 @@ const section = (
 const draftWith = (
   sections: SectionDraft[],
   name = "Tuesday stability",
-): WorkoutDraft => ({ name, sections });
+): WorkoutDraft => ({ ...createEmptyDraft(), name, sections });
 
 /** A key generator that counts up, like the builder's own. */
 const keys = (): (() => string) => {
@@ -42,7 +43,7 @@ const keys = (): (() => string) => {
 };
 
 describe("draftToTemplate", () => {
-  it.each(pickSkills.map((skill) => [skill.id, skill.regionTags.slice(0, 1)]))(
+  it.each(pickSkills.map((skill) => [skill.id, skill.tags.slice(0, 1)]))(
     "writes %s as a picks block with the exercise count",
     (skillId, tags) => {
       const template = draftToTemplate(
@@ -67,6 +68,38 @@ describe("draftToTemplate", () => {
       ]);
     },
   );
+
+  it("starts with the warm-up and ends with the cool-down", () => {
+    const template = draftToTemplate(
+      {
+        ...draftWith([section("GKS", 5), section("CARDIO_2", 20, [], "s2")]),
+        warmUp: { enabled: true, amount: 4 },
+        coolDown: { enabled: true, amount: 3 },
+      },
+      "id-1",
+    );
+    expect(template.blocks.map((block) => block.skill)).toEqual([
+      "WU",
+      "GKS",
+      "CARDIO_2",
+      "CD",
+    ]);
+    expect(template.blocks[0]).toEqual({
+      kind: "picks",
+      skill: "WU",
+      picks: [{ tags: [], count: 4 }],
+    });
+    expect(template.blocks[3]).toEqual({
+      kind: "picks",
+      skill: "CD",
+      picks: [{ tags: [], count: 3 }],
+    });
+  });
+
+  it("writes neither warm-up nor cool-down when both are unticked", () => {
+    const template = draftToTemplate(draftWith([section("GKS", 5)]), "id-1");
+    expect(template.blocks.map((block) => block.skill)).toEqual(["GKS"]);
+  });
 
   it("writes the version, id and trimmed English name", () => {
     const template = draftToTemplate(
@@ -175,36 +208,83 @@ describe("validateDraft", () => {
     ).toEqual([{ code: "TAG_NOT_ALLOWED", sectionKey: "bad" }]);
   });
 
-  it("reports TAG_NOT_ALLOWED for a section that mixes the two groups", () => {
+  it("reports TAG_NOT_ALLOWED for a body region in the prevention section", () => {
     expect(
       validateDraft(
-        draftWith([
-          section(
-            "PREV",
-            5,
-            ["REGION_UPPER_BODY", "PREVENTION_KNEE_HIP"],
-            "bad",
-          ),
-        ]),
+        draftWith([section("PREV", 5, ["REGION_UPPER_BODY"], "bad")]),
       ),
     ).toEqual([{ code: "TAG_NOT_ALLOWED", sectionKey: "bad" }]);
   });
+
+  it.each([
+    ["warmUp", "WARM_UP_OUT_OF_RANGE"],
+    ["coolDown", "COOL_DOWN_OUT_OF_RANGE"],
+  ] as const)("reports a ticked %s with 21 exercises", (part, code) => {
+    expect(
+      validateDraft({
+        ...draftWith([section("GKS", 5)]),
+        [part]: { enabled: true, amount: 21 },
+      }),
+    ).toEqual([{ code }]);
+  });
+
+  it("ignores the amount of an unticked warm-up", () => {
+    expect(
+      validateDraft({
+        ...draftWith([section("GKS", 5)]),
+        warmUp: { enabled: false, amount: Number.NaN },
+      }),
+    ).toEqual([]);
+  });
+
+  it(`counts warm-up and cool-down towards the ${MAX_SECTIONS} sections`, () => {
+    const sections = Array.from({ length: MAX_SECTIONS - 1 }, (_, index) =>
+      section("GKS", 5, [], `s${index}`),
+    );
+    const draft = {
+      ...draftWith(sections),
+      warmUp: { enabled: true, amount: 5 },
+    };
+    expect(validateDraft(draft)).toEqual([]);
+    expect(
+      validateDraft({ ...draft, coolDown: { enabled: true, amount: 5 } }),
+    ).toEqual([{ code: "TOO_MANY_SECTIONS" }]);
+  });
+});
+
+describe("training list", () => {
+  it("offers neither warm-up nor cool-down", () => {
+    const ids = BUILDER_SKILLS.map((skill) => skill.id);
+    expect(ids).not.toContain("WU");
+    expect(ids).not.toContain("CD");
+  });
+
+  it.each(["BAS", "BR", "WUSKSA", "CARDIO_1_SHORT", "CARDIO_1_LAKTAT"])(
+    "offers %s",
+    (skillId) => {
+      expect(BUILDER_SKILLS.map((skill) => skill.id)).toContain(skillId);
+    },
+  );
 });
 
 describe("tags", () => {
-  it.each(BUILDER_SKILLS.map((skill) => [skill.id, skill]))(
-    "%s offers only its listed tags",
-    (_id, skill) => {
-      const listed = new Set<BuilderTag>([
-        ...skill.regionTags,
-        ...skill.preventionTags,
-      ]);
-      const empty = createSection("s1", skill.id);
-      for (const tag of ALL_TAGS) {
-        expect(isTagSelectable(empty, tag), tag).toBe(listed.has(tag));
-      }
-    },
-  );
+  it("offers the five prevention areas and no body region for prevention", () => {
+    const prev = createSection("s1", "PREV");
+    expect(ALL_TAGS.filter((tag) => isTagSelectable(prev, tag))).toEqual(
+      PREVENTION_TAGS,
+    );
+  });
+
+  it.each(
+    BUILDER_SKILLS.filter((skill) => skill.id !== "PREV").map((skill) => [
+      skill.id,
+    ]),
+  )("%s offers no prevention area", (skillId) => {
+    const empty = createSection("s1", skillId);
+    expect(
+      PREVENTION_TAGS.filter((tag) => isTagSelectable(empty, tag)),
+    ).toEqual([]);
+  });
 
   it("offers no tag for a cardio skill", () => {
     for (const skill of cardioSkills) {
@@ -218,50 +298,28 @@ describe("tags", () => {
     expect(toggleSectionTag(sk, "REGION_CORE").tags).toEqual([]);
   });
 
-  it("takes several tags of one group", () => {
+  it("takes several tags and removes a checked one", () => {
     let prev = createSection("s1", "PREV");
-    prev = toggleSectionTag(prev, "REGION_UPPER_BODY");
-    prev = toggleSectionTag(prev, "REGION_CORE");
-    expect(prev.tags).toEqual(["REGION_UPPER_BODY", "REGION_CORE"]);
-  });
-
-  it("refuses a prevention tag once a region tag is checked", () => {
-    const prev = toggleSectionTag(
-      createSection("s1", "PREV"),
-      "REGION_UPPER_BODY",
-    );
-    for (const tag of PREVENTION_TAGS) {
-      expect(isTagSelectable(prev, tag), tag).toBe(false);
-      expect(toggleSectionTag(prev, tag).tags).toEqual(["REGION_UPPER_BODY"]);
-    }
-  });
-
-  it("refuses a region tag once a prevention tag is checked", () => {
-    const prev = toggleSectionTag(
-      createSection("s1", "PREV"),
-      "PREVENTION_SPINE",
-    );
-    for (const tag of REGION_TAGS) {
-      expect(isTagSelectable(prev, tag), tag).toBe(false);
-    }
-  });
-
-  it("offers the other group again after the last tag is unchecked", () => {
-    let prev = toggleSectionTag(createSection("s1", "PREV"), "REGION_CORE");
-    prev = toggleSectionTag(prev, "REGION_CORE");
-    expect(prev.tags).toEqual([]);
-    expect(isTagSelectable(prev, "PREVENTION_SPINE")).toBe(true);
+    prev = toggleSectionTag(prev, "PREVENTION_KNEE_HIP");
+    prev = toggleSectionTag(prev, "PREVENTION_SPINE");
+    expect(prev.tags).toEqual(["PREVENTION_KNEE_HIP", "PREVENTION_SPINE"]);
+    expect(toggleSectionTag(prev, "PREVENTION_SPINE").tags).toEqual([
+      "PREVENTION_KNEE_HIP",
+    ]);
   });
 });
 
 describe("templateToDraft", () => {
   it("reads a saved template back into the same sections", () => {
-    const draft = draftWith([
-      section("WU", 4, ["REGION_LOWER_BODY"], "k0"),
-      section("PREV", 6, ["PREVENTION_SHOULDER", "PREVENTION_SPINE"], "k1"),
-      section("GKS", 8, [], "k2"),
-      section("CARDIO_1_LAKTAT", 45, [], "k3"),
-    ]);
+    const draft: WorkoutDraft = {
+      ...draftWith([
+        section("PREV", 6, ["PREVENTION_SHOULDER", "PREVENTION_SPINE"], "k0"),
+        section("GKS", 8, [], "k1"),
+        section("CARDIO_1_SHORT", 45, [], "k2"),
+      ]),
+      warmUp: { enabled: true, amount: 4 },
+      coolDown: { enabled: true, amount: 2 },
+    };
     const template = draftToTemplate(draft, "id-1");
 
     expect(templateToDraft(template, keys())).toEqual(draft);
@@ -298,67 +356,52 @@ describe("templateToDraft", () => {
     ["not an object", "a template"],
     ["null", null],
     ["a template without blocks", base],
-    [
-      "a skill outside the builder list",
-      { ...base, blocks: [picks("CARDIO_1_SHORT")] },
-    ],
-    ["an unknown skill", { ...base, blocks: [picks("NOPE")] }],
-    [
-      "a cardio skill written as picks",
-      { ...base, blocks: [picks("CARDIO_2")] },
-    ],
+  ])("reports %s as not editable", (_label, template) => {
+    expect(templateToDraft(template, keys())).toBeUndefined();
+  });
+
+  it.each([
+    ["an unknown skill", picks("NOPE")],
+    ["a warm-up in the middle", picks("WU")],
+    ["a cardio skill written as picks", picks("CARDIO_2")],
     [
       "an exercise skill written as a duration",
-      { ...base, blocks: [{ kind: "duration", skill: "GKS", duration: 600 }] },
+      { kind: "duration", skill: "GKS", duration: 600 },
     ],
     [
       "a duration that is not whole minutes",
-      {
-        ...base,
-        blocks: [{ kind: "duration", skill: "CARDIO_2", duration: 90 }],
-      },
+      { kind: "duration", skill: "CARDIO_2", duration: 90 },
     ],
     [
       "a block with two picks",
       {
-        ...base,
-        blocks: [
-          {
-            kind: "picks",
-            skill: "GKS",
-            picks: [
-              { tags: [], count: 2 },
-              { tags: [], count: 3 },
-            ],
-          },
+        kind: "picks",
+        skill: "GKS",
+        picks: [
+          { tags: [], count: 2 },
+          { tags: [], count: 3 },
         ],
       },
     ],
     [
       "a pick with a tag the builder does not know",
       {
-        ...base,
-        blocks: [
-          {
-            kind: "picks",
-            skill: "GKS",
-            picks: [{ tags: ["EQUIPMENT_BAND"], count: 3 }],
-          },
-        ],
+        kind: "picks",
+        skill: "GKS",
+        picks: [{ tags: ["EQUIPMENT_BAND"], count: 3 }],
       },
     ],
     [
       "a pick without a count",
-      {
-        ...base,
-        blocks: [{ kind: "picks", skill: "GKS", picks: [{ tags: [] }] }],
-      },
+      { kind: "picks", skill: "GKS", picks: [{ tags: [] }] },
     ],
-    [
-      "one readable and one unreadable block",
-      { ...base, blocks: [picks("GKS"), picks("NOPE")] },
-    ],
-  ])("reports %s as not editable", (_label, template) => {
-    expect(templateToDraft(template, keys())).toBeUndefined();
+  ])("drops %s and reads the other sections", (_label, block) => {
+    const template = {
+      ...base,
+      blocks: [picks("MOB"), block, picks("GKS")],
+    };
+    expect(
+      templateToDraft(template, keys())?.sections.map((s) => s.skill),
+    ).toEqual(["MOB", "GKS"]);
   });
 });

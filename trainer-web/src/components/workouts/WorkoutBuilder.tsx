@@ -5,6 +5,7 @@ import {
   AMOUNT_RANGES,
   AMOUNT_UNITS,
   changeSectionSkill,
+  countBlocks,
   createSection,
   draftToTemplate,
   MAX_NAME_LENGTH,
@@ -13,6 +14,7 @@ import {
   sectionKind,
   toggleSectionTag,
   validateDraft,
+  type BookendDraft,
   type DraftError,
   type SectionDraft,
   type WorkoutDraft,
@@ -32,7 +34,69 @@ interface WorkoutBuilderProps {
   onCancel: () => void;
 }
 
-const DEFAULT_SKILL = "WU";
+const DEFAULT_SKILL = "MOB";
+
+const BOOKENDS = [
+  { part: "warmUp", testId: "workout-warm-up" },
+  { part: "coolDown", testId: "workout-cool-down" },
+] as const;
+
+interface BookendFieldProps {
+  testId: string;
+  label: string;
+  amountLabel: string;
+  bookend: BookendDraft;
+  onChange: (bookend: BookendDraft) => void;
+}
+
+/** The checkbox of the warm-up or the cool-down, with its exercise count. */
+function BookendField({
+  testId,
+  label,
+  amountLabel,
+  bookend,
+  onChange,
+}: BookendFieldProps) {
+  const range = AMOUNT_RANGES.picks;
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 px-4 py-3">
+      <label className="flex min-w-40 flex-1 cursor-pointer items-center gap-2 text-sm font-medium text-gray-900">
+        <input
+          type="checkbox"
+          data-testid={testId}
+          className="h-4 w-4 accent-red-600"
+          checked={bookend.enabled}
+          onChange={(event) =>
+            onChange({ ...bookend, enabled: event.target.checked })
+          }
+        />
+        {label}
+      </label>
+      {bookend.enabled && (
+        <label className="flex items-center gap-2 text-sm text-gray-700">
+          {amountLabel}
+          <input
+            type="number"
+            inputMode="numeric"
+            data-testid={`${testId}-amount`}
+            min={range.min}
+            max={range.max}
+            step={1}
+            value={Number.isNaN(bookend.amount) ? "" : bookend.amount}
+            onChange={(event) =>
+              onChange({
+                ...bookend,
+                amount:
+                  event.target.value === "" ? NaN : Number(event.target.value),
+              })
+            }
+            className="w-20 rounded-lg border border-gray-500 px-3 py-1.5 text-base focus:border-red-600 focus:outline-none"
+          />
+        </label>
+      )}
+    </div>
+  );
+}
 
 export function WorkoutBuilder({
   initialDraft,
@@ -88,7 +152,13 @@ export function WorkoutBuilder({
       return {
         testId: `workout-error-${error.code}`,
         message: t(key, {
-          max: error.code === "NAME_TOO_LONG" ? MAX_NAME_LENGTH : MAX_SECTIONS,
+          ...AMOUNT_RANGES.picks,
+          max:
+            error.code === "NAME_TOO_LONG"
+              ? MAX_NAME_LENGTH
+              : error.code === "TOO_MANY_SECTIONS"
+                ? MAX_SECTIONS
+                : AMOUNT_RANGES.picks.max,
         }),
       };
     }
@@ -129,6 +199,21 @@ export function WorkoutBuilder({
           setDraft((prev) => ({ ...prev, name: event.target.value }))
         }
       />
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {BOOKENDS.map(({ part, testId }) => (
+          <BookendField
+            key={part}
+            testId={testId}
+            label={t(`workouts.builder.${part}`)}
+            amountLabel={t("workouts.builder.exercises")}
+            bookend={draft[part]}
+            onChange={(bookend) =>
+              setDraft((prev) => ({ ...prev, [part]: bookend }))
+            }
+          />
+        ))}
+      </div>
 
       <div>
         <h4 className="mb-2 text-sm font-semibold text-gray-900">
@@ -177,7 +262,7 @@ export function WorkoutBuilder({
           variant="secondary"
           className="mt-3"
           data-testid="workout-add-section"
-          disabled={draft.sections.length >= MAX_SECTIONS}
+          disabled={countBlocks(draft) >= MAX_SECTIONS}
           onClick={() =>
             setSections((sections) => [
               ...sections,

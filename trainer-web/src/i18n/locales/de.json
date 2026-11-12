@@ -235,14 +235,13 @@
   },
   "workouts": {
     "title": "Team-Workouts",
-    "description": "Veröffentlichte Workouts erscheinen in der App deiner Athleten. Neue Workouts sind zuerst Entwürfe, die nur du und deine Begleiter*innen sehen.",
+    "description": "Veröffentlichte Workouts erscheinen in der App deiner Athleten. Neue Workouts sind zuerst Entwürfe: Nur du und deine Begleiter*innen sehen sie, auch in der App zum Testen.",
     "new": "Neues Workout",
     "edit": "Bearbeiten",
     "empty": "Dieses Team hat noch keine Workouts.",
     "emptyOwner": "Dieses Team hat noch keine Workouts. Erstelle das erste.",
     "publish": "Veröffentlichen",
     "moveToDraft": "Zurück zu Entwurf",
-    "download": "JSON herunterladen",
     "status": {
       "draft": "Entwurf"
     },
@@ -274,7 +273,8 @@
         "regions": "Körperregionen (optional)",
         "prevention": "Präventionsbereiche (optional)"
       },
-      "tagGroupHint": "Ein Abschnitt zielt auf Körperregionen oder auf Präventionsbereiche, nicht auf beides."
+      "warmUp": "Warm-up",
+      "coolDown": "Cooldown / Stretching"
     },
     "errors": {
       "NAME_REQUIRED": "Gib einen Namen ein.",
@@ -283,22 +283,26 @@
       "TOO_MANY_SECTIONS": "Ein Workout darf höchstens {{max}} Abschnitte haben.",
       "UNKNOWN_SKILL": "Abschnitt {{number}}: Wähle ein Training.",
       "AMOUNT_OUT_OF_RANGE": "Abschnitt {{number}}: Gib {{min}} bis {{max}} {{unit}} ein.",
-      "TAG_NOT_ALLOWED": "Abschnitt {{number}}: Wähle Körperregionen oder Präventionsbereiche, nicht beides."
+      "TAG_NOT_ALLOWED": "Abschnitt {{number}}: Diese Auswahl passt nicht zum Training.",
+      "WARM_UP_OUT_OF_RANGE": "Warm-up: Gib {{min}} bis {{max}} Übungen ein.",
+      "COOL_DOWN_OUT_OF_RANGE": "Cooldown: Gib {{min}} bis {{max}} Übungen ein."
     },
     "skills": {
-      "WU": "Aufwärmen",
       "MOB": "Mobilität",
-      "GKS": "Stabilität",
+      "GKS": "Ganzkörperstabilität",
+      "BAS": "Beinachsenstabilität",
       "PREV": "Prävention",
-      "SWR1": "Hypertrophie",
+      "SWR1": "Hypertrophie / Muskelaufbau",
       "SK": "Schnellkraft",
       "PLYO_MEDIUM": "Plyometrie",
-      "CD": "Cool-down",
-      "CARDIO_1_LAKTAT": "Cardio Zone 1",
-      "CARDIO_2": "Cardio Zone 2",
-      "CARDIO_3": "Cardio Zone 3",
-      "CARDIO_4": "Cardio Zone 4",
-      "CARDIO_5": "Cardio Zone 5"
+      "WUSKSA": "Schnelligkeits-Warm-up",
+      "BR": "Faszienrolle",
+      "CARDIO_1_SHORT": "Cardio Zone 1: Sprintintervalle (5 bis 10 Sek. Belastung / 80 Sek. Pause)",
+      "CARDIO_1_LAKTAT": "Cardio Zone 1: Laktatintervalle (30 Sek. Belastung / 4 Min. Pause)",
+      "CARDIO_2": "Cardio Zone 2: Intervalltraining 1 (1 Min. Belastung / 1 Min. Pause)",
+      "CARDIO_3": "Cardio Zone 3: Intervalltraining 2 (2 Min. Belastung / 1 Min. Pause)",
+      "CARDIO_4": "Cardio Zone 4: Grundlagenausdauer",
+      "CARDIO_5": "Cardio Zone 5: Regenerationslauf"
     },
     "tags": {
       "REGION_UPPER_BODY": "Oberkörper",
@@ -310,6 +314,7 @@
       "PREVENTION_SPINE": "Wirbelsäule",
       "PREVENTION_ANKLE": "Sprunggelenk",
       "PREVENTION_WRIST_ELBOW": "Handgelenk und Ellbogen"
-    }
+    },
+    "publishedNotice": "„{{name}}“ ist veröffentlicht und den Spieler*innen des Teams zugewiesen."
   }
 }

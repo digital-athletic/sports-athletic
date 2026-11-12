@@ -35,7 +35,7 @@ async function importFileThrough(
   await chooser.setFiles(filePath);
 }
 
-/** Opens the imported workout from the "Your trainings" list as a checklist. */
+/** Opens the imported workout from its "Your trainings" tile as a checklist. */
 async function openImportedWorkoutAsChecklist(page: Page) {
   await page.getByRole("button", { name: "My core", exact: true }).click();
   await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
@@ -84,7 +84,9 @@ test.describe("Custom workouts: import of own trainings", () => {
     ).toBeVisible();
 
     await importFileThrough(page, "Import training", VALID_FILE);
-    await expect(page.getByRole("button", { name: "My core" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "My core", exact: true }),
+    ).toBeVisible();
     await expect(page.getByText("Currently no workouts available")).toHaveCount(
       0,
     );
@@ -98,7 +100,7 @@ test.describe("Custom workouts: import of own trainings", () => {
 
     await importFileThrough(page, "Import training", RENAMED_FILE);
     await expect(
-      page.getByRole("button", { name: "My core v2" }),
+      page.getByRole("button", { name: "My core v2", exact: true }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "My core", exact: true }),
@@ -106,10 +108,10 @@ test.describe("Custom workouts: import of own trainings", () => {
 
     await page.reload();
     await expect(
-      page.getByRole("button", { name: "My core v2" }),
+      page.getByRole("button", { name: "My core v2", exact: true }),
     ).toBeVisible();
 
-    await page.getByRole("button", { name: "My core v2" }).click();
+    await page.getByRole("button", { name: "My core v2", exact: true }).click();
     await expect(
       page.getByRole("heading", { name: "Where do you train today?" }),
     ).toBeVisible();
@@ -162,5 +164,39 @@ test.describe("Custom workouts: import of own trainings", () => {
       ).toBeVisible();
       await expect(page.locator('[role="progressbar"]')).toHaveCount(0);
     }
+  });
+
+  test("athlete imports a training, sees its tile and deletes it through the delete icon", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+
+    const basePage = new BasePage(page);
+    await page.goto("/");
+    await basePage.expectLoggedIn();
+    await page.getByRole("button", { name: "Additional trainings" }).click();
+    await page.getByRole("button", { name: "Your trainings" }).click();
+    await importFileThrough(page, "Import training", VALID_FILE);
+
+    const tile = page.getByRole("button", { name: "My core", exact: true });
+    await expect(tile).toBeVisible();
+    await expect(page.getByTestId("own-trainings-grid-cell")).toHaveCount(1);
+
+    await page.getByRole("button", { name: "Delete My core" }).click();
+    await expect(page.getByText("Delete training?")).toBeVisible();
+    await page.getByRole("button", { name: "Cancel" }).click();
+    await expect(tile).toBeVisible();
+
+    await page.getByRole("button", { name: "Delete My core" }).click();
+    await page.getByRole("button", { name: "Delete", exact: true }).click();
+    await expect(tile).toHaveCount(0);
+    await expect(
+      page.getByText("Currently no workouts available"),
+    ).toBeVisible();
+
+    await page.reload();
+    await expect(
+      page.getByText("Currently no workouts available"),
+    ).toBeVisible();
   });
 });

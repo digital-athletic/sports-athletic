@@ -1,6 +1,7 @@
 import { Alert } from "@/common/Alert";
+import { TileGrid } from "@/common/TileGrid";
 import { readLocalizedTemplateName } from "@/data/loadTemplates";
-import { CustomWorkoutRow } from "@/features/customWorkouts/CustomWorkoutRow";
+import { CustomWorkoutTile } from "@/features/customWorkouts/CustomWorkoutTile";
 import { EmptyTrainingListMessage } from "@/features/customWorkouts/EmptyTrainingListMessage";
 import {
   listWorkoutsForTeam,
@@ -8,6 +9,7 @@ import {
 } from "@/store/customWorkoutsStore";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
+import { useTheme } from "@/theme/theme";
 import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
@@ -48,6 +50,7 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
   importing,
 }) => {
   const { t, i18n } = useTranslation();
+  const { spacing } = useTheme();
   const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
   const deleteOwnCustomWorkout = useCustomWorkoutsStore(
     (state) => state.deleteOwnCustomWorkout,
@@ -76,27 +79,32 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
   return (
     <ScrollBox
       flex={1}
-      backgroundColor="lightGrey1"
+      backgroundColor="white"
       contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ padding: spacing.l }}
       testID="own-trainings-list"
     >
-      {workouts.map((workout) => {
-        const name = readLocalizedTemplateName(
-          workout.template.name,
-          i18n.language,
-        );
-        return (
-          <CustomWorkoutRow
-            key={workout.id}
-            workoutId={workout.id}
-            name={name}
-            deleteAction={{
-              label: deleteLabel,
-              onDelete: () => confirmDeleteTraining(workout.id, name),
-            }}
-          />
-        );
-      })}
+      <TileGrid testID="own-trainings-grid">
+        {workouts.map((workout) => {
+          const name = readLocalizedTemplateName(
+            workout.template.name,
+            i18n.language,
+          );
+          return (
+            <CustomWorkoutTile
+              key={workout.id}
+              workoutId={workout.id}
+              name={name}
+              deleteAction={{
+                label: t("screens.home.additionalTrainings.deleteTraining", {
+                  name,
+                }),
+                onDelete: () => confirmDeleteTraining(workout.id, name),
+              }}
+            />
+          );
+        })}
+      </TileGrid>
     </ScrollBox>
   );
 };

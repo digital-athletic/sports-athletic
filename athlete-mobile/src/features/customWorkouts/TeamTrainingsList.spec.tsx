@@ -30,13 +30,46 @@ beforeEach(() => {
 });
 
 describe("TeamTrainingsList", () => {
-  it("offers no delete action on a team workout", async () => {
+  it("shows one tile per team workout on a tile grid", async () => {
+    mockFetchTeamWorkoutTemplates.mockResolvedValue([
+      generateTeamTemplate(),
+      generateTeamTemplate({ id: "TEAM_SPRINT", name: { en: "Team sprint" } }),
+    ]);
+
+    const { findByRole, getAllByTestId } = await render(
+      <TeamTrainingsList teamId="team-1" />,
+    );
+
+    expect(await findByRole("button", { name: "Team core" })).toBeTruthy();
+    expect(await findByRole("button", { name: "Team sprint" })).toBeTruthy();
+    expect(getAllByTestId("team-trainings-grid-cell")).toHaveLength(2);
+  });
+
+  it("shows no delete button on a team workout", async () => {
     mockFetchTeamWorkoutTemplates.mockResolvedValue([generateTeamTemplate()]);
 
-    const { findByRole } = await render(<TeamTrainingsList teamId="team-1" />);
+    const { findByRole, queryByRole } = await render(
+      <TeamTrainingsList teamId="team-1" />,
+    );
 
-    const row = await findByRole("button", { name: "Team core" });
-    expect(row.props.accessibilityActions).toBeUndefined();
+    await findByRole("button", { name: "Team core" });
+    expect(queryByRole("button", { name: "Delete Team core" })).toBeNull();
+  });
+
+  it("shows the offline note above the tiles of the last sync", async () => {
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateTeamTemplate(), "team-1");
+    mockFetchTeamWorkoutTemplates.mockRejectedValue(
+      new Error("Failed to fetch"),
+    );
+
+    const { findByText, getByRole } = await render(
+      <TeamTrainingsList teamId="team-1" />,
+    );
+
+    expect(await findByText(OFFLINE_NOTE)).toBeTruthy();
+    expect(getByRole("button", { name: "Team core" })).toBeTruthy();
   });
 
   it("shows the empty message and the offline note without a previous sync", async () => {

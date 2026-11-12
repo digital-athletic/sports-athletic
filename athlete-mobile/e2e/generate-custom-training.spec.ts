@@ -23,9 +23,6 @@ test.describe("Custom workouts: generate an own training", () => {
     await expect(
       page.getByRole("button", { name: "Import training" }),
     ).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/generate-training-empty-list.png",
-    });
 
     await page.getByRole("button", { name: "Generate training" }).click();
     await expect(
@@ -46,9 +43,6 @@ test.describe("Custom workouts: generate an own training", () => {
     await page.getByRole("radio", { name: "Hypertrophy" }).click();
     await expect(generate).toBeDisabled();
     await page.getByRole("button", { name: "Upper body" }).click();
-    await page.screenshot({
-      path: "playwright/screenshots/generate-training-form.png",
-    });
     await generate.click();
 
     const tile = page.getByRole("button", {
@@ -58,9 +52,6 @@ test.describe("Custom workouts: generate an own training", () => {
     await expect(tile).toBeVisible();
     await expect(page.getByTestId("generate-training-tile")).toBeVisible();
     await expect(page.getByTestId("generate-training-header")).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/generate-training-grid.png",
-    });
 
     await tile.click();
     await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();

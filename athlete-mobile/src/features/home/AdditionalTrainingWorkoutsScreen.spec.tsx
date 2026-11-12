@@ -126,15 +126,6 @@ describe("AdditionalTrainingWorkoutsScreen: own source without entries", () => {
     expect(mockImportCustomWorkout).toHaveBeenCalledTimes(1);
   });
 
-  it("shows no import button in the header", async () => {
-    const { queryAllByRole } = await render(
-      <AdditionalTrainingWorkoutsScreen />,
-    );
-
-    // The one import button is the link of the empty message.
-    expect(queryAllByRole("button", { name: IMPORT_LABEL })).toHaveLength(1);
-  });
-
   it("marks the import training link as disabled while an import runs", async () => {
     mockImporting = true;
     const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
@@ -304,24 +295,29 @@ describe("AdditionalTrainingWorkoutsScreen: team source", () => {
 });
 
 describe("AdditionalTrainingWorkoutsScreen: generate training", () => {
-  it("shows a generate button in the header of the own trainings without entries", async () => {
+  beforeEach(() => {
     mockUseLocalSearchParams.mockReturnValue({
       title: "Your trainings",
       source: "own",
     });
-
-    const { getByTestId } = await render(<AdditionalTrainingWorkoutsScreen />);
-
-    expect(
-      getByTestId("generate-training-header").props.accessibilityLabel,
-    ).toBe("Generate training");
   });
 
-  it("shows the generate button next to the import button when entries exist", async () => {
-    mockUseLocalSearchParams.mockReturnValue({
-      title: "Your trainings",
-      source: "own",
-    });
+  it("sets no header button for the own trainings without entries", async () => {
+    await render(<AdditionalTrainingWorkoutsScreen />);
+
+    const options = mockStackScreen.mock.calls[0][0].options;
+    expect(options.headerRight).toBeUndefined();
+  });
+
+  it("opens the generate form from the button of the empty list", async () => {
+    const { getByRole } = await render(<AdditionalTrainingWorkoutsScreen />);
+
+    await fireEvent.press(getByRole("button", { name: "Generate training" }));
+
+    expect(mockPush).toHaveBeenCalledWith("/generate-training");
+  });
+
+  it("shows the generate button next to the import button in the header when entries exist", async () => {
     useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(generateCustomTemplate(), null);
@@ -330,15 +326,16 @@ describe("AdditionalTrainingWorkoutsScreen: generate training", () => {
       <AdditionalTrainingWorkoutsScreen />,
     );
 
-    expect(getByTestId("generate-training-header")).toBeTruthy();
+    expect(
+      getByTestId("generate-training-header").props.accessibilityLabel,
+    ).toBe("Generate training");
     expect(getByRole("button", { name: IMPORT_LABEL })).toBeTruthy();
   });
 
   it("opens the generate form from the header button", async () => {
-    mockUseLocalSearchParams.mockReturnValue({
-      title: "Your trainings",
-      source: "own",
-    });
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
     const { getByTestId } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     await fireEvent.press(getByTestId("generate-training-header"));
@@ -347,10 +344,9 @@ describe("AdditionalTrainingWorkoutsScreen: generate training", () => {
   });
 
   it("opens the generate form from the add tile", async () => {
-    mockUseLocalSearchParams.mockReturnValue({
-      title: "Your trainings",
-      source: "own",
-    });
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
     const { getByTestId } = await render(<AdditionalTrainingWorkoutsScreen />);
 
     await fireEvent.press(getByTestId("generate-training-tile"));
@@ -365,11 +361,11 @@ describe("AdditionalTrainingWorkoutsScreen: generate training", () => {
       teamId: "team-1",
     });
 
-    const { queryByTestId } = await render(
+    const { queryByTestId, queryByRole } = await render(
       <AdditionalTrainingWorkoutsScreen />,
     );
 
     expect(queryByTestId("generate-training-header")).toBeNull();
-    expect(queryByTestId("generate-training-tile")).toBeNull();
+    expect(queryByRole("button", { name: "Generate training" })).toBeNull();
   });
 });

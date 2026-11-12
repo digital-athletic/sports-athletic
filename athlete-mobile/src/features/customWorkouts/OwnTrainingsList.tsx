@@ -9,41 +9,49 @@ import {
   listWorkoutsForTeam,
   useCustomWorkoutsStore,
 } from "@/store/customWorkoutsStore";
+import { Box } from "@/theme/Box";
+import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
-import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import { TouchableBox } from "@/theme/TouchableBox";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 
-type ImportProps = {
+type OwnTrainingsListProps = {
+  onGenerate: () => void;
   onImport: () => void;
   importing: boolean;
 };
 
-type OwnTrainingsListProps = ImportProps & {
-  onGenerate: () => void;
-};
-
-const EmptyOwnTrainings: FC<ImportProps> = ({ onImport, importing }) => {
+/** Empty list: the message with the two ways to add a training. */
+const EmptyOwnTrainings: FC<OwnTrainingsListProps> = ({
+  onGenerate,
+  onImport,
+  importing,
+}) => {
   const { t } = useTranslation();
+  const generateLabel = t("screens.home.generateTraining.title");
   const importLabel = t("screens.home.additionalTrainings.importTraining");
 
   return (
     <EmptyTrainingListMessage>
-      <TouchableBox
-        onPress={onImport}
-        disabled={importing}
-        accessibilityState={{ disabled: importing }}
-        marginTop="m"
-        padding="s"
-        accessibilityRole="button"
-        accessibilityLabel={importLabel}
-      >
-        <Text variant="body" color="primary" textDecorationLine="underline">
+      <Box alignSelf="stretch" gap="s" marginTop="l">
+        <Button
+          variant="cta"
+          onPress={onGenerate}
+          accessibilityLabel={generateLabel}
+        >
+          {generateLabel}
+        </Button>
+        <Button
+          variant="ctaOutline"
+          onPress={onImport}
+          disabled={importing}
+          accessibilityState={{ disabled: importing }}
+          accessibilityLabel={importLabel}
+        >
           {importLabel}
-        </Text>
-      </TouchableBox>
+        </Button>
+      </Box>
     </EmptyTrainingListMessage>
   );
 };
@@ -81,12 +89,22 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
   const confirmDeleteTraining = useConfirmDeleteTraining();
   const workouts = listWorkoutsForTeam(workoutsById, null);
 
+  if (workouts.length === 0) {
+    return (
+      <EmptyOwnTrainings
+        onGenerate={onGenerate}
+        onImport={onImport}
+        importing={importing}
+      />
+    );
+  }
+
   return (
     <ScrollBox
       flex={1}
       backgroundColor="white"
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ padding: spacing.l, gap: spacing.l }}
+      contentContainerStyle={{ padding: spacing.l }}
       testID="own-trainings-list"
     >
       <TileGrid testID="own-trainings-grid">
@@ -116,9 +134,6 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
           testID="generate-training-tile"
         />
       </TileGrid>
-      {workouts.length === 0 && (
-        <EmptyOwnTrainings onImport={onImport} importing={importing} />
-      )}
     </ScrollBox>
   );
 };

@@ -299,9 +299,9 @@ describe("OwnTrainingsList: entries", () => {
   });
 });
 
-describe("OwnTrainingsList: add tile", () => {
-  it("shows the add tile next to the empty message when nothing is imported", async () => {
-    const { getByTestId, getByText } = await render(
+describe("OwnTrainingsList: generate training", () => {
+  it("shows a generate button above the import button when nothing is imported", async () => {
+    const { getAllByRole } = await render(
       <OwnTrainingsList
         onGenerate={jest.fn()}
         onImport={jest.fn()}
@@ -309,12 +309,14 @@ describe("OwnTrainingsList: add tile", () => {
       />,
     );
 
-    expect(getByTestId("generate-training-tile")).toBeTruthy();
-    expect(getByText(EMPTY_MESSAGE)).toBeTruthy();
+    expect(listTileLabels(getAllByRole("button"))).toEqual([
+      GENERATE_LABEL,
+      IMPORT_LABEL,
+    ]);
   });
 
-  it("announces the add tile as a generate training button", async () => {
-    const { getByRole } = await render(
+  it("shows no add tile when nothing is imported", async () => {
+    const { queryByTestId } = await render(
       <OwnTrainingsList
         onGenerate={jest.fn()}
         onImport={jest.fn()}
@@ -322,10 +324,28 @@ describe("OwnTrainingsList: add tile", () => {
       />,
     );
 
-    expect(getByRole("button", { name: GENERATE_LABEL })).toBeTruthy();
+    expect(queryByTestId("generate-training-tile")).toBeNull();
+  });
+
+  it("calls onGenerate when the generate button of the empty list is pressed", async () => {
+    const onGenerate = jest.fn();
+    const { getByRole } = await render(
+      <OwnTrainingsList
+        onGenerate={onGenerate}
+        onImport={jest.fn()}
+        importing={false}
+      />,
+    );
+
+    await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
+
+    expect(onGenerate).toHaveBeenCalledTimes(1);
   });
 
   it("calls onGenerate when the add tile is pressed", async () => {
+    useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(generateCustomTemplate(), null);
     const onGenerate = jest.fn();
     const { getByTestId } = await render(
       <OwnTrainingsList

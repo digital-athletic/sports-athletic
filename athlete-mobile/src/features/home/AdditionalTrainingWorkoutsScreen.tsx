@@ -29,7 +29,8 @@ export default function AdditionalTrainingWorkoutsScreen() {
     params.source === "team" && typeof params.teamId === "string"
       ? params.teamId
       : "";
-  const showsHeaderImport =
+  // The empty list offers both actions itself.
+  const showsHeaderActions =
     isOwnSource && listWorkoutsForTeam(workoutsById, null).length > 0;
 
   return (
@@ -38,7 +39,7 @@ export default function AdditionalTrainingWorkoutsScreen() {
         options={{
           title,
           headerShown: true,
-          headerRight: isOwnSource
+          headerRight: showsHeaderActions
             ? () => (
                 <Box flexDirection="row" alignItems="center" gap="s">
                   <HeaderIconButton
@@ -49,16 +50,14 @@ export default function AdditionalTrainingWorkoutsScreen() {
                     )}
                     testID="generate-training-header"
                   />
-                  {showsHeaderImport && (
-                    <HeaderIconButton
-                      icon={IconCirclePlusFilled}
-                      onPress={importCustomWorkout}
-                      disabled={importing}
-                      accessibilityLabel={t(
-                        "screens.home.additionalTrainings.importTraining",
-                      )}
-                    />
-                  )}
+                  <HeaderIconButton
+                    icon={IconCirclePlusFilled}
+                    onPress={importCustomWorkout}
+                    disabled={importing}
+                    accessibilityLabel={t(
+                      "screens.home.additionalTrainings.importTraining",
+                    )}
+                  />
                 </Box>
               )
             : undefined,

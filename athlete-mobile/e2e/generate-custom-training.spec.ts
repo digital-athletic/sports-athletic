@@ -7,7 +7,7 @@ import { BasePage } from "./pages";
 test.describe("Custom workouts: generate an own training", () => {
   test.use({ profile: createCompletedProfile(), signedIn: true });
 
-  test("athlete generates a training from the add tile and starts it from Your trainings", async ({
+  test("athlete generates a training from the empty list and starts it from Your trainings", async ({
     page,
   }) => {
     await mockSupabaseAuth(page);
@@ -17,12 +17,17 @@ test.describe("Custom workouts: generate an own training", () => {
     await new BasePage(page).expectLoggedIn();
     await page.getByRole("button", { name: "Additional trainings" }).click();
     await page.getByRole("button", { name: "Your trainings" }).click();
-    await expect(page.getByTestId("generate-training-header")).toBeVisible();
+    await expect(
+      page.getByText("Currently no workouts available"),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Import training" }),
+    ).toBeVisible();
     await page.screenshot({
-      path: "playwright/screenshots/generate-training-empty-grid.png",
+      path: "playwright/screenshots/generate-training-empty-list.png",
     });
 
-    await page.getByTestId("generate-training-tile").click();
+    await page.getByRole("button", { name: "Generate training" }).click();
     await expect(
       page.getByRole("heading", { name: "Generate training" }),
     ).toBeVisible();
@@ -52,6 +57,7 @@ test.describe("Custom workouts: generate an own training", () => {
     });
     await expect(tile).toBeVisible();
     await expect(page.getByTestId("generate-training-tile")).toBeVisible();
+    await expect(page.getByTestId("generate-training-header")).toBeVisible();
     await page.screenshot({
       path: "playwright/screenshots/generate-training-grid.png",
     });

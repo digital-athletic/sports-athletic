@@ -508,6 +508,12 @@
       "finishEarly": {
         "question": "Training vorzeitig beenden?",
         "explanation": "Noch nicht alle Sätze sind erledigt. Das Training endet unvollständig."
+      },
+      "share": {
+        "label": "Training als Text teilen",
+        "copied": "Das Training ist kopiert. Du kannst es in deine Notizen einfügen.",
+        "setNumber": "Satz {{number}}",
+        "title": "Training"
       }
     },
     "active": {

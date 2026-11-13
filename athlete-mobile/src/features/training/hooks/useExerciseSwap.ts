@@ -1,4 +1,3 @@
-import { featureFlags } from "@/config/featureFlags";
 import type { PlaceType } from "@/constants/workoutConstants";
 import { listSwapAlternatives } from "@/features/training/exerciseSwap/swapAlternatives";
 import {
@@ -134,9 +133,7 @@ const findOriginalBranchId = (
  */
 const useSwapState = (request: SwapRequest) => {
   const enabled =
-    request.params.type === "PLAN" &&
-    featureFlags.aiwlGeneratorEnabled &&
-    request.ctx.trainingPlan !== null;
+    request.params.type === "PLAN" && request.ctx.trainingPlan !== null;
   const hasSession = useTrainingStore((s) => s.exerciseList !== null);
   const [swaps, setSwaps] = useState<Record<string, ExerciseSwapState> | null>(
     null,

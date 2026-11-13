@@ -7,7 +7,6 @@ import { minutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import type { PlacesData } from "@/store/placesStore";
-import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 
 const TRAINING_WEEKDAYS = [1, 3];
 const STUDIO_EQUIPMENT = ["BARBELL", "DUMBBELL", "BENCH", "MAT"];
@@ -75,8 +74,6 @@ const usesSpecialBranch = (entries: { branchId: string }[]) =>
   entries.some((entry) => specialBranchIds.has(entry.branchId));
 
 describe("training day power endurance: field players", () => {
-  setUpAiwlGeneratorFlag(true);
-
   it.each([
     ["an adult", "1990-01-01"],
     ["a child", "2020-01-01"],

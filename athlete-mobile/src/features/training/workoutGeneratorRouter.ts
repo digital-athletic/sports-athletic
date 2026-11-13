@@ -1,6 +1,4 @@
-import { featureFlags } from "@/config/featureFlags";
 import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
-import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { TrainingType } from "@/features/training/models/Training";
@@ -26,26 +24,6 @@ export interface WorkoutGenerationRequest {
   daysSinceLastWorkout: number;
   userExerciseData: UserExerciseDataMapType;
 }
-
-const generateWithOldGenerator = (
-  request: WorkoutGenerationRequest,
-): GeneratedSetListEntry[] =>
-  new TrainingGenerator().generateTraining(
-    request.type,
-    request.user,
-    request.place,
-    request.exercises,
-    request.skillTrees,
-    request.weekday,
-    request.equipment,
-    request.givenSection,
-    request.daysSinceLastWorkout,
-    // The legacy generator reads the one record per exercise only.
-    {
-      exerciseData: request.userExerciseData.exerciseData,
-      branchData: request.userExerciseData.branchData,
-    },
-  );
 
 const createInput = (request: WorkoutGenerationRequest) =>
   createGenerationInput({
@@ -77,18 +55,14 @@ const generateShortWorkout = (
 };
 
 /**
- * Picks the generator per training type. Short workouts run on the AIWL
- * generator. The strength test and plan training days run on the AIWL
- * generator unless the flag turns it off.
+ * Picks the AIWL entry point per training type: the strength test, a plan
+ * training day, or a short workout from its template.
  */
 export const generateWorkout = (
   request: WorkoutGenerationRequest,
 ): GeneratedSetListEntry[] => {
   if (request.type !== "PLAN" && request.type !== "TEST_WORKOUT") {
     return generateShortWorkout(request);
-  }
-  if (!featureFlags.aiwlGeneratorEnabled) {
-    return generateWithOldGenerator(request);
   }
   if (request.type === "TEST_WORKOUT") {
     return generateStrengthTest(createInput(request), request.skillTrees);

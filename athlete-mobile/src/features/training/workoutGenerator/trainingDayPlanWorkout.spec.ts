@@ -1,7 +1,6 @@
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
-import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import { deepFreeze } from "@test/factories/deepFreeze";
 import {
   buildPlanUser,
@@ -13,8 +12,6 @@ import {
 } from "@test/factories/planWorkout";
 
 describe("AIWL training day: plan workout", () => {
-  setUpAiwlGeneratorFlag(true);
-
   it("does not throw when trainingPlan is frozen (immer store) and daysSinceLastWorkout > 7", () => {
     const user = buildPlanUser({
       weekday: 1,

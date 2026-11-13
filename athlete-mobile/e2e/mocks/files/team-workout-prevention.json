@@ -1,0 +1,12 @@
+{
+  "aiwl": 1,
+  "id": "TEAM_PREVENTION",
+  "name": { "en": "Team prevention", "de": "Team Prävention" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "PREV",
+      "picks": [{ "tags": ["PREVENTION_KNEE_HIP"], "count": 3 }]
+    }
+  ]
+}

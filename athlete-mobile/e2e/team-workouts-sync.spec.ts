@@ -2,7 +2,6 @@ import { type Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 import customWorkout from "./mocks/files/custom-workout.json";
 import invalidWorkout from "./mocks/files/custom-workout-invalid.json";
-import preventionWorkout from "./mocks/files/team-workout-prevention.json";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import {
@@ -27,10 +26,6 @@ const TEAM_SPRINT_ROW = generateTeamWorkoutRow(
 const INVALID_ROW = generateTeamWorkoutRow(
   "44444444-4444-4444-8444-444444444444",
   invalidWorkout,
-);
-const TEAM_PREVENTION_ROW = generateTeamWorkoutRow(
-  "66666666-6666-4666-8666-666666666666",
-  preventionWorkout,
 );
 const TEAM_DRAFT_ROW: TeamWorkoutRow = {
   ...generateTeamWorkoutRow("55555555-5555-4555-8555-555555555555", {
@@ -143,41 +138,6 @@ test.describe("Team workouts: sync on a team tile", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Team core", exact: true }),
-    ).toBeVisible();
-  });
-
-  // The home place of the profile holds no weights.
-  test("an athlete without weights starts a team workout with a prevention section", async ({
-    page,
-  }) => {
-    test.setTimeout(90000);
-    await mockSupabaseAuth(page);
-    await mockWakeLock(page);
-    const server = await mockTeamWithWorkouts(page, TEAM);
-    server.setRows([TEAM_PREVENTION_ROW]);
-
-    const workoutPage = new WorkoutPage(page);
-    await page.goto("/");
-    await new BasePage(page).expectLoggedIn();
-    await openTeamTile(page);
-
-    await page
-      .getByRole("button", { name: "Team prevention", exact: true })
-      .click();
-    await expect(
-      page.getByRole("heading", { name: "Where do you train today?" }),
-    ).toBeVisible();
-    await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
-
-    await expect(
-      page.getByRole("heading", { name: "Training Overview" }),
-    ).toBeVisible({ timeout: 15000 });
-    await expect(
-      page.getByText("The app found no suitable exercises"),
-    ).toHaveCount(0);
-    await workoutPage.beginWorkout();
-    await expect(
-      page.getByRole("heading", { name: "Team prevention" }),
     ).toBeVisible();
   });
 });

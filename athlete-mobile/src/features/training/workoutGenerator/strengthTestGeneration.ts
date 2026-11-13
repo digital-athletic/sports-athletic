@@ -18,6 +18,7 @@ import {
   type ExercisesBlockRules,
 } from "./blockHandlers/exercises/exercisesHandler";
 import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
+import type { PicksPoolRules } from "./blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "./generationInput/generationInput";
 import {
   createStrengthTestSetListBuilder,
@@ -45,6 +46,12 @@ const STRENGTH_TEST_FINISH_RULES: WorkoutFinishRules = {
 
 // The athlete picks no place for the test; it runs on the fixed STUDIO equipment.
 const STRENGTH_TEST_EXERCISES_RULES: ExercisesBlockRules = {
+  equipment: "ignored",
+};
+
+// The test runs on fixed studio equipment and its lifts ignore pain, so the warm-up does too.
+const STRENGTH_TEST_PICKS_POOL_RULES: PicksPoolRules = {
+  pain: "ignored",
   equipment: "ignored",
 };
 
@@ -95,10 +102,9 @@ export const loadStrengthTestLoadData = (): StrengthTestLoadData => ({
  * Generates the strength test template through the template interpreter: its
  * warm-up picks block, then its exercises block of lifts. Athletes under 16
  * and athletes with muscle soreness get no test. The warm-up draws like every
- * other picks block, after the pain, equipment, age group and gender rules,
- * and throws their pool errors. Every lift must be in the catalog; the
- * place's equipment does not block a lift. The set list ends on the last test
- * set.
+ * other picks block, after the age group and gender rules only, and throws
+ * their pool errors. Every lift must be in the catalog; the place's equipment
+ * does not block a lift. The set list ends on the last test set.
  *
  * generateStrengthTest(input, getAllSkillTrees())
  * → [WU 432 1/1, pause 10, ..., pause 30, 25 1/4, pause 60, ..., 54 4/4]
@@ -120,5 +126,6 @@ export const generateStrengthTest = (
         [lifts.skill]: createStrengthTestSetListBuilder(loadData),
       }),
     skillTrees,
+    picksPoolRules: STRENGTH_TEST_PICKS_POOL_RULES,
   }).setList;
 };

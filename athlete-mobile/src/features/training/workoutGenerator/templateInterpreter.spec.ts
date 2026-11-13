@@ -12,6 +12,7 @@ import {
   generateShortTemplate,
   generateTemplate,
 } from "@test/factories/templateBlock";
+import { SHORT_WORKOUT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
 import {
   type BuiltBlockResult,
   TRAINING_DAY_FINISH_RULES,
@@ -69,6 +70,7 @@ describe("templateInterpreter: interpretTemplate", () => {
           receivedInputs.push(input);
           return buildSkillSetList;
         },
+        picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
       },
     );
 
@@ -99,6 +101,7 @@ describe("templateInterpreter: interpretTemplate", () => {
       handlers,
       finishRules: TRAINING_DAY_FINISH_RULES,
       createSetListBuilder: () => buildSkillSetList,
+      picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
     });
 
     expect(resolvedSkills).toEqual(["WU"]);
@@ -124,6 +127,7 @@ describe("templateInterpreter: interpretTemplate", () => {
       finishRules: TRAINING_DAY_FINISH_RULES,
       createSetListBuilder: () => buildSkillSetList,
       skillTrees: { ...skillTrees, WU: { "409": warmUpBranch } },
+      picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
     });
 
     expect(poolKeys).toEqual([["409"]]);
@@ -146,6 +150,7 @@ describe("templateInterpreter: interpretTemplate", () => {
         handlers,
         finishRules: TRAINING_DAY_FINISH_RULES,
         createSetListBuilder: () => buildSkillSetList,
+        picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
       }),
     ).toThrow(
       expect.objectContaining({

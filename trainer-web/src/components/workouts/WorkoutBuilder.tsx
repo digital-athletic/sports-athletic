@@ -14,7 +14,7 @@ import {
   sectionKind,
   toggleSectionTag,
   validateDraft,
-  type BookendDraft,
+  type FixedSectionDraft,
   type DraftError,
   type SectionDraft,
   type WorkoutDraft,
@@ -36,27 +36,27 @@ interface WorkoutBuilderProps {
 
 const DEFAULT_SKILL = "MOB";
 
-const BOOKENDS = [
+const FIXED_SECTIONS = [
   { part: "warmUp", testId: "workout-warm-up" },
   { part: "coolDown", testId: "workout-cool-down" },
 ] as const;
 
-interface BookendFieldProps {
+interface FixedSectionFieldProps {
   testId: string;
   label: string;
   amountLabel: string;
-  bookend: BookendDraft;
-  onChange: (bookend: BookendDraft) => void;
+  fixedSection: FixedSectionDraft;
+  onChange: (fixedSection: FixedSectionDraft) => void;
 }
 
 /** The checkbox of the warm-up or the cool-down, with its exercise count. */
-function BookendField({
+function FixedSectionField({
   testId,
   label,
   amountLabel,
-  bookend,
+  fixedSection,
   onChange,
-}: BookendFieldProps) {
+}: FixedSectionFieldProps) {
   const range = AMOUNT_RANGES.picks;
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 px-4 py-3">
@@ -65,14 +65,14 @@ function BookendField({
           type="checkbox"
           data-testid={testId}
           className="h-4 w-4 accent-red-600"
-          checked={bookend.enabled}
+          checked={fixedSection.enabled}
           onChange={(event) =>
-            onChange({ ...bookend, enabled: event.target.checked })
+            onChange({ ...fixedSection, enabled: event.target.checked })
           }
         />
         {label}
       </label>
-      {bookend.enabled && (
+      {fixedSection.enabled && (
         <label className="flex items-center gap-2 text-sm text-gray-700">
           {amountLabel}
           <input
@@ -82,10 +82,10 @@ function BookendField({
             min={range.min}
             max={range.max}
             step={1}
-            value={Number.isNaN(bookend.amount) ? "" : bookend.amount}
+            value={Number.isNaN(fixedSection.amount) ? "" : fixedSection.amount}
             onChange={(event) =>
               onChange({
-                ...bookend,
+                ...fixedSection,
                 amount:
                   event.target.value === "" ? NaN : Number(event.target.value),
               })
@@ -197,15 +197,15 @@ export function WorkoutBuilder({
       />
 
       <div className="grid gap-3 sm:grid-cols-2">
-        {BOOKENDS.map(({ part, testId }) => (
-          <BookendField
+        {FIXED_SECTIONS.map(({ part, testId }) => (
+          <FixedSectionField
             key={part}
             testId={testId}
             label={t(`workouts.builder.${part}`)}
             amountLabel={t("workouts.builder.exercises")}
-            bookend={draft[part]}
-            onChange={(bookend) =>
-              setDraft((prev) => ({ ...prev, [part]: bookend }))
+            fixedSection={draft[part]}
+            onChange={(fixedSection) =>
+              setDraft((prev) => ({ ...prev, [part]: fixedSection }))
             }
           />
         ))}

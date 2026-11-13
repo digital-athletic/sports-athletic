@@ -111,8 +111,11 @@ export interface SectionDraft {
   amount: number;
 }
 
-/** The warm-up or the cool-down: ticked or not, with its exercise count. */
-export interface BookendDraft {
+/**
+ * A fixed section: the warm-up, always first, or the cool-down, always last.
+ * It is ticked or not, with its exercise count.
+ */
+export interface FixedSectionDraft {
   enabled: boolean;
   /** NaN while the field is empty. */
   amount: number;
@@ -120,8 +123,8 @@ export interface BookendDraft {
 
 export interface WorkoutDraft {
   name: string;
-  warmUp: BookendDraft;
-  coolDown: BookendDraft;
+  warmUp: FixedSectionDraft;
+  coolDown: FixedSectionDraft;
   sections: SectionDraft[];
 }
 
@@ -240,8 +243,8 @@ const validateSection = (section: SectionDraft): DraftError[] => {
   return errors;
 };
 
-const isBookendValid = (bookend: BookendDraft): boolean =>
-  !bookend.enabled || isAmountInRange(bookend.amount, "picks");
+const isFixedSectionValid = (fixedSection: FixedSectionDraft): boolean =>
+  !fixedSection.enabled || isAmountInRange(fixedSection.amount, "picks");
 
 /** The number of blocks the draft saves: the sections plus the ticked warm-up and cool-down. */
 export const countBlocks = (draft: WorkoutDraft): number =>
@@ -259,10 +262,10 @@ export const validateDraft = (draft: WorkoutDraft): DraftError[] => {
   if (countBlocks(draft) > MAX_SECTIONS) {
     errors.push({ code: "TOO_MANY_SECTIONS" });
   }
-  if (!isBookendValid(draft.warmUp)) {
+  if (!isFixedSectionValid(draft.warmUp)) {
     errors.push({ code: "WARM_UP_OUT_OF_RANGE" });
   }
-  if (!isBookendValid(draft.coolDown)) {
+  if (!isFixedSectionValid(draft.coolDown)) {
     errors.push({ code: "COOL_DOWN_OUT_OF_RANGE" });
   }
   return [...errors, ...draft.sections.flatMap(validateSection)];
@@ -277,9 +280,18 @@ const sectionToBlock = (section: SectionDraft): AiwlBlock =>
         picks: [{ tags: section.tags, count: section.amount }],
       };
 
-const bookendToBlocks = (bookend: BookendDraft, skill: string): AiwlBlock[] =>
-  bookend.enabled
-    ? [{ kind: "picks", skill, picks: [{ tags: [], count: bookend.amount }] }]
+const fixedSectionToBlocks = (
+  fixedSection: FixedSectionDraft,
+  skill: string,
+): AiwlBlock[] =>
+  fixedSection.enabled
+    ? [
+        {
+          kind: "picks",
+          skill,
+          picks: [{ tags: [], count: fixedSection.amount }],
+        },
+      ]
     : [];
 
 /**
@@ -295,9 +307,9 @@ export const draftToTemplate = (
   id,
   name: { en: draft.name.trim() },
   blocks: [
-    ...bookendToBlocks(draft.warmUp, WARM_UP_SKILL),
+    ...fixedSectionToBlocks(draft.warmUp, WARM_UP_SKILL),
     ...draft.sections.map(sectionToBlock),
-    ...bookendToBlocks(draft.coolDown, COOL_DOWN_SKILL),
+    ...fixedSectionToBlocks(draft.coolDown, COOL_DOWN_SKILL),
   ],
 });
 
@@ -352,10 +364,10 @@ const blockToSection = (
 };
 
 /** Reads the block as a warm-up or cool-down when the block's skill is `skill`. */
-const blockToBookend = (
+const blockToFixedSection = (
   block: unknown,
   skill: string,
-): BookendDraft | undefined => {
+): FixedSectionDraft | undefined => {
   if (!isRecord(block) || block.skill !== skill) return undefined;
   const pick = readSinglePick(block);
   return pick ? { enabled: true, amount: pick.count } : undefined;
@@ -374,8 +386,8 @@ export const templateToDraft = (
   if (!isRecord(template) || !Array.isArray(template.blocks)) return undefined;
   const blocks: unknown[] = template.blocks;
   const empty = createEmptyDraft();
-  const warmUp = blockToBookend(blocks[0], WARM_UP_SKILL);
-  const coolDown = blockToBookend(blocks.at(-1), COOL_DOWN_SKILL);
+  const warmUp = blockToFixedSection(blocks[0], WARM_UP_SKILL);
+  const coolDown = blockToFixedSection(blocks.at(-1), COOL_DOWN_SKILL);
   const middle = blocks.slice(warmUp ? 1 : 0, coolDown ? -1 : undefined);
   return {
     name: readTemplateName(template),

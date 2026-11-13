@@ -207,8 +207,8 @@ test.describe("Workout builder", () => {
 
     await workouts.startNewWorkout();
     await workouts.fillName("Knee care");
-    await workouts.tickBookend("warm-up", 4);
-    await workouts.tickBookend("cool-down", 3);
+    await workouts.tickFixedSection("warm-up", 4);
+    await workouts.tickFixedSection("cool-down", 3);
     await workouts.addSection({
       skill: "PREV",
       tags: ["PREVENTION_KNEE_HIP"],
@@ -243,8 +243,8 @@ test.describe("Workout builder", () => {
     await workouts.expectPublishedNotice("Knee care");
 
     await workouts.editWorkout("Knee care");
-    await workouts.expectBookendTicked("warm-up", 4);
-    await workouts.expectBookendTicked("cool-down", 3);
+    await workouts.expectFixedSectionTicked("warm-up", 4);
+    await workouts.expectFixedSectionTicked("cool-down", 3);
     await workouts.expectSectionSkills(["PREV"]);
 
     await workouts.cancel();

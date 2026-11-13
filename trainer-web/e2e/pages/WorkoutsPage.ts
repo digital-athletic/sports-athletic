@@ -77,12 +77,15 @@ export class WorkoutsPage {
   }
 
   /** Ticks the warm-up or the cool-down and sets its exercise count. */
-  async tickBookend(part: "warm-up" | "cool-down", amount: number) {
+  async tickFixedSection(part: "warm-up" | "cool-down", amount: number) {
     await this.page.getByTestId(`workout-${part}`).check();
     await this.page.getByTestId(`workout-${part}-amount`).fill(String(amount));
   }
 
-  async expectBookendTicked(part: "warm-up" | "cool-down", amount: number) {
+  async expectFixedSectionTicked(
+    part: "warm-up" | "cool-down",
+    amount: number,
+  ) {
     await expect(this.page.getByTestId(`workout-${part}`)).toBeChecked();
     await expect(this.page.getByTestId(`workout-${part}-amount`)).toHaveValue(
       String(amount),

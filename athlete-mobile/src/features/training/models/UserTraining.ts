@@ -30,10 +30,6 @@ export type AiwlTrainingType = {
 
 export type UserTrainingType = LegacyTrainingType | AiwlTrainingType;
 
-/** The old generator throws this for a training day stored as an AIWL workout. */
-export const AIWL_TRAINING_DAY_ERROR =
-  "A training day stored as an AIWL workout has no copied branches";
-
 /**
  * True for a training day that stores copied branches and minutes per skill.
  * Only an AIWL training day stores a workout; a legacy day stored before store

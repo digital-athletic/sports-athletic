@@ -34,16 +34,21 @@ export type UserTrainingType = OldTrainingType | AiwlTrainingType;
 export const AIWL_TRAINING_DAY_ERROR =
   "A training day stored as an AIWL workout has no copied branches";
 
-/** True for a training day that stores copied branches and minutes per skill. */
+/**
+ * True for a training day that stores copied branches and minutes per skill.
+ * Only an AIWL training day stores a workout; an old day stored before store
+ * version 17 can lack `skills`.
+ */
 export const isOldTraining = (
   training: UserTrainingType,
-): training is OldTrainingType => "skills" in training;
+): training is OldTrainingType => !("workout" in training);
 
 /**
- * Returns the copied branches of an old training day. A training day stored
- * as an AIWL workout copies no branches and returns undefined.
+ * Returns the copied branches of an old training day, or none for an old day
+ * stored without `skills`. A training day stored as an AIWL workout copies no
+ * branches and returns undefined.
  */
 export const readCopiedBranches = (
   training: UserTrainingType,
 ): CopiedBranchesType | undefined =>
-  isOldTraining(training) ? training.skills : undefined;
+  isOldTraining(training) ? (training.skills ?? {}) : undefined;

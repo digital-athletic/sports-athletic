@@ -77,7 +77,7 @@ describe("skillTagMigration: migratePlanSkillTags", () => {
     expect(result?.sections[0].trainings[0]).toBe(training);
   });
 
-  it("leaves an old training without branches unchanged", () => {
+  it("writes empty branches onto an old training stored without them", () => {
     const trainingWithoutSkills = {
       weekday: 1,
       lengths: { SK: 20 },
@@ -88,7 +88,10 @@ describe("skillTagMigration: migratePlanSkillTags", () => {
       sections: [{ type: "SK", trainings: [trainingWithoutSkills] }],
     } as unknown as TrainingPlanType;
     const result = migratePlanSkillTags(plan);
-    expect(result?.sections[0].trainings[0]).toBe(trainingWithoutSkills);
+    expect(result?.sections[0].trainings[0]).toEqual({
+      ...trainingWithoutSkills,
+      skills: {},
+    });
   });
 
   it("returns null when no plan is stored", () => {

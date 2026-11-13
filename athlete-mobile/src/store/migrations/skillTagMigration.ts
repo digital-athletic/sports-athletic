@@ -1,5 +1,9 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import type { UserTrainingType } from "@/features/training/models/UserTraining";
+import {
+  type CopiedBranchesType,
+  readCopiedBranches,
+  type UserTrainingType,
+} from "@/features/training/models/UserTraining";
 
 const SKILL_TAG_RENAME_MAP: Record<string, string> = {
   SKILL_SCHNELLKRAFT: "SKILL_EXPLOSIVE_POWER",
@@ -18,8 +22,8 @@ export function migrateSkillTags(tags: string[]): string[] {
 }
 
 const migrateTrainingSkills = (
-  skills: UserTrainingType["skills"],
-): UserTrainingType["skills"] =>
+  skills: CopiedBranchesType,
+): CopiedBranchesType =>
   Object.fromEntries(
     Object.entries(skills).map(([skillKey, branches]) => [
       skillKey,
@@ -29,6 +33,17 @@ const migrateTrainingSkills = (
       })),
     ]),
   );
+
+/**
+ * Renames the skill tags of an old training's branches. A training without
+ * copied branches, such as one stored as an AIWL workout, stays unchanged.
+ */
+const migrateTraining = (training: UserTrainingType): UserTrainingType => {
+  const skills = readCopiedBranches(training);
+  return skills
+    ? { ...training, skills: migrateTrainingSkills(skills) }
+    : training;
+};
 
 /** Renames the skill tags of every branch the stored plan copied from the skill trees. */
 export function migratePlanSkillTags(
@@ -40,10 +55,7 @@ export function migratePlanSkillTags(
     ...plan,
     sections: plan.sections.map((section) => ({
       ...section,
-      trainings: section.trainings.map((training) => ({
-        ...training,
-        skills: migrateTrainingSkills(training.skills ?? {}),
-      })),
+      trainings: section.trainings.map(migrateTraining),
     })),
   };
 }

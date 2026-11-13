@@ -16,6 +16,7 @@ import {
   isTrainingCategory,
   type TrainingCategory,
 } from "@/features/training/models/Training";
+import { readCopiedBranches } from "@/features/training/models/UserTraining";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { hasAnyBarbell } from "@/features/training/utils/equipmentUtils";
 import { isStrengthTestDue } from "@/features/training/utils/strengthTestUtils";
@@ -109,14 +110,16 @@ function SelectTraining({ category }: { category: TrainingCategory }) {
     if (lastTestExpired) {
       const exerciseIds = sectionTrainings.reduce<string[]>(
         (acc, trainingDay) => {
-          let dayExerciseIds = Object.keys(trainingDay.skills).reduce<string[]>(
+          // A training day stored as an AIWL workout copies no branches.
+          const copiedBranches = readCopiedBranches(trainingDay) ?? {};
+          let dayExerciseIds = Object.keys(copiedBranches).reduce<string[]>(
             (acc2, skill) => {
               if (!isSkillTypes(skill)) {
                 return acc2;
               }
 
               let additionalIds: string[] = [];
-              for (let branch of trainingDay.skills[skill] ?? []) {
+              for (let branch of copiedBranches[skill] ?? []) {
                 for (let level in branch.exercises) {
                   let exerciseId = branch.exercises[level].exerciseId;
                   if (

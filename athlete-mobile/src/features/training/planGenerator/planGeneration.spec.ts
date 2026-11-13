@@ -2,6 +2,7 @@ import { loadExercises } from "@/data/loadExercises";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySelection";
+import { requireOldTraining } from "@/features/training/utils/testFixtures";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import type { UserType } from "@/schemas/user.schema";
 import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
@@ -118,7 +119,9 @@ describe("generateTrainingPlan: workout generator day lookup", () => {
     jest.setSystemTime(new Date(`${plan.sections[1].start}T12:00:00`));
     const [firstSectionDay, secondSectionDay] = plan.sections.map(
       ({ trainings }) =>
-        trainings.filter(({ weekday }) => weekday === STUDIO_WEEKDAY)[0],
+        requireOldTraining(
+          trainings.filter(({ weekday }) => weekday === STUDIO_WEEKDAY)[0],
+        ),
     );
 
     const storedDay = selectStoredTrainingDay(
@@ -142,9 +145,11 @@ describe("generateTrainingPlan: workout generator day lookup", () => {
     });
     const plan = generateTrainingPlan(input);
     jest.setSystemTime(new Date(`${plan.sections[1].start}T12:00:00`));
-    const secondSectionDay = plan.sections[1].trainings.filter(
-      ({ weekday }) => weekday === STUDIO_WEEKDAY,
-    )[0];
+    const secondSectionDay = requireOldTraining(
+      plan.sections[1].trainings.filter(
+        ({ weekday }) => weekday === STUDIO_WEEKDAY,
+      )[0],
+    );
 
     const setList = generateWorkout({
       type: "PLAN",

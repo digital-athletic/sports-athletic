@@ -5,6 +5,7 @@ import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import { minutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { requireOldTraining } from "@/features/training/utils/testFixtures";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { PlacesData } from "@/store/placesStore";
 import PlanGenerator from "./PlanGenerator";
@@ -74,7 +75,7 @@ const generateWithPains = (pains: string[]): TrainingPlanType => {
 
 const skillsPerTraining = (plan: TrainingPlanType) =>
   plan.sections.flatMap((section) =>
-    section.trainings.map((training) => training.lengths),
+    section.trainings.map((training) => requireOldTraining(training).lengths),
   );
 
 describe("generatePlan: pain tags", () => {

@@ -1,12 +1,17 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import type { UserTrainingType } from "@/features/training/models/UserTraining";
+import {
+  type OldTrainingType,
+  readCopiedBranches,
+  type UserTrainingType,
+} from "@/features/training/models/UserTraining";
+import { createAiwlTraining } from "@/features/training/utils/testFixtures";
 import { keepUnchangedTrainingDays } from "./planRegeneration";
 
 const branch = (branchId: string) => ({ branchId, tags: [], exercises: {} });
 
 const training = (
-  overrides: Partial<UserTrainingType> & { branchId: string },
-): UserTrainingType => ({
+  overrides: Partial<OldTrainingType> & { branchId: string },
+): OldTrainingType => ({
   weekday: 1,
   focus: "PHASE",
   skills: { SWR1: [branch(overrides.branchId)] },
@@ -30,8 +35,12 @@ const planWith = (...trainings: UserTrainingType[]): TrainingPlanType =>
   }) as TrainingPlanType;
 
 const keptBranchId = (oldPlan: TrainingPlanType, newPlan: TrainingPlanType) =>
-  keepUnchangedTrainingDays(oldPlan, newPlan).sections[0].trainings[0].skills
-    .SWR1?.[0].branchId;
+  readCopiedBranches(
+    keepUnchangedTrainingDays(oldPlan, newPlan).sections[0].trainings[0],
+  )?.SWR1?.[0].branchId;
+
+const keptTraining = (oldPlan: TrainingPlanType, newPlan: TrainingPlanType) =>
+  keepUnchangedTrainingDays(oldPlan, newPlan).sections[0].trainings[0];
 
 describe("keepUnchangedTrainingDays", () => {
   it("keeps the old branches of a day whose focus, skills, minutes and equipment stayed the same", () => {
@@ -102,5 +111,24 @@ describe("keepUnchangedTrainingDays", () => {
         planWith(training({ branchId: "new" })),
       ),
     ).toBe("new");
+  });
+
+  it("redraws a day that the old plan stored as an AIWL workout", () => {
+    expect(
+      keptBranchId(
+        planWith(createAiwlTraining()),
+        planWith(training({ branchId: "new" })),
+      ),
+    ).toBe("new");
+  });
+
+  it("keeps a day that the new plan stores as an AIWL workout as generated", () => {
+    const aiwlTraining = createAiwlTraining();
+    expect(
+      keptTraining(
+        planWith(training({ branchId: "old" })),
+        planWith(aiwlTraining),
+      ),
+    ).toBe(aiwlTraining);
   });
 });

@@ -1,5 +1,6 @@
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { requireOldTraining } from "@/features/training/utils/testFixtures";
 import type { State } from "../userWorkoutStore";
 import { userWorkoutStoreMigrations } from "./userWorkoutStoreMigrations";
 
@@ -47,8 +48,8 @@ describe("userWorkoutStoreMigrations", () => {
         stateWith(planWithMaxBranch),
       );
       expect(
-        result.trainingPlan?.sections[0].trainings[0].skills.MAX_STRENGTH?.[0]
-          .tags,
+        requireOldTraining(result.trainingPlan?.sections[0].trainings[0]).skills
+          .MAX_STRENGTH?.[0].tags,
       ).toEqual(["SKILL_MAX_STRENGTH", "PLACE_STUDIO"]);
     });
 

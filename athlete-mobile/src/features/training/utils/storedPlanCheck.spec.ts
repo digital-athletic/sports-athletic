@@ -2,6 +2,8 @@ import type { ExerciseBranchType } from "@/features/training/models/ExerciseBran
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { minutes } from "@/features/training/models/TimeUnits";
+import type { OldTrainingType } from "@/features/training/models/UserTraining";
+import { createAiwlPlan } from "@/features/training/utils/testFixtures";
 import type { PlacesData } from "@/store/placesStore";
 import { importTree, realExercises } from "@test/factories/planWorkout";
 import { isStoredPlanBroken } from "./storedPlanCheck";
@@ -34,8 +36,7 @@ const planWith = (skills: UserSkills): TrainingPlanType => ({
   ],
 });
 
-type UserSkills =
-  TrainingPlanType["sections"][number]["trainings"][number]["skills"];
+type UserSkills = OldTrainingType["skills"];
 
 const trainingDays = (place: TrainingDayType["place"]): TrainingDayType[] => [
   { active: true, weekday: 1, duration: minutes(60), place },
@@ -95,5 +96,9 @@ describe("isStoredPlanBroken", () => {
 
   it("accepts other skills with missing equipment, which workouts replace", () => {
     expect(check(planWith({ SWR1: [squat] }), { place: "HOME" })).toBe(false);
+  });
+
+  it("accepts a plan of trainings stored as AIWL workouts", () => {
+    expect(check(createAiwlPlan(), { birthday: twelveYearsAgo })).toBe(false);
   });
 });

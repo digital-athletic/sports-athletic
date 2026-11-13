@@ -2,6 +2,8 @@ import { loadExercises } from "@/data/loadExercises";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import type { TrainingType } from "@/features/training/models/Training";
+import { AIWL_TRAINING_DAY_ERROR } from "@/features/training/models/UserTraining";
+import { createAiwlPlan } from "@/features/training/utils/testFixtures";
 import { PICKS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
 import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import type * as ShortWorkoutGeneration from "@/features/training/workoutGenerator/shortWorkoutGeneration";
@@ -215,6 +217,18 @@ describe("generateWorkout: routing", () => {
         expect(generateTrainingDayFromStoredDay).not.toHaveBeenCalled();
       },
     );
+
+    it("rejects a training day stored as an AIWL workout before any generator runs", () => {
+      const user = {
+        ...generateWarmUpOnlyPlanUser(),
+        trainingPlan: createAiwlPlan(),
+      };
+
+      expect(
+        catchThrownValue(() => generatePlanWorkoutForWeekday(user)),
+      ).toEqual(new Error(AIWL_TRAINING_DAY_ERROR));
+      expect(generateTrainingDayFromStoredDay).not.toHaveBeenCalled();
+    });
   });
 });
 

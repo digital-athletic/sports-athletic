@@ -6,6 +6,7 @@ import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import { minutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingSectionType } from "@/features/training/models/TrainingSection";
+import { requireOldTraining } from "@/features/training/utils/testFixtures";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { PlacesData } from "@/store/placesStore";
 import PlanGenerator from "./PlanGenerator";
@@ -1872,7 +1873,7 @@ describe("PlanGenerator", () => {
         {},
       );
 
-      const training = result.trainings[0];
+      const training = requireOldTraining(result.trainings[0]);
       expect(training).toMatchObject({
         weekday: 0,
         focus: expect.stringMatching(/^(PHASE|CARDIO|STABILITY|COMBINED)$/),

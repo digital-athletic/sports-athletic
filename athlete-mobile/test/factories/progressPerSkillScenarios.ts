@@ -4,6 +4,7 @@ import PlanGenerator from "@/features/training/generators/PlanGenerator";
 import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { requireOldTraining } from "@/features/training/utils/testFixtures";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
 import { useAuthStore } from "@/store/authStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
@@ -84,9 +85,9 @@ export const setUpRecreatedPlanScenario = (startDate: Date) => {
     places,
     startDate,
   );
-  const swr1Training = firstPlan.sections[0]?.trainings.find(
-    (training) => training.skills.SWR1?.length,
-  );
+  const swr1Training = firstPlan.sections[0]?.trainings
+    .map(requireOldTraining)
+    .find((training) => training.skills.SWR1?.length);
   const swr1Entry = swr1Training?.skills.SWR1?.[0];
   const firstLevel = Object.entries(swr1Entry?.exercises ?? {})[0];
   if (!firstLevel) throw new Error("The first plan holds no SWR1 exercise");

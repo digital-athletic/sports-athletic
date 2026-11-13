@@ -1,7 +1,7 @@
 import type { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import type { TrainingSectionType } from "@/features/training/models/TrainingSection";
-import type { UserTrainingType } from "@/features/training/models/UserTraining";
+import type { OldTrainingType } from "@/features/training/models/UserTraining";
 import type { PlacesData } from "@/store/placesStore";
 import { addDays, formatDateToISO, ISODateToDate } from "@/utils/date";
 import { mapReduce } from "@/utils/functional";
@@ -64,7 +64,7 @@ const copyBranch = ({
 const writeTrainingDay = (
   { budget, selections }: AssembledTrainingDay,
   trainingPlaces: PlacesData,
-): UserTrainingType => ({
+): OldTrainingType => ({
   weekday: budget.day.weekday,
   skills: Object.fromEntries(
     selections.flatMap((selection) =>

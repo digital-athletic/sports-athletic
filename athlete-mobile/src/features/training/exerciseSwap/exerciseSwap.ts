@@ -55,7 +55,7 @@ export const swapBranchInStoredDay = (
 
 /**
  * Returns a copy of the training day with the alternative in place of the
- * branch under the skill. An old training stores the alternative as a copied
+ * branch under the skill. A legacy training stores the alternative as a copied
  * branch, an AIWL training stores its branch ID in every block of the skill.
  */
 export const swapBranchInTrainingDay = (

@@ -9,18 +9,18 @@ import {
 import { isAiwlTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { selectStoredTrainingDay } from "./storedTrainingDaySelection";
 
-/** Selects the day of an old plan; fails the test for an AIWL training. */
-const selectOldTrainingDay = (
+/** Selects the day of a legacy plan; fails the test for an AIWL training. */
+const selectLegacyTrainingDay = (
   ...args: Parameters<typeof selectStoredTrainingDay>
 ) => {
   const day = selectStoredTrainingDay(...args);
-  if (isAiwlTrainingDay(day)) throw new Error("Expected an old training day");
+  if (isAiwlTrainingDay(day)) throw new Error("Expected a legacy training day");
   return day;
 };
 
 describe("selectStoredTrainingDay: section", () => {
   it("selects the section that started last before today", () => {
-    const day = selectOldTrainingDay(
+    const day = selectLegacyTrainingDay(
       generateTwoSectionPlanUser(),
       1,
       undefined,
@@ -31,13 +31,13 @@ describe("selectStoredTrainingDay: section", () => {
   });
 
   it("selects the given section", () => {
-    const day = selectOldTrainingDay(generateTwoSectionPlanUser(), 1, 1, 14);
+    const day = selectLegacyTrainingDay(generateTwoSectionPlanUser(), 1, 1, 14);
 
     expect(day.lengths).toEqual({ WU: 7 });
   });
 
   it("reads a given section 0 as no section", () => {
-    const day = selectOldTrainingDay(generateTwoSectionPlanUser(), 1, 0, 0);
+    const day = selectLegacyTrainingDay(generateTwoSectionPlanUser(), 1, 0, 0);
 
     expect(day.lengths).toEqual({ WU: 7 });
   });
@@ -50,7 +50,7 @@ describe("selectStoredTrainingDay: section", () => {
   ])(
     "after %i days without training selects lengths %j",
     (daysSinceLastWorkout, lengths) => {
-      const day = selectOldTrainingDay(
+      const day = selectLegacyTrainingDay(
         generateTwoSectionPlanUser(),
         1,
         undefined,
@@ -66,7 +66,7 @@ describe("selectStoredTrainingDay: training", () => {
   afterEach(jest.restoreAllMocks);
 
   it("returns the skills and lengths of the weekday's training", () => {
-    const day = selectOldTrainingDay(
+    const day = selectLegacyTrainingDay(
       generateWarmUpOnlyPlanUser(),
       1,
       undefined,
@@ -78,7 +78,7 @@ describe("selectStoredTrainingDay: training", () => {
   });
 
   it("falls back to the first training for a weekday without training", () => {
-    const day = selectOldTrainingDay(
+    const day = selectLegacyTrainingDay(
       generateWarmUpOnlyPlanUser(),
       3,
       undefined,

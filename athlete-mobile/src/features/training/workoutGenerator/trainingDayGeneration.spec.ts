@@ -29,7 +29,7 @@ describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () =>
       random: () => 0,
     });
 
-  // Copies catalog branches into the entries an old training stores.
+  // Copies catalog branches into the entries a legacy training stores.
   const copyCatalogBranches = (input: GenerationInput, branchIds: string[]) =>
     branchIds.map((branchId) => {
       const indexed = input.branchLookupIndex.get(branchId);
@@ -76,7 +76,7 @@ describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () =>
         .filter(({ skill }) => skill === "CARDIO_5")
         .map(({ branchId, duration }) => [branchId, duration]),
     ).toEqual([["576", 1500]]);
-    // an old training of the same branches and minutes times the GKS block alike
+    // a legacy training of the same branches and minutes times the GKS block alike
     expect(setList).toEqual(
       generateTrainingDayFromStoredDay(
         {
@@ -136,7 +136,7 @@ describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () =>
   });
 });
 
-describe("trainingDayGeneration: generateTrainingDay of an old training", () => {
+describe("trainingDayGeneration: generateTrainingDay of a legacy training", () => {
   it("generates the set list of the stored day", () => {
     const day = generateStoredTrainingDay(
       { CARDIO_5: ["900001"] },

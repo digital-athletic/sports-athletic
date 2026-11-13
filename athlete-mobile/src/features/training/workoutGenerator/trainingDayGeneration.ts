@@ -23,7 +23,7 @@ import {
 import { interpretTemplate } from "./templateInterpreter";
 
 /**
- * A plan training day as the generator runs it: the stored day of an old
+ * A plan training day as the generator runs it: the stored day of a legacy
  * training, or the AIWL workout of an AIWL training.
  */
 export type TrainingDay = StoredTrainingDay | Template;
@@ -51,8 +51,8 @@ const createTrainingDayHandlers = (
   exercises: UNREACHABLE_TRAINING_DAY_HANDLER,
 });
 
-// An old training reads its saved copies, which hold every planned branch.
-const createOldTrainingHandlers = (
+// A legacy training reads its saved copies, which hold every planned branch.
+const createLegacyTrainingHandlers = (
   training: StoredTrainingDay,
 ): BlockHandlerRegistry =>
   createTrainingDayHandlers(
@@ -98,12 +98,12 @@ export const generateTrainingDayFromStoredDay = (
   runTrainingDayWorkout(
     createStoredDayWorkout(training),
     input,
-    createOldTrainingHandlers(training),
+    createLegacyTrainingHandlers(training),
   );
 
 /**
- * Generates the set list of a plan training day. An old training runs its
- * stored day with the branches it saved. An AIWL training runs its workout
+ * Generates the set list of a plan training day. A legacy training runs
+ * its stored day with the branches it saved. An AIWL training runs its workout
  * with the branches of the skill catalog, and a branch ID the catalog lacks
  * draws a replacement from the same skill. Both use the training day set list
  * rules. A block of another kind than branches throws.

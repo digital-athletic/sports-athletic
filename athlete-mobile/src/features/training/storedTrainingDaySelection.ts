@@ -27,7 +27,7 @@ const MAX_DAYS_TO_EXTEND = 21;
  * training returns its copied branches and minutes, an AIWL training a copy of
  * its workout. Either copy fails on data that breaks its schema.
  *
- * selectStoredTrainingDay(oldPlanUser, 1, undefined, 0)
+ * selectStoredTrainingDay(legacyPlanUser, 1, undefined, 0)
  * → { skills: { WU: [{ branchId: "410", ... }] }, lengths: { WU: 5 } }
  *
  * selectStoredTrainingDay(aiwlPlanUser, 1, undefined, 0)

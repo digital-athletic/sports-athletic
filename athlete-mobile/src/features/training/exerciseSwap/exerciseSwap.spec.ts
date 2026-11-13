@@ -199,7 +199,7 @@ describe("exerciseSwap: listSwappableBranches", () => {
 });
 
 describe("exerciseSwap: swapBranchInTrainingDay", () => {
-  it("writes the catalog branch into the entries of an old training", () => {
+  it("writes the catalog branch into the entries of a legacy training", () => {
     const day = generateStoredTrainingDay({ SK: ["10", "11"] });
     const alternative = generateAlternative("20");
 

@@ -6,6 +6,7 @@ type TrainingDay = "Mo" | "Tu" | "We" | "Th" | "Fr" | "Sa" | "Su";
 export interface AnamnesisParams {
   name?: string;
   gender?: "Male" | "Female";
+  birthday?: string;
   heightCm?: number;
   weightKg?: number;
   position?:
@@ -58,6 +59,10 @@ export class AnamnesisPage extends BasePage {
     return this.page.getByPlaceholder(/enter your name/i);
   }
 
+  private get birthdayInput() {
+    return this.page.getByLabel("Date of birth");
+  }
+
   private get heightInput() {
     return this.page.getByPlaceholder("175");
   }
@@ -97,6 +102,10 @@ export class AnamnesisPage extends BasePage {
       await this.choice(params.gender).click();
     }
 
+    if (params.birthday) {
+      await this.birthdayInput.fill(params.birthday);
+    }
+
     await this.goOnButton.click();
   }
 
@@ -134,11 +143,6 @@ export class AnamnesisPage extends BasePage {
   ) {
     await expect(this.seasonPhaseHeading).toBeVisible();
     await this.choice(phase).click();
-
-    // Note: The @react-native-community/datetimepicker doesn't render on web,
-    // so the end date is auto-calculated by the app (12 weeks from now).
-    // We verify the stored date is valid in the test assertions.
-
     await this.goOnButton.click();
   }
 

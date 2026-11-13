@@ -243,7 +243,7 @@ The router selects the stored training day of the plan with its own copy of the 
 1. a picks block of skill `WU` whose picks are the warm-up region quotas, timed as one 60 s set per exercise with 10 s rests and 30 s before the first lift
 2. an exercises block of skill `TEST` with the lifts in authored order and the `testSets`: 40, 60 and 85 % of the test set load for 6, 4 and 2 repetitions, then the AMRAP test set
 
-The builder binds the test set loads per lift, gender and fitness level from `strengthTest.json`, which the old path reads too and this source leaves unchanged, and the share of the last estimated 1RM a test set loads per fitness level from `oneRepMaxShares.json`. A lift without an estimated 1RM and without a test set load for the athlete's gender fails the builder instead of building at 0 kg. Lifts no longer vary by fitness level or gender in this source; the template lists them.
+The builder binds the test set loads per lift, gender and fitness level from `strengthTest.json` and the share of the last estimated 1RM a test set loads per fitness level from `oneRepMaxShares.json`. A lift without an estimated 1RM and without a test set load for the athlete's gender fails the builder instead of building at 0 kg. Lifts no longer vary by fitness level or gender in this source; the template lists them.
 
 Source checks run before any block. `loadStrengthTestTemplate` parses `TEST.json` with the AIWL `TemplateSchema` and checks the id `TEST`. `checkStrengthTestTemplate` checks the template first and throws a configuration error naming the path: the lifts block holds `testSets`, and `checkTestSetWorkout` runs the checks every workout with test sets passes: the warm-up picks block of skill `WU` comes first, the exercises block of lifts second and last, its `testSets` end on their one `amrap` set, and every lift has test set loads for both genders in `strengthTest.json`. The generic interpreter holds none of these rules. The athlete checks follow: workout data, no athlete under 16 (`NO_EXERCISES/AGE`), no muscle soreness (`TOO_MUCH_SORENESS/TEST_WORKOUT`). Workout setup skips the picks workout rules of short workouts. The picks handler of this source keeps the old warm-up rules: age group and gender filters only, region quotas with a fallback to every unused branch, no repeated branch or exercise. A lift missing from the catalog fails the whole test with a template error. The athlete picks no place for the test and the app passes the STUDIO equipment, so the source sets the exercises rule `equipment: "ignored"` and missing lift equipment blocks no lift. Setting the rule to `"required"` turns the check on and throws `NO_EXERCISES/EQUIPMENT`. The source sets the finish rule `requiredBlocks: "every"`, so a warm-up that draws no exercise fails the test with `NO_EXERCISES/SKILL_TREE` and the skill `WU`. Lift entries keep the placeholder branch ID, so session storage, resume, completion, statistics and the estimated 1RM update read them as before and write no branch progression.
 
@@ -266,7 +266,6 @@ The generator deviates from the target architecture in these places, so that sto
 1. The duration handler with the minutes table chooser.
 2. The `order` field and the `bodyParts` filter.
 3. The stored plan migration.
-4. The router sends the strength test to the strength test source.
 
 ### Errors
 

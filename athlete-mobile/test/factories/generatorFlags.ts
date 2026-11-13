@@ -6,7 +6,7 @@
  * setUpEnvFlag("EXPO_PUBLIC_PLAN_GENERATOR_ENABLED", "TRUE");
  * → process.env.EXPO_PUBLIC_PLAN_GENERATOR_ENABLED is "TRUE" in each test
  */
-const setUpEnvFlag = (name: string, value: string | undefined): void => {
+export const setUpEnvFlag = (name: string, value: string | undefined): void => {
   let previousValue: string | undefined;
   beforeEach(() => {
     previousValue = process.env[name];

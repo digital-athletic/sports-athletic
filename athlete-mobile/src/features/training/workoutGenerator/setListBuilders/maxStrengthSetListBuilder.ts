@@ -35,7 +35,8 @@ import {
 } from "./supportExercisePick";
 import { roundWeight } from "../exerciseValues/weightRounding";
 
-const WARM_UP_WEIGHT_PERCENTAGES = [50, 75];
+/** The warm-up sets load these percents of the first working set. */
+export const WARM_UP_WEIGHT_PERCENTAGES = [50, 75];
 const WARM_UP_REST_SECONDS = 60;
 const LAST_WORKING_SET_REST_SECONDS = 120;
 const BEFORE_SUPPORT_REST_SECONDS = 30;

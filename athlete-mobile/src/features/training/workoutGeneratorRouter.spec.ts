@@ -11,6 +11,7 @@ import type * as StrengthTestGeneration from "@/features/training/workoutGenerat
 import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type * as TrainingDayGeneration from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
+import { setUpEnvFlag } from "@test/factories/generatorFlags";
 import type { UserType } from "@/schemas/user.schema";
 import {
   buildPlanUser,
@@ -105,18 +106,7 @@ describe("generateWorkout: routing", () => {
   // EAS environments live outside the repo and may still set the retired
   // build flag. The router ignores it.
   describe("with a leftover EXPO_PUBLIC_AIWL_GENERATOR_ENABLED of false", () => {
-    let previousValue: string | undefined;
-    beforeEach(() => {
-      previousValue = process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED;
-      process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED = "false";
-    });
-    afterEach(() => {
-      if (previousValue === undefined) {
-        delete process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED;
-      } else {
-        process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED = previousValue;
-      }
-    });
+    setUpEnvFlag("EXPO_PUBLIC_AIWL_GENERATOR_ENABLED", "false");
 
     it("runs the strength test on the AIWL generator", () => {
       generateWorkoutOf("TEST_WORKOUT");

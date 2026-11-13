@@ -29,7 +29,10 @@ import {
 } from "@/features/training/utils/workoutUtils";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import { readMaxTrainingWeights } from "@/features/training/workoutGenerator/setListBuilders/maxStrengthLadder";
-import { buildMaxStrengthSetList } from "@/features/training/workoutGenerator/setListBuilders/maxStrengthSetListBuilder";
+import {
+  buildMaxStrengthSetList,
+  WARM_UP_WEIGHT_PERCENTAGES,
+} from "@/features/training/workoutGenerator/setListBuilders/maxStrengthSetListBuilder";
 import type { SkillCode } from "@/schemas/generator.schema";
 import {
   toUserExerciseData,
@@ -43,9 +46,6 @@ import type { FeedbackScript } from "./feedbackScripts";
 import { personaToUser, type Persona } from "./personaAdapter";
 
 const SIMULATED_BRANCH_ID = "progression-simulator-branch";
-
-/** The warm-up sets load these percents of the first working set. */
-const WARMUP_WEIGHT_PERCENTAGES = [50, 75];
 
 /** Fixed seed, so the support exercise draw repeats on every run. */
 const SUPPORT_DRAW_SEED = 1;
@@ -135,7 +135,7 @@ function toSetSnapshots(
     // Production labels its warm-up sets, so they need no positional guessing.
     const isWarmup = entry.repetitionMAX?.level === "WARMUP";
     const percentage = isWarmup
-      ? WARMUP_WEIGHT_PERCENTAGES[warmupCount++]
+      ? WARM_UP_WEIGHT_PERCENTAGES[warmupCount++]
       : workingPercentages[setIndex - warmupCount];
     return {
       setNumber: setIndex + 1,

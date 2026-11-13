@@ -3,7 +3,8 @@
 Target output of the progression simulator, one pair of files per run
 (`<persona>-<focus>.<feedback>.{progression,sets}.md`, with the focus as a
 readable slug, e.g. `max-strength` for `MAX_STRENGTH`), compared by string
-equality in `src/features/training/generators/progressionSimulation.spec.ts`.
+equality in
+`src/features/training/workoutGenerator/setListBuilders/maxStrengthProgression.spec.ts`.
 
 **These tables encode the values as they SHOULD be** according to
 `docs/specs/progression/max-strength-progression.md`, hand-derived from the

@@ -3,7 +3,12 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { getTagValues } from "@/utils/tagUtils";
-import { importTrees, realExercises } from "@test/factories/planWorkout";
+import {
+  buildPlanUser,
+  importTree,
+  importTrees,
+  realExercises,
+} from "@test/factories/planWorkout";
 import PlanGenerator from "./PlanGenerator";
 
 const template = realExercises[0];
@@ -123,5 +128,36 @@ describe("getBranchesForWorkout: max strength and plyometric slots", () => {
         getTagValues(branch.tags ?? [], "SKILL").includes("PLYO_HIGH"),
       ),
     ).toBe(true);
+  });
+});
+
+describe("getBranchesForWorkout: branches with the same exercise", () => {
+  it("skips GKSKG branches 939 to 942, which all hold exercise 357", () => {
+    const gkskg = importTree("GKSKG");
+    const branches = PlanGenerator.getBranchesForWorkout(
+      "GKSKG",
+      { tags: [], count: 4 },
+      {},
+      {},
+      {},
+      {},
+      [],
+      [],
+      buildPlanUser({ weekday: 1, skills: {}, lengths: {} }),
+      "HOME",
+      realExercises,
+      {
+        GKSKG: {
+          "939": gkskg["939"],
+          "940": gkskg["940"],
+          "941": gkskg["941"],
+          "942": gkskg["942"],
+        },
+      },
+      [],
+      {},
+      [],
+    );
+    expect(branches).toHaveLength(1);
   });
 });

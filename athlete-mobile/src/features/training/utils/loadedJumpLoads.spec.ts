@@ -1,10 +1,12 @@
 import { getExerciseById } from "@/data/exerciseRegistry";
+import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import type { ExerciseType } from "@/schemas/exercise.schema";
+import { generateAthleteWithMaxValues } from "@test/factories/athlete";
+import { generateExerciseStartValueSource } from "@test/factories/exerciseStartValueSource";
 import ExercisesData from "../../../../assets/data/generator/Exercises.json";
 import SA from "../../../../assets/data/generator/skillTrees/SA.json";
-import TrainingGenerator, {
-  getIntensityBySkill,
-} from "../generators/TrainingGenerator";
+import { readExerciseStartValues } from "../workoutGenerator/exerciseValues/exerciseStartValues";
+import { readSkillIntensity } from "../workoutGenerator/exerciseValues/skillIntensity";
 import {
   DEFAULT_MAX_VALUE,
   DEFAULT_MAX_VALUES,
@@ -24,12 +26,12 @@ import {
 } from "./workoutUtils";
 
 const LEVELS = [
-  { level: "beginner", start: 5, target: 10 },
-  { level: "advanced", start: 10, target: 20 },
-  { level: "professional", start: 10, target: 20 },
+  { level: "beginner", levelTag: "BEGINNER", start: 5, target: 10 },
+  { level: "advanced", levelTag: "ADVANCED", start: 10, target: 20 },
+  { level: "professional", levelTag: "PROFESSIONAL", start: 10, target: 20 },
 ] as const;
 
-const intensity = getIntensityBySkill("SK");
+const intensity = readSkillIntensity(loadSkillCatalog(), "SK");
 const maxValues: MaxValuesType = {
   ...DEFAULT_MAX_VALUES,
   kneeDominant: { ...DEFAULT_MAX_VALUE, barbell: 100 },
@@ -115,15 +117,17 @@ describe("loaded jumps: authored load limits", () => {
 
     it.each(LEVELS)(
       "$level: the generator starts the new exercise at $start% of F-Max",
-      ({ level, start }) => {
-        const values = new TrainingGenerator().getExerciseValues(
-          null,
+      ({ levelTag, start }) => {
+        const values = readExerciseStartValues(
+          generateExerciseStartValueSource({
+            athlete: generateAthleteWithMaxValues({
+              level: levelTag,
+              maxValues,
+            }),
+          }),
+          { skill: "SK" },
+          { branchId: "jump", exerciseId: id, branchTags: [] },
           exercise(id),
-          intensity,
-          "m",
-          level,
-          maxValues,
-          "SK",
         );
 
         expect(values.weight).toBe(start);

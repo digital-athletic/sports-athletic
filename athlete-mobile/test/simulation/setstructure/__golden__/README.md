@@ -3,7 +3,8 @@
 Spec: `docs/specs/session/session-set-structure.md` (rest types, transition
 rule, expansion, warm-up sets).
 Generate from: the set list (`GeneratedSetListEntry[]`) that
-`TrainingGenerator` emits for the scenario below, one row per entry in order.
+the workout generator (`src/features/training/workoutGenerator`, standard set
+list builder) emits for the scenario below, one row per entry in order.
 
 Column mapping, all mechanical:
 

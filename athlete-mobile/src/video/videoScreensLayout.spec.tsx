@@ -39,6 +39,14 @@ jest.mock("react-native-keyboard-controller", () => ({
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
+jest.mock("@expo/ui/swift-ui", () => ({
+  Host: () => null,
+  ProgressView: () => null,
+}));
+jest.mock("@expo/ui/swift-ui/modifiers", () => ({
+  progressViewStyle: () => ({}),
+  tint: () => ({}),
+}));
 
 const tabletLandscape = { width: 1280, height: 800, scale: 2, fontScale: 2 };
 const tabletPortrait = { width: 800, height: 1280, scale: 2, fontScale: 2 };

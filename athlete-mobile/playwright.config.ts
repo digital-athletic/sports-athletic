@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
+// Use TESTING_PLAYWRIGHT_BASE_URL=http://host.docker.internal:8081 on mac when executing on the host
+const baseURL =
+  process.env.TESTING_PLAYWRIGHT_BASE_URL ?? "http://localhost:8081";
+
 const connectOptions = process.env.CI
   ? {}
   : {
@@ -26,8 +30,7 @@ export default defineConfig({
   use: {
     ...{
       ignoreHTTPSErrors: true,
-      baseURL:
-        process.env.TESTING_PLAYWRIGHT_BASE_URL ?? "http://localhost:8081", // Use TESTING_PLAYWRIGHT_BASE_URL=http://host.docker.internal:8081 on mac when executing on the host
+      baseURL,
 
       /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
       trace: "on-first-retry",
@@ -65,7 +68,7 @@ export default defineConfig({
   /* E2E_STATIC=1 serves a production export (built once) instead of the Metro dev server */
   webServer: [
     {
-      url: process.env.TESTING_PLAYWRIGHT_BASE_URL ?? "http://localhost:8081",
+      url: baseURL,
       command: process.env.E2E_STATIC
         ? "pnpm run e2e:static"
         : "pnpm run web --clear",
@@ -78,8 +81,8 @@ export default defineConfig({
         EXPO_PUBLIC_SUPABASE_URL:
           process.env.TESTING_SUPABASE_BASE_URL ?? "http://localhost:54321",
         EXPO_PUBLIC_SUPABASE_ANON_KEY: "mock-anon-key",
-        EXPO_PUBLIC_LINK_AGB: "http://localhost:8081/agb",
-        EXPO_PUBLIC_LINK_PRIVACY: "http://localhost:8081/privacy",
+        EXPO_PUBLIC_LINK_AGB: `${baseURL}/agb`,
+        EXPO_PUBLIC_LINK_PRIVACY: `${baseURL}/privacy`,
         EXPO_PUBLIC_SERVER_SYNC_ENABLED: "true",
         EXPO_PUBLIC_SERVER_SYNC_ACTIVITY_ONLY_ENABLED: "true",
         EXPO_PUBLIC_ANALYTICS_CONSENT_ENABLED: "true",

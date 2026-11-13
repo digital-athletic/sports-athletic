@@ -1,5 +1,6 @@
 import type { Block } from "@/schemas/aiwl.schema";
 import type { ExerciseBranchEntry } from "@/schemas/generator.schema";
+import { findCatalogBranch } from "../../generationInput/branchLookupIndex";
 import type { GenerationInput } from "../../generationInput/generationInput";
 import type { CandidateBranch } from "../../ruleFamilies/ruleFamily";
 
@@ -20,21 +21,12 @@ export type StoredBranchLookup = (
   input: GenerationInput,
 ) => CandidateBranch | undefined;
 
-/**
- * Reads a stored branch ID from the current catalog through the branch lookup
- * index. A branch without levels counts as not found, as plan creation never
- * stores one.
- */
+/** Reads a stored branch ID from the current catalog of the generation input. */
 export const lookUpStoredBranchInCatalog: StoredBranchLookup = (
   _skill,
   branchId,
   { branchLookupIndex },
-) => {
-  const indexedBranch = branchLookupIndex.get(branchId);
-  return indexedBranch && Object.keys(indexedBranch.branch.levels).length > 0
-    ? indexedBranch.branch
-    : undefined;
-};
+) => findCatalogBranch(branchLookupIndex, branchId);
 
 /**
  * Reads a stored branch ID from the entries a stored training day saved at

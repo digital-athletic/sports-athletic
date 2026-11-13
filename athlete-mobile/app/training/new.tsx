@@ -1,10 +1,6 @@
 import { BackHeader } from "@/common/BackHeader";
 import { FullScreenCoaching } from "@/common/FullScreenCoaching";
-import {
-  isSkillTypes,
-  TileData,
-  WorkoutConstants,
-} from "@/constants/workoutConstants";
+import { TileData, WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import { FocusTrainingGrid } from "@/features/training/FocusTrainingGrid";
@@ -16,9 +12,9 @@ import {
   isTrainingCategory,
   type TrainingCategory,
 } from "@/features/training/models/Training";
-import { readCopiedBranches } from "@/features/training/models/UserTraining";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { hasAnyBarbell } from "@/features/training/utils/equipmentUtils";
+import { listPlannedExerciseIds } from "@/features/training/utils/plannedBranches";
 import { isStrengthTestDue } from "@/features/training/utils/strengthTestUtils";
 import type { I18nKey } from "@/i18n";
 import { Logger } from "@/services/Logger";
@@ -108,39 +104,7 @@ function SelectTraining({ category }: { category: TrainingCategory }) {
     // look if exercises with Fmax used
     let needsFmaxValues = false;
     if (lastTestExpired) {
-      const exerciseIds = sectionTrainings.reduce<string[]>(
-        (acc, trainingDay) => {
-          // A training day stored as an AIWL workout copies no branches.
-          const copiedBranches = readCopiedBranches(trainingDay) ?? {};
-          let dayExerciseIds = Object.keys(copiedBranches).reduce<string[]>(
-            (acc2, skill) => {
-              if (!isSkillTypes(skill)) {
-                return acc2;
-              }
-
-              let additionalIds: string[] = [];
-              for (let branch of copiedBranches[skill] ?? []) {
-                for (let level in branch.exercises) {
-                  let exerciseId = branch.exercises[level].exerciseId;
-                  if (
-                    exerciseId &&
-                    acc2.indexOf(exerciseId) === -1 &&
-                    additionalIds.indexOf(exerciseId) === -1
-                  ) {
-                    additionalIds.push(exerciseId);
-                  }
-                }
-              }
-              return acc2.concat(additionalIds);
-            },
-            [],
-          );
-          return acc.concat(dayExerciseIds);
-        },
-        [],
-      );
-
-      for (let id of exerciseIds) {
+      for (const id of listPlannedExerciseIds(sectionTrainings)) {
         const exercise = exercises?.find((ed) => ed.id === id);
 
         if (

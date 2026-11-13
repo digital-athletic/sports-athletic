@@ -1,6 +1,12 @@
+import { loadExercises } from "@/data/loadExercises";
 import type { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
+import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
+import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
+import { toUserExerciseData } from "@/schemas/generator.schema";
+import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateLowerBodyBranch } from "@test/factories/skillTree";
 import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
 import {
@@ -14,6 +20,7 @@ import {
   swapBranchInTrainingDay,
   toExerciseBranch,
 } from "./exerciseSwap";
+import { listSwapAlternatives } from "./swapAlternatives";
 
 /**
  * Builds a plan branch, e.g. branch "20" with levels 1 to 3:
@@ -352,5 +359,71 @@ describe("exerciseSwap: findNextSwap", () => {
     });
 
     expect(next).toEqual({ position: 0, session });
+  });
+});
+
+describe("exerciseSwap: swap in an AIWL training day, then generate the day", () => {
+  const exerciseCatalog = loadExercises();
+  // the place holds weights, so GKS draws alternatives from its own tree
+  const generateInput = () =>
+    generateGenerationInput({
+      exerciseCatalog,
+      equipment: ["DUMBBELL", "BARBELL", "TREADMILL"],
+      random: () => 0,
+    });
+  const day = generateTemplate([
+    generateBranchesBlock("GKS", ["510"], { duration: 600 }),
+    generateBranchesBlock("CARDIO_5", ["576"], { duration: 1500 }),
+  ]);
+  const branchIdsOf = (entries: readonly { branchId?: string }[]) => [
+    ...new Set(entries.map(({ branchId }) => branchId)),
+  ];
+
+  it("trains the swapped branch in the session and in the generated day", () => {
+    const session = generateTrainingDay(day, generateInput()).map(
+      toUserExerciseData,
+    );
+    expect(listSwappableBranches(session, day)).toContainEqual({
+      branchId: "510",
+      skill: "GKS",
+    });
+    const others = session.filter(({ branchId }) => branchId !== "510");
+    const alternatives = listSwapAlternatives(
+      {
+        skill: "GKS",
+        branchId: "510",
+        usedBranchIds: others.flatMap(({ branchId }) =>
+          branchId ? [branchId] : [],
+        ),
+        usedExerciseIds: others.map(({ exerciseId }) => exerciseId),
+      },
+      setUpWorkout(generateInput()),
+    );
+    expect(alternatives.length).toBeGreaterThan(0);
+    const generateSwappedDay = (alternative: StoredBranch) =>
+      generateTrainingDay(
+        swapBranchInTrainingDay(day, "GKS", "510", alternative),
+        generateInput(),
+      );
+
+    const next = findNextSwap({
+      session,
+      original: "510",
+      swap: {
+        skill: "GKS",
+        position: 0,
+        alternatives,
+        originalEntries: session.filter(({ branchId }) => branchId === "510"),
+      },
+      generateWith: generateSwappedDay,
+    });
+
+    expect(next?.position).toBeGreaterThan(0);
+    const swapped = alternatives[(next?.position ?? 1) - 1];
+    expect(branchIdsOf(next?.session ?? [])).toContain(swapped.branchId);
+    expect(branchIdsOf(next?.session ?? [])).not.toContain("510");
+    const generatedBranchIds = branchIdsOf(generateSwappedDay(swapped));
+    expect(generatedBranchIds).toContain(swapped.branchId);
+    expect(generatedBranchIds).not.toContain("510");
   });
 });

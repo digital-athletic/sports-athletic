@@ -206,7 +206,7 @@ The index maps every branch ID to its branch across all skill trees. Skill tree 
 
 The target: a training day stores an AIWL template whose branches blocks hold branch IDs and durations. The branch lookup index supplies tags, levels and exercises at generation time, so a stored plan follows catalog changes.
 
-Today a training day stores branches and minutes per skill. With the AIWL generator flag on, the generator runs it as a stored day workout: one branches block per skill, holding branch IDs and durations.
+Today a training day stores branches and minutes per skill. The generator runs it as a stored day workout: one branches block per skill, holding branch IDs and durations.
 
 A stored day workout is no AIWL document. Stored data may break the language rules, and the stored day workout keeps the results of the old generator for these cases:
 
@@ -226,12 +226,13 @@ A follow-up issue defines the migration, its trigger, and what happens to a slot
 
 ### Routing
 
-The router `src/features/training/workoutGeneratorRouter.ts` picks the generator per training type:
+The router `src/features/training/workoutGeneratorRouter.ts` sends every training type to the AIWL generator and picks the entry point per type:
 
-1. Short workouts and custom workouts run on the AIWL generator.
-2. The strength test and plan training days run on the AIWL generator. When `EXPO_PUBLIC_AIWL_GENERATOR_ENABLED` is `"false"`, both run on the old generator.
+1. Short workouts and custom workouts run from their template.
+2. The strength test runs from the strength test source.
+3. Plan training days run as a stored day workout.
 
-The old generator in `generators/` stays as it was before the AIWL generator work and knows nothing of the router, the flag or the AIWL generator. Each generator throws its own `GeneratorError` type; both types share one shape, so the training generation hook reads either.
+The old training generator and its flag `EXPO_PUBLIC_AIWL_GENERATOR_ENABLED` are deleted. The old plan generator in `generators/PlanGenerator.ts` stays behind its own flag `EXPO_PUBLIC_PLAN_GENERATOR_ENABLED`.
 
 The router selects the stored training day of the plan with its own copy of the old section and weekday selection, so the AIWL path imports nothing from `generators/`.
 
@@ -246,7 +247,7 @@ The builder binds the test set loads per lift, gender and fitness level from `st
 
 Source checks run before any block. `loadStrengthTestTemplate` parses `TEST.json` with the AIWL `TemplateSchema` and checks the id `TEST`. `checkStrengthTestTemplate` checks the template first and throws a configuration error naming the path: the lifts block holds `testSets`, and `checkTestSetWorkout` runs the checks every workout with test sets passes: the warm-up picks block of skill `WU` comes first, the exercises block of lifts second and last, its `testSets` end on their one `amrap` set, and every lift has test set loads for both genders in `strengthTest.json`. The generic interpreter holds none of these rules. The athlete checks follow: workout data, no athlete under 16 (`NO_EXERCISES/AGE`), no muscle soreness (`TOO_MUCH_SORENESS/TEST_WORKOUT`). Workout setup skips the picks workout rules of short workouts. The picks handler of this source keeps the old warm-up rules: age group and gender filters only, region quotas with a fallback to every unused branch, no repeated branch or exercise. A lift missing from the catalog fails the whole test with a template error. The athlete picks no place for the test and the app passes the STUDIO equipment, so the source sets the exercises rule `equipment: "ignored"` and missing lift equipment blocks no lift. Setting the rule to `"required"` turns the check on and throws `NO_EXERCISES/EQUIPMENT`. The source sets the finish rule `requiredBlocks: "every"`, so a warm-up that draws no exercise fails the test with `NO_EXERCISES/SKILL_TREE` and the skill `WU`. Lift entries keep the placeholder branch ID, so session storage, resume, completion, statistics and the estimated 1RM update read them as before and write no branch progression.
 
-The router sends the strength test to this source unless `EXPO_PUBLIC_AIWL_GENERATOR_ENABLED` is `"false"`, which routes it to the old generator. This source neither imports nor tests against the old generator, and it changes no module, schema or data file the old generator reads. Compared with the old path, it adds the age check.
+The router sends every strength test to this source. Compared with the deleted old path, it adds the age check.
 
 ### Compatibility exceptions
 
@@ -259,15 +260,13 @@ The generator deviates from the target architecture in these places, so that sto
 | Training day overrides for the cardio skills and PLYO | The skill catalog lacks these values | The catalog holds the values |
 | The set list rules differ by source | Each source keeps the set lists of its old path | A decision unifies or keeps each rule |
 | Training days store cardio as a branches block | Plan creation stores cardio branches, so this ADR amends AIWL rule 1 | Plan creation writes duration blocks |
-| The router sends training days to the old generator while the AIWL generator flag is off | The flag lets the team compare both paths | The flag defaults to on and the old generator is deleted |
 
 ### Remaining work
 
 1. The duration handler with the minutes table chooser.
 2. The `order` field and the `bodyParts` filter.
 3. The stored plan migration.
-4. The AIWL generator flag on by default, and deletion of the old generator in `generators/`.
-5. The router sends the strength test to the strength test source.
+4. The router sends the strength test to the strength test source.
 
 ### Errors
 

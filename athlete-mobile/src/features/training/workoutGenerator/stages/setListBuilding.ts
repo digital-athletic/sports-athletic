@@ -1,7 +1,9 @@
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { Block } from "@/schemas/aiwl.schema";
-import type { ExercisesBlock } from "@/schemas/strengthTestTemplate.schema";
+import type {
+  BranchSelectingBlock,
+  ExercisesBlock,
+} from "@/schemas/aiwl.schema";
 import { readResolvedPicksBlockTiming } from "../blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
 import {
@@ -24,7 +26,7 @@ import {
   type SkillSetListBuilder,
 } from "../setListBuilders/setListBuilder";
 import { buildStandardSetList } from "../setListBuilders/standardSetListBuilder";
-import type { BlockResult, BranchSelectingBlock } from "./blockWalk";
+import type { BlockResult } from "./blockWalk";
 import { orderExerciseUnits, readEndingExerciseId } from "./exerciseOrder";
 import type {
   BuiltBlockResult,
@@ -159,13 +161,16 @@ const pairBlockExercises = (
  *
  * readBlockMinutes({ kind: "branches", duration: 1200, ... }) → 20
  */
-const readBlockMinutes = (block: Block): number =>
+const readBlockMinutes = (block: BranchSelectingBlock): number =>
   block.kind === "branches" ? (block.duration ?? 0) / SECONDS_PER_MINUTE : 0;
 
 const buildBlockSetList = (
   kind: SkillSetListKind,
   pairs: ExercisePair[],
-  { block, timing }: { block: Block; timing: ResolvedBlockTiming },
+  {
+    block,
+    timing,
+  }: { block: BranchSelectingBlock; timing: ResolvedBlockTiming },
   input: GenerationInput,
 ): GeneratedSetListEntry[] => {
   const { superset, ...setListTiming } = timing;

@@ -171,6 +171,21 @@ describe("validateCustomWorkoutText: invalid format", () => {
 
     expect(result).toEqual({ success: false, error: "INVALID_FORMAT" });
   });
+  // Only the strength test runs an exercises block, so an import rejects one.
+  it("returns INVALID_FORMAT for an exercises block", () => {
+    const result = validateCustomWorkoutText(
+      JSON.stringify({
+        ...generateCustomTemplate(),
+        blocks: [
+          { kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2 }] },
+          { kind: "exercises", skill: "TEST", exercises: ["25"] },
+        ],
+      }),
+      getAllSkillTrees(),
+    );
+
+    expect(result).toEqual({ success: false, error: "INVALID_FORMAT" });
+  });
 });
 
 describe("validateCustomWorkoutText: unsupported content", () => {

@@ -1,17 +1,12 @@
 import TEST from "../../assets/data/templates/TEST.json";
 import { createDataLoader, parseData } from "./createDataLoader";
-import {
-  StrengthTestTemplateSchema,
-  type StrengthTestTemplate,
-} from "@/schemas/strengthTestTemplate.schema";
+import { TemplateSchema, type Template } from "@/schemas/aiwl.schema";
 
 const STRENGTH_TEST_TEMPLATE_ID = "TEST";
 
-export const parseStrengthTestTemplate = (
-  data: unknown,
-): StrengthTestTemplate => {
+export const parseStrengthTestTemplate = (data: unknown): Template => {
   const template = parseData(
-    StrengthTestTemplateSchema,
+    TemplateSchema,
     data,
     `template ${STRENGTH_TEST_TEMPLATE_ID}`,
     STRENGTH_TEST_TEMPLATE_ID,

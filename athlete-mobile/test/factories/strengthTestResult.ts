@@ -1,5 +1,5 @@
 import type { BlockResult } from "@/features/training/workoutGenerator/stages/blockWalk";
-import type { ExercisesBlock } from "@/schemas/strengthTestTemplate.schema";
+import type { ExercisesBlock } from "@/schemas/aiwl.schema";
 import { generatePrescribedLifts } from "./strengthTestLifts";
 
 type PrescribedBlockResult = Extract<BlockResult, { status: "prescribed" }>;

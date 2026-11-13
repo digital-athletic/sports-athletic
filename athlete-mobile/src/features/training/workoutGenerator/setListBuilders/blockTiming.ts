@@ -1,4 +1,4 @@
-import type { Block, Superset } from "@/schemas/aiwl.schema";
+import type { BranchSelectingBlock, Superset } from "@/schemas/aiwl.schema";
 import type { SkillCatalogEntry } from "@/schemas/skillCatalog.schema";
 import type { SetListBlock } from "./setListBuilder";
 
@@ -44,7 +44,7 @@ export const createBlockDefaultCheck =
  *     setDuration: undefined, values: undefined }
  */
 export const resolveBlockTiming = (
-  block: Block,
+  block: BranchSelectingBlock,
   defaults: SkillTimingDefaults | undefined,
   path?: string,
 ): ResolvedBlockTiming => {

@@ -5,6 +5,7 @@ import { readSkillSetListKind } from "./setListBuilding";
 // Names the kind or field of a block the generator cannot run yet. A duration
 // block runs only for a skill whose set list builder fills a length: cardio.
 const findUnsupportedBlockPart = (block: Block): string | undefined => {
+  if (block.kind === "exercises") return block.kind;
   if (
     block.kind === "duration" &&
     readSkillSetListKind(block.skill) !== "cardio"
@@ -19,9 +20,9 @@ const findUnsupportedBlockPart = (block: Block): string | undefined => {
 };
 
 /**
- * Rejects a template block a short workout cannot run: a duration block of a
- * skill other than a cardio zone, an `order` field, or `bodyParts` on a picks
- * or duration block. The first offending block in template order throws
+ * Rejects a template block a short workout cannot run: an exercises block, a
+ * duration block of a skill other than a cardio zone, an `order` field, or
+ * `bodyParts` on a picks or duration block. The first offending block in template order throws
  * OTHER/BLOCK_KIND.
  *
  * requireSupportedTemplateBlocks(durationTemplate)

@@ -64,7 +64,9 @@ const isBlockWithinLimits = (block: Block): boolean => {
     isAtMost(block.sets, MAX_CUSTOM_WORKOUT_SETS) &&
     isAtMost(block.setDuration, MAX_CUSTOM_WORKOUT_SET_DURATION_SECONDS) &&
     isAtMost(
-      block.kind === "picks" ? undefined : block.duration,
+      block.kind === "duration" || block.kind === "branches"
+        ? block.duration
+        : undefined,
       MAX_CUSTOM_WORKOUT_DURATION_SECONDS,
     ) &&
     restValues.every((rest) =>
@@ -194,13 +196,23 @@ export const isTemplateRunnable = (
   );
 };
 
-/** Checks an already parsed value against TemplateSchema, import limits, then runnability. */
+// Only the strength test runs an exercises block, so an import rejects one as
+// a format error and a trainer cannot publish a workout the app fails to run.
+const hasExercisesBlock = (template: Template): boolean =>
+  template.blocks.some((block) => block.kind === "exercises");
+
+/**
+ * Checks an already parsed value against TemplateSchema without exercises
+ * blocks, import limits, then runnability.
+ */
 export const validateCustomWorkoutValue = (
   data: unknown,
   skillTrees: Record<string, SkillTreeType>,
 ): CustomWorkoutValidation => {
   const result = v.safeParse(TemplateSchema, data);
-  if (!result.success) return { success: false, error: "INVALID_FORMAT" };
+  if (!result.success || hasExercisesBlock(result.output)) {
+    return { success: false, error: "INVALID_FORMAT" };
+  }
   const template = result.output;
   if (
     !isTemplateWithinImportLimits(template) ||

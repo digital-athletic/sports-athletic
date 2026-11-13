@@ -48,7 +48,7 @@ Prevention and focus trainings skip the superset rules of [Plan Workout Generati
 
 1. Athletes under 16 get no strength test; the app offers no menu entry for it.
 2. Any reported soreness aborts with a soreness error.
-3. Warm-up: random branches from the warm-up tree per authored region quotas, without repeating a branch or a resolved exercise.
+3. Warm-up: random branches from the warm-up tree per authored region quotas, without repeating a branch or a resolved exercise. A one-sided branch fills one slot, and a region quota without a matching branch draws any unused branch. The AIWL strength test source filters the warm-up tree by pain, equipment, age, and gender first, as a short workout does, and aborts with the same typed errors; the equipment is that of the athlete's STUDIO place.
 4. Test lifts, their order, the ramp-up sets, and the test set: [Weight Calculation from Strength Tests](../progression/weight-calculation-from-strength-tests.md).
 
 The authored lift list in `assets/data/generator/strengthTest.json` names the lifts by exercise id. All three fitness levels use the same five lifts, in this order:

@@ -17,7 +17,7 @@ import {
   createExercisesBlockHandler,
   type ExercisesBlockRules,
 } from "./blockHandlers/exercises/exercisesHandler";
-import { createStrengthTestWarmUpHandler } from "./blockHandlers/picks/strengthTestWarmUpHandler";
+import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
 import type { GenerationInput } from "./generationInput/generationInput";
 import {
   createStrengthTestSetListBuilder,
@@ -32,7 +32,6 @@ import {
   STRENGTH_TEST_SET_LIST_RULES,
 } from "./stages/setListBuilding";
 import type { WorkoutFinishRules } from "./stages/workoutFinish";
-import { setUpWorkout } from "./stages/workoutSetup";
 import { checkStrengthTestTemplate } from "./strengthTestTemplateCheck";
 import { interpretTemplate } from "./templateInterpreter";
 
@@ -58,14 +57,12 @@ const UNREACHABLE_STRENGTH_TEST_HANDLER = {
   handleBlock: throwUnreachableStrengthTestBlock,
 } as const;
 
-const createStrengthTestHandlers = (
-  skillTrees: Readonly<Record<string, SkillTreeType>>,
-): BlockHandlerRegistry => ({
-  picks: createStrengthTestWarmUpHandler(skillTrees),
+const STRENGTH_TEST_HANDLERS: BlockHandlerRegistry = {
+  picks: PICKS_BLOCK_HANDLER,
   branches: UNREACHABLE_STRENGTH_TEST_HANDLER,
   duration: UNREACHABLE_STRENGTH_TEST_HANDLER,
   exercises: createExercisesBlockHandler(STRENGTH_TEST_EXERCISES_RULES),
-});
+};
 
 // The source checks run before any block. The old path checks workout data
 // and soreness only; the age check follows the spec, where the app hid the
@@ -97,9 +94,11 @@ export const loadStrengthTestLoadData = (): StrengthTestLoadData => ({
 /**
  * Generates the strength test template through the template interpreter: its
  * warm-up picks block, then its exercises block of lifts. Athletes under 16
- * and athletes with muscle soreness get no test. Every lift must be in the
- * catalog; the place's equipment does not block a lift. The set list ends on
- * the last test set.
+ * and athletes with muscle soreness get no test. The warm-up draws like every
+ * other picks block, after the pain, equipment, age group and gender rules,
+ * and throws their pool errors. Every lift must be in the catalog; the
+ * place's equipment does not block a lift. The set list ends on the last test
+ * set.
  *
  * generateStrengthTest(input, getAllSkillTrees())
  * → [WU 432 1/1, pause 10, ..., pause 30, 25 1/4, pause 60, ..., 54 4/4]
@@ -114,13 +113,12 @@ export const generateStrengthTest = (
   const lifts = checkStrengthTestTemplate(template, loadData);
   requireStrengthTestAthlete(input.athlete);
   return interpretTemplate(template, input, {
-    handlers: createStrengthTestHandlers(skillTrees),
+    handlers: STRENGTH_TEST_HANDLERS,
     finishRules: STRENGTH_TEST_FINISH_RULES,
     createSetListBuilder: (workoutInput) =>
       createSetListBuilder(workoutInput, STRENGTH_TEST_SET_LIST_RULES, {
         [lifts.skill]: createStrengthTestSetListBuilder(loadData),
       }),
-    // The short workout pool rules do not apply to the strength test warm-up.
-    setUpWorkout: (generationInput) => setUpWorkout(generationInput),
+    skillTrees,
   }).setList;
 };

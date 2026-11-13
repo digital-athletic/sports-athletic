@@ -224,6 +224,17 @@ Until a migration rewrites the stored plans, a temporary decision applies:
 
 A follow-up issue defines the migration, its trigger, and what happens to a slot whose branch ID the catalog removed. After the migration, training day generation switches from the saved entries to the branch lookup index.
 
+A plan training may already store the target shape, an AIWL training. `generateTrainingDay` runs either shape with the training day set list rules:
+
+| Training | Branch data | Missing branch ID | Set list rules |
+|---|---|---|---|
+| old | saved branch copies | trains the saved copy | training day |
+| AIWL | branch lookup index | replaced from the same skill | training day |
+
+1. The training day selection returns the workout of an AIWL training, validated against the AIWL schema. The exercise swap hook generates through the same function.
+2. The branches handler takes a missing branch rule. Under `"replace"`, the AIWL training rule, each distinct branch ID the catalog lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. Old trainings and short workouts keep the `"drop"` rule.
+3. An AIWL training holds branches blocks only. The other handlers throw.
+
 ### Routing
 
 The router `src/features/training/workoutGeneratorRouter.ts` sends every training type to the AIWL generator and picks the entry point per type:

@@ -2,7 +2,7 @@ import type { ExerciseBranchType } from "@/features/training/models/ExerciseBran
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { minutes } from "@/features/training/models/TimeUnits";
-import type { OldTrainingType } from "@/features/training/models/UserTraining";
+import type { LegacyTrainingType } from "@/features/training/models/UserTraining";
 import { createAiwlPlan } from "@/features/training/utils/testFixtures";
 import type { PlacesData } from "@/store/placesStore";
 import { importTree, realExercises } from "@test/factories/planWorkout";
@@ -36,7 +36,7 @@ const planWith = (skills: UserSkills): TrainingPlanType => ({
   ],
 });
 
-type UserSkills = OldTrainingType["skills"];
+type UserSkills = LegacyTrainingType["skills"];
 
 const trainingDays = (place: TrainingDayType["place"]): TrainingDayType[] => [
   { active: true, weekday: 1, duration: minutes(60), place },

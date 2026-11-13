@@ -1,5 +1,5 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import { requireOldTraining } from "@/features/training/utils/testFixtures";
+import { requireLegacyTraining } from "@/features/training/utils/testFixtures";
 import { migratePlanSkillTags, migrateSkillTags } from "./skillTagMigration";
 
 const planWithBranchTags = (tags: string[]): TrainingPlanType =>
@@ -21,7 +21,7 @@ const planWithBranchTags = (tags: string[]): TrainingPlanType =>
   }) as unknown as TrainingPlanType;
 
 const firstTrainingOf = (plan: TrainingPlanType | null) =>
-  requireOldTraining(plan?.sections[0].trainings[0]);
+  requireLegacyTraining(plan?.sections[0].trainings[0]);
 
 const branchTagsOf = (plan: TrainingPlanType | null) =>
   firstTrainingOf(plan).skills.SK?.[0].tags;
@@ -67,7 +67,7 @@ describe("skillTagMigration: migratePlanSkillTags", () => {
     expect(firstTrainingOf(result).skills.SK?.[0].branchId).toBe("213");
   });
 
-  it("writes empty branches onto an old training stored without them", () => {
+  it("writes empty branches onto a legacy training stored without them", () => {
     const trainingWithoutSkills = {
       weekday: 1,
       lengths: { SK: 20 },

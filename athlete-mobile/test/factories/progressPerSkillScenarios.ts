@@ -4,7 +4,7 @@ import PlanGenerator from "@/features/training/generators/PlanGenerator";
 import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { requireOldTraining } from "@/features/training/utils/testFixtures";
+import { requireLegacyTraining } from "@/features/training/utils/testFixtures";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
 import { useAuthStore } from "@/store/authStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
@@ -86,7 +86,7 @@ export const setUpRecreatedPlanScenario = (startDate: Date) => {
     startDate,
   );
   const swr1Training = firstPlan.sections[0]?.trainings
-    .map(requireOldTraining)
+    .map(requireLegacyTraining)
     .find((training) => training.skills.SWR1?.length);
   const swr1Entry = swr1Training?.skills.SWR1?.[0];
   const firstLevel = Object.entries(swr1Entry?.exercises ?? {})[0];

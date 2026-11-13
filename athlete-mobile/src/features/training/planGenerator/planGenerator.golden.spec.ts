@@ -1,5 +1,5 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import { requireOldTraining } from "@/features/training/utils/testFixtures";
+import { requireLegacyTraining } from "@/features/training/utils/testFixtures";
 import {
   generatePlanAthlete,
   generatePlanGenerationInput,
@@ -79,7 +79,7 @@ const outlineTrainingPlan = (plan: TrainingPlanType): string[] => [
   `plan ${plan.start}`,
   ...plan.sections.flatMap((section) => [
     `${section.start} ${section.type} ${section.numOfWeeks} weeks ${section.cardioType}`,
-    ...section.trainings.map(requireOldTraining).flatMap((training) => {
+    ...section.trainings.map(requireLegacyTraining).flatMap((training) => {
       const branchesBySkill = new Map(Object.entries(training.skills));
       return [
         `  day ${training.weekday} ${training.focus} ${training.equipment?.join(",")}`,

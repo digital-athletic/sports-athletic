@@ -28,7 +28,7 @@ import type { TrainingType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import {
   AIWL_TRAINING_DAY_ERROR,
-  isOldTraining,
+  isLegacyTraining,
   type UserTrainingType,
 } from "@/features/training/models/UserTraining";
 import { getSectionForDate } from "@/features/training/trainingUtils";
@@ -553,7 +553,7 @@ export default class TrainingGenerator {
       // use first training in list
       currTraining = trainings[0];
     }
-    if (!isOldTraining(currTraining)) {
+    if (!isLegacyTraining(currTraining)) {
       throw new Error(AIWL_TRAINING_DAY_ERROR);
     }
 

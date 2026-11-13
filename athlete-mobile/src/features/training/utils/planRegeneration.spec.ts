@@ -1,6 +1,6 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import {
-  type OldTrainingType,
+  type LegacyTrainingType,
   readCopiedBranches,
   type UserTrainingType,
 } from "@/features/training/models/UserTraining";
@@ -10,8 +10,8 @@ import { keepUnchangedTrainingDays } from "./planRegeneration";
 const branch = (branchId: string) => ({ branchId, tags: [], exercises: {} });
 
 const training = (
-  overrides: Partial<OldTrainingType> & { branchId: string },
-): OldTrainingType => ({
+  overrides: Partial<LegacyTrainingType> & { branchId: string },
+): LegacyTrainingType => ({
   weekday: 1,
   focus: "PHASE",
   skills: { SWR1: [branch(overrides.branchId)] },

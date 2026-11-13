@@ -87,8 +87,8 @@ export const UserTrainingExerciseBranchSchema = v.looseObject({
   ),
 });
 
-// Old training schema (matches OldTrainingType)
-const OldTrainingSchema = v.looseObject({
+// Legacy training schema (matches LegacyTrainingType)
+const LegacyTrainingSchema = v.looseObject({
   weekday: v.number(),
   skills: v.optional(
     v.record(v.string(), v.array(UserTrainingExerciseBranchSchema)),
@@ -107,10 +107,10 @@ const AiwlTrainingSchema = v.looseObject({
 });
 
 // UserTraining schema (matches UserTrainingType). The AIWL shape comes first:
-// the loose old shape accepts any training with a weekday.
+// the loose legacy shape accepts any training with a weekday.
 export const UserTrainingSchema = v.union([
   AiwlTrainingSchema,
-  OldTrainingSchema,
+  LegacyTrainingSchema,
 ]);
 
 export const SeasonPhaseSchema = v.object({
@@ -180,8 +180,8 @@ export type TrainingSectionSchemaType = v.InferOutput<
 export const TrainingPlanSchema = v.object({
   /** Training plan start date in ISO 8601 format (YYYY-MM-DD) */
   start: v.string(),
-  /** Shape of the training days; a plan without it is an old plan */
-  format: v.optional(v.picklist(["old", "aiwl"])),
+  /** Shape of the training days; a plan without it is a legacy plan */
+  format: v.optional(v.picklist(["legacy", "aiwl"])),
   sections: v.array(TrainingSectionSchema),
   gapShiftedOn: v.optional(v.string()),
 });

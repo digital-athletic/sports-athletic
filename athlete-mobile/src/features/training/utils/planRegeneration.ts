@@ -1,7 +1,7 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import {
-  isOldTraining,
-  type OldTrainingType,
+  isLegacyTraining,
+  type LegacyTrainingType,
   readCopiedBranches,
   type UserTrainingType,
 } from "@/features/training/models/UserTraining";
@@ -15,8 +15,8 @@ const sameValues = (a: string[], b: string[]): boolean => {
 };
 
 const sameLengths = (
-  a: OldTrainingType["lengths"],
-  b: OldTrainingType["lengths"],
+  a: LegacyTrainingType["lengths"],
+  b: LegacyTrainingType["lengths"],
 ): boolean =>
   sameValues(Object.keys(a), Object.keys(b)) &&
   Object.entries(a).every(
@@ -24,8 +24,8 @@ const sameLengths = (
   );
 
 const isUnchanged = (
-  oldTraining: OldTrainingType,
-  newTraining: OldTrainingType,
+  oldTraining: LegacyTrainingType,
+  newTraining: LegacyTrainingType,
 ): boolean =>
   oldTraining.focus === newTraining.focus &&
   sameValues(
@@ -37,14 +37,14 @@ const isUnchanged = (
   newTraining.equipment !== undefined &&
   sameValues(oldTraining.equipment, newTraining.equipment);
 
-/** The old branches a regenerated old training day keeps, if any. */
+/** The old branches a regenerated legacy training day keeps, if any. */
 const readKeptBranches = (
   oldTraining: UserTrainingType | undefined,
   newTraining: UserTrainingType,
-): OldTrainingType["skills"] | undefined =>
+): LegacyTrainingType["skills"] | undefined =>
   oldTraining &&
-  isOldTraining(oldTraining) &&
-  isOldTraining(newTraining) &&
+  isLegacyTraining(oldTraining) &&
+  isLegacyTraining(newTraining) &&
   isUnchanged(oldTraining, newTraining)
     ? readCopiedBranches(oldTraining)
     : undefined;

@@ -8,7 +8,7 @@ export type CopiedBranchesType = {
 };
 
 /** A training day that stores copied branches and minutes per skill. */
-export type OldTrainingType = {
+export type LegacyTrainingType = {
   weekday: number;
   skills: CopiedBranchesType;
   lengths: {
@@ -28,7 +28,7 @@ export type AiwlTrainingType = {
   equipment?: string[];
 };
 
-export type UserTrainingType = OldTrainingType | AiwlTrainingType;
+export type UserTrainingType = LegacyTrainingType | AiwlTrainingType;
 
 /** No generator runs a training day stored as an AIWL workout yet. */
 export const AIWL_TRAINING_DAY_ERROR =
@@ -36,19 +36,19 @@ export const AIWL_TRAINING_DAY_ERROR =
 
 /**
  * True for a training day that stores copied branches and minutes per skill.
- * Only an AIWL training day stores a workout; an old day stored before store
+ * Only an AIWL training day stores a workout; a legacy day stored before store
  * version 17 can lack `skills`.
  */
-export const isOldTraining = (
+export const isLegacyTraining = (
   training: UserTrainingType,
-): training is OldTrainingType => !("workout" in training);
+): training is LegacyTrainingType => !("workout" in training);
 
 /**
- * Returns the copied branches of an old training day, or none for an old day
+ * Returns the copied branches of a legacy training day, or none for a legacy day
  * stored without `skills`. A training day stored as an AIWL workout copies no
  * branches and returns undefined.
  */
 export const readCopiedBranches = (
   training: UserTrainingType,
 ): CopiedBranchesType | undefined =>
-  isOldTraining(training) ? (training.skills ?? {}) : undefined;
+  isLegacyTraining(training) ? (training.skills ?? {}) : undefined;

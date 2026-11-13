@@ -35,7 +35,7 @@ const migrateTrainingSkills = (
   );
 
 /**
- * Renames the skill tags of an old training's branches. A training without
+ * Renames the skill tags of a legacy training's branches. A training without
  * copied branches, such as one stored as an AIWL workout, stays unchanged.
  */
 const migrateTraining = (training: UserTrainingType): UserTrainingType => {

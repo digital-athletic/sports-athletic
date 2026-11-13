@@ -1,5 +1,5 @@
 import { minutes } from "@/features/training/models/TimeUnits";
-import { requireOldTraining } from "@/features/training/utils/testFixtures";
+import { requireLegacyTraining } from "@/features/training/utils/testFixtures";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { PlacesData } from "@/store/placesStore";
 import { deepFreeze } from "@test/factories/deepFreeze";
@@ -249,7 +249,9 @@ describe("planAssembly: training day", () => {
       { planStartDate: "2026-11-02", trainingPlaces: generateTrainingPlaces() },
     );
 
-    expect(requireOldTraining(plan.sections[0].trainings[0]).lengths).toEqual({
+    expect(
+      requireLegacyTraining(plan.sections[0].trainings[0]).lengths,
+    ).toEqual({
       SWR1: 25,
       MOB: 5,
     });
@@ -277,7 +279,9 @@ describe("planAssembly: training day", () => {
       { planStartDate: "2026-11-02", trainingPlaces: generateTrainingPlaces() },
     );
 
-    expect(requireOldTraining(plan.sections[0].trainings[0]).skills).toEqual({
+    expect(
+      requireLegacyTraining(plan.sections[0].trainings[0]).skills,
+    ).toEqual({
       SWR1: [
         {
           branchId: "7",
@@ -314,7 +318,7 @@ describe("planAssembly: training day", () => {
     );
 
     expect(
-      Object.keys(requireOldTraining(plan.sections[0].trainings[0]).skills),
+      Object.keys(requireLegacyTraining(plan.sections[0].trainings[0]).skills),
     ).toEqual(["WU"]);
   });
 });

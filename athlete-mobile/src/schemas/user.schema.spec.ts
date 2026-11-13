@@ -8,7 +8,7 @@ describe("UserTrainingSchema", () => {
     expect(v.parse(UserTrainingSchema, training)).toEqual(training);
   });
 
-  it("keeps the branches and minutes of an old training", () => {
+  it("keeps the branches and minutes of a legacy training", () => {
     const training = {
       weekday: 1,
       focus: "PHASE",

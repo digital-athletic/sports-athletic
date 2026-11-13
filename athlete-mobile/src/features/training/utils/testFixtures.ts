@@ -1,8 +1,8 @@
 import { type TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import {
   type AiwlTrainingType,
-  isOldTraining,
-  type OldTrainingType,
+  isLegacyTraining,
+  type LegacyTrainingType,
   type UserTrainingType,
 } from "@/features/training/models/UserTraining";
 import { type ExerciseType } from "@/schemas/exercise.schema";
@@ -10,12 +10,12 @@ import { type UserExerciseDataType } from "@/schemas/sync.schema";
 
 /** Shared test fixtures for training feature specs. Not for production code. */
 
-/** Narrows a training day of an old plan; fails the test for any other. */
-export const requireOldTraining = (
+/** Narrows a training day of a legacy plan; fails the test for any other. */
+export const requireLegacyTraining = (
   training: UserTrainingType | undefined,
-): OldTrainingType => {
-  if (!training || !isOldTraining(training)) {
-    throw new Error("Expected a training day of an old plan");
+): LegacyTrainingType => {
+  if (!training || !isLegacyTraining(training)) {
+    throw new Error("Expected a training day of a legacy plan");
   }
   return training;
 };

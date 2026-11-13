@@ -1,6 +1,6 @@
 import {
   AIWL_TRAINING_DAY_ERROR,
-  isOldTraining,
+  isLegacyTraining,
   readCopiedBranches,
   type UserTrainingType,
 } from "@/features/training/models/UserTraining";
@@ -62,7 +62,7 @@ export const selectStoredTrainingDay = (
   const training =
     trainings.find((entry) => entry.weekday === weekday) ?? trainings[0];
 
-  if (!isOldTraining(training)) {
+  if (!isLegacyTraining(training)) {
     throw new Error(AIWL_TRAINING_DAY_ERROR);
   }
 

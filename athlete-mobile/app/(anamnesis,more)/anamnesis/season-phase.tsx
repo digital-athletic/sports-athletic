@@ -16,7 +16,7 @@ import { formatDateToISO, getDateOneYearFromNow } from "@/utils/date";
 import { RoutePath, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useEffectEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
+import { Alert } from "@/common/Alert";
 import IconBed from "@tabler/icons-react-native/IconBed";
 import IconTrophy from "@tabler/icons-react-native/IconTrophy";
 import IconWeight from "@tabler/icons-react-native/IconWeight";

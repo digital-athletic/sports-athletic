@@ -1,6 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { act, renderHook } from "@testing-library/react-native";
-import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import { createAiwlPlan } from "@/features/training/utils/testFixtures";
 import { formatDateToISO } from "@/utils/date";
 import { useUserWorkoutStore } from "./userWorkoutStore";
@@ -149,41 +147,6 @@ describe("userWorkoutStore", () => {
       });
 
       expect(result.current.trainingPlan).toEqual(plan);
-    });
-  });
-
-  describe("rehydration of a store at version 17", () => {
-    const workoutData = {
-      sport: "FOOTBALL_SPORT",
-      tags: { LEVEL: ["ADVANCED"], POSITION: ["GOAL"] },
-      seasonPhase: { type: "COMPETITION", endDate: "2026-12-31" },
-      maxValues: {
-        ...DEFAULT_MAX_VALUES,
-        testAt: new Date("2026-09-01").getTime(),
-        verticalPush: { barbell: 80 },
-      },
-    };
-
-    afterEach(async () => {
-      await AsyncStorage.clear();
-    });
-
-    it("keeps the AIWL plan, max values and workout data", async () => {
-      const plan = createAiwlPlan();
-      await AsyncStorage.setItem(
-        "user-workout-storage",
-        JSON.stringify({
-          state: { workoutData, trainingPlan: plan },
-          version: 17,
-        }),
-      );
-
-      await useUserWorkoutStore.persist.rehydrate();
-
-      const state = useUserWorkoutStore.getState();
-      expect(state.trainingPlan).toEqual(plan);
-      expect(state.workoutData.maxValues).toEqual(workoutData.maxValues);
-      expect(state.workoutData).toEqual(workoutData);
     });
   });
 

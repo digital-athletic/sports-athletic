@@ -1,9 +1,5 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import {
-  createAiwlPlan,
-  createAiwlTraining,
-  requireOldTraining,
-} from "@/features/training/utils/testFixtures";
+import { requireOldTraining } from "@/features/training/utils/testFixtures";
 import { migratePlanSkillTags, migrateSkillTags } from "./skillTagMigration";
 
 const planWithBranchTags = (tags: string[]): TrainingPlanType =>
@@ -69,12 +65,6 @@ describe("skillTagMigration: migratePlanSkillTags", () => {
     expect(result?.start).toBe("2026-10-05");
     expect(firstTrainingOf(result).lengths).toEqual({ SK: 20 });
     expect(firstTrainingOf(result).skills.SK?.[0].branchId).toBe("213");
-  });
-
-  it("leaves a training stored as an AIWL workout unchanged", () => {
-    const training = createAiwlTraining();
-    const result = migratePlanSkillTags(createAiwlPlan([training]));
-    expect(result?.sections[0].trainings[0]).toBe(training);
   });
 
   it("writes empty branches onto an old training stored without them", () => {

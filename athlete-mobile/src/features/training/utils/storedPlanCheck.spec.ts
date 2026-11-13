@@ -3,9 +3,17 @@ import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { minutes } from "@/features/training/models/TimeUnits";
 import type { LegacyTrainingType } from "@/features/training/models/UserTraining";
-import { createAiwlPlan } from "@/features/training/utils/testFixtures";
+import {
+  createAiwlPlan,
+  createAiwlTraining,
+} from "@/features/training/utils/testFixtures";
+import { buildBranchLookupIndex } from "@/features/training/workoutGenerator/generationInput/branchLookupIndex";
 import type { PlacesData } from "@/store/placesStore";
 import { importTree, realExercises } from "@test/factories/planWorkout";
+import {
+  generateBranchesBlock,
+  generateTemplate,
+} from "@test/factories/templateBlock";
 import { isStoredPlanBroken } from "./storedPlanCheck";
 
 const maxTree = importTree("MAX");
@@ -49,6 +57,15 @@ const places: PlacesData = {
   OUTSIDE: { equipment: [] },
 };
 
+// The catalog of AIWL trainings: the max strength tree and the adult-only
+// branch as SWR1 branch 900100.
+const branchLookupIndex = buildBranchLookupIndex({
+  MAX: maxTree,
+  SWR1: {
+    "900100": { tags: adultOnly.tags, levels: adultOnly.exercises },
+  },
+});
+
 const check = (
   plan: TrainingPlanType,
   options: { birthday?: string; place?: TrainingDayType["place"] } = {},
@@ -61,7 +78,15 @@ const check = (
     places,
     exercises: realExercises,
     branchData: {},
+    branchLookupIndex,
   });
+
+const aiwlPlanWith = (skill: string, branchIds: string[]) =>
+  createAiwlPlan([
+    createAiwlTraining({
+      workout: generateTemplate([generateBranchesBlock(skill, branchIds)]),
+    }),
+  ]);
 
 const twelveYearsAgo = `${new Date().getFullYear() - 12}-01-01`;
 
@@ -100,5 +125,38 @@ describe("isStoredPlanBroken", () => {
 
   it("accepts a plan of trainings stored as AIWL workouts", () => {
     expect(check(createAiwlPlan(), { birthday: twelveYearsAgo })).toBe(false);
+  });
+});
+
+describe("isStoredPlanBroken: AIWL plan", () => {
+  it("flags an adult-only branch in the plan of a child", () => {
+    expect(
+      check(aiwlPlanWith("SWR1", ["900100"]), { birthday: twelveYearsAgo }),
+    ).toBe(true);
+  });
+
+  it("accepts an adult-only branch in the plan of an adult", () => {
+    expect(check(aiwlPlanWith("SWR1", ["900100"]))).toBe(false);
+  });
+
+  it("flags a max strength lift whose equipment the day's place lacks", () => {
+    expect(
+      check(aiwlPlanWith("MAX_STRENGTH", ["143"]), { place: "HOME" }),
+    ).toBe(true);
+  });
+
+  it("accepts a max strength lift at a place with its equipment", () => {
+    expect(
+      check(aiwlPlanWith("MAX_STRENGTH", ["143"]), { place: "STUDIO" }),
+    ).toBe(false);
+  });
+
+  it("skips a branch ID the catalog lacks", () => {
+    expect(
+      check(aiwlPlanWith("MAX_STRENGTH", ["900001"]), {
+        birthday: twelveYearsAgo,
+        place: "HOME",
+      }),
+    ).toBe(false);
   });
 });

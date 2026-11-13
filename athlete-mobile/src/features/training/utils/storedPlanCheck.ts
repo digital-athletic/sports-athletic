@@ -3,13 +3,15 @@ import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import {
-  readCopiedBranches,
-  type UserTrainingType,
-} from "@/features/training/models/UserTraining";
+import type { UserTrainingType } from "@/features/training/models/UserTraining";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import { equipmentForExerciseExists } from "@/features/training/utils/equipmentUtils";
+import { readPlannedBranches } from "@/features/training/utils/plannedBranches";
 import { getUserExerciseFromBranch } from "@/features/training/utils/skillTreeUtils";
+import {
+  type BranchLookupIndex,
+  loadBranchLookupIndex,
+} from "@/features/training/workoutGenerator/generationInput/branchLookupIndex";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { BranchDataMapType } from "@/store/exerciseProgressStore";
 import type { PlacesData } from "@/store/placesStore";
@@ -24,6 +26,8 @@ export interface StoredPlanCheckInput {
   places: PlacesData;
   exercises: ExerciseType[];
   branchData: BranchDataMapType;
+  /** The skill catalog that resolves the branch IDs of AIWL trainings. */
+  branchLookupIndex?: BranchLookupIndex;
 }
 
 const MAX_STRENGTH_SKILLS = ["MAX", "MAX_STRENGTH"];
@@ -38,9 +42,11 @@ const isAdultOnly = (branch: ExerciseBranchType): boolean => {
 /**
  * True when a stored plan holds what older plan creation let through and no
  * workout corrects: an adult-only branch for a child with a known birthday,
- * or a max strength lift whose equipment the day's place lacks.
+ * or a max strength lift whose equipment the day's place lacks. An AIWL
+ * training checks the branches its branch IDs resolve to in the catalog.
  */
 export function isStoredPlanBroken(input: StoredPlanCheckInput): boolean {
+  const branchLookupIndex = input.branchLookupIndex ?? loadBranchLookupIndex();
   // a missing birthday is not a known age, so it never counts as a child here
   const isChild =
     isISODate(input.birthday) &&
@@ -71,10 +77,10 @@ export function isStoredPlanBroken(input: StoredPlanCheckInput): boolean {
       (equipment !== undefined &&
         MAX_STRENGTH_SKILLS.includes(skill) &&
         liftLacksEquipment(branch, equipment));
-    // A training day stored as an AIWL workout copies no branches to check.
-    return Object.entries(readCopiedBranches(training) ?? {}).some(
-      ([skill, branches]) =>
-        (branches ?? []).some((branch) => isBranchBroken(skill, branch)),
+    return Object.entries(
+      readPlannedBranches(training, branchLookupIndex),
+    ).some(([skill, branches]) =>
+      (branches ?? []).some((branch) => isBranchBroken(skill, branch)),
     );
   };
 

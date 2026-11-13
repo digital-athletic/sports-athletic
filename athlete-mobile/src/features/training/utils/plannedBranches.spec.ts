@@ -1,4 +1,4 @@
-import type { OldTrainingType } from "@/features/training/models/UserTraining";
+import type { LegacyTrainingType } from "@/features/training/models/UserTraining";
 import { createAiwlTraining } from "@/features/training/utils/testFixtures";
 import { buildBranchLookupIndex } from "@/features/training/workoutGenerator/generationInput/branchLookupIndex";
 import type { Block } from "@/schemas/aiwl.schema";
@@ -25,7 +25,7 @@ const catalog = buildBranchLookupIndex({
   },
 });
 
-const oldTraining: OldTrainingType = {
+const oldTraining: LegacyTrainingType = {
   weekday: 1,
   focus: "PHASE",
   skills: {

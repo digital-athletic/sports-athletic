@@ -9,10 +9,7 @@ import {
   describeSetListEntries,
   listTrainedExercises,
 } from "@test/factories/setListDescription";
-import {
-  generateStrengthTestInput,
-  STRENGTH_TEST_EQUIPMENT,
-} from "@test/factories/strengthTestInput";
+import { generateStrengthTestInput } from "@test/factories/strengthTestInput";
 import { generateStrengthTestTemplate } from "@test/factories/strengthTestTemplate";
 import {
   generateRegionWarmUpTree,
@@ -25,9 +22,6 @@ import {
 } from "@test/factories/testSets";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import { filterBranchesByEquipment } from "./ruleFamilies/equipmentRule";
-import { filterBranchesByPain } from "./ruleFamilies/painRule";
 import {
   generateStrengthTest,
   loadStrengthTestLoadData,
@@ -46,11 +40,6 @@ const listWarmUpBranchIds = (setList: GeneratedSetListEntry[]): string[] =>
   setList
     .filter((entry) => entry.skill === "WU" && entry.branchId !== "-1")
     .map((entry) => entry.branchId);
-
-const listRemovedBranchIds = (
-  tree: SkillTreeType,
-  keep: SkillTreeType,
-): string[] => Object.keys(tree).filter((id) => !Object.hasOwn(keep, id));
 
 describe("strengthTestGeneration: generateStrengthTest", () => {
   const skillTrees = getAllSkillTrees();
@@ -357,70 +346,57 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
   describe("warm up", () => {
     const bundledTemplate = v.parse(TemplateSchema, TEST);
 
-    it("draws no warm up branch that knee pain blocks", () => {
-      const kneeBlockedIds = listRemovedBranchIds(
-        skillTrees.WU,
-        filterBranchesByPain(
-          skillTrees.WU,
-          generateStrengthTestInput({ pains: ["KNEE_LEFT"] }).athlete,
-        ).keep,
-      );
-
-      const drawnIds = SEEDS.flatMap((seed) =>
-        listWarmUpBranchIds(
-          generateStrengthTest(
-            generateStrengthTestInput({
-              pains: ["KNEE_LEFT"],
-              random: generateSeededRandom(seed),
-            }),
-            skillTrees,
+    it("draws the same warm up for an athlete with knee and shoulder pain and no equipment as for one without, for every seed", () => {
+      // drawWarmUps({ pains: ["KNEE_LEFT"] }) → [["410", "411", ...], ...], one list per seed
+      const drawWarmUps = (
+        options: Parameters<typeof generateStrengthTestInput>[0],
+      ) =>
+        SEEDS.map((seed) =>
+          listWarmUpBranchIds(
+            generateStrengthTest(
+              generateStrengthTestInput({
+                ...options,
+                random: generateSeededRandom(seed),
+              }),
+              skillTrees,
+            ),
           ),
-        ),
-      );
-
-      expect(kneeBlockedIds).not.toHaveLength(0);
-      expect(drawnIds.filter((id) => kneeBlockedIds.includes(id))).toEqual([]);
-    });
-
-    it("draws no warm up branch whose equipment the place lacks", () => {
-      const lackingIds = listRemovedBranchIds(
-        skillTrees.WU,
-        filterBranchesByEquipment(skillTrees.WU, STRENGTH_TEST_EQUIPMENT).keep,
-      );
-
-      const drawnIds = SEEDS.flatMap((seed) =>
-        listWarmUpBranchIds(
-          generateStrengthTest(
-            generateStrengthTestInput({ random: generateSeededRandom(seed) }),
-            skillTrees,
-          ),
-        ),
-      );
-
-      expect(lackingIds).not.toHaveLength(0);
-      expect(drawnIds.filter((id) => lackingIds.includes(id))).toEqual([]);
-    });
-
-    it("throws NO_EXERCISES PAIN when knee pain blocks every warm up branch", () => {
-      const warmUpTree = generateRegionWarmUpTree(["BLOCK_KNEE"]);
+        );
 
       expect(
-        catchThrownValue(() =>
-          generateStrengthTest(
-            generateStrengthTestInput({
-              pains: ["KNEE_LEFT"],
-              random: generateSeededRandom(7),
-            }),
-            { WU: warmUpTree },
-            loadStrengthTestLoadData(),
-            bundledTemplate,
-          ),
-        ),
-      ).toEqual({
-        type: "NO_EXERCISES",
-        subtype: "PAIN",
-        params: Object.keys(warmUpTree).map(() => "KNEE"),
+        drawWarmUps({ pains: ["KNEE_LEFT", "SHOULDER_LEFT"], equipment: [] }),
+      ).toEqual(drawWarmUps({}));
+    });
+
+    it("fills the warm up when knee pain blocks every warm up branch", () => {
+      const input = generateStrengthTestInput({
+        pains: ["KNEE_LEFT"],
+        random: generateSeededRandom(7),
       });
+
+      const setList = generateStrengthTest(
+        input,
+        { WU: generateRegionWarmUpTree(["BLOCK_KNEE"]) },
+        loadStrengthTestLoadData(),
+        bundledTemplate,
+      );
+
+      expect(listWarmUpBranchIds(setList)).toHaveLength(5);
+    });
+
+    it("fills the warm up when every warm up branch needs equipment the place lacks", () => {
+      const input = generateStrengthTestInput({
+        random: generateSeededRandom(7),
+      });
+
+      const setList = generateStrengthTest(
+        input,
+        { WU: generateRegionWarmUpTree(["EQ_DUMBBELL"]) },
+        loadStrengthTestLoadData(),
+        bundledTemplate,
+      );
+
+      expect(listWarmUpBranchIds(setList)).toHaveLength(5);
     });
 
     it("draws one exercise per quota slot from one sided branches", () => {
@@ -560,7 +536,7 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
           duration,
         }));
 
-    it("draws a warm up without knee blocked exercises and keeps the four test sets of each lift", () => {
+    it("draws the same warm up with knee pain as without and keeps the four test sets of each lift", () => {
       const kneeInput = generateStrengthTestInput({
         level: "ADVANCED",
         gender: "FEMALE",
@@ -572,16 +548,14 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         gender: "FEMALE",
         random: generateSeededRandom(3),
       });
-      const kneeBlockedIds = listRemovedBranchIds(
-        skillTrees.WU,
-        filterBranchesByPain(skillTrees.WU, kneeInput.athlete).keep,
-      );
 
       const setList = generateStrengthTest(kneeInput, skillTrees);
 
       const warmUpIds = listWarmUpBranchIds(setList);
       expect(warmUpIds).toHaveLength(5);
-      expect(warmUpIds.filter((id) => kneeBlockedIds.includes(id))).toEqual([]);
+      expect(warmUpIds).toEqual(
+        listWarmUpBranchIds(generateStrengthTest(painFreeInput, skillTrees)),
+      );
       expect(
         setList
           .filter((entry) => entry.skill === "WU" && entry.branchId !== "-1")
@@ -618,13 +592,13 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
       expect(describeSetListEntries(setList)).toEqual([
         "432 1/1",
         "pause 10",
-        "135 1/1",
+        "493 1/1",
         "pause 10",
         "1112 1/1",
         "pause 10",
         "421 1/1",
         "pause 10",
-        "401 1/1",
+        "400 1/1",
         "pause 30",
         "25 1/4",
         "pause 60",
@@ -710,7 +684,7 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
           .filter((entry) => entry.repetition !== undefined)
           .map((entry) => [entry.exerciseId, entry.weight]),
       }).toEqual({
-        warmUpBranches: ["410", "409", "1026", "427", "422"],
+        warmUpBranches: ["410", "411", "1026", "427", "421"],
         testWeights: [
           ["25", 25],
           ["25", 35],

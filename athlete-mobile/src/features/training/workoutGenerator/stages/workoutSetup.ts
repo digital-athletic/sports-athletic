@@ -10,6 +10,7 @@ import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getUserTagValues } from "@/utils/tagUtils";
 import {
   createEmptyPicksWorkout,
+  type PicksPoolRules,
   type PicksWorkout,
   resolvePicksWorkout,
 } from "../blockHandlers/picks/picksWorkoutRules";
@@ -32,12 +33,15 @@ const createFrozenList = (list: string[]): readonly string[] =>
 /**
  * Adds the derived inputs that several blocks share and applies the picks
  * workout rules of the template. The muscle soreness check stays in its rule
- * family, which throws only for a skill it filters.
+ * family, which throws only for a skill it filters. `picksPoolRules` picks
+ * the families the picks pool filter applies; the default is the short
+ * workout rules.
  */
 export const setUpWorkout = (
   input: GenerationInput,
   template?: InterpretedWorkout,
   skillTrees?: Readonly<Record<string, SkillTreeType>>,
+  picksPoolRules?: PicksPoolRules,
 ): WorkoutInput => {
   const pains = getUserTagValues(
     input.athlete.workoutData?.tags,
@@ -51,7 +55,12 @@ export const setUpWorkout = (
     preventionSkills: createFrozenList(getPreventionsFromPains(pains)),
     hasWeights: hasWeights(input.equipment),
     picksWorkout: template
-      ? resolvePicksWorkout(template, { ...input, athleteLevel }, skillTrees)
+      ? resolvePicksWorkout(
+          template,
+          { ...input, athleteLevel },
+          skillTrees,
+          picksPoolRules,
+        )
       : createEmptyPicksWorkout(),
   });
 };

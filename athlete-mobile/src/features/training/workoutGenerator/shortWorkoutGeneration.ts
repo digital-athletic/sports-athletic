@@ -7,6 +7,7 @@ import { createCardioDurationHandler } from "./blockHandlers/duration/cardioDura
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import { restrictTemplateBranchesBlock } from "./blockHandlers/branches/templateBranchRestriction";
 import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
+import { SHORT_WORKOUT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "./generationInput/generationInput";
 import type { BlockHandlerRegistry } from "./stages/blockWalk";
 import {
@@ -78,5 +79,6 @@ export const generateShortWorkoutFromTemplate = (
     createSetListBuilder: (workoutInput) =>
       createSetListBuilder(workoutInput, SHORT_WORKOUT_SET_LIST_RULES),
     skillTrees,
+    picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
   }).setList;
 };

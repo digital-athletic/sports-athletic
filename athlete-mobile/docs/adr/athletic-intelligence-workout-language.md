@@ -43,7 +43,7 @@ The generator runs these workout sources:
 | Training day, AIWL generator flag on | AIWL generator | The generator runs the stored training day as a [stored day workout](./workout-generator-architecture.md#stored-workouts), which is no AIWL document | `branches`, one block per stored skill |
 | Training day, flag off (default) | Old training day path | none | none |
 | Strength test (app) | Old path | none | none |
-| Strength test source, inactive | AIWL generator | Bundled template `TEST.json`, outside the short workout templates | `picks` with the strength test warm-up rules, then `exercises` with `testSets` |
+| Strength test source, inactive | AIWL generator | Bundled template `TEST.json`, outside the short workout templates | `picks` on the shared picks handler, then `exercises` with `testSets` |
 | Trainer workout | none | No editor exists | `duration` (planned) |
 
 A template configures these training day skills:

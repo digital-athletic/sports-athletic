@@ -19,11 +19,12 @@ const NO_BRANCHES = new Set<string>();
 describe("branchesHandler: createBranchesBlockHandler", () => {
   const { handleBlock, usedBranchScope } = createBranchesBlockHandler(
     lookUpStoredBranchInCatalog,
+    "drop",
   );
 
   // a forgotten lookup would read the catalog instead of a stored snapshot
-  it("takes the stored branch lookup without a default", () => {
-    expect(createBranchesBlockHandler).toHaveLength(1);
+  it("takes the stored branch lookup and the missing branch rule without a default", () => {
+    expect(createBranchesBlockHandler).toHaveLength(2);
   });
 
   it("resolves every stored branch in stored order at the athlete level", () => {
@@ -182,6 +183,77 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
   });
 });
 
+describe("branchesHandler: a branch ID the catalog lacks", () => {
+  const { handleBlock } = createBranchesBlockHandler(
+    lookUpStoredBranchInCatalog,
+    "replace",
+  );
+  const input = generateWorkoutInput({
+    equipment: ["DUMBBELL", "BARBELL"],
+    exerciseCatalog,
+    random: () => 0,
+  });
+
+  const listBranchIds = (result: BlockResult) =>
+    result.status === "filled"
+      ? result.exercises.map(({ branchId }) => branchId)
+      : [];
+
+  // no skill tree holds the branch ID 900001
+  it("keeps the found branch and adds a replacement of the same skill", () => {
+    const result = handleBlock(
+      generateBranchesBlock("GKS", ["510", "900001"]),
+      input,
+      NO_BRANCHES,
+    );
+
+    const [kept, replacement, ...rest] = listBranchIds(result);
+    expect(kept).toBe("510");
+    expect(rest).toEqual([]);
+    expect(replacement).not.toBe("900001");
+    expect(input.branchLookupIndex.get(replacement)?.skillTreeName).toBe("GKS");
+  });
+
+  it("replaces a block whose every branch ID the catalog lacks", () => {
+    const result = handleBlock(
+      generateBranchesBlock("GKS", ["900001"]),
+      input,
+      NO_BRANCHES,
+    );
+
+    const branchIds = listBranchIds(result);
+    expect(branchIds).toHaveLength(1);
+    expect(input.branchLookupIndex.get(branchIds[0])?.skillTreeName).toBe(
+      "GKS",
+    );
+  });
+
+  it("requests one replacement for a repeated missing branch ID", () => {
+    const result = handleBlock(
+      generateBranchesBlock("GKS", ["510", "900001", "900001"]),
+      input,
+      NO_BRANCHES,
+    );
+
+    expect(listBranchIds(result)).toHaveLength(2);
+  });
+
+  it("drops the missing branch ID under the drop rule", () => {
+    const { handleBlock: handleDropBlock } = createBranchesBlockHandler(
+      lookUpStoredBranchInCatalog,
+      "drop",
+    );
+
+    const result = handleDropBlock(
+      generateBranchesBlock("GKS", ["510", "900001"]),
+      input,
+      NO_BRANCHES,
+    );
+
+    expect(listBranchIds(result)).toEqual(["510"]);
+  });
+});
+
 describe("branchesHandler: stored day entries", () => {
   it("generates from the stored entries, including an ID no skill tree holds", () => {
     const { handleBlock } = createBranchesBlockHandler(
@@ -191,6 +263,7 @@ describe("branchesHandler: stored day entries", () => {
           generateStoredDayEntry("900001", ["REGION_CORE"], "16"),
         ],
       }),
+      "drop",
     );
     const input = generateWorkoutInput({ exerciseCatalog });
 
@@ -224,6 +297,7 @@ describe("branchesHandler: stored day entries", () => {
           generateStoredDayEntry("2", [], "20"),
         ],
       }),
+      "drop",
     );
     const input = generateWorkoutInput({ exerciseCatalog });
 
@@ -249,6 +323,7 @@ describe("branchesHandler: stored day entries", () => {
 describe("branchesHandler: cardio swap", () => {
   const { handleBlock } = createBranchesBlockHandler(
     lookUpStoredBranchInCatalog,
+    "drop",
   );
   // sore quadriceps block every cardio skill, so each requests a lower body replacement
   const soreInput = generateWorkoutInput({
@@ -388,6 +463,7 @@ describe("branchesHandler: duplicate exercises", () => {
           generateStoredDayEntry("2", ["REGION_UPPER_BODY"], "336"),
         ],
       }),
+      "drop",
     );
     const input = generateWorkoutInput({
       equipment: ["DUMBBELL", "BARBELL"],
@@ -421,6 +497,7 @@ describe("branchesHandler: duplicate exercises", () => {
           generateStoredDayEntry("2", [], "336"),
         ],
       }),
+      "drop",
     );
     const input = generateWorkoutInput({ exerciseCatalog });
 
@@ -452,6 +529,7 @@ describe("branchesHandler: duplicate exercises", () => {
             generateStoredDayEntry("3", ["REGION_UPPER_BODY"], "16"),
           ],
         }),
+        "drop",
       );
       const input = generateWorkoutInput({
         pains,

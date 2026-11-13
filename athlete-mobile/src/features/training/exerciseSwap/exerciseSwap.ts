@@ -5,6 +5,10 @@ import type { GeneratedSetListEntry } from "../models/SetListEntry";
 import type { UserExerciseDataType } from "../models/UserExerciseData";
 import type { StoredBranch } from "../workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import type { StoredTrainingDay } from "../workoutGenerator/storedDayWorkout";
+import {
+  isAiwlTrainingDay,
+  type TrainingDay,
+} from "../workoutGenerator/trainingDayGeneration";
 
 export interface ExerciseSwapState {
   skill: string;
@@ -48,6 +52,50 @@ export const swapBranchInStoredDay = (
     ),
   },
 });
+
+/**
+ * Returns a copy of the training day with the alternative in place of the
+ * branch under the skill. An old training stores the alternative as a copied
+ * branch, an AIWL training stores its branch ID in every block of the skill.
+ */
+export const swapBranchInTrainingDay = (
+  day: TrainingDay,
+  skill: string,
+  branchId: string,
+  alternative: StoredBranch,
+): TrainingDay =>
+  isAiwlTrainingDay(day)
+    ? {
+        ...day,
+        blocks: day.blocks.map((block) =>
+          block.kind === "branches" && block.skill === skill
+            ? {
+                ...block,
+                branches: block.branches.map((planned) =>
+                  planned === branchId ? alternative.branchId : planned,
+                ),
+              }
+            : block,
+        ),
+      }
+    : swapBranchInStoredDay(
+        day,
+        skill,
+        branchId,
+        toExerciseBranch(alternative),
+      );
+
+/** The branch IDs a training day plans under the skill. */
+const listPlannedBranchIds = (day: TrainingDay, skill: string): string[] =>
+  isAiwlTrainingDay(day)
+    ? day.blocks.flatMap((block) =>
+        block.kind === "branches" && block.skill === skill
+          ? block.branches
+          : [],
+      )
+    : (day.skills[skill] ?? []).flatMap(({ branchId }) =>
+        branchId ? [branchId] : [],
+      );
 
 /**
  * Replaces the session entries of a branch, in place and in order, with the
@@ -101,7 +149,7 @@ interface SwappableBranch {
  */
 export const listSwappableBranches = (
   session: readonly UserExerciseDataType[],
-  day: StoredTrainingDay,
+  day: TrainingDay,
 ): SwappableBranch[] => {
   const skillsByBranch = new Map<string, Set<SwappableBranch["skill"]>>();
   for (const { branchId, skill } of session) {
@@ -112,9 +160,7 @@ export const listSwappableBranches = (
   }
   return [...skillsByBranch].flatMap(([branchId, skills]) => {
     const [skill] = [...skills];
-    const inPlan = day.skills[skill]?.some(
-      (entry) => entry.branchId === branchId,
-    );
+    const inPlan = listPlannedBranchIds(day, skill).includes(branchId);
     return skills.size === 1 && inPlan ? [{ branchId, skill }] : [];
   });
 };

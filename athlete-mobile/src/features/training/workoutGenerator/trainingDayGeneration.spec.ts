@@ -4,10 +4,153 @@ import { generateSeededRandom } from "@test/factories/seededRandom";
 import { describeSetListEntries } from "@test/factories/setListDescription";
 import { generateStoredDayEntry } from "@test/factories/storedBranch";
 import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
+import {
+  generateBranchesBlock,
+  generatePicksBlock,
+  generateTemplate,
+} from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import { generateTrainingDayFromStoredDay } from "./trainingDayGeneration";
+import { toExerciseBranch } from "@/features/training/exerciseSwap/exerciseSwap";
+import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
+import type { GenerationInput } from "./generationInput/generationInput";
+import {
+  generateTrainingDay,
+  generateTrainingDayFromStoredDay,
+} from "./trainingDayGeneration";
 
 const exerciseCatalog = loadExercises();
+
+describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () => {
+  // the place holds weights, so GKS replaces from its own tree
+  const generateInput = (): GenerationInput =>
+    generateGenerationInput({
+      exerciseCatalog,
+      equipment: ["DUMBBELL", "BARBELL", "TREADMILL"],
+      random: () => 0,
+    });
+
+  // Copies catalog branches into the entries an old training stores.
+  const copyCatalogBranches = (input: GenerationInput, branchIds: string[]) =>
+    branchIds.map((branchId) => {
+      const indexed = input.branchLookupIndex.get(branchId);
+      if (!indexed) throw new Error(`No catalog branch ${branchId}`);
+      return toExerciseBranch({ branchId, branch: indexed.branch });
+    });
+
+  // no skill tree holds the branch ID 900001
+  const workout = generateTemplate([
+    generateBranchesBlock("GKS", ["510", "900001"], { duration: 600 }),
+    generateBranchesBlock("CARDIO_5", ["576"], { duration: 1500 }),
+  ]);
+
+  it("generates its blocks with their durations and replaces a removed branch ID from the same skill", () => {
+    const input = generateInput();
+
+    const setList = generateTrainingDay(workout, input);
+
+    expect([...new Set(setList.map(({ skill }) => skill))]).toEqual([
+      "GKS",
+      "CARDIO_5",
+    ]);
+    const strengthBranchIds = [
+      ...new Set(
+        setList
+          .filter(
+            ({ skill, branchId }) =>
+              skill === "GKS" && !isPlaceholderBranch(branchId),
+          )
+          .map(({ branchId }) => branchId),
+      ),
+    ];
+    // the set list builder orders the exercises and adds support exercises
+    // under the placeholder branch
+    expect(strengthBranchIds).toHaveLength(2);
+    expect(strengthBranchIds).toContain("510");
+    const replacement = strengthBranchIds.find((id) => id !== "510");
+    expect(replacement).not.toBe("900001");
+    expect(input.branchLookupIndex.get(replacement ?? "")?.skillTreeName).toBe(
+      "GKS",
+    );
+    expect(
+      setList
+        .filter(({ skill }) => skill === "CARDIO_5")
+        .map(({ branchId, duration }) => [branchId, duration]),
+    ).toEqual([["576", 1500]]);
+    // an old training of the same branches and minutes times the GKS block alike
+    expect(setList).toEqual(
+      generateTrainingDayFromStoredDay(
+        {
+          skills: {
+            GKS: copyCatalogBranches(input, ["510", replacement ?? ""]),
+            CARDIO_5: copyCatalogBranches(input, ["576"]),
+          },
+          lengths: { GKS: 10, CARDIO_5: 25 },
+        },
+        generateInput(),
+      ),
+    );
+  });
+
+  it("reads its branches from the catalog, not from a stored copy", () => {
+    // the catalog trains exercise 39 on branch 576
+    const setList = generateTrainingDay(
+      generateTemplate([
+        generateBranchesBlock("CARDIO_5", ["576"], { duration: 1500 }),
+      ]),
+      generateInput(),
+    );
+
+    expect(setList).toEqual([
+      {
+        branchId: "576",
+        exerciseId: "39",
+        set: [1, 1],
+        skill: "CARDIO_5",
+        duration: 1500,
+      },
+    ]);
+  });
+
+  it("throws for a block of another kind than branches", () => {
+    expect(() =>
+      generateTrainingDay(
+        generateTemplate([generatePicksBlock("WU")]),
+        generateInput(),
+      ),
+    ).toThrow("A training day runs branches blocks only");
+  });
+
+  it("throws the anamnesis error for an athlete without workout data", () => {
+    const thrown = catchThrownValue(() =>
+      generateTrainingDay(
+        workout,
+        generateGenerationInput({ exerciseCatalog, withoutWorkoutData: true }),
+      ),
+    );
+
+    expect(thrown).toEqual({
+      type: "NO_ANAMNESIS",
+      subtype: "MISSING_WORKOUT_DATA",
+      params: [],
+    });
+  });
+});
+
+describe("trainingDayGeneration: generateTrainingDay of an old training", () => {
+  it("generates the set list of the stored day", () => {
+    const day = generateStoredTrainingDay(
+      { CARDIO_5: ["900001"] },
+      { CARDIO_5: 25 },
+      "721",
+    );
+    const generateInput = () =>
+      generateGenerationInput({ exerciseCatalog, random: () => 0 });
+
+    expect(generateTrainingDay(day, generateInput())).toEqual(
+      generateTrainingDayFromStoredDay(day, generateInput()),
+    );
+  });
+});
 
 describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
   it("generates from the branch snapshot the stored day holds, not from the catalog", () => {

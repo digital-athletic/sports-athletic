@@ -1,5 +1,4 @@
 import {
-  AIWL_TRAINING_DAY_ERROR,
   isLegacyTraining,
   readCopiedBranches,
   type UserTrainingType,
@@ -10,10 +9,11 @@ import {
   requireTrainingPlan,
   requireWorkoutData,
 } from "@/features/training/utils/userDataUtils";
+import { TemplateSchema } from "@/schemas/aiwl.schema";
 import { SkillBranchesSchema } from "@/schemas/generator.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
-import type { StoredTrainingDay } from "@/features/training/workoutGenerator/storedDayWorkout";
+import type { TrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 
 // Past three weeks without training the plan regenerates, so the sections
 // extend only between one and three weeks.
@@ -23,17 +23,22 @@ const MAX_DAYS_TO_EXTEND = 21;
 /**
  * Selects the stored training day of a weekday from the athlete's plan, as the
  * old generator does: the given section or the section of today, extended for
- * missed weeks, then the weekday's training or the section's first one.
+ * missed weeks, then the weekday's training or the section's first one. A legacy
+ * training returns its copied branches and minutes, an AIWL training a copy of
+ * its workout. Either copy fails on data that breaks its schema.
  *
- * selectStoredTrainingDay(user, 1, undefined, 0)
+ * selectStoredTrainingDay(oldPlanUser, 1, undefined, 0)
  * → { skills: { WU: [{ branchId: "410", ... }] }, lengths: { WU: 5 } }
+ *
+ * selectStoredTrainingDay(aiwlPlanUser, 1, undefined, 0)
+ * → { aiwl: 1, id: "TRAINING_DAY_1", blocks: [{ kind: "branches", ... }], ... }
  */
 export const selectStoredTrainingDay = (
   user: UserType,
   weekday: number,
   givenSection: number | undefined,
   daysSinceLastWorkout: number,
-): StoredTrainingDay => {
+): TrainingDay => {
   requireWorkoutData(user);
   const trainingPlan = requireTrainingPlan(user);
 
@@ -63,7 +68,11 @@ export const selectStoredTrainingDay = (
     trainings.find((entry) => entry.weekday === weekday) ?? trainings[0];
 
   if (!isLegacyTraining(training)) {
-    throw new Error(AIWL_TRAINING_DAY_ERROR);
+    return cloneWithValidation(
+      training.workout,
+      TemplateSchema,
+      "currTraining.workout",
+    );
   }
 
   return {

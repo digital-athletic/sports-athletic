@@ -26,7 +26,11 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { TemporalDataType } from "@/features/training/models/TemporalData";
 import type { TrainingType } from "@/features/training/models/Training";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
-import type { UserTrainingType } from "@/features/training/models/UserTraining";
+import {
+  AIWL_TRAINING_DAY_ERROR,
+  isOldTraining,
+  type UserTrainingType,
+} from "@/features/training/models/UserTraining";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import {
@@ -548,6 +552,9 @@ export default class TrainingGenerator {
     if (typeof currTraining === "undefined") {
       // use first training in list
       currTraining = trainings[0];
+    }
+    if (!isOldTraining(currTraining)) {
+      throw new Error(AIWL_TRAINING_DAY_ERROR);
     }
 
     if (TrainingGenerator.DEBUG) {

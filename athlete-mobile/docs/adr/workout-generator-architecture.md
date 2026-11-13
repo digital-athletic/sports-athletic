@@ -235,6 +235,16 @@ A plan training may already store the target shape, an AIWL training. `generateT
 2. The branches handler takes a missing branch rule. Under `"replace"`, the AIWL training rule, each distinct branch ID the catalog lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. Legacy trainings and short workouts keep the `"drop"` rule.
 3. An AIWL training holds branches blocks only. The other handlers throw.
 
+The plan features outside the generator read both shapes. `readPlannedBranches` returns the copied branches of an old training, and for an AIWL training the catalog branches of its branch IDs. Every feature skips a branch ID the catalog lacks, because the generator replaces it at run time.
+
+| Feature | Old training | AIWL training |
+|---|---|---|
+| Strength test prompt | exercises of every level of each copied branch | exercises of every level of each resolved branch |
+| Exercise swap | swaps a branch copy in the generated day | swaps a branch ID in the generated day |
+| Branch level progression | replaces one copied entry with one or two entries | replaces one branch ID with one or two branch IDs |
+| Plan regeneration | keeps the old day when skills and minutes match | keeps the old branch IDs when blocks and durations match |
+| Broken plan check | adult-only branches for a child, max strength lifts without equipment | the same two rules on the resolved branches |
+
 ### Routing
 
 The router `src/features/training/workoutGeneratorRouter.ts` sends every training type to the AIWL generator and picks the entry point per type:

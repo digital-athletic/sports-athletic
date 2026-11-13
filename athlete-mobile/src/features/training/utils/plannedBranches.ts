@@ -4,7 +4,7 @@ import type { ExerciseBranchType } from "@/features/training/models/ExerciseBran
 import {
   type AiwlTrainingType,
   type CopiedBranchesType,
-  isOldTraining,
+  isLegacyTraining,
   type UserTrainingType,
 } from "@/features/training/models/UserTraining";
 import {
@@ -31,7 +31,7 @@ const resolveWorkoutBranches = (
 };
 
 /**
- * Returns the branches a training plans, per skill. An old training returns
+ * Returns the branches a training plans, per skill. A legacy training returns
  * its copied branches. An AIWL training resolves the branch IDs of its
  * branches blocks through the skill catalog, with tags and an exercise per
  * level. The catalog lacks some IDs, and the generator replaces those at run
@@ -44,7 +44,7 @@ export const readPlannedBranches = (
   training: UserTrainingType,
   branchLookupIndex: BranchLookupIndex = loadBranchLookupIndex(),
 ): CopiedBranchesType =>
-  isOldTraining(training)
+  isLegacyTraining(training)
     ? training.skills
     : resolveWorkoutBranches(training, branchLookupIndex);
 

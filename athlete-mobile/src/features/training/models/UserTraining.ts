@@ -48,3 +48,35 @@ export const readCopiedBranches = (
   training: UserTrainingType,
 ): CopiedBranchesType | undefined =>
   isLegacyTraining(training) ? (training.skills ?? {}) : undefined;
+
+/**
+ * Returns a copy of the AIWL workout with the replacement IDs in place of the
+ * first occurrence of the branch ID in the branches blocks of the skill.
+ * Returns undefined when no block of the skill plans the branch ID.
+ *
+ * replaceBranchIdInWorkout({ blocks: [{ kind: "branches", skill: "SK", branches: ["10", "11"] }] }, "SK", "10", ["20", "21"])
+ * → { blocks: [{ kind: "branches", skill: "SK", branches: ["20", "21", "11"] }] }
+ */
+export const replaceBranchIdInWorkout = (
+  workout: Template,
+  skill: string,
+  branchId: string,
+  replacementIds: readonly string[],
+): Template | undefined => {
+  const blockIndex = workout.blocks.findIndex(
+    (block) =>
+      block.kind === "branches" &&
+      block.skill === skill &&
+      block.branches.includes(branchId),
+  );
+  const block = workout.blocks[blockIndex];
+  if (block?.kind !== "branches") return undefined;
+  const branches = [...block.branches];
+  branches.splice(branches.indexOf(branchId), 1, ...replacementIds);
+  return {
+    ...workout,
+    blocks: workout.blocks.map((other, index) =>
+      index === blockIndex ? { ...block, branches } : other,
+    ),
+  };
+};

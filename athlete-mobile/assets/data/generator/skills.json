@@ -73,7 +73,10 @@
     "rest": { "withinSuperset": 30, "betweenSets": 60, "afterExercise": 60 }
   },
   "PREV": {
-    "skillTree": { "withWeights": ["PREV"], "withoutWeights": ["PREV"] },
+    "skillTree": {
+      "withWeights": ["PREV", "PREVKG"],
+      "withoutWeights": ["PREV", "PREVKG"]
+    },
     "intensity": "PREV",
     "focusArea": "PREVENTION",
     "progression": true,

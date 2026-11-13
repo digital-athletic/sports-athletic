@@ -27,5 +27,8 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/src/$1",
     "^@test/(.*)$": "<rootDir>/test/$1",
     "@react-native-community/netinfo": "<rootDir>/test/netinfoMock",
+    // The native views of @expo/ui do not render in Jest.
+    "^@expo/ui/community/segmented-control$":
+      "<rootDir>/test/expoSegmentedControlMock",
   },
 };

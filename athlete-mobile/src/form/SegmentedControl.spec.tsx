@@ -2,29 +2,11 @@ import { fireEvent, render, screen } from "@/utils/testUtils";
 import { SegmentedControl } from "./SegmentedControl";
 
 const options = [
-  { value: "workouts", label: "Training", testID: "segment-workouts" },
-  { value: "tests", label: "Power test", testID: "segment-tests" },
+  { value: "workouts", label: "Training" },
+  { value: "tests", label: "Power test" },
 ] as const;
 
-describe("SegmentedControl: pill toggle", () => {
-  it("groups the segments in a labelled tab list", async () => {
-    await render(
-      <SegmentedControl
-        accessibilityLabel="View"
-        options={options}
-        value="workouts"
-        onChange={jest.fn()}
-      />,
-    );
-
-    // The tab list stays non accessible so that its tabs remain focusable on iOS.
-    expect(screen.getByLabelText("View")).toHaveProp(
-      "accessibilityRole",
-      "tablist",
-    );
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
-  });
-
+describe("SegmentedControl: native control", () => {
   it("marks only the segment of the current value as selected", async () => {
     await render(
       <SegmentedControl
@@ -39,7 +21,7 @@ describe("SegmentedControl: pill toggle", () => {
     expect(screen.getByRole("tab", { name: "Training" })).not.toBeSelected();
   });
 
-  it("reports the value of the pressed segment", async () => {
+  it("reports the value of the pressed segment, not its label", async () => {
     const onChange = jest.fn();
     await render(
       <SegmentedControl
@@ -50,7 +32,7 @@ describe("SegmentedControl: pill toggle", () => {
       />,
     );
 
-    await fireEvent.press(screen.getByTestId("segment-tests"));
+    await fireEvent.press(screen.getByRole("tab", { name: "Power test" }));
 
     expect(onChange).toHaveBeenCalledWith("tests");
   });

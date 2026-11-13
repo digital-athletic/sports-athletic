@@ -71,13 +71,13 @@ describe("StatisticsScreen: range selector", () => {
   });
 
   it("shows the range buttons on both sub tabs", async () => {
-    const { getByLabelText, getByTestId } = await render(<StatisticsScreen />);
+    const { getByLabelText, getByRole } = await render(<StatisticsScreen />);
 
     for (const scale of SCALES) {
       expect(getByLabelText(scaleLabel(scale))).toBeTruthy();
     }
 
-    await fireEvent.press(getByTestId("statistics-tab-tests"));
+    await fireEvent.press(getByRole("tab", { name: "Power test" }));
 
     for (const scale of SCALES) {
       expect(getByLabelText(scaleLabel(scale))).toBeTruthy();
@@ -97,24 +97,23 @@ describe("StatisticsScreen: range selector", () => {
   });
 
   it("keeps the selected range across sub tab switches and filters strength tests", async () => {
-    const { getByLabelText, getByTestId, queryByTestId } = await render(
-      <StatisticsScreen />,
-    );
+    const { getByLabelText, getByRole, getByTestId, queryByTestId } =
+      await render(<StatisticsScreen />);
 
     await fireEvent.press(getByLabelText(scaleLabel("week")));
-    await fireEvent.press(getByTestId("statistics-tab-tests"));
+    await fireEvent.press(getByRole("tab", { name: "Power test" }));
 
     expect(queryByTestId("power-test-entry-0")).not.toBeNull();
     expect(queryByTestId("power-test-entry-1")).toBeNull();
 
-    await fireEvent.press(getByTestId("statistics-tab-workouts"));
+    await fireEvent.press(getByRole("tab", { name: "Training" }));
 
     expect(
       within(getByTestId("overall-summary")).queryByText("5"),
     ).not.toBeNull();
 
     await fireEvent.press(getByLabelText(scaleLabel("total")));
-    await fireEvent.press(getByTestId("statistics-tab-tests"));
+    await fireEvent.press(getByRole("tab", { name: "Power test" }));
 
     expect(queryByTestId("power-test-entry-1")).not.toBeNull();
   });
@@ -205,13 +204,15 @@ describe("StatisticsScreen: export button", () => {
     await act(() => {
       useCompletedWorkoutsStore.getState().clearWorkoutHistory();
     });
-    const { getByTestId, getByLabelText } = await render(<StatisticsScreen />);
+    const { getByTestId, getByLabelText, getByRole } = await render(
+      <StatisticsScreen />,
+    );
 
     expect(
       getByTestId("statistics-export-button").props.accessibilityState,
     ).toMatchObject({ disabled: true });
 
-    await fireEvent.press(getByTestId("statistics-tab-tests"));
+    await fireEvent.press(getByRole("tab", { name: "Power test" }));
 
     expect(
       getByTestId("statistics-export-button").props.accessibilityState,

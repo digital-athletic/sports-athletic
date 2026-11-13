@@ -279,22 +279,22 @@ describe("planAssembly: training day", () => {
       { planStartDate: "2026-11-02", trainingPlaces: generateTrainingPlaces() },
     );
 
-    expect(
-      requireLegacyTraining(plan.sections[0].trainings[0]).skills,
-    ).toEqual({
-      SWR1: [
-        {
-          branchId: "7",
-          tags: ["REGION_CORE"],
-          exercises: { 1: { exerciseId: "e1" }, 2: { exerciseId: "e2" } },
-        },
-        {
-          branchId: "9",
-          tags: ["REGION_UPPER_BODY"],
-          exercises: { 1: { exerciseId: "e1" }, 2: { exerciseId: "e2" } },
-        },
-      ],
-    });
+    expect(requireLegacyTraining(plan.sections[0].trainings[0]).skills).toEqual(
+      {
+        SWR1: [
+          {
+            branchId: "7",
+            tags: ["REGION_CORE"],
+            exercises: { 1: { exerciseId: "e1" }, 2: { exerciseId: "e2" } },
+          },
+          {
+            branchId: "9",
+            tags: ["REGION_UPPER_BODY"],
+            exercises: { 1: { exerciseId: "e1" }, 2: { exerciseId: "e2" } },
+          },
+        ],
+      },
+    );
   });
 
   it("leaves an empty skill out of the stored skills", () => {

@@ -102,7 +102,7 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
   return (
     <ScrollBox
       flex={1}
-      backgroundColor="white"
+      backgroundColor="surface"
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{ padding: spacing.l }}
       testID="own-trainings-list"

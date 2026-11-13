@@ -15,7 +15,7 @@ export default function TrainingLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: colors.lightGrey1 },
+        headerStyle: { backgroundColor: colors.surfaceContainerLow },
         headerBackButtonDisplayMode: "minimal",
       }}
     >

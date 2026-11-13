@@ -27,7 +27,7 @@ const StageMark: FC<{ done: boolean; active: boolean }> = ({
     <AppIcon
       icon={done ? IconCircleCheckFilled : IconCircle}
       size={24}
-      color={done ? colors.primary : colors.lightGrey3}
+      color={done ? colors.primary : colors.outline}
       decorative
     />
   );
@@ -43,7 +43,7 @@ export const GeneratingStages: FC<GeneratingStagesProps> = ({
     padding="l"
     borderRadius="xl"
     borderWidth={1.5}
-    borderColor="lightGrey2"
+    borderColor="outlineVariant"
     alignSelf="stretch"
   >
     {stages.map((stage, index) => {
@@ -57,7 +57,7 @@ export const GeneratingStages: FC<GeneratingStagesProps> = ({
             <Text
               variant="body"
               fontWeight={active ? "600" : "400"}
-              color={index > activeIndex ? "darkGrey1" : "darkGrey3"}
+              color={index > activeIndex ? "onSurfaceVariant" : "onSurface"}
               {...(active ? liveRegionProps : {})}
             >
               {stage}

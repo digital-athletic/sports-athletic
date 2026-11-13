@@ -132,14 +132,14 @@ export default function EquipmentDetailsScreen() {
       />
       <ScrollBox
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         contentInsetAdjustmentBehavior="automatic"
       >
         <Box padding="m">
-          <Text variant="title" color="darkGrey3">
+          <Text variant="title" color="onSurface">
             {t(equipmentCountKey)}
           </Text>
-          <Text variant="body" color="darkGrey1" marginBottom="s">
+          <Text variant="body" color="onSurfaceVariant" marginBottom="s">
             {t("equipment.xEquipmentPiecesSelected", {
               count: placeEquipment.length,
             })}
@@ -154,7 +154,7 @@ export default function EquipmentDetailsScreen() {
                 style={[
                   styles.equipmentItem,
                   {
-                    borderTopColor: colors.lightGrey2,
+                    borderTopColor: colors.outlineVariant,
                   },
                 ]}
                 onPress={() => handleToggleEquipment(equipmentId, isActive)}
@@ -174,10 +174,10 @@ export default function EquipmentDetailsScreen() {
                     width={28}
                     height={28}
                     borderRadius="xl"
-                    backgroundColor="lightGrey2"
+                    backgroundColor="surfaceContainerHigh"
                   />
                 )}
-                <Text variant="button" color="darkGrey3" marginLeft="m">
+                <Text variant="button" color="onSurface" marginLeft="m">
                   {t(`equipment.items.${equipmentId}`)}
                 </Text>
               </TouchableOpacity>
@@ -195,10 +195,10 @@ export default function EquipmentDetailsScreen() {
         >
           <Button onPress={handleSaveChanges}>
             <Box alignItems="center">
-              <Text variant="button" color="white">
+              <Text variant="button" color="onPrimary">
                 {t("common.save")}
               </Text>
-              <Text variant="small" color="white">
+              <Text variant="small" color="onPrimary">
                 {t("equipment.planWillBeUpdated")}
               </Text>
             </Box>

@@ -18,7 +18,7 @@ export const ListDivider: FC<Props> = ({ hasLeadingIcon = true }) => {
   if (!hasLeadingIcon) {
     return (
       <Box paddingLeft="l">
-        <Box height={1} borderTopWidth={0.5} borderTopColor="lightGrey2" />
+        <Box height={1} borderTopWidth={0.5} borderTopColor="outlineVariant" />
       </Box>
     );
   }
@@ -30,7 +30,7 @@ export const ListDivider: FC<Props> = ({ hasLeadingIcon = true }) => {
         flex={5}
         height={1}
         borderTopWidth={0.5}
-        borderTopColor={"lightGrey2"}
+        borderTopColor="outlineVariant"
       />
     </Box>
   );

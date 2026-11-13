@@ -43,17 +43,17 @@ export const EmailInputField: FC<EmailInputFieldProps> = ({
       <Box
         flexDirection="row"
         alignItems="center"
-        backgroundColor="white"
+        backgroundColor="surfaceContainerLowest"
         borderRadius="xl"
         height={HEIGHT}
         paddingLeft="m"
         borderWidth={1.5}
-        borderColor={showError ? "error" : "lightGrey3"}
+        borderColor={showError ? "error" : "outline"}
       >
         <AppIcon
           icon={IconMail}
           size={22}
-          color={colors.darkGrey1}
+          color={colors.onSurfaceVariant}
           decorative
         />
         <BasicTextInput

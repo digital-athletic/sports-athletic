@@ -23,8 +23,10 @@ export const WeekdayToggle: FC<WeekdayToggleProps> = ({
       style={[
         styles.day,
         {
-          backgroundColor: active ? colors.primary : colors.white,
-          borderColor: active ? colors.primary : colors.lightGrey2,
+          backgroundColor: active
+            ? colors.primary
+            : colors.surfaceContainerLowest,
+          borderColor: active ? colors.primary : colors.outlineVariant,
         },
       ]}
       accessibilityRole="button"
@@ -35,7 +37,7 @@ export const WeekdayToggle: FC<WeekdayToggleProps> = ({
       <Text
         variant="body"
         fontWeight={active ? "700" : "500"}
-        color={active ? "white" : "darkGrey3"}
+        color={active ? "onPrimary" : "onSurface"}
       >
         {label}
       </Text>

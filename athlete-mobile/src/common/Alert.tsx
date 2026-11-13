@@ -9,6 +9,7 @@ import {
   Platform,
   type AlertOptions,
 } from "react-native";
+import { useTheme } from "../theme/theme";
 
 export interface AlertButton {
   text: string;
@@ -53,6 +54,7 @@ function hideAlert() {
 /** Render this once at app root for web alert support */
 export function AlertHost() {
   const [state, setState] = useState(currentState);
+  const { colors } = useTheme();
 
   useEffect(() => {
     listener = setState;
@@ -66,21 +68,44 @@ export function AlertHost() {
   return (
     <Modal visible transparent animationType="fade">
       <View style={styles.backdrop}>
-        <View style={styles.dialog}>
-          <Text style={styles.title}>{state.title}</Text>
-          {state.message && <Text style={styles.message}>{state.message}</Text>}
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            styles.scrim,
+            { backgroundColor: colors.scrim },
+          ]}
+        />
+        <View
+          style={[
+            styles.dialog,
+            { backgroundColor: colors.surfaceContainerLowest },
+          ]}
+        >
+          <Text style={[styles.title, { color: colors.onSurface }]}>
+            {state.title}
+          </Text>
+          {state.message && (
+            <Text style={[styles.message, { color: colors.onSurfaceVariant }]}>
+              {state.message}
+            </Text>
+          )}
           <View style={styles.buttons}>
             {state.buttons.map((btn, i) => (
               <Pressable
                 key={i}
                 accessibilityRole="button"
-                style={styles.button}
+                style={[
+                  styles.button,
+                  { backgroundColor: colors.surfaceContainerHigh },
+                ]}
                 onPress={() => {
                   hideAlert();
                   btn.onPress?.();
                 }}
               >
-                <Text style={styles.buttonText}>{btn.text}</Text>
+                <Text style={[styles.buttonText, { color: colors.onSurface }]}>
+                  {btn.text}
+                </Text>
               </Pressable>
             ))}
           </View>
@@ -108,12 +133,13 @@ export const Alert = {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
+  scrim: {
+    opacity: 0.5,
+  },
   dialog: {
-    backgroundColor: "white",
     borderRadius: 12,
     padding: 20,
     minWidth: 250,
@@ -127,7 +153,6 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 13,
-    color: "#666",
     textAlign: "center",
     marginBottom: 20,
   },
@@ -137,7 +162,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   button: {
-    backgroundColor: "#e5e5e5",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,

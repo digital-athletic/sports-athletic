@@ -35,7 +35,7 @@ export const AnamnesisQuestionContainer: FC<PropsWithChildren<Props>> = ({
           {getLocalizedText(title)}
         </Text>
         {description && (
-          <Text variant="small" color="darkGrey1">
+          <Text variant="small" color="onSurfaceVariant">
             {getLocalizedText(description)}
           </Text>
         )}

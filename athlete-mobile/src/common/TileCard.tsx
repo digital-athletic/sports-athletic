@@ -54,7 +54,7 @@ export const TileCard: FC<TileCardProps> = ({
     >
       <Card variant="outlined" flex={1} overflow="hidden">
         <Box
-          backgroundColor="lightGrey1"
+          backgroundColor="surfaceContainerLow"
           alignItems="center"
           justifyContent="center"
           height={headerHeight}
@@ -76,7 +76,7 @@ export const TileCard: FC<TileCardProps> = ({
           <AppIcon
             icon={IconChevronRight}
             size={14}
-            color={colors.lightGrey3}
+            color={colors.outline}
             decorative
           />
         </Box>

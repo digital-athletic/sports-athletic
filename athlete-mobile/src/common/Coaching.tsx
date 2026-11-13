@@ -53,7 +53,7 @@ export const Coaching: FC<CoachingProps> = ({ text, onDismiss }) => {
             <AppIcon
               icon={IconCircleXFilled}
               size={24}
-              color={theme.colors.darkGrey1}
+              color={theme.colors.onSurfaceVariant}
               decorative
             />
           </Box>

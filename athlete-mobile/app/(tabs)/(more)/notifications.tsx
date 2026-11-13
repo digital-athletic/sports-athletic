@@ -105,7 +105,7 @@ export default function NotificationsScreen() {
               alignItems="center"
               minHeight={56}
             >
-              <Text variant="sectionTitle" color="darkGrey3">
+              <Text variant="sectionTitle" color="onSurface">
                 {t("more.notifications.settingsTitle")}
               </Text>
               <SwitchInputField
@@ -114,26 +114,26 @@ export default function NotificationsScreen() {
                 accessibilityLabel={t("more.notifications.settingsTitle")}
                 onChange={handleToggleNotifications}
                 size="small"
-                color={colors.settingsSwitchGreen}
-                thumbColor={colors.white}
+                color={colors.success}
+                thumbColor={colors.onSuccess}
               />
             </Box>
-            <Text variant="body" color="darkGrey3">
+            <Text variant="body" color="onSurface">
               {t("more.notifications.settingsText")}
             </Text>
           </Box>
         ) : (
           <Box flex={1} paddingHorizontal="l">
             <Box minHeight={56} justifyContent="center">
-              <Text variant="sectionTitle" color="darkGrey3">
+              <Text variant="sectionTitle" color="onSurface">
                 {t("more.notifications.systemSettingsTitle")}
               </Text>
             </Box>
-            <Text variant="body" color="darkGrey3" marginBottom="l">
+            <Text variant="body" color="onSurface" marginBottom="l">
               {t("more.notifications.systemSettingsText")}
             </Text>
             <Button variant="primary" onPress={handleOpenSettings}>
-              <Text variant="button" color="white">
+              <Text variant="button" color="onPrimary">
                 {t("more.notifications.systemSettingsButtonText")}
               </Text>
             </Button>

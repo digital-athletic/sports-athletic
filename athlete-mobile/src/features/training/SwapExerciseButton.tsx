@@ -44,7 +44,11 @@ export const SwapExerciseButton: FC<SwapExerciseButtonProps> = ({
       })}
       testID="swap-exercise-button"
     >
-      <AppIcon icon={IconSwitchHorizontal} size={24} color={colors.darkGrey2} />
+      <AppIcon
+        icon={IconSwitchHorizontal}
+        size={24}
+        color={colors.onSurfaceVariant}
+      />
     </TouchableBox>
   );
 };

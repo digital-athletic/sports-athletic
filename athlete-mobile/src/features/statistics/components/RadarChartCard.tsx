@@ -8,7 +8,7 @@ type RadarChartCardProps = ComponentProps<typeof RadarChart>;
 export const RadarChartCard: FC<RadarChartCardProps> = (props) => (
   <Card
     variant="outlined"
-    backgroundColor="lightGrey1"
+    backgroundColor="surfaceContainerLow"
     alignItems="center"
     paddingVertical="s"
   >

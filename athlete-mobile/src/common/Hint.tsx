@@ -21,12 +21,12 @@ const HINT_STYLES: Record<
   WARNING: {
     icon: IconAlertTriangle,
     iconColor: "warning",
-    background: "warningTint",
+    background: "warningContainer",
   },
   HINT: {
     icon: IconInfoCircle,
     iconColor: "info",
-    background: "infoTint",
+    background: "infoContainer",
   },
 };
 
@@ -61,7 +61,7 @@ export const Hint: FC<HintProps> = ({ type, message }) => {
         accessibilityLabel={accessibilityLabel}
       />
       <Box flex={1}>
-        <Text variant="small" color="darkGrey2">
+        <Text variant="small" color="onSurfaceVariant">
           {message}
         </Text>
       </Box>

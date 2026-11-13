@@ -10,7 +10,7 @@ export default function TestTrainingScreen() {
       justifyContent="center"
       alignItems="center"
       padding="l"
-      backgroundColor="white"
+      backgroundColor="surface"
     >
       <Text variant="title">Test Training</Text>
       <Text variant="description">

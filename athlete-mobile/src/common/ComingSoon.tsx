@@ -27,7 +27,7 @@ export const ComingSoon: FC<Props> = () => {
         paddingVertical="l"
         borderRadius="m"
         borderWidth={1}
-        borderColor={"darkGrey1"}
+        borderColor="onSurfaceVariant"
       >
         <Text variant="title" color="primary" textAlign="center">
           {t("common.comingSoon")}

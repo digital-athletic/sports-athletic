@@ -148,16 +148,11 @@ export default function JoinTeamScreen() {
       <Stack.Screen options={{ title: t("more.joinTeam.title") }} />
       <ScrollBox
         flex={1}
-        backgroundColor="lightGrey2"
+        backgroundColor="surfaceContainerHigh"
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: 20 }}
       >
-        <Box
-          backgroundColor="white"
-          borderRadius="l"
-          padding="l"
-          marginBottom="m"
-        >
+        <Box {...CARD_PROPS} marginBottom="m">
           <Text variant="sectionTitle">{t("more.joinTeam.yourTeams")}</Text>
           {teamsLoading ? (
             <ActivityIndicator testID="teams-loading-indicator" />
@@ -192,7 +187,7 @@ export default function JoinTeamScreen() {
                     <AppIcon
                       icon={IconChevronRight}
                       size={18}
-                      color={colors.darkGrey2}
+                      color={colors.onSurfaceVariant}
                       decorative
                     />
                   </TouchableOpacity>
@@ -228,7 +223,7 @@ export default function JoinTeamScreen() {
           )}
         </Box>
 
-        <Box backgroundColor="white" borderRadius="l" padding="l">
+        <Box {...CARD_PROPS}>
           <Text variant="sectionTitle">{t("more.joinTeam.joinSection")}</Text>
           <Text variant="label" marginBottom="xs">
             {t("more.joinTeam.codeLabel")}
@@ -240,16 +235,16 @@ export default function JoinTeamScreen() {
             onChangeText={(text) => setCode(text.toUpperCase())}
             maxLength={6}
             placeholder={t("more.joinTeam.codePlaceholder")}
-            placeholderTextColor={colors.darkGrey2}
+            placeholderTextColor={colors.onSurfaceVariant}
             autoCapitalize="characters"
             autoCorrect={false}
             spellCheck={false}
             style={[
               styles.codeInput,
               {
-                backgroundColor: colors.lightGrey2,
-                color: colors.darkGrey3,
-                borderColor: colors.lightGrey2,
+                backgroundColor: colors.surfaceContainerHigh,
+                color: colors.onSurface,
+                borderColor: colors.surfaceContainerHigh,
               },
             ]}
           />
@@ -263,7 +258,7 @@ export default function JoinTeamScreen() {
           {joinState.status === "success" && (
             <Text
               variant="body"
-              color="successText"
+              color="onSuccessContainer"
               textAlign="center"
               marginTop="m"
               {...liveRegionProps}
@@ -290,6 +285,12 @@ export default function JoinTeamScreen() {
     </>
   );
 }
+
+const CARD_PROPS = {
+  backgroundColor: "surfaceContainerLowest",
+  borderRadius: "l",
+  padding: "l",
+} as const;
 
 const styles = StyleSheet.create({
   teamRow: {

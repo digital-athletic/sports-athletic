@@ -26,14 +26,14 @@ export const MediaSkeleton: FC<Props> = ({
       width={width}
       height={height}
       aspectRatio={aspectRatio}
-      backgroundColor="darkGrey3"
+      backgroundColor="scrim"
       justifyContent="center"
       alignItems="center"
       borderRadius="m"
     >
       {showRetry && onRetry ? (
         <>
-          <Text color="lightGrey3" textAlign="center" marginBottom="s">
+          <Text color="outline" textAlign="center" marginBottom="s">
             {t("common.videoLoadError")}
           </Text>
           <TouchableOpacity
@@ -47,12 +47,12 @@ export const MediaSkeleton: FC<Props> = ({
               paddingVertical="s"
               backgroundColor="primary"
             >
-              <Text color="white">{t("common.retry")}</Text>
+              <Text color="onPrimary">{t("common.retry")}</Text>
             </Box>
           </TouchableOpacity>
         </>
       ) : (
-        <Text color="lightGrey3" variant="xSmall" textAlign="center">
+        <Text color="outline" variant="xSmall" textAlign="center">
           {t("common.noConnection")}
         </Text>
       )}

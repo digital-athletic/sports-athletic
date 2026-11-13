@@ -39,7 +39,7 @@ export const ExerciseHeartRateDisplay: FC<Props> = ({
   return (
     <>
       <Text variant="largeTitle">{heartRateLabel}</Text>
-      <Text variant="small" color="darkGrey1">
+      <Text variant="small" color="onSurfaceVariant">
         {t("training.active.heartRateInterval")}
       </Text>
     </>

@@ -11,14 +11,14 @@ export const EmptyTrainingListMessage: FC<PropsWithChildren> = ({
   return (
     <Box
       flex={1}
-      backgroundColor="lightGrey1"
+      backgroundColor="surfaceContainerLow"
       justifyContent="center"
       alignItems="center"
       padding="l"
     >
       <Text
         variant="body"
-        color="darkGrey1"
+        color="onSurfaceVariant"
         textAlign="center"
         accessibilityRole="text"
       >

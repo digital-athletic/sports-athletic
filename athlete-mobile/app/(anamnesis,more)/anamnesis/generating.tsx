@@ -245,7 +245,7 @@ export default function Generating() {
       />
       <Box
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         padding="l"
         justifyContent="center"
         alignItems="center"
@@ -256,7 +256,7 @@ export default function Generating() {
             width={104}
             height={104}
             borderRadius="round"
-            backgroundColor="primaryTint"
+            backgroundColor="primaryContainer"
             justifyContent="center"
             alignItems="center"
           >

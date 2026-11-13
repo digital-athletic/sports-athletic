@@ -287,7 +287,7 @@ export default function OnboardingScreen() {
         flex={1}
         justifyContent="space-between"
         alignItems="stretch"
-        backgroundColor="white"
+        backgroundColor="surface"
       >
         {renderContent()}
       </Box>

@@ -8,14 +8,14 @@ describe("ScrollBox: styles", () => {
     await render(
       <ScrollBox
         testID="scroll"
-        backgroundColor="white"
+        backgroundColor="surface"
         style={{ marginTop: 12 }}
       />,
     );
 
     const style = StyleSheet.flatten(screen.getByTestId("scroll").props.style);
     expect(style).toMatchObject({
-      backgroundColor: colors.white,
+      backgroundColor: colors.surface,
       marginTop: 12,
     });
   });

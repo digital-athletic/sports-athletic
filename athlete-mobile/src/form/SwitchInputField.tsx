@@ -31,14 +31,14 @@ export const SwitchInputField: FC<SwitchInputFieldProps> = ({
 
   const scaleStyle = size === "small" ? styles.smallSwitch : undefined;
   const trackColor = color || colors.primary;
-  const thumbTintColor = thumbColor || colors.lightGrey3;
+  const thumbTintColor = thumbColor || colors.outline;
 
   return (
     <Box padding="l">
       <Box flexDirection="row" alignItems="center" justifyContent="flex-start">
         <Switch
           trackColor={{
-            false: colors.darkGrey1,
+            false: colors.onSurfaceVariant,
             true: trackColor,
           }}
           thumbColor={thumbTintColor}
@@ -48,7 +48,7 @@ export const SwitchInputField: FC<SwitchInputFieldProps> = ({
           accessibilityLabel={accessibilityLabel ?? descriptionText}
         />
         <Box flex={1} marginLeft="m">
-          <Text variant="body" color="darkGrey3">
+          <Text variant="body" color="onSurface">
             {descriptionText}
           </Text>
         </Box>

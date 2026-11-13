@@ -62,14 +62,14 @@ export const TrainingDayCard: FC<TrainingDayCardProps> = ({
       padding="m"
       borderRadius="xl"
       borderWidth={1.5}
-      borderColor="lightGrey2"
-      backgroundColor="white"
+      borderColor="outlineVariant"
+      backgroundColor="surfaceContainerLowest"
     >
       <Text variant="fieldLabel" accessibilityRole="header">
         {t(WorkoutConstants.WEEKDAY_TRAINING_KEYS[day.weekday])}
       </Text>
       <Box gap="s">
-        <Text variant="small" color="darkGrey1">
+        <Text variant="small" color="onSurfaceVariant">
           {t("screens.trainingDays.whereDoYouWorkOut")}
         </Text>
         <ChoiceChips

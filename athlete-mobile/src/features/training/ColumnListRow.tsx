@@ -41,9 +41,9 @@ export const ColumnListRow: FC<ColumnListRowProps> = ({
       <Box
         position="relative"
         width="100%"
-        backgroundColor="white"
+        backgroundColor="surface"
         borderBottomWidth={1}
-        borderBottomColor="lightGrey2"
+        borderBottomColor="outlineVariant"
         flexDirection="row"
         alignItems="center"
       >
@@ -62,11 +62,11 @@ export const ColumnListRow: FC<ColumnListRowProps> = ({
           </Text>
           {hasDescription && (
             <Box>
-              <Text variant="body" color="darkGrey1">
+              <Text variant="body" color="onSurfaceVariant">
                 {description}
               </Text>
               {secondaryDescription && (
-                <Text variant="body" color="darkGrey1" marginTop="xs">
+                <Text variant="body" color="onSurfaceVariant" marginTop="xs">
                   {secondaryDescription}
                 </Text>
               )}
@@ -77,7 +77,7 @@ export const ColumnListRow: FC<ColumnListRowProps> = ({
           <AppIcon
             icon={IconChevronRight}
             size={20}
-            color={colors.lightGrey3}
+            color={colors.outline}
             decorative
           />
         </Box>

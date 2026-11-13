@@ -3,7 +3,7 @@
 exports[`BasicTextInput matches the snapshot 1`] = `
 <TextInput
   onChangeText={[MockFunction]}
-  placeholderTextColor="#555555"
+  placeholderTextColor="#767676"
   style={
     [
       {

@@ -21,7 +21,7 @@ export const StatisticsScreen: FC = () => {
   return (
     <ScrollBox
       flex={1}
-      backgroundColor="white"
+      backgroundColor="surface"
       contentContainerStyle={{ paddingTop: top }}
     >
       <StatisticsHeader

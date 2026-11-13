@@ -22,7 +22,7 @@ export const OnboardingHeadline: FC<Props> = ({
     <Text variant="display" accessibilityRole="header">
       {heading}
     </Text>
-    <Text variant="subtitle" color="darkGrey1">
+    <Text variant="subtitle" color="onSurfaceVariant">
       {description}
     </Text>
   </Box>

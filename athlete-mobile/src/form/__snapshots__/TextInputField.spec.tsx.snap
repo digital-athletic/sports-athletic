@@ -138,7 +138,7 @@ exports[`<TextInputField /> renders correctly with an icon 1`] = `
       onChangeText={[MockFunction]}
       onFocus={[Function]}
       placeholder="Enter text"
-      placeholderTextColor="#555555"
+      placeholderTextColor="#767676"
       style={
         [
           {

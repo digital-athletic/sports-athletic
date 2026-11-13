@@ -151,7 +151,7 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   };
 
   const displayValue = (
-    <Text variant="body" color="darkGrey3">
+    <Text variant="body" color="onSurface">
       {getDisplayValue()}
     </Text>
   );

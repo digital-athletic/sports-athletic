@@ -36,7 +36,7 @@ const PowerTestResults: FC<PowerTestResultsProps> = ({
   if (history.length === 0) {
     return (
       <Box alignItems="center" testID="power-test-no-results">
-        <Text variant="subtitle" textAlign="center" color="darkGrey2">
+        <Text variant="subtitle" textAlign="center" color="onSurfaceVariant">
           {t("statistics.powerTest.noTestYet")}
         </Text>
       </Box>

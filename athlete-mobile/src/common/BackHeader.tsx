@@ -28,7 +28,7 @@ export const BackHeader: FC<BackHeaderProps> = ({ onBack, testID }) => {
       <AppIcon
         icon={IconArrowLeft}
         size={30}
-        color={theme.colors.black}
+        color={theme.colors.onSurface}
         decorative
       />
     </TouchableOpacity>

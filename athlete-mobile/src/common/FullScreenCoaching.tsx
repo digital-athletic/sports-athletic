@@ -104,7 +104,7 @@ export const FullScreenCoaching: FC<FullScreenCoachingProps> = ({
             >
               <Text
                 variant="body"
-                color="darkGrey3"
+                color="onSurface"
                 textAlign="center"
                 textDecorationLine="underline"
               >

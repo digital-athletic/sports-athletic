@@ -635,15 +635,15 @@
     "errorMessageConsentSaveFailed": "Die App konnte deine Zustimmung nicht speichern. Prüfe deine Internetverbindung und versuche es noch einmal."
   },
   "sports": {
-    "HANDBALL_SPORT": "Handball",
-    "FOOTBALL_SPORT": "Fußball",
-    "VOLLEYBALL_SPORT": "Volleyball",
-    "BASKETBALL_SPORT": "Basketball",
-    "ICE_HOCKEY_SPORT": "Eishockey",
-    "HOCKEY_SPORT": "Hockey",
-    "AMERICAN_FOOTBALL_SPORT": "American Football",
-    "RUGBY_SPORT": "Rugby",
-    "OTHER_SPORT": "Allgemeine Athletik"
+    "SPORT_HANDBALL": "Handball",
+    "SPORT_FOOTBALL": "Fußball",
+    "SPORT_VOLLEYBALL": "Volleyball",
+    "SPORT_BASKETBALL": "Basketball",
+    "SPORT_ICE_HOCKEY": "Eishockey",
+    "SPORT_HOCKEY": "Hockey",
+    "SPORT_AMERICAN_FOOTBALL": "American Football",
+    "SPORT_RUGBY": "Rugby",
+    "SPORT_OTHER": "Allgemeine Athletik"
   },
   "more": {
     "title": "Profil",

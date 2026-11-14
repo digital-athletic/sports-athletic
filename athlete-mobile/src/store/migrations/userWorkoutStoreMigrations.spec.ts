@@ -6,7 +6,7 @@ import { userWorkoutStoreMigrations } from "./userWorkoutStoreMigrations";
 
 const stateWith = (trainingPlan: TrainingPlanType | null): State => ({
   workoutData: {
-    sport: "OTHER_SPORT",
+    sport: "SPORT_OTHER",
     tags: { LEVEL: ["ADVANCED"] },
     seasonPhase: { type: null, endDate: "2026-12-31" },
     maxValues: DEFAULT_MAX_VALUES,
@@ -17,6 +17,31 @@ const stateWith = (trainingPlan: TrainingPlanType | null): State => ({
 const plan = { start: "2026-10-05", sections: [] } as TrainingPlanType;
 
 describe("userWorkoutStoreMigrations", () => {
+  describe("v18 to v19: renames the stored sport code", () => {
+    it("renames the sport and leaves the rest of the workout data unchanged", () => {
+      const state = stateWith(null);
+      const stored = {
+        ...state,
+        workoutData: { ...state.workoutData, sport: "HANDBALL_SPORT" },
+      } as unknown as State;
+
+      const result = userWorkoutStoreMigrations[18](stored);
+
+      expect(result.workoutData).toEqual({
+        ...state.workoutData,
+        sport: "SPORT_HANDBALL",
+      });
+    });
+
+    it("leaves the training plan unchanged", () => {
+      const state = stateWith(plan);
+
+      const result = userWorkoutStoreMigrations[18](state);
+
+      expect(result.trainingPlan).toBe(plan);
+    });
+  });
+
   describe("v17 to v18: renames German skill tags in the stored plan", () => {
     const planWithMaxBranch = {
       start: "2026-10-05",

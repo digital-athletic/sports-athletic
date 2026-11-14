@@ -14,7 +14,7 @@ describe("userWorkoutStore", () => {
   describe("initial state", () => {
     it("has default workout data", async () => {
       const { result } = await renderHook(() => useUserWorkoutStore());
-      expect(result.current.workoutData.sport).toBe("OTHER_SPORT");
+      expect(result.current.workoutData.sport).toBe("SPORT_OTHER");
       expect(result.current.workoutData.tags).toEqual({
         POSITION: ["FIELD"],
         LEVEL: ["BEGINNER"],
@@ -32,10 +32,10 @@ describe("userWorkoutStore", () => {
       const { result } = await renderHook(() => useUserWorkoutStore());
 
       await act(() => {
-        result.current.setWorkoutData({ sport: "FOOTBALL_SPORT" });
+        result.current.setWorkoutData({ sport: "SPORT_FOOTBALL" });
       });
 
-      expect(result.current.workoutData.sport).toBe("FOOTBALL_SPORT");
+      expect(result.current.workoutData.sport).toBe("SPORT_FOOTBALL");
       expect(result.current.workoutData.tags).toEqual({
         POSITION: ["FIELD"],
         LEVEL: ["BEGINNER"],
@@ -48,10 +48,10 @@ describe("userWorkoutStore", () => {
       const { result } = await renderHook(() => useUserWorkoutStore());
 
       await act(() => {
-        result.current.setSport("HANDBALL_SPORT");
+        result.current.setSport("SPORT_HANDBALL");
       });
 
-      expect(result.current.workoutData.sport).toBe("HANDBALL_SPORT");
+      expect(result.current.workoutData.sport).toBe("SPORT_HANDBALL");
     });
   });
 
@@ -155,7 +155,7 @@ describe("userWorkoutStore", () => {
       const { result } = await renderHook(() => useUserWorkoutStore());
 
       await act(() => {
-        result.current.setSport("FOOTBALL_SPORT");
+        result.current.setSport("SPORT_FOOTBALL");
         result.current.setTrainingPlan({
           start: formatDateToISO(new Date()),
           sections: [],
@@ -163,7 +163,7 @@ describe("userWorkoutStore", () => {
         result.current.resetUserWorkoutData();
       });
 
-      expect(result.current.workoutData.sport).toBe("OTHER_SPORT");
+      expect(result.current.workoutData.sport).toBe("SPORT_OTHER");
       expect(result.current.trainingPlan).toBeNull();
     });
   });

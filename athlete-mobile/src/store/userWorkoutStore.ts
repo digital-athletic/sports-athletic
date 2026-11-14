@@ -37,7 +37,7 @@ export type State = {
 const createInitialWorkoutData = (): UserWorkoutDataType => ({
   // NOTE: height and weight have been moved to userProfileStore.personalData
   // Use getUserHeight/getUserWeight from userDataUtils.ts for access with fallback
-  sport: "OTHER_SPORT",
+  sport: "SPORT_OTHER",
   tags: {
     POSITION: ["FIELD"],
     LEVEL: ["BEGINNER"],

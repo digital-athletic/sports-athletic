@@ -60,7 +60,7 @@ export const seedCompletionSession = (
   });
   useUserWorkoutStore.setState({
     workoutData: {
-      sport: "OTHER_SPORT",
+      sport: "SPORT_OTHER",
       tags: { LEVEL: ["ADVANCED"] },
       seasonPhase: { type: null, endDate: "2026-01-01" },
       maxValues: {

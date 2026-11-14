@@ -1,51 +1,18 @@
-import { type SportTest } from "./models/SportTest";
 import { formatRangeNumber, referenceRangeFor } from "./referenceRange";
+import { generateReferenceValue, generateSportTest } from "./testFixtures";
 
-/**
- * A sport test with two reference values as the service returns it, e.g.
- * { id: "test-1", code: "FAKE_TEST", unit: "s", referenceValues: [{ gender: "FEMALE", position: "WING", trainingStage: "GRUNDLAGENTRAINING", rangeStart: 9.87, rangeEnd: 6.54 }] }
- */
-const generateSportTest = (
-  referenceValues: SportTest["referenceValues"],
-): SportTest => ({
-  id: "test-1",
-  code: "FAKE_TEST",
-  unit: "s",
-  referenceValues,
-});
-
-const femaleWingGrundlagen = {
-  gender: "FEMALE",
-  position: "WING",
-  trainingStage: "GRUNDLAGENTRAINING",
-  rangeStart: 9.87,
-  rangeEnd: 6.54,
-} as const;
-
-const maleWingGrundlagen = {
-  ...femaleWingGrundlagen,
-  gender: "MALE",
-  rangeStart: 9.1,
-  rangeEnd: 9.2,
-} as const;
-
-const femaleGoalkeeperGrundlagen = {
-  ...femaleWingGrundlagen,
+const femaleWingGrundlagen = generateReferenceValue();
+const maleWingGrundlagen = generateReferenceValue({ gender: "MALE" });
+const femaleGoalkeeperGrundlagen = generateReferenceValue({
   position: "GOALKEEPER",
-  rangeStart: 7.1,
-  rangeEnd: 7.2,
-} as const;
-
-const femaleWingBasis = {
-  ...femaleWingGrundlagen,
+});
+const femaleWingBasis = generateReferenceValue({
   trainingStage: "BASISTRAINING",
-  rangeStart: 5.1,
-  rangeEnd: 5.2,
-} as const;
+});
 
 describe("referenceRangeFor: matching", () => {
   it("picks the value matching gender, position and stage", () => {
-    const test = generateSportTest([
+    const test = generateSportTest("FAKE_TEST", [
       maleWingGrundlagen,
       femaleGoalkeeperGrundlagen,
       femaleWingBasis,
@@ -62,7 +29,7 @@ describe("referenceRangeFor: matching", () => {
   });
 
   it("returns null when the stage is null", () => {
-    const test = generateSportTest([femaleWingGrundlagen]);
+    const test = generateSportTest("FAKE_TEST", [femaleWingGrundlagen]);
 
     const range = referenceRangeFor(test, {
       gender: "FEMALE",
@@ -74,7 +41,7 @@ describe("referenceRangeFor: matching", () => {
   });
 
   it("returns null when the position is undefined", () => {
-    const test = generateSportTest([femaleWingGrundlagen]);
+    const test = generateSportTest("FAKE_TEST", [femaleWingGrundlagen]);
 
     const range = referenceRangeFor(test, {
       gender: "FEMALE",
@@ -86,7 +53,10 @@ describe("referenceRangeFor: matching", () => {
   });
 
   it("returns null when no value matches", () => {
-    const test = generateSportTest([maleWingGrundlagen, femaleWingBasis]);
+    const test = generateSportTest("FAKE_TEST", [
+      maleWingGrundlagen,
+      femaleWingBasis,
+    ]);
 
     const range = referenceRangeFor(test, {
       gender: "FEMALE",
@@ -98,7 +68,7 @@ describe("referenceRangeFor: matching", () => {
   });
 
   it("returns null when the test has no reference values", () => {
-    const test = generateSportTest([]);
+    const test = generateSportTest("FAKE_TEST", []);
 
     const range = referenceRangeFor(test, {
       gender: "FEMALE",
@@ -123,7 +93,7 @@ describe("formatRangeNumber: language", () => {
     expect(formatRangeNumber(1.234, "en")).toBe("1.23");
   });
 
-  it("keeps a single decimal as is", () => {
+  it("shows one decimal for a value with one decimal", () => {
     expect(formatRangeNumber(1.2, "en")).toBe("1.2");
   });
 

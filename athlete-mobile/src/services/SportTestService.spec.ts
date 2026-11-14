@@ -40,6 +40,7 @@ const generateSportTestRow = (
   ],
 });
 
+// Supabase answers getSession with a session, as for a signed in athlete.
 const signedIn = () =>
   mockGetSession.mockResolvedValue({
     data: { session: { user: { id: "user-1" }, access_token: "tok" } },
@@ -88,7 +89,7 @@ describe("fetchSportTests: mapping", () => {
     ]);
   });
 
-  it("keeps numeric values that already arrive as numbers", async () => {
+  it("accepts range values that arrive as numbers", async () => {
     signedIn();
     mockOrder.mockResolvedValue({
       data: [generateSportTestRow(9.87, 6.54)],
@@ -114,30 +115,14 @@ describe("fetchSportTests: mapping", () => {
 });
 
 describe("fetchSportTests: filters", () => {
-  it("reads the sport_tests table", async () => {
+  it("reads the tests of the given sport for region DE by default", async () => {
     signedIn();
     mockOrder.mockResolvedValue({ data: [], error: null });
 
     await fetchSportTests("HANDBALL_SPORT");
 
     expect(mockFrom).toHaveBeenCalledWith("sport_tests");
-  });
-
-  it("filters by the given sport", async () => {
-    signedIn();
-    mockOrder.mockResolvedValue({ data: [], error: null });
-
-    await fetchSportTests("HANDBALL_SPORT");
-
     expect(mockEqSport).toHaveBeenCalledWith("sport", "HANDBALL_SPORT");
-  });
-
-  it("filters by region DE when no region is given", async () => {
-    signedIn();
-    mockOrder.mockResolvedValue({ data: [], error: null });
-
-    await fetchSportTests("HANDBALL_SPORT");
-
     expect(mockEqRegion).toHaveBeenCalledWith("region", "DE");
   });
 

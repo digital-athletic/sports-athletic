@@ -2,6 +2,7 @@ import { type SportTest } from "@/features/performanceTests/models/SportTest";
 import { useSportTestsStore } from "@/store/sportTestsStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
+import { generateSportTest } from "./testFixtures";
 import { usePerformanceTests } from "./usePerformanceTests";
 
 const mockFetchSportTests = jest.fn();
@@ -15,17 +16,6 @@ jest.mock("expo-router", () => ({
     require("react").useEffect(callback, [callback]);
   },
 }));
-
-/**
- * A sport test without reference values, e.g.
- * { id: "id-FAKE_TEST_A", code: "FAKE_TEST_A", unit: "s", referenceValues: [] }
- */
-const generateSportTest = (code: string): SportTest => ({
-  id: `id-${code}`,
-  code,
-  unit: "s",
-  referenceValues: [],
-});
 
 beforeEach(() => {
   mockFetchSportTests.mockReset();
@@ -95,7 +85,7 @@ describe("usePerformanceTests: with cache", () => {
     expect(result.current.state).toEqual({ status: "loaded", tests: cached });
   });
 
-  it("keeps the cached list when the refresh fails", async () => {
+  it("still returns the cached list when the refresh fails", async () => {
     const cached = [generateSportTest("FAKE_TEST_CACHED")];
     useSportTestsStore.setState({ testsBySport: { HANDBALL_SPORT: cached } });
     mockFetchSportTests.mockRejectedValue(new Error("offline"));

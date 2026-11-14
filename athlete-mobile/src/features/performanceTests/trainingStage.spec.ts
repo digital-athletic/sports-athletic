@@ -18,29 +18,17 @@ describe("trainingStageFor: handball bands", () => {
   ] as const;
 
   it.each(femaleBands)(
-    "returns %s for a female athlete aged %i, the lower boundary",
-    (stage, lowest) => {
+    "returns %s for a female athlete aged %i to %i",
+    (stage, lowest, highest) => {
       expect(trainingStageFor("HANDBALL_SPORT", "FEMALE", lowest)).toBe(stage);
-    },
-  );
-
-  it.each(femaleBands)(
-    "returns %s for a female athlete aged %i to %i, the upper boundary",
-    (stage, _lowest, highest) => {
       expect(trainingStageFor("HANDBALL_SPORT", "FEMALE", highest)).toBe(stage);
     },
   );
 
   it.each(maleBands)(
-    "returns %s for a male athlete aged %i, the lower boundary",
-    (stage, lowest) => {
+    "returns %s for a male athlete aged %i to %i",
+    (stage, lowest, highest) => {
       expect(trainingStageFor("HANDBALL_SPORT", "MALE", lowest)).toBe(stage);
-    },
-  );
-
-  it.each(maleBands)(
-    "returns %s for a male athlete aged %i to %i, the upper boundary",
-    (stage, _lowest, highest) => {
       expect(trainingStageFor("HANDBALL_SPORT", "MALE", highest)).toBe(stage);
     },
   );

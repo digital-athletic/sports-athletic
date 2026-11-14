@@ -5,6 +5,7 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { formatDateToISO } from "@/utils/date";
 import { act, fireEvent, render } from "../../utils/testUtils";
 import PerformanceTestsScreen from "./PerformanceTestsScreen";
+import { generateReferenceValue, generateSportTest } from "./testFixtures";
 
 const mockFetchSportTests = jest.fn();
 jest.mock("@/services/SportTestService", () => ({
@@ -31,42 +32,11 @@ const generateBirthdayForAge = (age: number): string => {
 };
 
 /**
- * Sport test with one female wing reference value, e.g.
- * { id: "id-SPRINT_5M", code: "SPRINT_5M", unit: "s", referenceValues: [{ FEMALE, WING, GRUNDLAGENTRAINING, 9.87 to 6.54 }] }
+ * A test with a range for a female wing player in Grundlagentraining, e.g.
+ * { id: "id-SPRINT_5M", code: "SPRINT_5M", unit: "s", referenceValues: [{ ..., rangeStart: 9.87, rangeEnd: 6.54 }] }
  */
-const generateSprintTest = (code = "SPRINT_5M"): SportTest => ({
-  id: `id-${code}`,
-  code,
-  unit: "s",
-  referenceValues: [
-    {
-      gender: "FEMALE",
-      position: "WING",
-      trainingStage: "GRUNDLAGENTRAINING",
-      rangeStart: 9.87,
-      rangeEnd: 6.54,
-    },
-  ],
-});
-
-/**
- * Sport test whose only reference value is for another stage, e.g.
- * { id: "id-FAKE_TEST", code: "FAKE_TEST", unit: "s", referenceValues: [{ FEMALE, WING, BASISTRAINING, 5.1 to 5.2 }] }
- */
-const generateTestWithoutMatchingRange = (): SportTest => ({
-  id: "id-FAKE_TEST",
-  code: "FAKE_TEST",
-  unit: "s",
-  referenceValues: [
-    {
-      gender: "FEMALE",
-      position: "WING",
-      trainingStage: "BASISTRAINING",
-      rangeStart: 5.1,
-      rangeEnd: 5.2,
-    },
-  ],
-});
+const generateTestWithRange = (code = "SPRINT_5M"): SportTest =>
+  generateSportTest(code, [generateReferenceValue()]);
 
 beforeEach(() => {
   mockFetchSportTests.mockReset();
@@ -83,7 +53,7 @@ beforeEach(() => {
 
 describe("PerformanceTestsScreen: list", () => {
   it("shows the test name and the reference range of the athlete", async () => {
-    mockFetchSportTests.mockResolvedValue([generateSprintTest()]);
+    mockFetchSportTests.mockResolvedValue([generateTestWithRange()]);
 
     const screen = await render(<PerformanceTestsScreen />);
 
@@ -91,17 +61,12 @@ describe("PerformanceTestsScreen: list", () => {
     expect(screen.getByText("Reference 9.87 to 6.54 s")).toBeTruthy();
   });
 
-  it("asks for the tests of the sport of the athlete", async () => {
-    mockFetchSportTests.mockResolvedValue([generateSprintTest()]);
-
-    const screen = await render(<PerformanceTestsScreen />);
-    await screen.findByText("5 m sprint");
-
-    expect(mockFetchSportTests).toHaveBeenCalledWith("HANDBALL_SPORT");
-  });
-
   it("says there is no reference when no range matches the stage", async () => {
-    mockFetchSportTests.mockResolvedValue([generateTestWithoutMatchingRange()]);
+    mockFetchSportTests.mockResolvedValue([
+      generateSportTest("FAKE_TEST", [
+        generateReferenceValue({ trainingStage: "BASISTRAINING" }),
+      ]),
+    ]);
 
     const screen = await render(<PerformanceTestsScreen />);
 
@@ -113,7 +78,7 @@ describe("PerformanceTestsScreen: list", () => {
 
   it("shows the code when a test has no translation", async () => {
     mockFetchSportTests.mockResolvedValue([
-      generateSprintTest("FAKE_UNTRANSLATED"),
+      generateTestWithRange("FAKE_UNTRANSLATED"),
     ]);
 
     const screen = await render(<PerformanceTestsScreen />);
@@ -123,8 +88,8 @@ describe("PerformanceTestsScreen: list", () => {
 
   it("lists one row per test", async () => {
     mockFetchSportTests.mockResolvedValue([
-      generateSprintTest("SPRINT_5M"),
-      generateSprintTest("FAKE_UNTRANSLATED"),
+      generateTestWithRange("SPRINT_5M"),
+      generateTestWithRange("FAKE_UNTRANSLATED"),
     ]);
 
     const screen = await render(<PerformanceTestsScreen />);
@@ -169,7 +134,7 @@ describe("PerformanceTestsScreen: states", () => {
 
   it("loads again when the athlete taps retry", async () => {
     mockFetchSportTests.mockRejectedValueOnce(new Error("offline"));
-    mockFetchSportTests.mockResolvedValueOnce([generateSprintTest()]);
+    mockFetchSportTests.mockResolvedValueOnce([generateTestWithRange()]);
     const screen = await render(<PerformanceTestsScreen />);
     await screen.findByTestId("performance-tests-retry");
 

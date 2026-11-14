@@ -3,8 +3,10 @@
 -- sport_tests stores one fitness test per sport and region. The sport is an app
 -- code such as SPORT_HANDBALL and the region is an ISO 3166 country or
 -- subdivision code such as DE or GB-ENG. sport_test_reference_values stores the
--- reference ranges of a test per gender, position and training stage. A test
--- may have no reference values.
+-- reference ranges of a test per gender, position and training stage. Each
+-- reference value names the ages it applies to (min_age to max_age, both
+-- included), because the age band of a training stage differs per gender and
+-- per federation. A test may have no reference values.
 --
 -- An administrator imports the data in Supabase. The migration seeds no rows.
 --
@@ -94,6 +96,8 @@ CREATE TABLE public.sport_test_reference_values (
   gender         TEXT NOT NULL,
   position       TEXT NOT NULL,
   training_stage TEXT NOT NULL,
+  min_age        SMALLINT NOT NULL,
+  max_age        SMALLINT NOT NULL,
   range_start    NUMERIC NOT NULL,
   range_end      NUMERIC NOT NULL,
   created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -104,6 +108,8 @@ CREATE TABLE public.sport_test_reference_values (
     CHECK (char_length(position) BETWEEN 1 AND 100),
   CONSTRAINT sport_test_reference_values_training_stage_check
     CHECK (char_length(training_stage) BETWEEN 1 AND 100),
+  CONSTRAINT sport_test_reference_values_age_check
+    CHECK (min_age >= 0 AND max_age >= min_age),
   CONSTRAINT sport_test_reference_values_test_gender_position_stage_key
     UNIQUE (test_id, gender, position, training_stage)
 );

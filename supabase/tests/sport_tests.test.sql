@@ -10,7 +10,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(58);
+SELECT plan(62);
 
 -- T1 is the handball example. T2 is a second test for the same sport and region.
 -- T3 is deleted to prove the cascade. A is an authenticated user.
@@ -46,10 +46,10 @@ INSERT INTO public.sport_tests (id, sport, region, code, unit) VALUES
   (:'T3', 'FAKE_SPORT_B', 'DE', 'FAKE_CASCADE', 'kg');
 
 INSERT INTO public.sport_test_reference_values
-  (test_id, gender, position, training_stage, range_start, range_end) VALUES
-  (:'T1', 'FEMALE', 'WING', 'GRUNDLAGENTRAINING', 9.87, 6.54),
-  (:'T3', 'FEMALE', 'FAKE_POSITION_ONE', 'FAKE_STAGE', 10, 20),
-  (:'T3', 'MALE', 'FAKE_POSITION_ONE', 'FAKE_STAGE', 12, 22);
+  (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end) VALUES
+  (:'T1', 'FEMALE', 'WING', 'GRUNDLAGENTRAINING', 13, 14, 9.87, 6.54),
+  (:'T3', 'FEMALE', 'FAKE_POSITION_ONE', 'FAKE_STAGE', 13, 14, 10, 20),
+  (:'T3', 'MALE', 'FAKE_POSITION_ONE', 'FAKE_STAGE', 13, 14, 12, 22);
 
 -- ---------------------------------------------------------------------------
 -- Defaults
@@ -57,8 +57,8 @@ INSERT INTO public.sport_test_reference_values
 INSERT INTO public.sport_tests (sport, region, code, unit)
   VALUES ('FAKE_DEFAULTS', 'DE', 'FAKE_DEFAULT_TEST', 'm');
 INSERT INTO public.sport_test_reference_values
-  (test_id, gender, position, training_stage, range_start, range_end)
-  VALUES (:'T2', 'MALE', 'FAKE_DEFAULT_POSITION', 'FAKE_STAGE', 1, 2);
+  (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
+  VALUES (:'T2', 'MALE', 'FAKE_DEFAULT_POSITION', 'FAKE_STAGE', 13, 14, 1, 2);
 
 SELECT ok((SELECT id IS NOT NULL FROM public.sport_tests WHERE sport = 'FAKE_DEFAULTS'),
   'defaults: a test inserted without an id gets one');
@@ -86,15 +86,15 @@ SELECT lives_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
     VALUES ('SPORT_HANDBALL', 'FR', 'SPRINT_5M', 's') $$,
   'unique: the same sport and code in another region is accepted');
 SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
     VALUES ('aaaaaaaa-0000-0000-0000-000000000001', 'FEMALE', 'WING',
-            'GRUNDLAGENTRAINING', 2, 3) $$,
+            'GRUNDLAGENTRAINING', 13, 14, 2, 3) $$,
   '23505', NULL,
   'unique: the same test, gender, position and training stage twice is rejected');
 SELECT lives_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
     VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'FEMALE', 'WING',
-            'GRUNDLAGENTRAINING', 2, 3) $$,
+            'GRUNDLAGENTRAINING', 13, 14, 2, 3) $$,
   'unique: the same gender, position and training stage for another test is accepted');
 
 -- ---------------------------------------------------------------------------
@@ -141,36 +141,59 @@ SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
 -- Checks on sport_test_reference_values
 -- ---------------------------------------------------------------------------
 SELECT lives_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
     VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_POSITION_TWO',
-            'FAKE_STAGE', 1, 2) $$,
+            'FAKE_STAGE', 13, 14, 1, 2) $$,
   'gender: MALE is accepted');
 SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
     VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'OTHER', 'FAKE_POSITION_THREE',
-            'FAKE_STAGE', 1, 2) $$,
+            'FAKE_STAGE', 13, 14, 1, 2) $$,
   '23514', NULL, 'gender: a value other than MALE or FEMALE is rejected');
 SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
-    VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', '', 'FAKE_STAGE', 1, 2) $$,
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
+    VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', '', 'FAKE_STAGE', 13, 14, 1, 2) $$,
   '23514', NULL, 'position: an empty string is rejected');
 SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
-    VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_POSITION_FOUR', '', 1, 2) $$,
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
+    VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_POSITION_FOUR', '', 13, 14, 1, 2) $$,
   '23514', NULL, 'training_stage: an empty string is rejected');
+
+-- ---------------------------------------------------------------------------
+-- Age range of a reference value
+-- ---------------------------------------------------------------------------
+SELECT is((SELECT min_age::text || '/' || max_age::text
+           FROM public.sport_test_reference_values
+           WHERE test_id = :'T1' AND position = 'WING'),
+  '13/14', 'age: a reference value stores the lowest and the highest age it applies to');
+SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
+    VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_AGE_ONE',
+            'FAKE_STAGE', NULL, 14, 1, 2) $$,
+  '23502', NULL, 'age: min_age cannot be NULL');
+SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
+    VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_AGE_TWO',
+            'FAKE_STAGE', 15, 14, 1, 2) $$,
+  '23514', NULL, 'age: a max_age below the min_age is rejected');
+SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
+    VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_AGE_THREE',
+            'FAKE_STAGE', -1, 14, 1, 2) $$,
+  '23514', NULL, 'age: a negative min_age is rejected');
 
 -- ---------------------------------------------------------------------------
 -- Range
 -- ---------------------------------------------------------------------------
 SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
     VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_POSITION_FIVE',
-            'FAKE_STAGE', NULL, 2) $$,
+            'FAKE_STAGE', 13, 14, NULL, 2) $$,
   '23502', NULL, 'range: range_start cannot be NULL');
 SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
     VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_POSITION_SIX',
-            'FAKE_STAGE', 1, NULL) $$,
+            'FAKE_STAGE', 13, 14, 1, NULL) $$,
   '23502', NULL, 'range: range_end cannot be NULL');
 SELECT is((SELECT range_start::text || '/' || range_end::text
            FROM public.sport_test_reference_values
@@ -189,9 +212,9 @@ SELECT is((SELECT count(*) FROM public.sport_test_reference_values WHERE test_id
   0::bigint, 'relation: deleting a test deletes its reference values');
 
 SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
     VALUES ('aaaaaaaa-0000-0000-0000-0000000000ff', 'MALE', 'FAKE_POSITION_SEVEN',
-            'FAKE_STAGE', 1, 2) $$,
+            'FAKE_STAGE', 13, 14, 1, 2) $$,
   '23503', NULL, 'relation: a reference value for an unknown test is rejected');
 
 -- ---------------------------------------------------------------------------
@@ -202,8 +225,8 @@ SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
 INSERT INTO public.sport_tests (sport, region, code, unit, updated_at)
   VALUES ('FAKE_SPORT_A', 'DE', 'FAKE_STAMP_TEST', 'm', '2000-01-01 00:00:00+00');
 INSERT INTO public.sport_test_reference_values
-  (test_id, gender, position, training_stage, range_start, range_end, updated_at)
-  VALUES (:'T2', 'MALE', 'FAKE_STAMP_POSITION', 'FAKE_STAGE', 1, 2, '2000-01-01 00:00:00+00');
+  (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end, updated_at)
+  VALUES (:'T2', 'MALE', 'FAKE_STAMP_POSITION', 'FAKE_STAGE', 13, 14, 1, 2, '2000-01-01 00:00:00+00');
 
 UPDATE public.sport_tests SET unit = 'cm' WHERE code = 'FAKE_STAMP_TEST';
 UPDATE public.sport_test_reference_values SET range_end = 3
@@ -223,9 +246,9 @@ INSERT INTO public.sport_tests (id, sport, region, code, unit) VALUES
   ('aaaaaaaa-0000-0000-0000-000000000004',
    ' fake_sport_c ', ' gb-eng ', ' fake_spelling ', ' cm ');
 INSERT INTO public.sport_test_reference_values
-  (test_id, gender, position, training_stage, range_start, range_end) VALUES
+  (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end) VALUES
   ('aaaaaaaa-0000-0000-0000-000000000004',
-   ' female ', ' fake_position_two ', ' fake_stage_two ', 1, 2);
+   ' female ', ' fake_position_two ', ' fake_stage_two ', 13, 14, 1, 2);
 
 SELECT is(
   (SELECT sport || '|' || region || '|' || code || '|' || unit
@@ -279,9 +302,9 @@ SELECT throws_ok($$ UPDATE public.sport_tests SET unit = 'x' $$,
 SELECT throws_ok($$ DELETE FROM public.sport_tests $$,
   '42501', NULL, 'write: an authenticated user cannot DELETE from sport_tests');
 SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
     VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_AUTH_INSERT',
-            'FAKE_STAGE', 1, 2) $$,
+            'FAKE_STAGE', 13, 14, 1, 2) $$,
   '42501', NULL, 'write: an authenticated user cannot INSERT into sport_test_reference_values');
 SELECT throws_ok($$ UPDATE public.sport_test_reference_values SET range_end = 0 $$,
   '42501', NULL, 'write: an authenticated user cannot UPDATE sport_test_reference_values');
@@ -303,9 +326,9 @@ SELECT lives_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
     VALUES ('FAKE_SPORT_A', 'DE', 'FAKE_SERVICE_INSERT', 'm') $$,
   'write: service_role can INSERT into sport_tests');
 SELECT lives_ok($$ INSERT INTO public.sport_test_reference_values
-      (test_id, gender, position, training_stage, range_start, range_end)
+      (test_id, gender, position, training_stage, min_age, max_age, range_start, range_end)
     VALUES ('aaaaaaaa-0000-0000-0000-000000000002', 'MALE', 'FAKE_SERVICE_INSERT',
-            'FAKE_STAGE', 1, 2) $$,
+            'FAKE_STAGE', 13, 14, 1, 2) $$,
   'write: service_role can INSERT into sport_test_reference_values');
 
 RESET ROLE;

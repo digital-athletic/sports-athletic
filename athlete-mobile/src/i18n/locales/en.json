@@ -832,6 +832,20 @@
       "loadError": "The app could not load this team. Check your connection and try again.",
       "retry": "Try again",
       "notMember": "You are no longer a member of this team."
+    },
+    "performanceTests": {
+      "menuItem": "Performance tests",
+      "description": "The reference values for your sport, your position and your age.",
+      "title": "Performance tests",
+      "reference": "Reference {{start}} to {{end}} {{unit}}",
+      "noReference": "No reference for your training stage",
+      "empty": "There are no performance tests for your sport yet.",
+      "loadError": "The app could not load the performance tests. Check your connection and try again."
+    }
+  },
+  "performanceTests": {
+    "tests": {
+      "SPRINT_5M": "5 m sprint"
     }
   },
   "muscles": {

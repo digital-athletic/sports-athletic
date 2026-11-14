@@ -27,4 +27,5 @@ export const STORE_VERSIONS = {
   EXERCISE_PROGRESS: 20,
   TRAINING: 17,
   CUSTOM_WORKOUTS: 14,
+  SPORT_TESTS: 14,
 } as const;

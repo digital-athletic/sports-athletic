@@ -5,8 +5,7 @@ import {
   type ExerciseSwapState,
   findNextSwap,
   listSwappableBranches,
-  swapBranchInStoredDay,
-  toExerciseBranch,
+  swapBranchInTrainingDay,
 } from "@/features/training/exerciseSwap/exerciseSwap";
 import {
   buildUser,
@@ -23,7 +22,7 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
 import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
-import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
+import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { Logger } from "@/services/Logger";
 import { parseIntParam } from "@/utils/router";
 import { useEffect, useEffectEvent, useState } from "react";
@@ -113,8 +112,8 @@ const generateSwappedDay = (
   original: string,
   alternative: StoredBranch,
 ) =>
-  generateTrainingDayFromStoredDay(
-    swapBranchInStoredDay(day, skill, original, toExerciseBranch(alternative)),
+  generateTrainingDay(
+    swapBranchInTrainingDay(day, skill, original, alternative),
     input,
   );
 

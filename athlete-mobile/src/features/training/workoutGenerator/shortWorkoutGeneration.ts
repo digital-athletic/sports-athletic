@@ -28,6 +28,7 @@ const UNREACHABLE_SHORT_WORKOUT_HANDLER = {
 
 const CATALOG_BRANCHES_HANDLER = createBranchesBlockHandler(
   lookUpStoredBranchInCatalog,
+  "drop",
 );
 
 // requireSupportedTemplateBlocks rejects exercises blocks and duration blocks

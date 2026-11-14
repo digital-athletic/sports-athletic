@@ -20,42 +20,42 @@ describe("trainingStageFor: handball bands", () => {
   it.each(femaleBands)(
     "returns %s for a female athlete aged %i to %i",
     (stage, lowest, highest) => {
-      expect(trainingStageFor("HANDBALL_SPORT", "FEMALE", lowest)).toBe(stage);
-      expect(trainingStageFor("HANDBALL_SPORT", "FEMALE", highest)).toBe(stage);
+      expect(trainingStageFor("SPORT_HANDBALL", "FEMALE", lowest)).toBe(stage);
+      expect(trainingStageFor("SPORT_HANDBALL", "FEMALE", highest)).toBe(stage);
     },
   );
 
   it.each(maleBands)(
     "returns %s for a male athlete aged %i to %i",
     (stage, lowest, highest) => {
-      expect(trainingStageFor("HANDBALL_SPORT", "MALE", lowest)).toBe(stage);
-      expect(trainingStageFor("HANDBALL_SPORT", "MALE", highest)).toBe(stage);
+      expect(trainingStageFor("SPORT_HANDBALL", "MALE", lowest)).toBe(stage);
+      expect(trainingStageFor("SPORT_HANDBALL", "MALE", highest)).toBe(stage);
     },
   );
 });
 
 describe("trainingStageFor: no stage", () => {
   it("returns null for a female athlete below the first band", () => {
-    expect(trainingStageFor("HANDBALL_SPORT", "FEMALE", 10)).toBeNull();
+    expect(trainingStageFor("SPORT_HANDBALL", "FEMALE", 10)).toBeNull();
   });
 
   it("returns null for a female athlete above the last band", () => {
-    expect(trainingStageFor("HANDBALL_SPORT", "FEMALE", 21)).toBeNull();
+    expect(trainingStageFor("SPORT_HANDBALL", "FEMALE", 21)).toBeNull();
   });
 
   it("returns null for a male athlete below the first band", () => {
-    expect(trainingStageFor("HANDBALL_SPORT", "MALE", 11)).toBeNull();
+    expect(trainingStageFor("SPORT_HANDBALL", "MALE", 11)).toBeNull();
   });
 
   it("returns null for a male athlete above the last band", () => {
-    expect(trainingStageFor("HANDBALL_SPORT", "MALE", 22)).toBeNull();
+    expect(trainingStageFor("SPORT_HANDBALL", "MALE", 22)).toBeNull();
   });
 
   it("returns null when the age is unknown", () => {
-    expect(trainingStageFor("HANDBALL_SPORT", "FEMALE", null)).toBeNull();
+    expect(trainingStageFor("SPORT_HANDBALL", "FEMALE", null)).toBeNull();
   });
 
   it("returns null for a sport other than handball", () => {
-    expect(trainingStageFor("FOOTBALL_SPORT", "FEMALE", 14)).toBeNull();
+    expect(trainingStageFor("SPORT_FOOTBALL", "FEMALE", 14)).toBeNull();
   });
 });

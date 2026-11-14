@@ -34,7 +34,7 @@ export function trainingStageFor(
   gender: Gender,
   age: number | null,
 ): TrainingStage | null {
-  if (sport !== "HANDBALL_SPORT") return null;
+  if (sport !== "SPORT_HANDBALL") return null;
   if (age === null) return null;
 
   const band = HANDBALL_BANDS[gender].find(

@@ -9,9 +9,9 @@ describe("sportTestsStore: cache per sport", () => {
   it("stores the tests under their sport", () => {
     const tests = [generateSportTest("FAKE_TEST_A")];
 
-    useSportTestsStore.getState().setTests("HANDBALL_SPORT", tests);
+    useSportTestsStore.getState().setTests("SPORT_HANDBALL", tests);
 
-    expect(useSportTestsStore.getState().testsBySport.HANDBALL_SPORT).toEqual(
+    expect(useSportTestsStore.getState().testsBySport.SPORT_HANDBALL).toEqual(
       tests,
     );
   });
@@ -20,26 +20,26 @@ describe("sportTestsStore: cache per sport", () => {
     const handballTests = [generateSportTest("FAKE_TEST_A")];
     const footballTests = [generateSportTest("FAKE_TEST_B")];
     useSportTestsStore.setState({
-      testsBySport: { HANDBALL_SPORT: handballTests },
+      testsBySport: { SPORT_HANDBALL: handballTests },
     });
 
-    useSportTestsStore.getState().setTests("FOOTBALL_SPORT", footballTests);
+    useSportTestsStore.getState().setTests("SPORT_FOOTBALL", footballTests);
 
     expect(useSportTestsStore.getState().testsBySport).toEqual({
-      HANDBALL_SPORT: handballTests,
-      FOOTBALL_SPORT: footballTests,
+      SPORT_HANDBALL: handballTests,
+      SPORT_FOOTBALL: footballTests,
     });
   });
 
   it("replaces the tests of the same sport", () => {
     useSportTestsStore.setState({
-      testsBySport: { HANDBALL_SPORT: [generateSportTest("FAKE_TEST_A")] },
+      testsBySport: { SPORT_HANDBALL: [generateSportTest("FAKE_TEST_A")] },
     });
     const refreshed = [generateSportTest("FAKE_TEST_C")];
 
-    useSportTestsStore.getState().setTests("HANDBALL_SPORT", refreshed);
+    useSportTestsStore.getState().setTests("SPORT_HANDBALL", refreshed);
 
-    expect(useSportTestsStore.getState().testsBySport.HANDBALL_SPORT).toEqual(
+    expect(useSportTestsStore.getState().testsBySport.SPORT_HANDBALL).toEqual(
       refreshed,
     );
   });
@@ -47,8 +47,8 @@ describe("sportTestsStore: cache per sport", () => {
   it("clears every sport on reset", () => {
     useSportTestsStore.setState({
       testsBySport: {
-        HANDBALL_SPORT: [generateSportTest("FAKE_TEST_A")],
-        FOOTBALL_SPORT: [generateSportTest("FAKE_TEST_B")],
+        SPORT_HANDBALL: [generateSportTest("FAKE_TEST_A")],
+        SPORT_FOOTBALL: [generateSportTest("FAKE_TEST_B")],
       },
     });
 

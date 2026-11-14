@@ -45,7 +45,7 @@ beforeEach(() => {
     gender: "FEMALE",
     birthday: generateBirthdayForAge(14),
   });
-  useUserWorkoutStore.getState().setSport("HANDBALL_SPORT");
+  useUserWorkoutStore.getState().setSport("SPORT_HANDBALL");
   useUserWorkoutStore
     .getState()
     .setTags({ POSITION: ["WING"], LEVEL: ["BEGINNER"] });

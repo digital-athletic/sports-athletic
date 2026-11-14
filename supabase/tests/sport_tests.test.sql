@@ -41,7 +41,7 @@ SELECT is((SELECT relrowsecurity FROM pg_class
 -- Fixtures
 -- ---------------------------------------------------------------------------
 INSERT INTO public.sport_tests (id, sport, region, code, unit) VALUES
-  (:'T1', 'HANDBALL_SPORT', 'DE', 'SPRINT_5M', 's'),
+  (:'T1', 'SPORT_HANDBALL', 'DE', 'SPRINT_5M', 's'),
   (:'T2', 'FAKE_SPORT_A', 'DE', 'FAKE_TEST_ONE', 'm'),
   (:'T3', 'FAKE_SPORT_B', 'DE', 'FAKE_CASCADE', 'kg');
 
@@ -80,10 +80,10 @@ SELECT ok((SELECT updated_at IS NOT NULL FROM public.sport_test_reference_values
 -- Uniqueness
 -- ---------------------------------------------------------------------------
 SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
-    VALUES ('HANDBALL_SPORT', 'DE', 'SPRINT_5M', 's') $$,
+    VALUES ('SPORT_HANDBALL', 'DE', 'SPRINT_5M', 's') $$,
   '23505', NULL, 'unique: the same sport, region and code twice is rejected');
 SELECT lives_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
-    VALUES ('HANDBALL_SPORT', 'FR', 'SPRINT_5M', 's') $$,
+    VALUES ('SPORT_HANDBALL', 'FR', 'SPRINT_5M', 's') $$,
   'unique: the same sport and code in another region is accepted');
 SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
       (test_id, gender, position, training_stage, range_start, range_end)
@@ -228,8 +228,8 @@ SET LOCAL "request.jwt.claim.sub" TO :'A';
 SELECT is((SELECT count(*) FROM public.sport_tests), :n_tests::bigint,
   'read: an authenticated user reads every row of sport_tests');
 SELECT is((SELECT array_agg(DISTINCT sport ORDER BY sport) FROM public.sport_tests
-           WHERE sport IN ('HANDBALL_SPORT', 'FAKE_SPORT_A')),
-  ARRAY['FAKE_SPORT_A', 'HANDBALL_SPORT'],
+           WHERE sport IN ('SPORT_HANDBALL', 'FAKE_SPORT_A')),
+  ARRAY['FAKE_SPORT_A', 'SPORT_HANDBALL'],
   'read: an authenticated user reads tests of every sport');
 SELECT is((SELECT count(*) FROM public.sport_test_reference_values), :n_values::bigint,
   'read: an authenticated user reads every row of sport_test_reference_values');

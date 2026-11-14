@@ -1,7 +1,7 @@
 -- Sport tests and their reference values (issue #631).
 --
 -- sport_tests stores one fitness test per sport and region. The sport is an app
--- code such as HANDBALL_SPORT and the region is an ISO 3166 country or
+-- code such as SPORT_HANDBALL and the region is an ISO 3166 country or
 -- subdivision code such as DE or GB-ENG. sport_test_reference_values stores the
 -- reference ranges of a test per gender, position and training stage. A test
 -- may have no reference values.

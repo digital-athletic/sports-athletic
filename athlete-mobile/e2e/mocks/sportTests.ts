@@ -9,6 +9,8 @@ export type MockSportTestRow = {
     gender: "MALE" | "FEMALE";
     position: string;
     training_stage: string;
+    min_age: number;
+    max_age: number;
     range_start: string;
     range_end: string;
   }[];

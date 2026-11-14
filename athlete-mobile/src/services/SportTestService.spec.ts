@@ -20,7 +20,7 @@ jest.mock("./supabaseClient", () => ({
 
 /**
  * A sport_tests row as Supabase returns it, e.g.
- * { id: "test-1", code: "FAKE_TEST", unit: "s", sport_test_reference_values: [{ gender: "FEMALE", position: "WING", training_stage: "GRUNDLAGENTRAINING", range_start: "9.87", range_end: 6.54 }] }
+ * { id: "test-1", code: "FAKE_TEST", unit: "s", sport_test_reference_values: [{ gender: "FEMALE", position: "WING", training_stage: "GRUNDLAGENTRAINING", min_age: 13, max_age: 14, range_start: "9.87", range_end: 6.54 }] }
  */
 const generateSportTestRow = (
   rangeStart: string | number,
@@ -34,6 +34,8 @@ const generateSportTestRow = (
       gender: "FEMALE",
       position: "WING",
       training_stage: "GRUNDLAGENTRAINING",
+      min_age: 13,
+      max_age: 14,
       range_start: rangeStart,
       range_end: rangeEnd,
     },
@@ -81,12 +83,25 @@ describe("fetchSportTests: mapping", () => {
             gender: "FEMALE",
             position: "WING",
             trainingStage: "GRUNDLAGENTRAINING",
+            minAge: 13,
+            maxAge: 14,
             rangeStart: 9.87,
             rangeEnd: 6.54,
           },
         ],
       },
     ]);
+  });
+
+  it("selects the age range columns", async () => {
+    signedIn();
+    mockOrder.mockResolvedValue({ data: [], error: null });
+
+    await fetchSportTests("SPORT_HANDBALL");
+
+    expect(mockSelect).toHaveBeenCalledWith(
+      expect.stringContaining("min_age, max_age"),
+    );
   });
 
   it("accepts range values that arrive as numbers", async () => {

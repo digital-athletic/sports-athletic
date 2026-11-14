@@ -2,12 +2,11 @@ import {
   type SportTest,
   type SportTestReferenceValue,
 } from "./models/SportTest";
-import { type TrainingStage } from "./trainingStage";
 
 export type AthleteReferenceKey = {
   gender: "MALE" | "FEMALE";
   position: string | undefined;
-  trainingStage: TrainingStage | null;
+  age: number | null;
 };
 
 export function referenceRangeFor(
@@ -15,13 +14,15 @@ export function referenceRangeFor(
   athlete: AthleteReferenceKey,
 ): SportTestReferenceValue | null {
   if (athlete.position === undefined) return null;
-  if (athlete.trainingStage === null) return null;
+  if (athlete.age === null) return null;
 
+  const { age } = athlete;
   const match = test.referenceValues.find(
     (value) =>
       value.gender === athlete.gender &&
       value.position === athlete.position &&
-      value.trainingStage === athlete.trainingStage,
+      value.minAge <= age &&
+      age <= value.maxAge,
   );
   return match ?? null;
 }

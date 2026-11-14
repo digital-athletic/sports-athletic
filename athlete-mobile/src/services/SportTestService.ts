@@ -7,6 +7,8 @@ interface SportTestReferenceValueRow {
   gender: "MALE" | "FEMALE";
   position: string;
   training_stage: string;
+  min_age: number;
+  max_age: number;
   // Postgres numeric can arrive as a string.
   range_start: number | string;
   range_end: number | string;
@@ -28,6 +30,8 @@ function toSportTest(row: SportTestRow): SportTest {
       gender: value.gender,
       position: value.position,
       trainingStage: value.training_stage,
+      minAge: value.min_age,
+      maxAge: value.max_age,
       rangeStart: Number(value.range_start),
       rangeEnd: Number(value.range_end),
     })),
@@ -47,7 +51,7 @@ export async function fetchSportTests(
   const { data, error } = (await supabase
     .from("sport_tests")
     .select(
-      "id, code, unit, sport_test_reference_values(gender, position, training_stage, range_start, range_end)",
+      "id, code, unit, sport_test_reference_values(gender, position, training_stage, min_age, max_age, range_start, range_end)",
     )
     .eq("sport", sport)
     .eq("region", region)

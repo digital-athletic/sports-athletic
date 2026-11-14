@@ -32,7 +32,7 @@ const generateBirthdayForAge = (age: number): string => {
 };
 
 /**
- * A test with a range for a female wing player in Grundlagentraining, e.g.
+ * A test with a range for a female wing player aged 13 to 14, e.g.
  * { id: "id-SPRINT_5M", code: "SPRINT_5M", unit: "s", referenceValues: [{ ..., rangeStart: 9.87, rangeEnd: 6.54 }] }
  */
 const generateTestWithRange = (code = "SPRINT_5M"): SportTest =>
@@ -61,10 +61,10 @@ describe("PerformanceTestsScreen: list", () => {
     expect(screen.getByText("Reference 9.87 to 6.54 s")).toBeTruthy();
   });
 
-  it("says there is no reference when no range matches the stage", async () => {
+  it("says there is no reference when no range matches the age", async () => {
     mockFetchSportTests.mockResolvedValue([
       generateSportTest("FAKE_TEST", [
-        generateReferenceValue({ trainingStage: "BASISTRAINING" }),
+        generateReferenceValue({ minAge: 15, maxAge: 16 }),
       ]),
     ]);
 

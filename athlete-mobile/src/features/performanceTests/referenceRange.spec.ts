@@ -1,52 +1,116 @@
 import { formatRangeNumber, referenceRangeFor } from "./referenceRange";
 import { generateReferenceValue, generateSportTest } from "./testFixtures";
 
-const femaleWingGrundlagen = generateReferenceValue();
-const maleWingGrundlagen = generateReferenceValue({ gender: "MALE" });
-const femaleGoalkeeperGrundlagen = generateReferenceValue({
+const femaleWingAged13To14 = generateReferenceValue();
+const maleWingAged13To14 = generateReferenceValue({ gender: "MALE" });
+const femaleGoalkeeperAged13To14 = generateReferenceValue({
   position: "GOALKEEPER",
 });
-const femaleWingBasis = generateReferenceValue({
-  trainingStage: "BASISTRAINING",
+const femaleWingAged15To16 = generateReferenceValue({
+  minAge: 15,
+  maxAge: 16,
 });
 
 describe("referenceRangeFor: matching", () => {
-  it("picks the value matching gender, position and stage", () => {
+  it("picks the value matching gender, position and age", () => {
     const test = generateSportTest("FAKE_TEST", [
-      maleWingGrundlagen,
-      femaleGoalkeeperGrundlagen,
-      femaleWingBasis,
-      femaleWingGrundlagen,
+      maleWingAged13To14,
+      femaleGoalkeeperAged13To14,
+      femaleWingAged15To16,
+      femaleWingAged13To14,
     ]);
 
     const range = referenceRangeFor(test, {
       gender: "FEMALE",
       position: "WING",
-      trainingStage: "GRUNDLAGENTRAINING",
+      age: 13,
     });
 
-    expect(range).toEqual(femaleWingGrundlagen);
+    expect(range).toEqual(femaleWingAged13To14);
   });
 
-  it("returns null when the stage is null", () => {
-    const test = generateSportTest("FAKE_TEST", [femaleWingGrundlagen]);
+  it("picks the value by age when the stage label is the same", () => {
+    const test = generateSportTest("FAKE_TEST", [
+      femaleWingAged13To14,
+      generateReferenceValue({ minAge: 15, maxAge: 16, rangeStart: 8.76 }),
+    ]);
 
     const range = referenceRangeFor(test, {
       gender: "FEMALE",
       position: "WING",
-      trainingStage: null,
+      age: 15,
+    });
+
+    expect(range?.rangeStart).toBe(8.76);
+  });
+
+  it("matches the lower age bound", () => {
+    const test = generateSportTest("FAKE_TEST", [femaleWingAged13To14]);
+
+    const range = referenceRangeFor(test, {
+      gender: "FEMALE",
+      position: "WING",
+      age: 13,
+    });
+
+    expect(range).toEqual(femaleWingAged13To14);
+  });
+
+  it("matches the upper age bound", () => {
+    const test = generateSportTest("FAKE_TEST", [femaleWingAged13To14]);
+
+    const range = referenceRangeFor(test, {
+      gender: "FEMALE",
+      position: "WING",
+      age: 14,
+    });
+
+    expect(range).toEqual(femaleWingAged13To14);
+  });
+
+  it("returns null one year below the range", () => {
+    const test = generateSportTest("FAKE_TEST", [femaleWingAged13To14]);
+
+    const range = referenceRangeFor(test, {
+      gender: "FEMALE",
+      position: "WING",
+      age: 12,
+    });
+
+    expect(range).toBeNull();
+  });
+
+  it("returns null one year above the range", () => {
+    const test = generateSportTest("FAKE_TEST", [femaleWingAged13To14]);
+
+    const range = referenceRangeFor(test, {
+      gender: "FEMALE",
+      position: "WING",
+      age: 15,
+    });
+
+    expect(range).toBeNull();
+  });
+
+  it("returns null when the age is null", () => {
+    const test = generateSportTest("FAKE_TEST", [femaleWingAged13To14]);
+
+    const range = referenceRangeFor(test, {
+      gender: "FEMALE",
+      position: "WING",
+      age: null,
     });
 
     expect(range).toBeNull();
   });
 
   it("returns null when the position is undefined", () => {
-    const test = generateSportTest("FAKE_TEST", [femaleWingGrundlagen]);
+    const test = generateSportTest("FAKE_TEST", [femaleWingAged13To14]);
 
     const range = referenceRangeFor(test, {
       gender: "FEMALE",
       position: undefined,
-      trainingStage: "GRUNDLAGENTRAINING",
+      age: 13,
     });
 
     expect(range).toBeNull();
@@ -54,14 +118,14 @@ describe("referenceRangeFor: matching", () => {
 
   it("returns null when no value matches", () => {
     const test = generateSportTest("FAKE_TEST", [
-      maleWingGrundlagen,
-      femaleWingBasis,
+      maleWingAged13To14,
+      femaleWingAged15To16,
     ]);
 
     const range = referenceRangeFor(test, {
       gender: "FEMALE",
       position: "WING",
-      trainingStage: "GRUNDLAGENTRAINING",
+      age: 13,
     });
 
     expect(range).toBeNull();
@@ -73,7 +137,7 @@ describe("referenceRangeFor: matching", () => {
     const range = referenceRangeFor(test, {
       gender: "FEMALE",
       position: "WING",
-      trainingStage: "GRUNDLAGENTRAINING",
+      age: 13,
     });
 
     expect(range).toBeNull();

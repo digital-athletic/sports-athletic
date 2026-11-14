@@ -11,7 +11,6 @@ import { Text } from "@/theme/Text";
 import { type SportTest } from "./models/SportTest";
 import { PerformanceTestRow } from "./PerformanceTestRow";
 import { referenceRangeFor } from "./referenceRange";
-import { trainingStageFor } from "./trainingStage";
 import { usePerformanceTests } from "./usePerformanceTests";
 
 /** Lists the performance tests of the athlete's sport with the athlete's reference range. */
@@ -70,13 +69,11 @@ export default function PerformanceTestsScreen() {
 }
 
 function PerformanceTestList({ tests }: { tests: SportTest[] }) {
-  const sport = useUserWorkoutStore((state) => state.workoutData.sport);
   const position = useUserWorkoutStore(
     (state) => state.workoutData.tags.POSITION?.[0],
   );
   const gender = useUserProfileStore((state) => state.personalData.gender);
   const age = useUserProfileStore((state) => state.getAge());
-  const trainingStage = trainingStageFor(sport, gender, age);
 
   return (
     <>
@@ -84,7 +81,7 @@ function PerformanceTestList({ tests }: { tests: SportTest[] }) {
         <PerformanceTestRow
           key={test.id}
           test={test}
-          range={referenceRangeFor(test, { gender, position, trainingStage })}
+          range={referenceRangeFor(test, { gender, position, age })}
         />
       ))}
     </>

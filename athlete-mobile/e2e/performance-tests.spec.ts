@@ -14,6 +14,8 @@ const SPRINT_5M_ROW = {
       gender: "FEMALE" as const,
       position: "WING",
       training_stage: "GRUNDLAGENTRAINING",
+      min_age: 13,
+      max_age: 14,
       range_start: "9.87",
       range_end: "6.54",
     },

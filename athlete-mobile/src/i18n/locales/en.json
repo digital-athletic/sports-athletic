@@ -840,7 +840,28 @@
       "reference": "Reference {{start}} to {{end}} {{unit}}",
       "noReference": "No reference for your training stage",
       "empty": "There are no performance tests for your sport yet.",
-      "loadError": "The app could not load the performance tests. Check your connection and try again."
+      "notFound": "This performance test does not exist.",
+      "loadError": "The app could not load the performance tests. Check your connection and try again.",
+      "noValue": "No value",
+      "latestValue": "Latest value",
+      "yourValues": "Your values",
+      "noValuesYet": "You have not entered a value yet. Add your first value below.",
+      "addValue": "Add value",
+      "value": "Value",
+      "valueLabel": "Value in {{unit}}",
+      "dateLabel": "Date",
+      "save": "Save",
+      "invalidValue": "Enter a number of 0 or more, for example 8.1.",
+      "invalidDate": "The date cannot be in the future.",
+      "legendValues": "Your values",
+      "legendRange": "Reference range",
+      "chartSummary_one": "Line chart with {{count}} value over time",
+      "chartSummary_other": "Line chart with {{count}} values over time",
+      "status": {
+        "IN_RANGE": "in range",
+        "BELOW_RANGE": "below range",
+        "ABOVE_RANGE": "above range"
+      }
     }
   },
   "performanceTests": {

@@ -1,92 +1,129 @@
 import { type FC } from "react";
+import { Pressable, StyleSheet } from "react-native";
+import { type TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
-import { useResponsiveProp } from "@shopify/restyle";
-import IconStopwatch from "@tabler/icons-react-native/IconStopwatch";
-import { AppIcon } from "@/common/AppIcon";
-import enTranslations from "@/i18n/locales/en.json";
 import { Box } from "@/theme/Box";
 import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
-import { useTheme } from "@/theme/theme";
 import {
   type SportTest,
   type SportTestReferenceValue,
 } from "./models/SportTest";
-import { formatRangeNumber } from "./referenceRange";
-
-type TranslatedTestCode = keyof typeof enTranslations.performanceTests.tests;
+import { TestIconCircle } from "./TestIconCircle";
+import { formatValueWithUnit, type LatestResult } from "./testValues";
+import { useReferenceLine, useTestName } from "./useTestLabels";
+import { ValueStatusPill } from "./ValueStatusPill";
 
 type Props = {
   test: SportTest;
   range: SportTestReferenceValue | null;
+  latest: LatestResult | null;
+  onPress: () => void;
 };
 
-function isTranslatedTestCode(code: string): code is TranslatedTestCode {
-  return Object.hasOwn(enTranslations.performanceTests.tests, code);
-}
-
-/** One test as a card with its icon, name and the reference range of the athlete. Not pressable. */
-export const PerformanceTestRow: FC<Props> = ({ test, range }) => {
+const LatestValue: FC<{ test: SportTest; latest: LatestResult | null }> = ({
+  test,
+  latest,
+}) => {
   const { t, i18n } = useTranslation();
-  const { colors } = useTheme();
-  const iconCircleSize = useResponsiveProp({ phone: 36, tablet: 52 });
-  const iconSize = useResponsiveProp({ phone: 20, tablet: 28 });
 
-  const name = isTranslatedTestCode(test.code)
-    ? t(`performanceTests.tests.${test.code}`)
-    : test.code;
-  const reference = range
-    ? t("more.performanceTests.reference", {
-        start: formatRangeNumber(range.rangeStart, i18n.language),
-        end: formatRangeNumber(range.rangeEnd, i18n.language),
-        unit: test.unit,
-      })
-    : t("more.performanceTests.noReference");
+  if (latest === null) {
+    return (
+      <Text
+        variant="small"
+        fontSize={{ phone: 14, tablet: 17 }}
+        color="darkGrey1"
+      >
+        {t("more.performanceTests.noValue")}
+      </Text>
+    );
+  }
 
   return (
-    <Card
-      variant="outlined"
-      backgroundColor="lightGrey1"
-      flexDirection="row"
-      alignItems="center"
-      gap={{ phone: "s", tablet: "m" }}
-      padding={{ phone: "s", tablet: "m" }}
-      testID={`performance-test-row-${test.code}`}
-      accessible
-      accessibilityLabel={`${name}, ${reference}`}
-    >
-      <Box
-        width={iconCircleSize}
-        height={iconCircleSize}
-        borderRadius="round"
-        backgroundColor="primaryTint"
-        alignItems="center"
-        justifyContent="center"
+    <Box alignItems="flex-end" gap="xs">
+      <Text
+        variant="body"
+        fontSize={{ phone: 16, tablet: 20 }}
+        fontWeight="600"
       >
-        <AppIcon
-          icon={IconStopwatch}
-          size={iconSize}
-          color={colors.primary}
-          decorative
-        />
-      </Box>
-      <Box flex={1}>
-        <Text
-          variant="body"
-          fontSize={{ phone: 16, tablet: 20 }}
-          fontWeight="600"
-          numberOfLines={1}
-        >
-          {name}
-        </Text>
-        <Text
-          variant="small"
-          fontSize={{ phone: 14, tablet: 17 }}
-          color="darkGrey1"
-        >
-          {reference}
-        </Text>
-      </Box>
-    </Card>
+        {formatValueWithUnit(latest.value.value, test.unit, i18n.language)}
+      </Text>
+      {latest.status && <ValueStatusPill status={latest.status} />}
+    </Box>
+  );
+};
+
+function describeLatest(
+  test: SportTest,
+  latest: LatestResult | null,
+  t: TFunction,
+  language: string,
+): string {
+  if (latest === null) return t("more.performanceTests.noValue");
+
+  const value = formatValueWithUnit(latest.value.value, test.unit, language);
+  if (latest.status === null) return value;
+
+  return `${value}, ${t(`more.performanceTests.status.${latest.status}`)}`;
+}
+
+const styles = StyleSheet.create({
+  pressed: {
+    opacity: 0.7,
+  },
+});
+
+/** One test as a pressable card with its icon, name, reference range and latest value. */
+export const PerformanceTestRow: FC<Props> = ({
+  test,
+  range,
+  latest,
+  onPress,
+}) => {
+  const { t, i18n } = useTranslation();
+
+  const name = useTestName(test.code);
+  const reference = useReferenceLine(test, range);
+  const latestLabel = describeLatest(test, latest, t, i18n.language);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => pressed && styles.pressed}
+      accessibilityRole="button"
+      accessibilityLabel={`${name}, ${reference}, ${latestLabel}`}
+      testID={`performance-test-row-${test.code}`}
+    >
+      <Card
+        variant="outlined"
+        backgroundColor="lightGrey1"
+        flexDirection="row"
+        alignItems="center"
+        gap={{ phone: "s", tablet: "m" }}
+        padding={{ phone: "s", tablet: "m" }}
+      >
+        <TestIconCircle />
+        <Box flex={1}>
+          <Text
+            variant="body"
+            fontSize={{ phone: 16, tablet: 20 }}
+            fontWeight="600"
+            numberOfLines={1}
+          >
+            {name}
+          </Text>
+          <Text
+            variant="small"
+            fontSize={{ phone: 14, tablet: 17 }}
+            color="darkGrey1"
+          >
+            {reference}
+          </Text>
+        </Box>
+        <Box testID={`performance-test-latest-${test.code}`}>
+          <LatestValue test={test} latest={latest} />
+        </Box>
+      </Card>
+    </Pressable>
   );
 };

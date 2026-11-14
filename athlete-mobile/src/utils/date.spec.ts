@@ -4,6 +4,7 @@ import {
   isISODate,
   formatDateForDisplay,
   addDays,
+  ageOnDate,
   calculateAgeFromBirthday,
   dateOfAge,
   daysBetweenISODates,
@@ -342,5 +343,23 @@ describe("date utils", () => {
 
       expect(result.getFullYear()).toBe(new Date().getFullYear() + 1);
     });
+  });
+});
+
+describe("ageOnDate: age on a given day", () => {
+  it("is one year less on the day before the birthday", () => {
+    expect(ageOnDate("2012-06-15", "2027-06-14")).toBe(14);
+  });
+
+  it("counts the new year on the birthday", () => {
+    expect(ageOnDate("2012-06-15", "2027-06-15")).toBe(15);
+  });
+
+  it("keeps the new age on the day after the birthday", () => {
+    expect(ageOnDate("2012-06-15", "2027-06-16")).toBe(15);
+  });
+
+  it("returns null for an invalid birthday", () => {
+    expect(ageOnDate("not a date", "2027-06-15")).toBeNull();
   });
 });

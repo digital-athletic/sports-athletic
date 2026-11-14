@@ -98,4 +98,13 @@ describe("<TextInputField />", () => {
     const input = getByPlaceholderText("Enter number");
     expect(input.props.keyboardType).toBe("numeric");
   });
+
+  it("shows the suffix after the input and hides it from screen readers", async () => {
+    const { getByText } = await render(
+      <TextInputField {...defaultProps} suffix="cm" />,
+    );
+
+    const suffix = getByText("cm", { includeHiddenElements: true });
+    expect(suffix.props.accessibilityElementsHidden).toBe(true);
+  });
 });

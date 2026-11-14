@@ -14,6 +14,29 @@ import { isAllowedValueDate, parseTestValue } from "./testValues";
 
 type EntryError = "invalidValue" | "invalidDate";
 
+/** Date of the value; the picker offers no date after today. */
+const ValueDateField: FC<{
+  date: string;
+  onChange: (date: string) => void;
+}> = ({ date, onChange }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Box>
+      <Text variant="label" marginBottom="xs">
+        {t("more.performanceTests.dateLabel")}
+      </Text>
+      <DateInputField
+        type="date"
+        dateTime={date}
+        onChange={onChange}
+        maximumDate={new Date()}
+        accessibilityLabel={t("more.performanceTests.dateLabel")}
+      />
+    </Box>
+  );
+};
+
 /** Entry of a new value with its date; a rejected entry shows an error and stores nothing. */
 export const TestValueEntryCard: FC<{ test: SportTest; valuesKey: string }> = ({
   test,
@@ -45,25 +68,18 @@ export const TestValueEntryCard: FC<{ test: SportTest; valuesKey: string }> = ({
     <TestSectionCard>
       <TestSectionTitle title={t("more.performanceTests.addValue")} />
       <TextInputField
-        title={t("more.performanceTests.valueLabel", { unit: test.unit })}
-        placeholder={test.unit}
+        title={t("more.performanceTests.value")}
+        accessibilityLabel={t("more.performanceTests.valueLabel", {
+          unit: test.unit,
+        })}
+        placeholder=""
+        suffix={test.unit}
         value={input}
         onChange={setInput}
         keyboardType="decimal-pad"
         testID="performance-test-value-input"
       />
-      <Box>
-        <Text variant="label" marginBottom="xs">
-          {t("more.performanceTests.dateLabel")}
-        </Text>
-        <DateInputField
-          type="date"
-          dateTime={date}
-          onChange={setDate}
-          maximumDate={new Date()}
-          accessibilityLabel={t("more.performanceTests.dateLabel")}
-        />
-      </Box>
+      <ValueDateField date={date} onChange={setDate} />
       {error && (
         <Text
           variant="body"

@@ -846,6 +846,7 @@
       "yourValues": "Deine Werte",
       "noValuesYet": "Du hast noch keinen Wert eingetragen. Trage unten deinen ersten Wert ein.",
       "addValue": "Wert hinzufügen",
+      "value": "Wert",
       "valueLabel": "Wert in {{unit}}",
       "dateLabel": "Datum",
       "save": "Speichern",

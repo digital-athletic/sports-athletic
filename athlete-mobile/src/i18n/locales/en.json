@@ -846,6 +846,7 @@
       "yourValues": "Your values",
       "noValuesYet": "You have not entered a value yet. Add your first value below.",
       "addValue": "Add value",
+      "value": "Value",
       "valueLabel": "Value in {{unit}}",
       "dateLabel": "Date",
       "save": "Save",

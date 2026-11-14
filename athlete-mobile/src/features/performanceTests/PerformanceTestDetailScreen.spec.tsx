@@ -259,3 +259,16 @@ describe("PerformanceTestDetailScreen: unknown test", () => {
     ).toBeTruthy();
   });
 });
+
+describe("PerformanceTestDetailScreen: value field", () => {
+  it("shows the unit of the test behind the value field", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(
+      await screen.findByTestId("performance-test-value-input-suffix", {
+        includeHiddenElements: true,
+      }),
+    ).toHaveTextContent("s");
+    expect(screen.getByLabelText("Value in s")).toBeTruthy();
+  });
+});

@@ -32,7 +32,7 @@ const generateBirthdayForAge = (age: number): string => {
 
 /**
  * Sport test with one female wing reference value, e.g.
- * { id: "id-SPRINT_5M", code: "SPRINT_5M", unit: "s", referenceValues: [{ FEMALE, WING, GRUNDLAGENTRAINING, 1.25 to 1.15 }] }
+ * { id: "id-SPRINT_5M", code: "SPRINT_5M", unit: "s", referenceValues: [{ FEMALE, WING, GRUNDLAGENTRAINING, 9.87 to 6.54 }] }
  */
 const generateSprintTest = (code = "SPRINT_5M"): SportTest => ({
   id: `id-${code}`,
@@ -43,8 +43,8 @@ const generateSprintTest = (code = "SPRINT_5M"): SportTest => ({
       gender: "FEMALE",
       position: "WING",
       trainingStage: "GRUNDLAGENTRAINING",
-      rangeStart: 1.25,
-      rangeEnd: 1.15,
+      rangeStart: 9.87,
+      rangeEnd: 6.54,
     },
   ],
 });
@@ -88,7 +88,7 @@ describe("PerformanceTestsScreen: list", () => {
     const screen = await render(<PerformanceTestsScreen />);
 
     expect(await screen.findByText("5 m sprint")).toBeTruthy();
-    expect(screen.getByText("Reference 1.25 to 1.15 s")).toBeTruthy();
+    expect(screen.getByText("Reference 9.87 to 6.54 s")).toBeTruthy();
   });
 
   it("asks for the tests of the sport of the athlete", async () => {

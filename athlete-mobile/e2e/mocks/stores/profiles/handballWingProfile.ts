@@ -37,7 +37,7 @@ export function createHandballWingProfile(age: number): StoreDataMap {
       isInInitialAnamnesis: false,
     }),
     [STORAGE_KEYS.USER_WORKOUT]: createUserWorkoutStore({
-      sport: "HANDBALL_SPORT",
+      sport: "SPORT_HANDBALL",
       tags: { POSITION: ["WING"], LEVEL: ["BEGINNER"] },
     }),
     [STORAGE_KEYS.EXERCISE_PROGRESS]: createExerciseProgressStore(),

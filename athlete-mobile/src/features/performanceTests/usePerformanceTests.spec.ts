@@ -20,7 +20,7 @@ jest.mock("expo-router", () => ({
 beforeEach(() => {
   mockFetchSportTests.mockReset();
   useSportTestsStore.setState({ testsBySport: {} });
-  useUserWorkoutStore.getState().setSport("HANDBALL_SPORT");
+  useUserWorkoutStore.getState().setSport("SPORT_HANDBALL");
 });
 
 describe("usePerformanceTests: without cache", () => {
@@ -42,7 +42,7 @@ describe("usePerformanceTests: without cache", () => {
     await waitFor(() =>
       expect(result.current.state).toEqual({ status: "loaded", tests }),
     );
-    expect(mockFetchSportTests).toHaveBeenCalledWith("HANDBALL_SPORT");
+    expect(mockFetchSportTests).toHaveBeenCalledWith("SPORT_HANDBALL");
   });
 
   it("returns error when the load fails", async () => {
@@ -77,7 +77,7 @@ describe("usePerformanceTests: without cache", () => {
 describe("usePerformanceTests: with cache", () => {
   it("shows the cached list at once while the refresh is pending", async () => {
     const cached = [generateSportTest("FAKE_TEST_CACHED")];
-    useSportTestsStore.setState({ testsBySport: { HANDBALL_SPORT: cached } });
+    useSportTestsStore.setState({ testsBySport: { SPORT_HANDBALL: cached } });
     mockFetchSportTests.mockReturnValue(new Promise(() => {}));
 
     const { result } = await renderHook(() => usePerformanceTests());
@@ -87,7 +87,7 @@ describe("usePerformanceTests: with cache", () => {
 
   it("still returns the cached list when the refresh fails", async () => {
     const cached = [generateSportTest("FAKE_TEST_CACHED")];
-    useSportTestsStore.setState({ testsBySport: { HANDBALL_SPORT: cached } });
+    useSportTestsStore.setState({ testsBySport: { SPORT_HANDBALL: cached } });
     mockFetchSportTests.mockRejectedValue(new Error("offline"));
 
     const { result } = await renderHook(() => usePerformanceTests());
@@ -100,7 +100,7 @@ describe("usePerformanceTests: with cache", () => {
   it("replaces the cache with the refreshed list", async () => {
     const cached = [generateSportTest("FAKE_TEST_CACHED")];
     const refreshed = [generateSportTest("FAKE_TEST_REFRESHED")];
-    useSportTestsStore.setState({ testsBySport: { HANDBALL_SPORT: cached } });
+    useSportTestsStore.setState({ testsBySport: { SPORT_HANDBALL: cached } });
     mockFetchSportTests.mockResolvedValue(refreshed);
 
     const { result } = await renderHook(() => usePerformanceTests());
@@ -111,7 +111,7 @@ describe("usePerformanceTests: with cache", () => {
         tests: refreshed,
       }),
     );
-    expect(useSportTestsStore.getState().testsBySport.HANDBALL_SPORT).toEqual(
+    expect(useSportTestsStore.getState().testsBySport.SPORT_HANDBALL).toEqual(
       refreshed,
     );
   });

@@ -7,7 +7,7 @@ export type PositionItem = {
 };
 
 const SPORT_POSITIONS: Record<Sport, PositionItem[] | null> = {
-  HANDBALL_SPORT: [
+  SPORT_HANDBALL: [
     {
       value: "BACKCOURT",
       translationKey: "anamnesisQuestions.position.options.backcourt",
@@ -29,7 +29,7 @@ const SPORT_POSITIONS: Record<Sport, PositionItem[] | null> = {
       translationKey: "anamnesisQuestions.position.options.referee",
     },
   ],
-  FOOTBALL_SPORT: [
+  SPORT_FOOTBALL: [
     {
       value: "FIELD",
       translationKey: "anamnesisQuestions.position.options.field",
@@ -39,29 +39,19 @@ const SPORT_POSITIONS: Record<Sport, PositionItem[] | null> = {
       translationKey: "anamnesisQuestions.position.options.goal",
     },
   ],
-  VOLLEYBALL_SPORT: [
+  SPORT_VOLLEYBALL: [
     {
       value: "FIELD",
       translationKey: "anamnesisQuestions.position.options.field",
     },
   ],
-  BASKETBALL_SPORT: [
+  SPORT_BASKETBALL: [
     {
       value: "FIELD",
       translationKey: "anamnesisQuestions.position.options.field",
     },
   ],
-  ICE_HOCKEY_SPORT: [
-    {
-      value: "FIELD",
-      translationKey: "anamnesisQuestions.position.options.field",
-    },
-    {
-      value: "GOAL",
-      translationKey: "anamnesisQuestions.position.options.goal",
-    },
-  ],
-  HOCKEY_SPORT: [
+  SPORT_ICE_HOCKEY: [
     {
       value: "FIELD",
       translationKey: "anamnesisQuestions.position.options.field",
@@ -71,19 +61,29 @@ const SPORT_POSITIONS: Record<Sport, PositionItem[] | null> = {
       translationKey: "anamnesisQuestions.position.options.goal",
     },
   ],
-  AMERICAN_FOOTBALL_SPORT: [
+  SPORT_HOCKEY: [
+    {
+      value: "FIELD",
+      translationKey: "anamnesisQuestions.position.options.field",
+    },
+    {
+      value: "GOAL",
+      translationKey: "anamnesisQuestions.position.options.goal",
+    },
+  ],
+  SPORT_AMERICAN_FOOTBALL: [
     {
       value: "FIELD",
       translationKey: "anamnesisQuestions.position.options.field",
     },
   ],
-  RUGBY_SPORT: [
+  SPORT_RUGBY: [
     {
       value: "FIELD",
       translationKey: "anamnesisQuestions.position.options.field",
     },
   ],
-  OTHER_SPORT: null,
+  SPORT_OTHER: null,
 };
 
 /** Returns the list of positions for a given sport, or null if not applicable. */
@@ -98,10 +98,10 @@ export function shouldShowPositionQuestion(sport: Sport): boolean {
 
 /**
  * Returns the default position selection for a sport.
- * OTHER_SPORT → ["OTHER"], single-position sports → [firstPosition], multi-position → [].
+ * SPORT_OTHER → ["OTHER"], single-position sports → [firstPosition], multi-position → [].
  */
 export function getDefaultPositionForSport(sport: Sport): string[] {
-  if (sport === "OTHER_SPORT") {
+  if (sport === "SPORT_OTHER") {
     return ["OTHER"];
   }
   const positions = SPORT_POSITIONS[sport];

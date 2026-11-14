@@ -58,7 +58,7 @@ const BARBELL_HIP_TAGS = [
 const seedMaxValues = (overrides: Partial<MaxValuesType> = {}) => {
   useUserWorkoutStore.setState({
     workoutData: {
-      sport: "OTHER_SPORT",
+      sport: "SPORT_OTHER",
       tags: { POSITION: ["FIELD"], LEVEL: ["BEGINNER"] },
       seasonPhase: { type: null, endDate: "2026-01-01" },
       maxValues: { ...DEFAULT_MAX_VALUES, ...overrides },

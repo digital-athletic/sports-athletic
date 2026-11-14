@@ -3,8 +3,18 @@ import type { State } from "../userWorkoutStore";
 
 import { migratePositionTags } from "./positionMigration";
 import { migratePlanSkillTags } from "./skillTagMigration";
+import { migrateSportCode } from "./sportCodeMigration";
 
 export const userWorkoutStoreMigrations: MigrationMap<State> = {
+  // The sport codes moved their marker to the front: HANDBALL_SPORT became
+  // SPORT_HANDBALL.
+  18: (state) => ({
+    ...state,
+    workoutData: {
+      ...state.workoutData,
+      sport: migrateSportCode(state.workoutData?.sport),
+    },
+  }),
   // The skill trees renamed their German skill tags to English; stored plans
   // hold copies of the branch tags.
   17: (state) => ({

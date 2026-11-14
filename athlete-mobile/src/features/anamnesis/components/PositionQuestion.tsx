@@ -22,7 +22,7 @@ export function PositionQuestion({
   const sportPositions = getPositionsForSport(sport);
   const currentPositions = tags[TagGroups.POSITION] ?? [];
 
-  // Auto-set position for OTHER_SPORT or if nothing is selected for a single-position sport
+  // Auto-set position for SPORT_OTHER or if nothing is selected for a single-position sport
   const setDefaultPosition = useEffectEvent(() => {
     if (!showSelector) {
       onChangeTag(TagGroups.POSITION, getDefaultPositionForSport(sport));

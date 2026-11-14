@@ -635,15 +635,15 @@
     "errorMessageConsentSaveFailed": "The app could not save your agreement. Check your internet connection and try again."
   },
   "sports": {
-    "HANDBALL_SPORT": "Handball",
-    "FOOTBALL_SPORT": "Football/Soccer",
-    "VOLLEYBALL_SPORT": "Volleyball",
-    "BASKETBALL_SPORT": "Basketball",
-    "ICE_HOCKEY_SPORT": "Ice Hockey",
-    "HOCKEY_SPORT": "Hockey",
-    "AMERICAN_FOOTBALL_SPORT": "American Football",
-    "RUGBY_SPORT": "Rugby",
-    "OTHER_SPORT": "General Athletics"
+    "SPORT_HANDBALL": "Handball",
+    "SPORT_FOOTBALL": "Football/Soccer",
+    "SPORT_VOLLEYBALL": "Volleyball",
+    "SPORT_BASKETBALL": "Basketball",
+    "SPORT_ICE_HOCKEY": "Ice Hockey",
+    "SPORT_HOCKEY": "Hockey",
+    "SPORT_AMERICAN_FOOTBALL": "American Football",
+    "SPORT_RUGBY": "Rugby",
+    "SPORT_OTHER": "General Athletics"
   },
   "more": {
     "title": "Profile",

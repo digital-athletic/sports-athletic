@@ -18,15 +18,15 @@ import IconCheck from "@tabler/icons-react-native/IconCheck";
 const SPORT_IMAGES: Partial<
   Record<keyof typeof WorkoutConstants.SPORTS, ImageSourcePropType>
 > = {
-  HANDBALL_SPORT: require("../../../assets/img/sportSelection/Handball.png"),
-  FOOTBALL_SPORT: require("../../../assets/img/sportSelection/soccer.jpg"),
-  VOLLEYBALL_SPORT: require("../../../assets/img/sportSelection/volleyball.jpg"),
-  BASKETBALL_SPORT: require("../../../assets/img/sportSelection/basketball.jpg"),
-  ICE_HOCKEY_SPORT: require("../../../assets/img/sportSelection/icehockey.jpg"),
-  HOCKEY_SPORT: require("../../../assets/img/sportSelection/Hockey.jpg"),
-  AMERICAN_FOOTBALL_SPORT: require("../../../assets/img/sportSelection/american-football.jpg"),
-  RUGBY_SPORT: require("../../../assets/img/sportSelection/Rugby.jpg"),
-  OTHER_SPORT: require("../../../assets/img/sportSelection/generel-athletic.jpg"),
+  SPORT_HANDBALL: require("../../../assets/img/sportSelection/Handball.png"),
+  SPORT_FOOTBALL: require("../../../assets/img/sportSelection/soccer.jpg"),
+  SPORT_VOLLEYBALL: require("../../../assets/img/sportSelection/volleyball.jpg"),
+  SPORT_BASKETBALL: require("../../../assets/img/sportSelection/basketball.jpg"),
+  SPORT_ICE_HOCKEY: require("../../../assets/img/sportSelection/icehockey.jpg"),
+  SPORT_HOCKEY: require("../../../assets/img/sportSelection/Hockey.jpg"),
+  SPORT_AMERICAN_FOOTBALL: require("../../../assets/img/sportSelection/american-football.jpg"),
+  SPORT_RUGBY: require("../../../assets/img/sportSelection/Rugby.jpg"),
+  SPORT_OTHER: require("../../../assets/img/sportSelection/generel-athletic.jpg"),
 };
 
 const SHADE = ["transparent", "rgba(0, 0, 0, 0.75)"] as const;

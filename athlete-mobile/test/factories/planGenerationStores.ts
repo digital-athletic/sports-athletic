@@ -40,7 +40,7 @@ const generateTrainingDay = (
  *
  * generatePlanGenerationStores()
  * → { personalData: { username: "athlete", gender: "MALE", birthday: "1990-06-15" },
- *     workoutData: { sport: "OTHER_SPORT", tags: { LEVEL: ["ADVANCED"], POSITION: ["FIELD"] },
+ *     workoutData: { sport: "SPORT_OTHER", tags: { LEVEL: ["ADVANCED"], POSITION: ["FIELD"] },
  *       seasonPhase: { type: "PREPARATORY", endDate: "2027-03-01" }, maxValues: ... },
  *     trainingDays: [Monday HOME 45, ..., Thursday STUDIO 60, ...],
  *     places: { HOME: { equipment: ["DUMBBELL"] }, STUDIO: { equipment: ["BARBELL"] }, ... },
@@ -53,7 +53,7 @@ export const generatePlanGenerationStores = (): PlanGenerationStores => ({
     birthday: "1990-06-15",
   },
   workoutData: {
-    sport: "OTHER_SPORT",
+    sport: "SPORT_OTHER",
     tags: { LEVEL: ["ADVANCED"], POSITION: ["FIELD"] },
     seasonPhase: { type: "PREPARATORY", endDate: "2027-03-01" },
     maxValues: DEFAULT_MAX_VALUES,

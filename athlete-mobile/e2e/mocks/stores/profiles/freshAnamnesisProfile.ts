@@ -32,7 +32,7 @@ export function createFreshAnamnesisProfile(): StoreDataMap {
       isInInitialAnamnesis: false,
     }),
     [STORAGE_KEYS.USER_WORKOUT]: createUserWorkoutStore({
-      sport: "HANDBALL_SPORT",
+      sport: "SPORT_HANDBALL",
       maxValues: null,
     }),
     [STORAGE_KEYS.EXERCISE_PROGRESS]: createExerciseProgressStore({

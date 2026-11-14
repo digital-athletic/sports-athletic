@@ -14,10 +14,10 @@ type PersonalData = ReturnType<
  * as the completion of an exercise reads it from the user workout store.
  *
  * generateAdvancedWorkoutData()
- * → { sport: "OTHER_SPORT", tags: { LEVEL: ["ADVANCED"] }, seasonPhase: { type: null, endDate: "2026-01-01" }, maxValues: DEFAULT_MAX_VALUES }
+ * → { sport: "SPORT_OTHER", tags: { LEVEL: ["ADVANCED"] }, seasonPhase: { type: null, endDate: "2026-01-01" }, maxValues: DEFAULT_MAX_VALUES }
  */
 export const generateAdvancedWorkoutData = (): WorkoutData => ({
-  sport: "OTHER_SPORT",
+  sport: "SPORT_OTHER",
   tags: { LEVEL: ["ADVANCED"] },
   seasonPhase: { type: null, endDate: "2026-01-01" },
   maxValues: DEFAULT_MAX_VALUES,

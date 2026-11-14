@@ -1,10 +1,10 @@
 import { PowerTest as Chart } from "@/charts/PowerTest";
 import { Coaching } from "@/common/Coaching";
+import { LegendPill } from "@/common/LegendPill";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { POWER_TEST_EXERCISES } from "@/features/statistics/models/powerTestExercises";
 import { Box } from "@/theme/Box";
 import { Card } from "@/theme/Card";
-import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,28 +14,6 @@ interface PowerTestChartCardProps {
   /** Undefined shows the whole history. */
   scale?: ScaleType;
 }
-
-const LegendPill: FC<{ label: string; color: string }> = ({ label, color }) => (
-  <Box
-    flexDirection="row"
-    alignItems="center"
-    gap="xs"
-    paddingHorizontal="s"
-    paddingVertical="xs"
-    borderRadius="round"
-    backgroundColor="surfaceSubtle"
-  >
-    <Box
-      width={8}
-      height={8}
-      borderRadius="round"
-      style={{ backgroundColor: color }}
-    />
-    <Text variant="xSmall" color="darkGrey3">
-      {label}
-    </Text>
-  </Box>
-);
 
 const Legend: FC = () => {
   const { t } = useTranslation();

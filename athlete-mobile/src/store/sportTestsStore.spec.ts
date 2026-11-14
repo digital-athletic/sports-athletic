@@ -1,16 +1,5 @@
-import { type SportTest } from "@/features/performanceTests/models/SportTest";
+import { generateSportTest } from "@/features/performanceTests/testFixtures";
 import { useSportTestsStore } from "./sportTestsStore";
-
-/**
- * A sport test without reference values, e.g.
- * { id: "test-1", code: "FAKE_TEST", unit: "s", referenceValues: [] }
- */
-const generateSportTest = (code: string): SportTest => ({
-  id: `id-${code}`,
-  code,
-  unit: "s",
-  referenceValues: [],
-});
 
 describe("sportTestsStore: cache per sport", () => {
   beforeEach(() => {
@@ -27,7 +16,7 @@ describe("sportTestsStore: cache per sport", () => {
     );
   });
 
-  it("keeps the tests of another sport untouched", () => {
+  it("leaves the tests of another sport unchanged", () => {
     const handballTests = [generateSportTest("FAKE_TEST_A")];
     const footballTests = [generateSportTest("FAKE_TEST_B")];
     useSportTestsStore.setState({

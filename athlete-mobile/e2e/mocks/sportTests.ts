@@ -3,6 +3,7 @@ import { type Page } from "@playwright/test";
 /** A sport_tests row as PostgREST returns it with the embedded reference values. */
 export type MockSportTestRow = {
   id: string;
+  sport: string;
   code: string;
   unit: string;
   sport_test_reference_values: {

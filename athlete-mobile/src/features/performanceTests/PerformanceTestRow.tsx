@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { Pressable } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import { type TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Box } from "@/theme/Box";
@@ -67,6 +67,12 @@ function describeLatest(
   return `${value}, ${t(`more.performanceTests.status.${latest.status}`)}`;
 }
 
+const styles = StyleSheet.create({
+  pressed: {
+    opacity: 0.7,
+  },
+});
+
 /** One test as a pressable card with its icon, name, reference range and latest value. */
 export const PerformanceTestRow: FC<Props> = ({
   test,
@@ -83,6 +89,7 @@ export const PerformanceTestRow: FC<Props> = ({
   return (
     <Pressable
       onPress={onPress}
+      style={({ pressed }) => pressed && styles.pressed}
       accessibilityRole="button"
       accessibilityLabel={`${name}, ${reference}, ${latestLabel}`}
       testID={`performance-test-row-${test.code}`}

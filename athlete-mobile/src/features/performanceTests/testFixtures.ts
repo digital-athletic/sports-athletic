@@ -1,4 +1,3 @@
-import { formatDateToISO } from "@/utils/date";
 import { type PerformanceTestValue } from "./models/PerformanceTestValue";
 import {
   type SportTest,
@@ -48,13 +47,8 @@ export const generatePerformanceTestValue = (
   ...overrides,
 });
 
-/**
- * ISO birthday that makes the athlete exactly the given age today, e.g.
- * on 2026-11-14 and age 14 it returns "2012-11-01".
- */
-export const generateBirthdayForAge = (age: number): string => {
-  const today = new Date();
-  return formatDateToISO(
-    new Date(today.getFullYear() - age, today.getMonth(), 1),
-  );
-};
+/** The day the specs of this feature freeze the clock on, a Saturday in November 2026. */
+export const FROZEN_NOW = new Date(2026, 10, 14, 12);
+
+/** Birthday of an athlete who is 14 on FROZEN_NOW and so in Grundlagentraining (female handball). */
+export const BIRTHDAY_AT_14 = "2012-11-01";

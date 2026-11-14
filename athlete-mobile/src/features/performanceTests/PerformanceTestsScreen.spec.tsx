@@ -6,7 +6,8 @@ import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, fireEvent, render, within } from "../../utils/testUtils";
 import PerformanceTestsScreen from "./PerformanceTestsScreen";
 import {
-  generateBirthdayForAge,
+  BIRTHDAY_AT_14,
+  FROZEN_NOW,
   generatePerformanceTestValue,
   generateReferenceValue,
   generateSportTest,
@@ -34,18 +35,23 @@ const generateTestWithRange = (code = "SPRINT_5M"): SportTest =>
   generateSportTest(code, [generateReferenceValue()]);
 
 beforeEach(() => {
+  jest.useFakeTimers({ now: FROZEN_NOW });
   mockFetchSportTests.mockReset();
   mockNavigate.mockReset();
   usePerformanceTestValuesStore.setState({ valuesByTest: {} });
   useSportTestsStore.setState({ testsBySport: {} });
   useUserProfileStore.getState().setPersonalData({
     gender: "FEMALE",
-    birthday: generateBirthdayForAge(14),
+    birthday: BIRTHDAY_AT_14,
   });
   useUserWorkoutStore.getState().setSport("SPORT_HANDBALL");
   useUserWorkoutStore
     .getState()
     .setTags({ POSITION: ["WING"], LEVEL: ["BEGINNER"] });
+});
+
+afterEach(() => {
+  jest.useRealTimers();
 });
 
 describe("PerformanceTestsScreen: list", () => {

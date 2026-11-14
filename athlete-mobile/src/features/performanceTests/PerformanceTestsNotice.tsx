@@ -8,11 +8,11 @@ import { Card } from "@/theme/Card";
 import { Text } from "@/theme/Text";
 
 type Props = {
-  kind: "loading" | "error" | "empty";
+  kind: "loading" | "error" | "empty" | "notFound";
   onRetry: () => void;
 };
 
-/** What the performance test screens show instead of content: loading, load error or no tests. */
+/** What the performance test screens show instead of content: loading, load error, no tests or an unknown test. */
 export const PerformanceTestsNotice: FC<Props> = ({ kind, onRetry }) => {
   const { t } = useTranslation();
 
@@ -49,9 +49,9 @@ export const PerformanceTestsNotice: FC<Props> = ({ kind, onRetry }) => {
       variant="outlined"
       backgroundColor="lightGrey1"
       padding="l"
-      testID="performance-tests-empty"
+      testID={`performance-tests-${kind === "empty" ? "empty" : "not-found"}`}
     >
-      <Text variant="body">{t("more.performanceTests.empty")}</Text>
+      <Text variant="body">{t(`more.performanceTests.${kind}`)}</Text>
     </Card>
   );
 };

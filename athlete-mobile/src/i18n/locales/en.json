@@ -840,6 +840,7 @@
       "reference": "Reference {{start}} to {{end}} {{unit}}",
       "noReference": "No reference for your training stage",
       "empty": "There are no performance tests for your sport yet.",
+      "notFound": "This performance test does not exist.",
       "loadError": "The app could not load the performance tests. Check your connection and try again.",
       "noValue": "No value",
       "latestValue": "Latest value",

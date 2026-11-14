@@ -11,12 +11,13 @@ import { rateValue, type ValueStatus } from "./valueStatus";
 
 const DECIMAL_INPUT = /^\d+([.,]\d+)?$/;
 
-/** Parses a decimal with comma or point, null for empty, non numeric or negative input. */
+/** Parses a decimal with comma or point, null for empty, non numeric, negative or non finite input. */
 export function parseTestValue(input: string): number | null {
   const trimmed = input.trim();
   if (!DECIMAL_INPUT.test(trimmed)) return null;
 
-  return Number(trimmed.replace(",", "."));
+  const value = Number(trimmed.replace(",", "."));
+  return Number.isFinite(value) ? value : null;
 }
 
 /** A value date is allowed when it is not after today. */

@@ -207,7 +207,7 @@ export default function PerformanceTestDetailScreen() {
       heading={t("more.performanceTests.title")}
     >
       <PerformanceTestsNotice
-        kind={state.status === "loaded" ? "empty" : state.status}
+        kind={state.status === "loaded" ? "notFound" : state.status}
         onRetry={reload}
       />
     </HeadlineScreen>

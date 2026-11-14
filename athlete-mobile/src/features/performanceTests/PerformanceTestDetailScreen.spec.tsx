@@ -2,13 +2,15 @@ import { usePerformanceTestValuesStore } from "@/store/performanceTestValuesStor
 import { useSportTestsStore } from "@/store/sportTestsStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { addDays, formatDateForDisplay, formatDateToISO } from "@/utils/date";
+import { formatDateForDisplay, formatDateToISO } from "@/utils/date";
+import { Platform } from "react-native";
 import { fireEvent, render, within } from "../../utils/testUtils";
 import { type PerformanceTestValue } from "./models/PerformanceTestValue";
 import { type SportTest } from "./models/SportTest";
 import PerformanceTestDetailScreen from "./PerformanceTestDetailScreen";
 import {
-  generateBirthdayForAge,
+  BIRTHDAY_AT_14,
+  FROZEN_NOW,
   generatePerformanceTestValue,
   generateReferenceValue,
   generateSportTest,
@@ -32,29 +34,25 @@ jest.mock("expo-router", () => ({
 const VALUES_KEY = "SPORT_HANDBALL/SPRINT_5M";
 
 /**
- * ISO date some days before today, e.g. on 2026-11-14 and 3 days it returns "2026-11-11".
- * The athlete of this spec turns 14 on the 1st of the current month, so up to 5 days back she is in Grundlagentraining.
- */
-const generateDateDaysAgo = (days: number): string =>
-  formatDateToISO(addDays(new Date(), -days));
-
-/**
- * A value of the test entered some days ago, e.g. generateValueDaysAgo("id-a", 3, 8.1) returns
- * { id: "id-a", date: "2026-11-11", value: 8.1 }
- */
-const generateValueDaysAgo = (
-  id: string,
-  days: number,
-  value: number,
-): PerformanceTestValue =>
-  generatePerformanceTestValue({ id, date: generateDateDaysAgo(days), value });
-
-/**
  * A sprint test with the range 9.87 to 6.54 s for the female wing athlete, e.g.
  * { id: "id-SPRINT_5M", code: "SPRINT_5M", unit: "s", referenceValues: [{ ..., rangeStart: 9.87, rangeEnd: 6.54 }] }
  */
 const generateSprintTestWithRange = (): SportTest =>
   generateSportTest("SPRINT_5M", [generateReferenceValue()]);
+
+/**
+ * A sprint test with the range 11.5 to 9.5 s in Basistraining and 9.87 to 6.54 s in Grundlagentraining
+ * for the female wing athlete, e.g. a value of 10.2 s is in range in the first and below range in the second.
+ */
+const generateSprintTestWithTwoStages = (): SportTest =>
+  generateSportTest("SPRINT_5M", [
+    generateReferenceValue({
+      trainingStage: "BASISTRAINING",
+      rangeStart: 11.5,
+      rangeEnd: 9.5,
+    }),
+    generateReferenceValue(),
+  ]);
 
 const seedSportTest = (test: SportTest) => {
   useSportTestsStore.setState({ testsBySport: { SPORT_HANDBALL: [test] } });
@@ -68,19 +66,25 @@ const seedValues = (values: PerformanceTestValue[]) => {
 };
 
 beforeEach(() => {
+  jest.useFakeTimers({ now: FROZEN_NOW });
   mockTestCode = "SPRINT_5M";
   mockFetchSportTests.mockReset();
   useSportTestsStore.setState({ testsBySport: {} });
   usePerformanceTestValuesStore.setState({ valuesByTest: {} });
   useUserProfileStore.getState().setPersonalData({
     gender: "FEMALE",
-    birthday: generateBirthdayForAge(14),
+    birthday: BIRTHDAY_AT_14,
   });
   useUserWorkoutStore.getState().setSport("SPORT_HANDBALL");
   useUserWorkoutStore
     .getState()
     .setTags({ POSITION: ["WING"], LEVEL: ["BEGINNER"] });
   seedSportTest(generateSprintTestWithRange());
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+  jest.restoreAllMocks();
 });
 
 describe("PerformanceTestDetailScreen: heading", () => {
@@ -100,8 +104,16 @@ describe("PerformanceTestDetailScreen: heading", () => {
 describe("PerformanceTestDetailScreen: summary", () => {
   it("shows the latest value with the status in range", async () => {
     seedValues([
-      generateValueDaysAgo("id-old", 4, 10.2),
-      generateValueDaysAgo("id-new", 2, 8.1),
+      generatePerformanceTestValue({
+        id: "id-old",
+        date: "2026-11-10",
+        value: 10.2,
+      }),
+      generatePerformanceTestValue({
+        id: "id-new",
+        date: "2026-11-12",
+        value: 8.1,
+      }),
     ]);
 
     const screen = await render(<PerformanceTestDetailScreen />);
@@ -112,7 +124,13 @@ describe("PerformanceTestDetailScreen: summary", () => {
   });
 
   it("shows below range for a value before the range start", async () => {
-    seedValues([generateValueDaysAgo("id-slow", 2, 10.2)]);
+    seedValues([
+      generatePerformanceTestValue({
+        id: "id-slow",
+        date: "2026-11-12",
+        value: 10.2,
+      }),
+    ]);
 
     const screen = await render(<PerformanceTestDetailScreen />);
 
@@ -121,7 +139,13 @@ describe("PerformanceTestDetailScreen: summary", () => {
   });
 
   it("shows above range for a value beyond the range end", async () => {
-    seedValues([generateValueDaysAgo("id-fast", 2, 6.1)]);
+    seedValues([
+      generatePerformanceTestValue({
+        id: "id-fast",
+        date: "2026-11-12",
+        value: 6.1,
+      }),
+    ]);
 
     const screen = await render(<PerformanceTestDetailScreen />);
 
@@ -131,7 +155,13 @@ describe("PerformanceTestDetailScreen: summary", () => {
 
   it("shows the values without any status when the test has no range for the athlete", async () => {
     seedSportTest(generateSportTest("SPRINT_5M", []));
-    seedValues([generateValueDaysAgo("id-new", 2, 8.1)]);
+    seedValues([
+      generatePerformanceTestValue({
+        id: "id-new",
+        date: "2026-11-12",
+        value: 8.1,
+      }),
+    ]);
 
     const screen = await render(<PerformanceTestDetailScreen />);
 
@@ -143,7 +173,13 @@ describe("PerformanceTestDetailScreen: summary", () => {
 
 describe("PerformanceTestDetailScreen: chart and hint", () => {
   it("shows the chart when there are values", async () => {
-    seedValues([generateValueDaysAgo("id-new", 2, 8.1)]);
+    seedValues([
+      generatePerformanceTestValue({
+        id: "id-new",
+        date: "2026-11-12",
+        value: 8.1,
+      }),
+    ]);
 
     const screen = await render(<PerformanceTestDetailScreen />);
 
@@ -160,7 +196,7 @@ describe("PerformanceTestDetailScreen: chart and hint", () => {
 });
 
 describe("PerformanceTestDetailScreen: add a value", () => {
-  it("stores 8.1 with today's date for the input 8,1", async () => {
+  it("stores 8.1 with the date of the frozen today for the input 8,1", async () => {
     const screen = await render(<PerformanceTestDetailScreen />);
 
     await fireEvent.changeText(
@@ -174,7 +210,7 @@ describe("PerformanceTestDetailScreen: add a value", () => {
     ).toEqual([
       {
         id: expect.any(String),
-        date: formatDateToISO(new Date()),
+        date: formatDateToISO(FROZEN_NOW),
         value: 8.1,
       },
     ]);
@@ -220,12 +256,104 @@ describe("PerformanceTestDetailScreen: add a value", () => {
   });
 });
 
+describe("PerformanceTestDetailScreen: entry rules", () => {
+  it("shows the error and stores nothing for a negative input", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.changeText(
+      screen.getByTestId("performance-test-value-input"),
+      "-8,1",
+    );
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+
+    expect(screen.getByTestId("performance-test-value-error")).toBeTruthy();
+    expect(
+      usePerformanceTestValuesStore.getState().valuesByTest[VALUES_KEY],
+    ).toBeUndefined();
+  });
+
+  it("stores the chosen date instead of today", async () => {
+    jest
+      .spyOn(Platform, "select")
+      .mockImplementation((spec) => ("web" in spec ? spec.web : undefined));
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent(screen.getByLabelText("Date"), "change", {
+      target: { value: "2026-10-20" },
+    });
+    await fireEvent.changeText(
+      screen.getByTestId("performance-test-value-input"),
+      "8,1",
+    );
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+
+    expect(
+      usePerformanceTestValuesStore.getState().valuesByTest[VALUES_KEY],
+    ).toEqual([{ id: expect.any(String), date: "2026-10-20", value: 8.1 }]);
+  });
+
+  it("removes the error text after a valid save", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+    expect(screen.getByTestId("performance-test-value-error")).toBeTruthy();
+
+    await fireEvent.changeText(
+      screen.getByTestId("performance-test-value-input"),
+      "8,1",
+    );
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+
+    expect(screen.queryByTestId("performance-test-value-error")).toBeNull();
+  });
+});
+
+describe("PerformanceTestDetailScreen: athlete changes the training stage", () => {
+  it("rates the latest value and draws one band per stage with the range of its own date", async () => {
+    seedSportTest(generateSprintTestWithTwoStages());
+    seedValues([
+      generatePerformanceTestValue({
+        id: "id-basis",
+        date: "2025-10-01",
+        value: 10.2,
+      }),
+      generatePerformanceTestValue({
+        id: "id-grund",
+        date: "2026-11-10",
+        value: 10.2,
+      }),
+    ]);
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+    await fireEvent(screen.getByTestId("performance-test-chart"), "layout", {
+      nativeEvent: { layout: { width: 320 } },
+    });
+
+    const summary = screen.getByTestId("performance-test-summary");
+    expect(within(summary).getByText("below range")).toBeTruthy();
+    expect(screen.getAllByTestId("performance-test-chart-band")).toHaveLength(
+      2,
+    );
+  });
+});
+
 describe("PerformanceTestDetailScreen: history", () => {
   it("lists the values newest first with their dates", async () => {
     seedValues([
-      generateValueDaysAgo("id-middle", 3, 10.2),
-      generateValueDaysAgo("id-newest", 1, 6.1),
-      generateValueDaysAgo("id-oldest", 5, 8.1),
+      generatePerformanceTestValue({
+        id: "id-middle",
+        date: "2026-11-11",
+        value: 10.2,
+      }),
+      generatePerformanceTestValue({
+        id: "id-newest",
+        date: "2026-11-13",
+        value: 6.1,
+      }),
+      generatePerformanceTestValue({
+        id: "id-oldest",
+        date: "2026-11-09",
+        value: 8.1,
+      }),
     ]);
 
     const screen = await render(<PerformanceTestDetailScreen />);
@@ -233,7 +361,7 @@ describe("PerformanceTestDetailScreen: history", () => {
     const newest = screen.getByTestId("performance-test-value-0");
     expect(within(newest).getByText("6.1 s")).toBeTruthy();
     expect(
-      within(newest).getByText(formatDateForDisplay(generateDateDaysAgo(1))),
+      within(newest).getByText(formatDateForDisplay("2026-11-13")),
     ).toBeTruthy();
     expect(
       within(screen.getByTestId("performance-test-value-1")).getByText(
@@ -247,16 +375,17 @@ describe("PerformanceTestDetailScreen: history", () => {
 });
 
 describe("PerformanceTestDetailScreen: unknown test", () => {
-  it("shows the empty text for an unknown test code", async () => {
+  it("shows the not found text for an unknown test code", async () => {
     mockTestCode = "FAKE_UNKNOWN_TEST";
 
     const screen = await render(<PerformanceTestDetailScreen />);
 
     expect(
-      await screen.findByText(
-        "There are no performance tests for your sport yet.",
-      ),
+      await screen.findByText("This performance test does not exist."),
     ).toBeTruthy();
+    expect(
+      screen.queryByText("There are no performance tests for your sport yet."),
+    ).toBeNull();
   });
 });
 

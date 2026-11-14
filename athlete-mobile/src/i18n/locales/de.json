@@ -840,6 +840,7 @@
       "reference": "Referenz {{start}} bis {{end}} {{unit}}",
       "noReference": "Keine Referenz für deine Trainingsstufe",
       "empty": "Für deine Sportart gibt es noch keine Leistungstests.",
+      "notFound": "Diesen Leistungstest gibt es nicht.",
       "loadError": "Die App konnte die Leistungstests nicht laden. Prüfe deine Verbindung und versuche es erneut.",
       "noValue": "Kein Wert",
       "latestValue": "Letzter Wert",

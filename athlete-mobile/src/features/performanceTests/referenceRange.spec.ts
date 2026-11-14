@@ -3,7 +3,7 @@ import { formatRangeNumber, referenceRangeFor } from "./referenceRange";
 
 /**
  * A sport test with two reference values as the service returns it, e.g.
- * { id: "test-1", code: "FAKE_TEST", unit: "s", referenceValues: [{ gender: "FEMALE", position: "WING", trainingStage: "GRUNDLAGENTRAINING", rangeStart: 1.25, rangeEnd: 1.15 }] }
+ * { id: "test-1", code: "FAKE_TEST", unit: "s", referenceValues: [{ gender: "FEMALE", position: "WING", trainingStage: "GRUNDLAGENTRAINING", rangeStart: 9.87, rangeEnd: 6.54 }] }
  */
 const generateSportTest = (
   referenceValues: SportTest["referenceValues"],
@@ -18,8 +18,8 @@ const femaleWingGrundlagen = {
   gender: "FEMALE",
   position: "WING",
   trainingStage: "GRUNDLAGENTRAINING",
-  rangeStart: 1.25,
-  rangeEnd: 1.15,
+  rangeStart: 9.87,
+  rangeEnd: 6.54,
 } as const;
 
 const maleWingGrundlagen = {
@@ -112,11 +112,11 @@ describe("referenceRangeFor: matching", () => {
 
 describe("formatRangeNumber: language", () => {
   it("uses a decimal point for en", () => {
-    expect(formatRangeNumber(1.25, "en")).toBe("1.25");
+    expect(formatRangeNumber(9.87, "en")).toBe("9.87");
   });
 
   it("uses a decimal comma for de", () => {
-    expect(formatRangeNumber(1.25, "de")).toBe("1,25");
+    expect(formatRangeNumber(9.87, "de")).toBe("9,87");
   });
 
   it("rounds to at most two decimals", () => {

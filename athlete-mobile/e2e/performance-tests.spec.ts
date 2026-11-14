@@ -14,8 +14,8 @@ const SPRINT_5M_ROW = {
       gender: "FEMALE" as const,
       position: "WING",
       training_stage: "GRUNDLAGENTRAINING",
-      range_start: "1.25",
-      range_end: "1.15",
+      range_start: "9.87",
+      range_end: "6.54",
     },
   ],
 };
@@ -35,6 +35,6 @@ test.describe("Performance tests: listing the tests of the sport", () => {
     await page.getByText("Performance tests", { exact: true }).click();
 
     await expect(page.getByText("5 m sprint")).toBeVisible();
-    await expect(page.getByText("Reference 1.25 to 1.15 s")).toBeVisible();
+    await expect(page.getByText("Reference 9.87 to 6.54 s")).toBeVisible();
   });
 });

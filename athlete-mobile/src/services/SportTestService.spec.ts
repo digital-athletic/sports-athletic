@@ -20,7 +20,7 @@ jest.mock("./supabaseClient", () => ({
 
 /**
  * A sport_tests row as Supabase returns it, e.g.
- * { id: "test-1", code: "FAKE_TEST", unit: "s", sport_test_reference_values: [{ gender: "FEMALE", position: "WING", training_stage: "GRUNDLAGENTRAINING", range_start: "1.25", range_end: 1.15 }] }
+ * { id: "test-1", code: "FAKE_TEST", unit: "s", sport_test_reference_values: [{ gender: "FEMALE", position: "WING", training_stage: "GRUNDLAGENTRAINING", range_start: "9.87", range_end: 6.54 }] }
  */
 const generateSportTestRow = (
   rangeStart: string | number,
@@ -64,7 +64,7 @@ describe("fetchSportTests: mapping", () => {
   it("maps snake_case rows with numeric strings to numbers", async () => {
     signedIn();
     mockOrder.mockResolvedValue({
-      data: [generateSportTestRow("1.25", "1.15")],
+      data: [generateSportTestRow("9.87", "6.54")],
       error: null,
     });
 
@@ -80,8 +80,8 @@ describe("fetchSportTests: mapping", () => {
             gender: "FEMALE",
             position: "WING",
             trainingStage: "GRUNDLAGENTRAINING",
-            rangeStart: 1.25,
-            rangeEnd: 1.15,
+            rangeStart: 9.87,
+            rangeEnd: 6.54,
           },
         ],
       },
@@ -91,15 +91,15 @@ describe("fetchSportTests: mapping", () => {
   it("keeps numeric values that already arrive as numbers", async () => {
     signedIn();
     mockOrder.mockResolvedValue({
-      data: [generateSportTestRow(1.25, 1.15)],
+      data: [generateSportTestRow(9.87, 6.54)],
       error: null,
     });
 
     const tests = await fetchSportTests("HANDBALL_SPORT");
 
     expect(tests[0].referenceValues[0]).toMatchObject({
-      rangeStart: 1.25,
-      rangeEnd: 1.15,
+      rangeStart: 9.87,
+      rangeEnd: 6.54,
     });
   });
 

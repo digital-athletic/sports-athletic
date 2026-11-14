@@ -10,7 +10,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(53);
+SELECT plan(58);
 
 -- T1 is the handball example. T2 is a second test for the same sport and region.
 -- T3 is deleted to prove the cascade. A is an authenticated user.
@@ -106,9 +106,9 @@ SELECT lives_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
 SELECT lives_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
     VALUES ('FAKE_SPORT_A', 'GB-ENG', 'FAKE_REGION_SUBDIVISION', 'm') $$,
   'region: a subdivision code such as GB-ENG is accepted');
-SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
+SELECT lives_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
     VALUES ('FAKE_SPORT_A', 'de', 'FAKE_REGION_LOWER', 'm') $$,
-  '23514', NULL, 'region: lower case is rejected');
+  'region: a lower case code is accepted and stored in upper case');
 SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
     VALUES ('FAKE_SPORT_A', 'Germany', 'FAKE_REGION_NAME', 'm') $$,
   '23514', NULL, 'region: a country name is rejected');
@@ -215,6 +215,43 @@ SELECT ok((SELECT updated_at > '2000-01-01 00:00:00+00'::timestamptz
 SELECT ok((SELECT updated_at > '2000-01-01 00:00:00+00'::timestamptz
            FROM public.sport_test_reference_values WHERE position = 'FAKE_STAMP_POSITION'),
   'updated_at: an UPDATE of a reference value moves updated_at forward');
+
+-- ---------------------------------------------------------------------------
+-- One spelling: codes are stored trimmed and in upper case
+-- ---------------------------------------------------------------------------
+INSERT INTO public.sport_tests (id, sport, region, code, unit) VALUES
+  ('aaaaaaaa-0000-0000-0000-000000000004',
+   ' fake_sport_c ', ' gb-eng ', ' fake_spelling ', ' cm ');
+INSERT INTO public.sport_test_reference_values
+  (test_id, gender, position, training_stage, range_start, range_end) VALUES
+  ('aaaaaaaa-0000-0000-0000-000000000004',
+   ' female ', ' fake_position_two ', ' fake_stage_two ', 1, 2);
+
+SELECT is(
+  (SELECT sport || '|' || region || '|' || code || '|' || unit
+   FROM public.sport_tests WHERE id = 'aaaaaaaa-0000-0000-0000-000000000004'),
+  'FAKE_SPORT_C|GB-ENG|FAKE_SPELLING|cm',
+  'spelling: a test is stored with upper case codes and a trimmed unit');
+SELECT is(
+  (SELECT gender || '|' || position || '|' || training_stage
+   FROM public.sport_test_reference_values
+   WHERE test_id = 'aaaaaaaa-0000-0000-0000-000000000004'),
+  'FEMALE|FAKE_POSITION_TWO|FAKE_STAGE_TWO',
+  'spelling: a reference value is stored with upper case codes');
+
+UPDATE public.sport_test_reference_values SET position = ' fake_position_three '
+  WHERE test_id = 'aaaaaaaa-0000-0000-0000-000000000004';
+SELECT is(
+  (SELECT position FROM public.sport_test_reference_values
+   WHERE test_id = 'aaaaaaaa-0000-0000-0000-000000000004'),
+  'FAKE_POSITION_THREE', 'spelling: an update is stored in upper case too');
+
+SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
+    VALUES ('Fake_Sport_C', 'GB-ENG', 'fake_spelling', 'cm') $$,
+  '23505', NULL, 'spelling: the same test in another case is a duplicate');
+SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
+    VALUES ('   ', 'DE', 'FAKE_BLANK_SPORT', 'm') $$,
+  '23514', NULL, 'spelling: a sport of blanks only is rejected');
 
 -- ---------------------------------------------------------------------------
 -- Access

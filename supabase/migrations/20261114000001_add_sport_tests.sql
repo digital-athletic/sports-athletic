@@ -13,6 +13,11 @@
 -- Signed-in users cannot write. Anonymous requests have no access.
 --
 -- A range keeps its source order: range_start may be greater than range_end.
+--
+-- Codes are stored in one spelling. A trigger trims sport, region, test code,
+-- gender, position and training stage and writes them in upper case, and trims
+-- the unit, so an import of "wing" and an import of "WING" store the same value
+-- and the app filters with plain equality.
 
 BEGIN;
 
@@ -39,6 +44,28 @@ CREATE TABLE public.sport_tests (
   CONSTRAINT sport_tests_sport_region_code_key
     UNIQUE (sport, region, code)
 );
+
+CREATE FUNCTION public.normalize_sport_test()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = ''
+AS $$
+BEGIN
+  NEW.sport := upper(btrim(NEW.sport));
+  NEW.region := upper(btrim(NEW.region));
+  NEW.code := upper(btrim(NEW.code));
+  NEW.unit := btrim(NEW.unit);
+  RETURN NEW;
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.normalize_sport_test()
+  FROM PUBLIC, anon, authenticated;
+
+CREATE TRIGGER normalize_sport_tests
+  BEFORE INSERT OR UPDATE ON public.sport_tests
+  FOR EACH ROW
+  EXECUTE FUNCTION public.normalize_sport_test();
 
 CREATE TRIGGER update_sport_tests_updated_at
   BEFORE UPDATE ON public.sport_tests
@@ -80,6 +107,27 @@ CREATE TABLE public.sport_test_reference_values (
   CONSTRAINT sport_test_reference_values_test_gender_position_stage_key
     UNIQUE (test_id, gender, position, training_stage)
 );
+
+CREATE FUNCTION public.normalize_sport_test_reference_value()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = ''
+AS $$
+BEGIN
+  NEW.gender := upper(btrim(NEW.gender));
+  NEW.position := upper(btrim(NEW.position));
+  NEW.training_stage := upper(btrim(NEW.training_stage));
+  RETURN NEW;
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.normalize_sport_test_reference_value()
+  FROM PUBLIC, anon, authenticated;
+
+CREATE TRIGGER normalize_sport_test_reference_values
+  BEFORE INSERT OR UPDATE ON public.sport_test_reference_values
+  FOR EACH ROW
+  EXECUTE FUNCTION public.normalize_sport_test_reference_value();
 
 CREATE TRIGGER update_sport_test_reference_values_updated_at
   BEFORE UPDATE ON public.sport_test_reference_values

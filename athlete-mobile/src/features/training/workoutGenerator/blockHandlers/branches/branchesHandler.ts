@@ -216,12 +216,59 @@ const findEarlierCardioSwap = (
 };
 
 /**
+ * What the handler does with a branch ID its lookup lacks: "drop" leaves the
+ * slot out, "replace" requests a replacement of the same skill for it, like a
+ * branch that a rule blocks.
+ */
+export type MissingBranchRule = "drop" | "replace";
+
+// No region tag carries this value, so the replacement of a missing branch
+// draws from the least used region of the skill.
+const MISSING_BRANCH_REGION = "MISSING_BRANCH";
+
+/** One region request per distinct branch ID of the block that the lookup lacks. */
+const listMissingBranchRegions = (
+  block: BranchesBlock,
+  storedBranches: readonly StoredBranch[],
+): string[] => {
+  const foundBranchIds = new Set(
+    storedBranches.map(({ branchId }) => branchId),
+  );
+  return [...new Set(block.branches)]
+    .filter((branchId) => !foundBranchIds.has(branchId))
+    .map(() => MISSING_BRANCH_REGION);
+};
+
+/**
+ * Runs the rule chain on the found branches. Under the replace rule, the
+ * region requests of missing branch IDs come before those of the families.
+ */
+const applyBlockRuleChain = (
+  block: BranchesBlock,
+  storedBranches: StoredBranch[],
+  input: WorkoutInput,
+  missingBranchRule: MissingBranchRule,
+): BranchesRuleChainResult => {
+  const chain = applyBranchesRuleChain(storedBranches, input, block.skill);
+  if (missingBranchRule === "drop") return chain;
+  return {
+    ...chain,
+    replace: [
+      ...listMissingBranchRegions(block, storedBranches),
+      ...chain.replace,
+    ],
+  };
+};
+
+/**
  * Builds the branches handler of a training day. The lookup reads the stored
  * branch IDs: the branch lookup index, or the entries a stored training day
- * saved at plan creation. No default, so a caller always picks one.
+ * saved at plan creation. The missing branch rule decides what a branch ID
+ * the lookup lacks does. No defaults, so a caller always picks both.
  */
 export const createBranchesBlockHandler = (
   lookUpStoredBranch: StoredBranchLookup,
+  missingBranchRule: MissingBranchRule,
 ): BlockHandlerRegistry["branches"] => ({
   usedBranchScope: "block",
   handleBlock: (storedBlock, input, _usedBranches, walk): BlockResult => {
@@ -235,7 +282,12 @@ export const createBranchesBlockHandler = (
     const storedBranches = earlierSwap
       ? block.branches.map((branchId) => ({ branchId, branch: {} }))
       : listStoredBranches(block, input, lookUpStoredBranch);
-    const chain = applyBranchesRuleChain(storedBranches, input, block.skill);
+    const chain = applyBlockRuleChain(
+      block,
+      storedBranches,
+      input,
+      missingBranchRule,
+    );
     // a cardio skill with a region request runs the CARDIO_5 branch instead
     if (block.skill.indexOf("CARDIO") !== -1 && chain.replace.length > 0) {
       return replaceCardioBlock(block, input);

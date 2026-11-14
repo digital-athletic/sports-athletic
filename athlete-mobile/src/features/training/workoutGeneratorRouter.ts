@@ -5,7 +5,7 @@ import type { TrainingType } from "@/features/training/models/Training";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import { generateStrengthTest } from "@/features/training/workoutGenerator/strengthTestGeneration";
-import { generateTrainingDayFromStoredDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
+import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseDataMapType } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
@@ -67,7 +67,7 @@ export const generateWorkout = (
   if (request.type === "TEST_WORKOUT") {
     return generateStrengthTest(createInput(request), request.skillTrees);
   }
-  return generateTrainingDayFromStoredDay(
+  return generateTrainingDay(
     selectStoredTrainingDay(
       request.user,
       request.weekday,

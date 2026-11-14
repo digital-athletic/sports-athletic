@@ -4,9 +4,14 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import { generateLowerBodyBranch } from "@test/factories/skillTree";
 import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
 import {
+  generateBranchesBlock,
+  generateTemplate,
+} from "@test/factories/templateBlock";
+import {
   findNextSwap,
   listSwappableBranches,
   swapBranchInStoredDay,
+  swapBranchInTrainingDay,
   toExerciseBranch,
 } from "./exerciseSwap";
 
@@ -173,6 +178,70 @@ describe("exerciseSwap: listSwappableBranches", () => {
     expect(listSwappableBranches(session, day)).toEqual([
       { branchId: "10", skill: "SK" },
     ]);
+  });
+
+  it("lists the branches an AIWL training plans under the skill of their block", () => {
+    const session = [
+      generateSessionEntry("10", "e1", [1, 1]),
+      generateSessionEntry("30", "e3", [1, 1]),
+      generateSessionEntry("40", "e4", [1, 1]),
+    ];
+    const day = generateTemplate([
+      generateBranchesBlock("SK", ["10", "40"]),
+      generateBranchesBlock("WU", ["30"]),
+    ]);
+
+    expect(listSwappableBranches(session, day)).toEqual([
+      { branchId: "10", skill: "SK" },
+      { branchId: "40", skill: "SK" },
+    ]);
+  });
+});
+
+describe("exerciseSwap: swapBranchInTrainingDay", () => {
+  it("writes the catalog branch into the entries of a legacy training", () => {
+    const day = generateStoredTrainingDay({ SK: ["10", "11"] });
+    const alternative = generateAlternative("20");
+
+    const swapped = swapBranchInTrainingDay(day, "SK", "10", alternative);
+
+    expect(swapped).toEqual({
+      ...day,
+      skills: {
+        SK: [toExerciseBranch(alternative), day.skills.SK?.[1]],
+      },
+    });
+  });
+
+  it("writes the branch ID into the blocks of the skill of an AIWL training", () => {
+    const day = generateTemplate([
+      generateBranchesBlock("SK", ["10", "11", "10"]),
+      generateBranchesBlock("WU", ["10"]),
+    ]);
+
+    const swapped = swapBranchInTrainingDay(
+      day,
+      "SK",
+      "10",
+      generateAlternative("20"),
+    );
+
+    expect(swapped).toEqual(
+      generateTemplate([
+        generateBranchesBlock("SK", ["20", "11", "20"]),
+        generateBranchesBlock("WU", ["10"]),
+      ]),
+    );
+  });
+
+  it("leaves the given AIWL training unchanged", () => {
+    const day = generateTemplate([generateBranchesBlock("SK", ["10"])]);
+
+    swapBranchInTrainingDay(day, "SK", "10", generateAlternative("20"));
+
+    expect(day).toEqual(
+      generateTemplate([generateBranchesBlock("SK", ["10"])]),
+    );
   });
 });
 

@@ -2,6 +2,8 @@ import {
   generateTwoSectionPlanUser,
   generateWarmUpOnlyPlanUser,
 } from "@test/factories/planWorkout";
+import { AIWL_TRAINING_DAY_ERROR } from "@/features/training/models/UserTraining";
+import { createAiwlPlan } from "@/features/training/utils/testFixtures";
 import { selectStoredTrainingDay } from "./storedTrainingDaySelection";
 
 describe("selectStoredTrainingDay: section", () => {
@@ -76,5 +78,16 @@ describe("selectStoredTrainingDay: training", () => {
     const user = { ...generateWarmUpOnlyPlanUser(), workoutData: undefined };
 
     expect(() => selectStoredTrainingDay(user, 1, undefined, 0)).toThrow();
+  });
+
+  it("throws for a training day stored as an AIWL workout", () => {
+    const user = {
+      ...generateWarmUpOnlyPlanUser(),
+      trainingPlan: createAiwlPlan(),
+    };
+
+    expect(() => selectStoredTrainingDay(user, 1, undefined, 0)).toThrow(
+      AIWL_TRAINING_DAY_ERROR,
+    );
   });
 });

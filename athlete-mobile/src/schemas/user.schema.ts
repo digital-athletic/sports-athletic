@@ -23,6 +23,7 @@
  */
 
 import * as v from "valibot";
+import { TemplateSchema } from "./aiwl.schema";
 import {
   CardioTypesSchema,
   SeasonPhaseEnumSchema,
@@ -86,8 +87,8 @@ export const UserTrainingExerciseBranchSchema = v.looseObject({
   ),
 });
 
-// UserTraining schema (matches UserTrainingType)
-export const UserTrainingSchema = v.looseObject({
+// Legacy training schema (matches LegacyTrainingType)
+const LegacyTrainingSchema = v.looseObject({
   weekday: v.number(),
   skills: v.optional(
     v.record(v.string(), v.array(UserTrainingExerciseBranchSchema)),
@@ -96,6 +97,21 @@ export const UserTrainingSchema = v.looseObject({
   focus: v.optional(FocusTypeSchema),
   equipment: v.optional(v.array(v.string())),
 });
+
+// AIWL training schema (matches AiwlTrainingType)
+const AiwlTrainingSchema = v.looseObject({
+  weekday: v.number(),
+  workout: TemplateSchema,
+  focus: v.optional(FocusTypeSchema),
+  equipment: v.optional(v.array(v.string())),
+});
+
+// UserTraining schema (matches UserTrainingType). The AIWL shape comes first:
+// the loose legacy shape accepts any training with a weekday.
+export const UserTrainingSchema = v.union([
+  AiwlTrainingSchema,
+  LegacyTrainingSchema,
+]);
 
 export const SeasonPhaseSchema = v.object({
   type: v.union([SeasonPhaseEnumSchema, v.null()]),
@@ -164,6 +180,8 @@ export type TrainingSectionSchemaType = v.InferOutput<
 export const TrainingPlanSchema = v.object({
   /** Training plan start date in ISO 8601 format (YYYY-MM-DD) */
   start: v.string(),
+  /** Shape of the training days; a plan without it is a legacy plan */
+  format: v.optional(v.picklist(["legacy", "aiwl"])),
   sections: v.array(TrainingSectionSchema),
   gapShiftedOn: v.optional(v.string()),
 });

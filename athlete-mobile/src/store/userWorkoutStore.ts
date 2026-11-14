@@ -7,6 +7,7 @@ import {
 import { SeasonPhaseType } from "@/features/training/models/SeasonPhase";
 import { TemporalDataType } from "@/features/training/models/TemporalData";
 import { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { readCopiedBranches } from "@/features/training/models/UserTraining";
 import {
   Sport,
   UserWorkoutDataType,
@@ -179,8 +180,11 @@ export const useUserWorkoutStore = create<UserWorkoutState>()(
           const training = trainings.find((t) => t.weekday === weekday);
 
           if (isSkillTypes(skillId)) {
-            // Find the branch to replace
-            const skillBranches = training?.skills[skillId];
+            // Find the branch to replace. A training day stored as an AIWL
+            // workout copies no branches, so nothing changes.
+            const skillBranches = training
+              ? readCopiedBranches(training)?.[skillId]
+              : undefined;
             const branchIndex = skillBranches?.findIndex(
               (branch) => branch.branchId === branchIdToReplace,
             );

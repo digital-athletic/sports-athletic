@@ -1,4 +1,9 @@
-import type { UserTrainingType } from "@/features/training/models/UserTraining";
+import {
+  AIWL_TRAINING_DAY_ERROR,
+  isLegacyTraining,
+  readCopiedBranches,
+  type UserTrainingType,
+} from "@/features/training/models/UserTraining";
 import { getSectionForDate } from "@/features/training/trainingUtils";
 import { extendSectionsForMissedWeeks } from "@/features/training/utils/trainingSectionUtils";
 import {
@@ -57,9 +62,13 @@ export const selectStoredTrainingDay = (
   const training =
     trainings.find((entry) => entry.weekday === weekday) ?? trainings[0];
 
+  if (!isLegacyTraining(training)) {
+    throw new Error(AIWL_TRAINING_DAY_ERROR);
+  }
+
   return {
     skills: cloneWithValidation(
-      training.skills,
+      readCopiedBranches(training),
       SkillBranchesSchema,
       "currTraining.skills",
     ),

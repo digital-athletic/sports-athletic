@@ -1,4 +1,5 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
+import { requireLegacyTraining } from "@/features/training/utils/testFixtures";
 import { migratePlanSkillTags, migrateSkillTags } from "./skillTagMigration";
 
 const planWithBranchTags = (tags: string[]): TrainingPlanType =>
@@ -19,8 +20,11 @@ const planWithBranchTags = (tags: string[]): TrainingPlanType =>
     ],
   }) as unknown as TrainingPlanType;
 
+const firstTrainingOf = (plan: TrainingPlanType | null) =>
+  requireLegacyTraining(plan?.sections[0].trainings[0]);
+
 const branchTagsOf = (plan: TrainingPlanType | null) =>
-  plan?.sections[0].trainings[0].skills.SK?.[0].tags;
+  firstTrainingOf(plan).skills.SK?.[0].tags;
 
 describe("skillTagMigration: migrateSkillTags", () => {
   it.each([
@@ -59,10 +63,25 @@ describe("skillTagMigration: migratePlanSkillTags", () => {
     const plan = planWithBranchTags(["SKILL_SCHNELLKRAFT"]);
     const result = migratePlanSkillTags(plan);
     expect(result?.start).toBe("2026-10-05");
-    expect(result?.sections[0].trainings[0].lengths).toEqual({ SK: 20 });
-    expect(result?.sections[0].trainings[0].skills.SK?.[0].branchId).toBe(
-      "213",
-    );
+    expect(firstTrainingOf(result).lengths).toEqual({ SK: 20 });
+    expect(firstTrainingOf(result).skills.SK?.[0].branchId).toBe("213");
+  });
+
+  it("writes empty branches onto a legacy training stored without them", () => {
+    const trainingWithoutSkills = {
+      weekday: 1,
+      lengths: { SK: 20 },
+      focus: "PHASE",
+    };
+    const plan = {
+      start: "2026-10-05",
+      sections: [{ type: "SK", trainings: [trainingWithoutSkills] }],
+    } as unknown as TrainingPlanType;
+    const result = migratePlanSkillTags(plan);
+    expect(result?.sections[0].trainings[0]).toEqual({
+      ...trainingWithoutSkills,
+      skills: {},
+    });
   });
 
   it("returns null when no plan is stored", () => {

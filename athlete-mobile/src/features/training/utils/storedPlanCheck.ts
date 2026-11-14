@@ -3,7 +3,10 @@ import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import type { UserTrainingType } from "@/features/training/models/UserTraining";
+import {
+  readCopiedBranches,
+  type UserTrainingType,
+} from "@/features/training/models/UserTraining";
 import { ageGroupFor } from "@/features/training/utils/ageUtils";
 import { equipmentForExerciseExists } from "@/features/training/utils/equipmentUtils";
 import { getUserExerciseFromBranch } from "@/features/training/utils/skillTreeUtils";
@@ -68,8 +71,10 @@ export function isStoredPlanBroken(input: StoredPlanCheckInput): boolean {
       (equipment !== undefined &&
         MAX_STRENGTH_SKILLS.includes(skill) &&
         liftLacksEquipment(branch, equipment));
-    return Object.entries(training.skills).some(([skill, branches]) =>
-      (branches ?? []).some((branch) => isBranchBroken(skill, branch)),
+    // A training day stored as an AIWL workout copies no branches to check.
+    return Object.entries(readCopiedBranches(training) ?? {}).some(
+      ([skill, branches]) =>
+        (branches ?? []).some((branch) => isBranchBroken(skill, branch)),
     );
   };
 

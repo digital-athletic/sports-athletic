@@ -1,4 +1,5 @@
 import { act, renderHook } from "@testing-library/react-native";
+import { createAiwlPlan } from "@/features/training/utils/testFixtures";
 import { formatDateToISO } from "@/utils/date";
 import { useUserWorkoutStore } from "./userWorkoutStore";
 
@@ -132,6 +133,20 @@ describe("userWorkoutStore", () => {
       });
 
       expect(result.current.workoutData.seasonPhase.type).toBe("COMPETITION");
+    });
+  });
+
+  describe("replaceBranchInTrainingPlan", () => {
+    it("leaves a training stored as an AIWL workout unchanged", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
+      const plan = createAiwlPlan();
+
+      await act(() => {
+        result.current.setTrainingPlan(plan);
+        result.current.replaceBranchInTrainingPlan(0, 1, "WU", "410", []);
+      });
+
+      expect(result.current.trainingPlan).toEqual(plan);
     });
   });
 

@@ -6,7 +6,7 @@
  * setUpEnvFlag("EXPO_PUBLIC_PLAN_GENERATOR_ENABLED", "TRUE");
  * → process.env.EXPO_PUBLIC_PLAN_GENERATOR_ENABLED is "TRUE" in each test
  */
-const setUpEnvFlag = (name: string, value: string | undefined): void => {
+export const setUpEnvFlag = (name: string, value: string | undefined): void => {
   let previousValue: string | undefined;
   beforeEach(() => {
     previousValue = process.env[name];
@@ -18,21 +18,6 @@ const setUpEnvFlag = (name: string, value: string | undefined): void => {
     else process.env[name] = previousValue;
   });
 };
-
-/**
- * Sets the AIWL generator build flag for each test of the enclosing describe
- * block.
- *
- * describe.each([false, true])("flag %s", (enabled) => {
- *   setUpAiwlGeneratorFlag(enabled);
- * });
- * → process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is "false" or "true" in each test
- */
-export const setUpAiwlGeneratorFlag = (enabled: boolean): void =>
-  setUpEnvFlag(
-    "EXPO_PUBLIC_AIWL_GENERATOR_ENABLED",
-    enabled ? "true" : "false",
-  );
 
 /**
  * Sets the plan generator build flag to the raw env value for each test of

@@ -5,7 +5,6 @@ import {
   parseSkillCatalog,
 } from "./loadSkillCatalog";
 import { getAllSkillTrees } from "./skillTreeRegistry";
-import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
 import type { CountBy } from "@/schemas/aiwl.schema";
 import {
   hasSkillTree,
@@ -56,12 +55,6 @@ const TIMING_CODES = [
   "CARDIO_5",
 ];
 const CODES = [...TREE_CODES, ...TIMING_CODES];
-// The plan generator names both plyometric intensities PLYO.
-const PLAN_CODES: Record<string, string> = {
-  PLYO_HIGH: "PLYO",
-  PLYO_MEDIUM: "PLYO",
-};
-const planCodeOf = (code: string): string => PLAN_CODES[code] ?? code;
 const WITHOUT_TIMING = [
   "CARDIO_1_SHORT",
   "CARDIO_1_LAKTAT",
@@ -70,7 +63,6 @@ const WITHOUT_TIMING = [
   "CARDIO_4",
   "CARDIO_5",
 ];
-const FITNESS_LEVELS = ["BEGINNER", "ADVANCED", "PROFESSIONAL"];
 
 interface Timing {
   sets?: number;
@@ -383,52 +375,6 @@ describe("loadSkillCatalog: timing and start values", () => {
       expect(entry.rest).toBeDefined();
     },
   );
-});
-
-describe("loadSkillCatalog: parity with the plan workout defaults", () => {
-  const generator = new TrainingGenerator();
-  const withSets = CODES.filter((code) => !WITHOUT_TIMING.includes(code));
-  const withSuperset = CODES.filter((code) => TIMING[code].superset);
-
-  it.each(
-    withSets.flatMap((code) => FITNESS_LEVELS.map((level) => [code, level])),
-  )("matches the plan set count for %s at %s", (code, level) => {
-    expect(entryOf(code).sets).toBe(
-      generator.getSetCountBySkill(planCodeOf(code), level),
-    );
-  });
-
-  it.each(withSuperset)("matches the plan superset for %s", (code) => {
-    expect(entryOf(code).superset).toBe(
-      generator.isSuperset(planCodeOf(code)) ? "muscles" : "none",
-    );
-  });
-
-  it.each(withSets)("matches the plan rest times for %s", (code) => {
-    const rest = entryOf(code).rest;
-    const planCode = planCodeOf(code);
-
-    expect({
-      withinSuperset: rest?.withinSuperset,
-      betweenSets: rest?.betweenSets,
-      afterExercise: rest?.afterExercise,
-    }).toEqual({
-      withinSuperset: generator.getInSetPauseBySkill(planCode),
-      betweenSets: generator.getSingleExerciseRestBySkill(planCode),
-      afterExercise: generator.getAfterSetPauseBySkill(planCode),
-    });
-  });
-
-  it.each(CODES)("matches the plan start values for %s", (code) => {
-    const entry = entryOf(code);
-
-    expect(entry.startRepetitions ?? 8).toBe(
-      generator.getRepetitionDefaultBySkill(code),
-    );
-    expect(entry.startDuration ?? 30).toBe(
-      generator.getDurationDefaultBySkill(code),
-    );
-  });
 });
 
 describe("loadSkillCatalog: bundled facts", () => {

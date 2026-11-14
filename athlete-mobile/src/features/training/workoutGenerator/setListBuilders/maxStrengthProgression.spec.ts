@@ -1,8 +1,8 @@
 /**
  * Example test for the persona-driven progression simulator
  * (male-advanced × MAX_STRENGTH).
- * It proves the framework runs end-to-end against the real generator and
- * asserts the intra-session invariants.
+ * It proves the framework runs end-to-end against the max strength set list
+ * builder and asserts the intra-session invariants.
  *
  * The tables under `__golden__/` encode the target values from
  * docs/specs/progression/max-strength-progression.md.
@@ -22,23 +22,23 @@ import {
   alwaysTooEasy,
   alwaysTooHard,
   type FeedbackScript,
-} from "../../../../test/simulation/progression/feedbackScripts";
+} from "@test/simulation/progression/feedbackScripts";
 import {
   progressionGoldens,
   serializeProgression,
   serializeSets,
-} from "../../../../test/simulation/progression/goldenTable";
-import { type Persona } from "../../../../test/simulation/progression/personaAdapter";
+} from "@test/simulation/progression/goldenTable";
+import { type Persona } from "@test/simulation/progression/personaAdapter";
 import {
   simulateProgression,
   type SessionSnapshot,
-} from "../../../../test/simulation/progression/progressionSimulator";
+} from "@test/simulation/progression/progressionSimulator";
 
 // JSON imports widen `level` to string; cast at the boundary. The persona is
 // ADVANCED, matching the spec's restriction of max strength training to the
 // Advanced/Pro levels.
 const maleAdvanced =
-  require("../../../../test/fixtures/personas/male-advanced.json") as Persona;
+  require("@test/fixtures/personas/male-advanced.json") as Persona;
 
 const exerciseById = (id: string): ExerciseType => {
   const found = getExerciseById(id);

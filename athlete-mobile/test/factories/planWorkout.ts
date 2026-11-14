@@ -89,34 +89,6 @@ export function generateBottleBranch(branchId: string, skillTag: string) {
 }
 
 /**
- * Prevention branch with warm-up exercises on every level, as a catalog tree
- * holds it (`levels`).
- *
- * generatePreventionBranch("810", "SHOULDER", "EQ_TYPE_KG")
- * → { branchId: "810", tags: ["PREVENTION_SHOULDER", "SKILL_PREVENTION", "REGION_LOWER_BODY", "EQ_TYPE_KG"], levels: { "1": { exerciseId: "431" }, ... } }
- */
-export function generatePreventionBranch(
-  branchId: string,
-  region: string,
-  equipment: string,
-) {
-  return {
-    tags: [
-      `PREVENTION_${region}`,
-      "SKILL_PREVENTION",
-      "REGION_LOWER_BODY",
-      equipment,
-    ],
-    levels: {
-      "1": { exerciseId: "431" },
-      "2": { exerciseId: "432" },
-      "3": { exerciseId: "432" },
-    },
-    branchId,
-  };
-}
-
-/**
  * Stored day entries for the first knee-hip prevention branches of a real
  * skill tree that hold at least one level.
  *

@@ -45,14 +45,6 @@ export const featureFlags = {
     return process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED !== "false";
   },
   /**
-   * Plan training days and the strength test generate through the AIWL
-   * generator unless set to "false", which falls back to the old generator.
-   * Short workouts always use AIWL. Env var: EXPO_PUBLIC_AIWL_GENERATOR_ENABLED
-   */
-  get aiwlGeneratorEnabled(): boolean {
-    return process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED !== "false";
-  },
-  /**
    * Plan creation and regeneration run on the new plan generator only when set
    * to "true"; otherwise they run on the old plan generator.
    * Env var: EXPO_PUBLIC_PLAN_GENERATOR_ENABLED

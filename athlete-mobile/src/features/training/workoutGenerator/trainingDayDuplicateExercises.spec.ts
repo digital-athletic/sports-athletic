@@ -1,6 +1,5 @@
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { UserType } from "@/schemas/user.schema";
-import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import {
   buildPlanUser,
   generatePlanWorkoutForWeekday,
@@ -41,8 +40,6 @@ const exerciseBranchPairs = (entries: GeneratedSetListEntry[], skill: string) =>
   entries
     .filter((entry) => entry.skill === skill && entry.exerciseId !== PAUSE_ID)
     .map((entry) => [entry.exerciseId, entry.branchId]);
-
-setUpAiwlGeneratorFlag(true);
 
 beforeEach(() => {
   jest.spyOn(Math, "random").mockReturnValue(0);

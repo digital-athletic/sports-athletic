@@ -10,7 +10,6 @@ import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, renderHook } from "@testing-library/react-native";
-import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import {
   generateAdultMalePersonalData,
   generateAdvancedWorkoutData,
@@ -79,8 +78,6 @@ const saveFrontSquatWorkout = (skill: SkillCode) =>
       generateFrontSquatTemplate(skill.toLowerCase(), skill),
       null,
     ).id;
-
-setUpAiwlGeneratorFlag(true);
 
 beforeEach(() => {
   useTrainingStore.setState(BASELINE_TRAINING_STATE);

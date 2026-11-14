@@ -3,7 +3,9 @@
 Spec: `docs/specs/session/cardio-training-system.md` (zone table, building
 the block).
 Generate from: the cardio block of the set list (`GeneratedSetListEntry[]`)
-that `TrainingGenerator` emits for the scenario below. The `in:` columns echo
+that the workout generator (`buildCardioSetList` in
+`src/features/training/workoutGenerator/setListBuilders`) emits for the
+scenario below. The `in:` columns echo
 the scenario inputs (zone, minute budget, interval count) on every row, like
 the session and exercise columns of the max-strength sets tables. `out: kind`
 is `pause` when the entry carries the pause exercise id, else `work`;

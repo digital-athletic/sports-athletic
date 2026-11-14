@@ -1,4 +1,3 @@
-import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import {
   buildPlanUser,
   generatePlanWorkoutForWeekday,
@@ -6,8 +5,6 @@ import {
 } from "@test/factories/planWorkout";
 
 describe("training day cardio block: closing pause", () => {
-  setUpAiwlGeneratorFlag(true);
-
   it("keeps the run that ends a plan workout", () => {
     const user = buildPlanUser({
       weekday: 1,

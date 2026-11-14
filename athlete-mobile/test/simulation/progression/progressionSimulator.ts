@@ -1,11 +1,11 @@
 /**
- * Deterministic, framework-agnostic progression harness. Drives the real
- * training generator through N consecutive sessions with scripted feedback and
- * records a per-set snapshot each session, so weight/rep progression can be
- * audited against golden tables and coded invariants.
+ * Deterministic, framework-agnostic progression harness. Drives the workout
+ * generator through N consecutive sessions with scripted feedback and records
+ * a per-set snapshot each session, so weight/rep progression can be audited
+ * against golden tables and coded invariants.
  *
  * Every recorded value comes from the production path: the sets are read off
- * `getSetListFromExercisePairs` (the assembly the app renders) and the
+ * `buildMaxStrengthSetList` (the builder the max strength block runs) and the
  * inter-session step replays `useExerciseCompletion`, driving the real
  * `exerciseProgressStore` so the state carried into the next session is the
  * state the app would hold.
@@ -16,8 +16,6 @@
  * session following a flagged one no longer mirrors the app.
  */
 import type { ExerciseDifficultyType } from "@/constants/workoutConstants";
-import TrainingGenerator from "@/features/training/generators/TrainingGenerator";
-import { WARMUP_WEIGHT_PERCENTAGES } from "@/features/training/generators/warmupDerivation";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
@@ -29,6 +27,12 @@ import {
   getMaxValueForExercise,
   getUserLevel,
 } from "@/features/training/utils/workoutUtils";
+import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
+import { readMaxTrainingWeights } from "@/features/training/workoutGenerator/setListBuilders/maxStrengthLadder";
+import {
+  buildMaxStrengthSetList,
+  WARM_UP_WEIGHT_PERCENTAGES,
+} from "@/features/training/workoutGenerator/setListBuilders/maxStrengthSetListBuilder";
 import type { SkillCode } from "@/schemas/generator.schema";
 import {
   toUserExerciseData,
@@ -36,13 +40,15 @@ import {
 } from "@/schemas/generator.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
+import { generateSeededRandom } from "../../factories/seededRandom";
+import { generateMaxStrengthBlock } from "../../factories/setListBlock";
 import type { FeedbackScript } from "./feedbackScripts";
 import { personaToUser, type Persona } from "./personaAdapter";
 
 const SIMULATED_BRANCH_ID = "progression-simulator-branch";
 
-/** Ignored by the MAX branch, which sizes the set count from the user level. */
-const SETS_PER_EXERCISE = 3;
+/** Fixed seed, so the support exercise draw repeats on every run. */
+const SUPPORT_DRAW_SEED = 1;
 
 export interface SetSnapshot {
   setNumber: number;
@@ -129,7 +135,7 @@ function toSetSnapshots(
     // Production labels its warm-up sets, so they need no positional guessing.
     const isWarmup = entry.repetitionMAX?.level === "WARMUP";
     const percentage = isWarmup
-      ? WARMUP_WEIGHT_PERCENTAGES[warmupCount++]
+      ? WARM_UP_WEIGHT_PERCENTAGES[warmupCount++]
       : workingPercentages[setIndex - warmupCount];
     return {
       setNumber: setIndex + 1,
@@ -162,7 +168,7 @@ export function simulateProgression(
   }
 
   const maxValues = opts.maxValues ?? DEFAULT_MAX_VALUES;
-  const generator = new TrainingGenerator();
+  const random = generateSeededRandom(SUPPORT_DRAW_SEED);
   const user = personaToUser(persona, maxValues);
   const ageGroup = ageGroupFor(getUserBirthday(user));
   const levelTag = getUserLevel(user);
@@ -186,27 +192,30 @@ export function simulateProgression(
   // One session past the requested count: a session's `levelAfter` is only
   // observable by generating the next one. The extra row is dropped below.
   for (let session = 1; session <= opts.sessions + 1; session++) {
-    const userExercisesData = useExerciseProgressStore.getState().exerciseData;
+    const { exerciseData, exerciseProgress } =
+      useExerciseProgressStore.getState();
+    const storedProgress = { exerciseData, exerciseProgress };
 
-    const setList = generator.getSetListFromExercisePairs(
+    const setList = buildMaxStrengthSetList(
       exercisePairs,
-      { skill: focus, length: 0 },
-      {},
-      user,
-      "HOME",
-      [],
-      opts.exercises,
-      SETS_PER_EXERCISE,
-      [],
-      userExercisesData,
+      generateMaxStrengthBlock(),
+      createGenerationInput({
+        athlete: user,
+        place: "HOME",
+        equipment: [],
+        exerciseCatalog: opts.exercises,
+        exerciseData: { ...storedProgress, branchData: {} },
+        random,
+      }),
     );
 
     // The set list carries kg only; the percentages come from the same
-    // generator call production makes internally, purely to annotate the table.
-    const { trainingWeights } = generator.getMaxTrainingWeights(
+    // ladder the builder reads, purely to annotate the table.
+    const { trainingWeights } = readMaxTrainingWeights(
       exercise,
       user,
-      userExercisesData,
+      storedProgress,
+      focus,
     );
     const sets = toSetSnapshots(setList, exercise.id, trainingWeights);
 

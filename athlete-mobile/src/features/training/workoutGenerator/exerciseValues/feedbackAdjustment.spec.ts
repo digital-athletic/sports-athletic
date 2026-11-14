@@ -136,6 +136,30 @@ describe("feedbackAdjustment: adjustExerciseValuesByFeedback", () => {
     },
   );
 
+  it.each([
+    ["SUCCEEDED", 9],
+    ["TOO_EASY", 10],
+  ] as const)(
+    "keeps the weight and raises only the repetitions on %s",
+    (feedback, expectedRepetition) => {
+      const values = adjustExerciseValuesByFeedback(
+        { repetition: 8, weight: 70, weightType: "weightFMax" },
+        generateContext(
+          "SWR2",
+          generateValueExercise("repetition", { withWeights: true }),
+        ),
+        feedback,
+        DEFAULT_MAX_VALUES,
+      );
+
+      expect(values).toEqual({
+        repetition: expectedRepetition,
+        weight: 70,
+        weightType: "weightFMax",
+      });
+    },
+  );
+
   it("lowers the load to the next real barbell load", () => {
     const exercise = generateValueExercise("repetition", {
       withWeights: true,

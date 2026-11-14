@@ -2,10 +2,7 @@ import PlanGenerator from "@/features/training/generators/PlanGenerator";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { generateTrainingPlan } from "@/features/training/planGenerator/planGeneration";
 import { loadPlanAuthoredData } from "@/data/loadPlanAuthoredData";
-import {
-  setUpAiwlGeneratorFlag,
-  setUpPlanGeneratorFlag,
-} from "@test/factories/generatorFlags";
+import { setUpPlanGeneratorFlag } from "@test/factories/generatorFlags";
 import {
   generatePlanGenerationStores,
   seedPlanGenerationStores,
@@ -112,21 +109,4 @@ describe("planGeneratorRouter: generatePlan", () => {
       expect(oldGeneratePlan).not.toHaveBeenCalled();
     });
   });
-
-  describe.each([
-    { aiwlEnabled: true, planFlag: "true", expected: newPlan },
-    { aiwlEnabled: false, planFlag: "true", expected: newPlan },
-    { aiwlEnabled: true, planFlag: undefined, expected: oldPlan },
-    { aiwlEnabled: false, planFlag: undefined, expected: oldPlan },
-  ])(
-    "AIWL generator flag $aiwlEnabled with plan generator flag $planFlag",
-    ({ aiwlEnabled, planFlag, expected }) => {
-      setUpAiwlGeneratorFlag(aiwlEnabled);
-      setUpPlanGeneratorFlag(planFlag);
-
-      it("selects the plan generator by the plan generator flag alone", () => {
-        expect(generatePlan(generatePlanRequest())).toBe(expected);
-      });
-    },
-  );
 });

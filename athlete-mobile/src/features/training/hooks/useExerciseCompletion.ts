@@ -3,7 +3,7 @@ import { isLevelTag, WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
-import { getIntensityBySkill } from "@/features/training/generators/TrainingGenerator";
+import { getIntensityBySkill } from "@/features/training/utils/intensityBySkill";
 import { isPauseExercise as checkIsPauseExercise } from "@/features/training/models/IdTypes";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
 import type { SkillCode } from "@/schemas/generator.schema";
@@ -414,7 +414,7 @@ export function useExerciseCompletion() {
             const increaseWeight = adjustmentResult.type === "INCREASE_WEIGHT";
             const decreaseWeight = adjustmentResult.type === "DECREASE_WEIGHT";
             // Weight changes at a performed boundary clear the feedback, so
-            // TrainingGenerator does not apply it a second time. Only a weight
+            // the workout generator does not apply it a second time. Only a weight
             // increase resets reps/duration to the start value.
             if (increaseWeight || decreaseWeight) {
               const weightType = getWeightType(currentExerciseData, intensity);
@@ -518,7 +518,7 @@ export function useExerciseCompletion() {
                 index,
               );
             } else {
-              // No boundary change: feedback is preserved so TrainingGenerator
+              // No boundary change: feedback is preserved so the workout generator
               // applies the ladder step or the weight step on the next generation.
               // A session without a rating stores null and drops the old one.
               let weightPercentage =

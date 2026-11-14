@@ -1,4 +1,3 @@
-import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import {
   buildPlanUser,
   generateBottleBranch,
@@ -8,8 +7,6 @@ import {
 } from "@test/factories/planWorkout";
 
 describe("training day slot filling: slots that cannot be refilled", () => {
-  setUpAiwlGeneratorFlag(true);
-
   it("drops the skill and keeps the rest of the session", () => {
     const user = buildPlanUser({
       weekday: 1,
@@ -22,8 +19,6 @@ describe("training day slot filling: slots that cannot be refilled", () => {
 });
 
 describe("training day slot filling: blocked zone 5 cardio", () => {
-  setUpAiwlGeneratorFlag(true);
-
   it("resolves the replacement run to its exercise", () => {
     const user = buildPlanUser({
       weekday: 3,

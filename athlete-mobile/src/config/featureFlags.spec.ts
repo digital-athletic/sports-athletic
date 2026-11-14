@@ -15,7 +15,6 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED;
     delete process.env.EXPO_PUBLIC_CONTACT_ENABLED;
     delete process.env.EXPO_PUBLIC_SUPPORT_EMAIL;
-    delete process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED;
     delete process.env.EXPO_PUBLIC_PLAN_GENERATOR_ENABLED;
   });
 
@@ -177,20 +176,8 @@ describe("featureFlags", () => {
     });
   });
 
-  describe("aiwlGeneratorEnabled", () => {
-    it("defaults to true when EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is unset", () => {
-      expect(featureFlags.aiwlGeneratorEnabled).toBe(true);
-    });
-
-    it("is false when EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is 'false'", () => {
-      process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED = "false";
-      expect(featureFlags.aiwlGeneratorEnabled).toBe(false);
-    });
-
-    it("is true when EXPO_PUBLIC_AIWL_GENERATOR_ENABLED is 'true'", () => {
-      process.env.EXPO_PUBLIC_AIWL_GENERATOR_ENABLED = "true";
-      expect(featureFlags.aiwlGeneratorEnabled).toBe(true);
-    });
+  it("offers no flag for the retired old training generator", () => {
+    expect(Object.keys(featureFlags)).not.toContain("aiwlGeneratorEnabled");
   });
 
   describe("planGeneratorEnabled", () => {

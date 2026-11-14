@@ -1,6 +1,5 @@
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { UserType } from "@/schemas/user.schema";
-import { setUpAiwlGeneratorFlag } from "@test/factories/generatorFlags";
 import {
   buildPlanUser,
   generateKneePreventionBranches,
@@ -17,8 +16,6 @@ const pausesOf = (entries: GeneratedSetListEntry[], skill: string) =>
     .map((entry) => entry.duration);
 
 describe("training day prevention timing: special warm up before prevention", () => {
-  setUpAiwlGeneratorFlag(true);
-
   beforeEach(() => {
     jest.spyOn(Math, "random").mockReturnValue(0);
   });

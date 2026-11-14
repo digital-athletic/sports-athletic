@@ -10,7 +10,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(49);
+SELECT plan(53);
 
 -- T1 is the handball example. T2 is a second test for the same sport and region.
 -- T3 is deleted to prove the cascade. A is an authenticated user.
@@ -112,6 +112,18 @@ SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
 SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
     VALUES ('FAKE_SPORT_A', 'Germany', 'FAKE_REGION_NAME', 'm') $$,
   '23514', NULL, 'region: a country name is rejected');
+SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
+    VALUES ('FAKE_SPORT_A', 'DEU', 'FAKE_REGION_THREE_LETTERS', 'm') $$,
+  '23514', NULL, 'region: a three-letter country code is rejected');
+SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
+    VALUES ('FAKE_SPORT_A', 'GB-ENGL', 'FAKE_REGION_LONG_SUBDIVISION', 'm') $$,
+  '23514', NULL, 'region: a subdivision part longer than three characters is rejected');
+SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
+    VALUES ('FAKE_SPORT_A', 'DE', repeat('C', 101), 'm') $$,
+  '23514', NULL, 'code: more than 100 characters are rejected');
+SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
+    VALUES ('FAKE_SPORT_A', 'DE', 'FAKE_UNIT_TOO_LONG', repeat('u', 21)) $$,
+  '23514', NULL, 'unit: more than 20 characters are rejected');
 SELECT throws_ok($$ INSERT INTO public.sport_tests (sport, region, code, unit)
     VALUES ('FAKE_SPORT_A', '', 'FAKE_REGION_EMPTY', 'm') $$,
   '23514', NULL, 'region: an empty string is rejected');
@@ -218,7 +230,7 @@ SELECT is((SELECT count(*) FROM public.sport_tests), :n_tests::bigint,
 SELECT is((SELECT array_agg(DISTINCT sport ORDER BY sport) FROM public.sport_tests
            WHERE sport IN ('HANDBALL_SPORT', 'FAKE_SPORT_A')),
   ARRAY['FAKE_SPORT_A', 'HANDBALL_SPORT'],
-  'read: an authenticated user reads tests of every sport, not only their own');
+  'read: an authenticated user reads tests of every sport');
 SELECT is((SELECT count(*) FROM public.sport_test_reference_values), :n_values::bigint,
   'read: an authenticated user reads every row of sport_test_reference_values');
 

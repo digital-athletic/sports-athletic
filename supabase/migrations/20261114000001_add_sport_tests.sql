@@ -35,6 +35,7 @@ CREATE TABLE public.sport_tests (
     CHECK (char_length(code) BETWEEN 1 AND 100),
   CONSTRAINT sport_tests_unit_check
     CHECK (char_length(unit) BETWEEN 1 AND 20),
+  -- The unique index also serves the device's filter by sport and region.
   CONSTRAINT sport_tests_sport_region_code_key
     UNIQUE (sport, region, code)
 );

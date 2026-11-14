@@ -7,7 +7,6 @@ import { ProfilePage } from "./pages";
 // Numeric columns arrive as strings from PostgREST.
 const SPRINT_5M_ROW = {
   id: "55555555-5555-4555-8555-555555555555",
-  sport: "SPORT_HANDBALL",
   code: "SPRINT_5M",
   unit: "s",
   sport_test_reference_values: [

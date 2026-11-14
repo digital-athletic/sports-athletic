@@ -47,7 +47,7 @@ INSERT INTO public.sport_tests (id, sport, region, code, unit) VALUES
 
 INSERT INTO public.sport_test_reference_values
   (test_id, gender, position, training_stage, range_start, range_end) VALUES
-  (:'T1', 'FEMALE', 'WING', 'GRUNDLAGENTRAINING', 1.25, 1.15),
+  (:'T1', 'FEMALE', 'WING', 'GRUNDLAGENTRAINING', 9.87, 6.54),
   (:'T3', 'FEMALE', 'FAKE_POSITION_ONE', 'FAKE_STAGE', 10, 20),
   (:'T3', 'MALE', 'FAKE_POSITION_ONE', 'FAKE_STAGE', 12, 22);
 
@@ -175,7 +175,7 @@ SELECT throws_ok($$ INSERT INTO public.sport_test_reference_values
 SELECT is((SELECT range_start::text || '/' || range_end::text
            FROM public.sport_test_reference_values
            WHERE test_id = :'T1' AND position = 'WING'),
-  '1.25/1.15', 'range: values are stored in source order, start may exceed end');
+  '9.87/6.54', 'range: values are stored in source order, start may exceed end');
 
 -- ---------------------------------------------------------------------------
 -- Relation between the tables

@@ -84,6 +84,8 @@ const WebDateInput: FC<WebDateInputProps> = ({
         color: colors.darkGrey3,
         fontFamily: "system-ui",
         fontSize: textVariants.body.fontSize,
+        // The full width moves the browser's picker button to the right edge.
+        width: "100%",
       }}
     />
   );
@@ -103,7 +105,11 @@ export const DateInputField: FC<DateInputFieldProps> = ({
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
 
-  const icon = type === "date" ? IconCalendar : IconClock;
+  // The browser draws its own picker button inside a date or time input.
+  const icon = Platform.select({
+    web: undefined,
+    default: type === "date" ? IconCalendar : IconClock,
+  });
 
   // Only date pickers need the floor; time pickers have no lower bound.
   const effectiveMinimumDate =
@@ -158,7 +164,11 @@ export const DateInputField: FC<DateInputFieldProps> = ({
 
   return (
     <FieldShell icon={icon}>
-      <Box flex={1} paddingHorizontal="s" alignItems="flex-start">
+      <Box
+        flex={1}
+        paddingHorizontal="s"
+        alignItems={Platform.select({ web: "stretch", default: "flex-start" })}
+      >
         {Platform.select({
           ios: (
             <DateTimePicker

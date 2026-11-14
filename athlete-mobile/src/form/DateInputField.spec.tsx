@@ -35,6 +35,21 @@ describe("DateInputField: web input", () => {
     });
   });
 
+  it("shows no leading icon, because the browser draws its own picker button", async () => {
+    const { queryByTestId } = await render(
+      <DateInputField
+        type="date"
+        dateTime="2000-01-31"
+        onChange={jest.fn()}
+        accessibilityLabel="Birthday"
+      />,
+    );
+
+    expect(
+      queryByTestId("decorative-icon", { includeHiddenElements: true }),
+    ).toBeNull();
+  });
+
   it("uses the default minimum when the caller sets none", async () => {
     const { getByLabelText } = await render(
       <DateInputField

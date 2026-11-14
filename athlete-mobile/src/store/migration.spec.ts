@@ -15,7 +15,7 @@ describe("Per-Store Migration Versioning", () => {
   });
 
   describe("STORE_VERSIONS", () => {
-    it("should have all 13 store versions defined as integers >= 14", () => {
+    it("should have all 14 store versions defined as integers >= 14", () => {
       const expectedStores = [
         "AUTH",
         "USER_DATA_BACKUP",
@@ -30,6 +30,7 @@ describe("Per-Store Migration Versioning", () => {
         "EXERCISE_PROGRESS",
         "TRAINING",
         "CUSTOM_WORKOUTS",
+        "SPORT_TESTS",
       ] as const;
 
       for (const store of expectedStores) {

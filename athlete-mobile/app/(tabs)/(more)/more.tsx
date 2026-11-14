@@ -27,6 +27,7 @@ import IconBook from "@tabler/icons-react-native/IconBook";
 import IconHeartbeat from "@tabler/icons-react-native/IconHeartbeat";
 import IconHelpCircle from "@tabler/icons-react-native/IconHelpCircle";
 import IconLogout from "@tabler/icons-react-native/IconLogout";
+import IconStopwatch from "@tabler/icons-react-native/IconStopwatch";
 import IconTrash from "@tabler/icons-react-native/IconTrash";
 import IconUser from "@tabler/icons-react-native/IconUser";
 
@@ -97,6 +98,12 @@ export default function MoreScreen() {
             iconBackground="primary"
           />
           <StrengthTestMenuItems />
+          <ListItem
+            title={t("more.performanceTests.menuItem")}
+            navPath="/(tabs)/(more)/performance-tests"
+            icon={IconStopwatch}
+            iconBackground="primary"
+          />
           <ListItem
             title={t("more.introductionVideos")}
             navPath="/(tabs)/(more)/tutorials"

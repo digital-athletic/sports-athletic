@@ -1,4 +1,8 @@
+import * as v from "valibot";
+
+import TEST from "../../../../assets/data/templates/TEST.json";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
+import { TemplateSchema } from "@/schemas/aiwl.schema";
 import { generateMaxValues } from "@test/factories/maxValues";
 import { generateSeededRandom } from "@test/factories/seededRandom";
 import {
@@ -500,6 +504,30 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         "pause 120",
         "54 4/4",
       ]);
+    });
+
+    it("generates the lifts and test sets of TEST.json parsed as an AIWL template", () => {
+      const template = v.parse(TemplateSchema, TEST);
+      const input = generateStrengthTestInput({
+        random: generateSeededRandom(7),
+      });
+
+      const testEntries = generateStrengthTest(
+        input,
+        skillTrees,
+        loadStrengthTestLoadData(),
+        template,
+      ).filter(
+        (entry) => entry.skill === "TEST" && entry.repetition !== undefined,
+      );
+
+      expect(
+        testEntries.map((entry) => [entry.exerciseId, entry.repetition]),
+      ).toEqual(
+        BUNDLED_LIFT_IDS.flatMap((exerciseId) =>
+          [6, 4, 2, -1].map((repetition) => [exerciseId, repetition]),
+        ),
+      );
     });
 
     it("pins the warm up branches and the authored test set loads for an advanced man with seed 7", () => {

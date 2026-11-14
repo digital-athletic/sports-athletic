@@ -94,6 +94,29 @@ describe("syncTeamWorkouts", () => {
     expect(listTeamTemplateIds("team-1")).toEqual(["A"]);
   });
 
+  it("leaves out a workout with an exercises block", async () => {
+    mockFetchTeamWorkouts.mockResolvedValue(
+      asPublished(
+        generateTeamTemplate({ id: "A" }),
+        generateTeamTemplate({
+          id: "LIFTS",
+          blocks: [
+            {
+              kind: "exercises",
+              skill: "TEST",
+              exercises: ["25"],
+              testSets: [{ share: 1, repetitions: "amrap", rest: 0 }],
+            },
+          ],
+        }),
+      ),
+    );
+
+    await syncTeamWorkouts("team-1");
+
+    expect(listTeamTemplateIds("team-1")).toEqual(["A"]);
+  });
+
   it("reports offline and leaves the last sync in place when the fetch fails", async () => {
     mockFetchTeamWorkouts.mockResolvedValueOnce(
       asPublished(generateTeamTemplate({ id: "A" })),

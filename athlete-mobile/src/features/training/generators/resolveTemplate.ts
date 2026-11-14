@@ -8,6 +8,7 @@ import {
 } from "@/features/training/utils/skillTreeUtils";
 import type {
   Block,
+  BranchSelectingBlock,
   BlockPicks,
   BlockValues,
   CountBy,
@@ -103,7 +104,7 @@ const requireDefault =
 
 const timingDefaultsOf = (
   path: string,
-  block: Block,
+  block: BranchSelectingBlock,
   entry: SkillCatalogEntry,
 ): TimingDefaults => {
   const withDefault = requireDefault(path, block);

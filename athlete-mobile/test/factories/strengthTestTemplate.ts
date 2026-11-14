@@ -1,5 +1,4 @@
-import type { PicksBlock } from "@/schemas/aiwl.schema";
-import type { StrengthTestTemplate } from "@/schemas/strengthTestTemplate.schema";
+import type { PicksBlock, Template } from "@/schemas/aiwl.schema";
 import { generateExercisesBlock } from "./exercisesBlock";
 import { generateStrengthTestWarmUpBlock } from "./strengthTestWarmUp";
 import { generateBundledTestSets, type TestSets } from "./testSets";
@@ -8,7 +7,7 @@ interface StrengthTestTemplateOptions {
   warmUp?: Partial<PicksBlock>;
   exercises?: string[];
   testSets?: TestSets;
-  blocks?: StrengthTestTemplate["blocks"];
+  blocks?: Template["blocks"];
 }
 
 /**
@@ -27,7 +26,7 @@ export const generateStrengthTestTemplate = ({
   exercises = ["25", "50", "342", "297", "54"],
   testSets = generateBundledTestSets(),
   blocks,
-}: StrengthTestTemplateOptions = {}): StrengthTestTemplate => ({
+}: StrengthTestTemplateOptions = {}): Template => ({
   aiwl: 1,
   id: "TEST",
   name: { en: "Strength test" },

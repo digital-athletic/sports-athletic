@@ -1,18 +1,15 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
-import type { Block } from "@/schemas/aiwl.schema";
 import type {
+  Block,
+  BranchSelectingBlock,
   ExercisesBlock,
-  WorkoutBlock,
-} from "@/schemas/strengthTestTemplate.schema";
+} from "@/schemas/aiwl.schema";
 import type { WorkoutInput } from "./workoutSetup";
 
-export type BlockKind = WorkoutBlock["kind"];
+export type BlockKind = Block["kind"];
 
 export type BranchesBlock = Extract<Block, { kind: "branches" }>;
-
-/** A block whose handler selects branches: every AIWL block kind. */
-export type BranchSelectingBlock = Block;
 
 /**
  * An exercise a workout prescribes by catalog ID. It belongs to no branch, so
@@ -25,12 +22,12 @@ export type PrescribedExerciseReference = {
 
 /**
  * The part of a workout the interpreter runs: a workout document, which passed
- * TemplateSchema or StrengthTestTemplateSchema, or a stored day workout, which
- * the language rules do not bind.
+ * TemplateSchema, or a stored day workout, which the language rules do not
+ * bind.
  */
 export interface InterpretedWorkout {
   readonly id: string;
-  readonly blocks: readonly WorkoutBlock[];
+  readonly blocks: readonly Block[];
 }
 
 // A handler may return a changed block, for example a blocked cardio skill
@@ -57,7 +54,7 @@ export type BlockResult =
     }
   | {
       status: "empty";
-      block: WorkoutBlock;
+      block: Block;
       reason: GeneratorError | undefined;
       usedBranchIds: string[];
     };
@@ -72,7 +69,7 @@ export interface BlockWalkContext {
 
 // The walk always passes the context; a handler that ignores it may leave it out.
 export type BlockHandler<K extends BlockKind> = (
-  block: Extract<WorkoutBlock, { kind: K }>,
+  block: Extract<Block, { kind: K }>,
   input: WorkoutInput,
   usedBranches: ReadonlySet<string>,
   walk?: BlockWalkContext,
@@ -96,7 +93,7 @@ interface BlockContext {
 }
 
 const handleBlockByKind = (
-  block: WorkoutBlock,
+  block: Block,
   handlers: BlockHandlerRegistry,
   { input, usedBranches, walk }: BlockContext,
 ): BlockResult => {

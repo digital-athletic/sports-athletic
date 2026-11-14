@@ -3,10 +3,7 @@ import type {
   InterpretedWorkout,
   PrescribedExerciseReference,
 } from "@/features/training/workoutGenerator/stages/blockWalk";
-import type {
-  ExercisesBlock,
-  WorkoutBlock,
-} from "@/schemas/strengthTestTemplate.schema";
+import type { ExercisesBlock, Block } from "@/schemas/aiwl.schema";
 
 type PrescribedBlockResult = Extract<BlockResult, { status: "prescribed" }>;
 
@@ -18,7 +15,7 @@ type PrescribedBlockResult = Extract<BlockResult, { status: "prescribed" }>;
  * → { id: "day", blocks: [picksBlock, { kind: "exercises", skill: "TEST", exercises: ["25"] }] }
  */
 export const generateWorkoutWithExercises = (
-  blocks: WorkoutBlock[],
+  blocks: Block[],
   id = "day",
 ): InterpretedWorkout => ({ id, blocks });
 

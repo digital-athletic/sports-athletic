@@ -29,6 +29,11 @@ describe("templateBlockCheck: requireSupportedTemplateBlocks", () => {
 
   it.each<{ behaviour: string; block: Block; what: string }>([
     {
+      behaviour: "an exercises block",
+      block: { kind: "exercises", skill: "TEST", exercises: ["25"] },
+      what: "exercises",
+    },
+    {
       behaviour: "a duration block of a skill other than a cardio zone",
       block: { kind: "duration", skill: "MOB", duration: 300 },
       what: "duration",

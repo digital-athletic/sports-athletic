@@ -7,10 +7,7 @@ import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { getUserGender } from "@/features/training/utils/userDataUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
-import type {
-  ExercisesBlock,
-  TestSet,
-} from "@/schemas/strengthTestTemplate.schema";
+import type { ExercisesBlock, TestSet } from "@/schemas/aiwl.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillCode, TestSetLoads } from "@/schemas/generator.schema";
 import type { OneRepMaxShares } from "@/schemas/oneRepMaxShares.schema";

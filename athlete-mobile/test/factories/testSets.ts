@@ -1,6 +1,6 @@
 import type { TestSetLoads } from "@/schemas/generator.schema";
 import type { OneRepMaxShares } from "@/schemas/oneRepMaxShares.schema";
-import type { ExercisesBlock } from "@/schemas/strengthTestTemplate.schema";
+import type { ExercisesBlock } from "@/schemas/aiwl.schema";
 
 export type TestSets = NonNullable<ExercisesBlock["testSets"]>;
 

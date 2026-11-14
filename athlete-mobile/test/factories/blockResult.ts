@@ -1,22 +1,21 @@
 import type { BlockResult } from "@/features/training/workoutGenerator/stages/blockWalk";
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
-import type { Block } from "@/schemas/aiwl.schema";
+import type { Block, BranchSelectingBlock } from "@/schemas/aiwl.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { WorkoutBlock } from "@/schemas/strengthTestTemplate.schema";
 import { generateBranchesBlock } from "./templateBlock";
 
 type FilledBlockResult = Extract<BlockResult, { status: "filled" }>;
 type EmptyBlockResult = Extract<BlockResult, { status: "empty" }>;
 
 interface FilledBlockResultOptions {
-  block?: Block;
+  block?: BranchSelectingBlock;
   usedBranchIds?: string[];
   exercises?: BranchExerciseReference[];
 }
 
 // Handler stubs receive any block; an exercises block never ends filled.
-const requireBranchSelectingBlock = (block: WorkoutBlock): Block => {
+const requireBranchSelectingBlock = (block: Block): BranchSelectingBlock => {
   if (block.kind === "exercises") {
     throw new Error("An exercises block ends prescribed, never filled");
   }
@@ -24,7 +23,7 @@ const requireBranchSelectingBlock = (block: WorkoutBlock): Block => {
 };
 
 interface EmptyBlockResultOptions {
-  block?: Block;
+  block?: BranchSelectingBlock;
   usedBranchIds?: string[];
   reason?: GeneratorError;
 }
@@ -75,7 +74,7 @@ export function generateBlockResult(
  *     exercises: [{ branchId: "510", branchTags: [], exerciseId: "exercise510" }] }
  */
 export const generateFilledBlockResult = (
-  block: WorkoutBlock,
+  block: Block,
   branchIds: string[],
   readExerciseId = (branchId: string) => `exercise${branchId}`,
 ): FilledBlockResult =>
@@ -99,7 +98,7 @@ export const generateFilledBlockResult = (
  */
 export const generateFilledResultFromCatalog = (
   exerciseCatalog: ExerciseType[],
-  block: Block,
+  block: BranchSelectingBlock,
   exerciseIds: string[],
 ): FilledBlockResult =>
   generateBlockResult("filled", {
@@ -120,7 +119,7 @@ export const generateFilledResultFromCatalog = (
  * → { status: "empty", block, reason: equipmentError, usedBranchIds: [] }
  */
 export const generateEmptyBlockResult = (
-  block: WorkoutBlock,
+  block: Block,
   reason?: GeneratorError,
   usedBranchIds: string[] = [],
 ): EmptyBlockResult => ({ status: "empty", block, reason, usedBranchIds });

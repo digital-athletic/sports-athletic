@@ -1,9 +1,12 @@
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { BlockValues, CatalogRest } from "@/schemas/aiwl.schema";
+import type {
+  BlockValues,
+  CatalogRest,
+  ExercisesBlock,
+} from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
-import type { ExercisesBlock } from "@/schemas/strengthTestTemplate.schema";
 import type { GenerationInput } from "../generationInput/generationInput";
 import type { PrescribedExerciseReference } from "../stages/blockWalk";
 

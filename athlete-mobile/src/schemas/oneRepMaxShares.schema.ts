@@ -1,6 +1,6 @@
 import * as v from "valibot";
 
-import { ShareSchema } from "./strengthTestTemplate.schema";
+import { ShareSchema } from "./aiwl.schema";
 
 /**
  * The share of the last estimated 1RM a strength test set loads, per fitness

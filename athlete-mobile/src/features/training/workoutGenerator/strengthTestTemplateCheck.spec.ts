@@ -1,13 +1,20 @@
 import { loadStrengthTest } from "@/data/loadStrengthTest";
 import { loadStrengthTestTemplate } from "@/data/loadStrengthTestTemplate";
-import { generateExercisesBlock } from "@test/factories/exercisesBlock";
+import {
+  generateExercisesBlock,
+  generateWorkoutWithExercises,
+} from "@test/factories/exercisesBlock";
 import { generateStrengthTestTemplate } from "@test/factories/strengthTestTemplate";
 import { generateStrengthTestWarmUpBlock } from "@test/factories/strengthTestWarmUp";
 import {
   generateBundledTestSets,
   generateTestSetLoads,
 } from "@test/factories/testSets";
-import { checkStrengthTestTemplate } from "./strengthTestTemplateCheck";
+import { generatePicksBlock } from "@test/factories/templateBlock";
+import {
+  checkStrengthTestTemplate,
+  checkTestSetWorkout,
+} from "./strengthTestTemplateCheck";
 
 describe("strengthTestTemplateCheck: checkStrengthTestTemplate", () => {
   it("accepts the bundled strength test template with the bundled strength test", () => {
@@ -236,5 +243,89 @@ describe("strengthTestTemplateCheck: checkStrengthTestTemplate", () => {
         "TEST.blocks[1].exercises: lift 25 has no test set loads for both genders",
       );
     });
+  });
+});
+
+// Test sets trigger the checks, so a workout other than TEST runs them too.
+describe("strengthTestTemplateCheck: checkTestSetWorkout", () => {
+  const warmUp = generateStrengthTestWarmUpBlock();
+
+  it("returns undefined for a workout without test sets", () => {
+    const workout = generateWorkoutWithExercises([
+      generatePicksBlock(),
+      generateExercisesBlock(["25"], "TEST"),
+    ]);
+
+    expect(
+      checkTestSetWorkout(workout, { testSetLoads: generateTestSetLoads() }),
+    ).toBeUndefined();
+  });
+
+  it("returns the lifts block of a workout with valid test sets", () => {
+    const lifts = generateExercisesBlock(["25", "54"], "TEST", {
+      testSets: generateBundledTestSets(),
+    });
+
+    expect(
+      checkTestSetWorkout(generateWorkoutWithExercises([warmUp, lifts]), {
+        testSetLoads: generateTestSetLoads(),
+      }),
+    ).toBe(lifts);
+  });
+
+  it("throws for a workout with test sets that starts without the warm-up", () => {
+    const workout = generateWorkoutWithExercises([
+      generatePicksBlock(),
+      generateExercisesBlock(["25"], "TEST", {
+        testSets: generateBundledTestSets(),
+      }),
+    ]);
+
+    expect(() =>
+      checkTestSetWorkout(workout, { testSetLoads: generateTestSetLoads() }),
+    ).toThrow(
+      "day.blocks[0]: the strength test starts with a warm-up picks block",
+    );
+  });
+
+  it.each([
+    ["without an amrap set", [{ share: 1, repetitions: 3, rest: 90 }]],
+    [
+      "with the amrap set first",
+      [
+        { share: 0.5, repetitions: "amrap", rest: 45 },
+        { share: 1, repetitions: 3, rest: 90 },
+      ],
+    ],
+  ] as const)("throws for a workout with test sets %s", (_label, testSets) => {
+    const workout = generateWorkoutWithExercises([
+      warmUp,
+      generateExercisesBlock(["25"], "TEST", { testSets: [...testSets] }),
+    ]);
+
+    expect(() =>
+      checkTestSetWorkout(workout, { testSetLoads: generateTestSetLoads() }),
+    ).toThrow(
+      "day.blocks[1].testSets: the strength test ends on its one amrap test set",
+    );
+  });
+
+  it("throws for a workout with test sets whose lift lacks the loads for women", () => {
+    const workout = generateWorkoutWithExercises([
+      warmUp,
+      generateExercisesBlock(["25"], "TEST", {
+        testSets: generateBundledTestSets(),
+      }),
+    ]);
+
+    expect(() =>
+      checkTestSetWorkout(workout, {
+        testSetLoads: generateTestSetLoads({
+          "25": { m: generateTestSetLoads()["25"].m },
+        }),
+      }),
+    ).toThrow(
+      "day.blocks[1].exercises: lift 25 has no test set loads for both genders",
+    );
   });
 });

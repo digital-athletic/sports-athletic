@@ -40,7 +40,9 @@ const aiwlTraining = (
 
 describe("plannedBranches: readPlannedBranches", () => {
   it("returns the copied branches of a legacy training", () => {
-    expect(readPlannedBranches(legacyTraining, catalog)).toBe(legacyTraining.skills);
+    expect(readPlannedBranches(legacyTraining, catalog)).toBe(
+      legacyTraining.skills,
+    );
   });
 
   it("resolves the branch IDs of an AIWL training through the catalog with tags and an exercise per level", () => {

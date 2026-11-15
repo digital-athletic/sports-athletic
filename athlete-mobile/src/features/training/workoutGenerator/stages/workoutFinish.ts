@@ -9,9 +9,6 @@ export type BuiltBlockResult = Exclude<BlockResult, { status: "empty" }>;
 export interface WorkoutFinishRules {
   // "section" builds the skills in SECTION_ORDER, "template" in block order.
   readonly blockOrder: "template" | "section";
-  // "throwFirstReason" throws the first empty block's reason in template
-  // order when the set list stays empty; "returnEmpty" never throws.
-  readonly emptyWorkout: "throwFirstReason" | "returnEmpty";
   // "every" throws for the first empty block in template order, with its
   // reason, so a source whose blocks belong together never returns a part of
   // it; "none" builds the blocks that are not empty.
@@ -24,25 +21,18 @@ export interface WorkoutFinishRules {
 
 export const TRAINING_DAY_FINISH_RULES: WorkoutFinishRules = {
   blockOrder: "section",
-  emptyWorkout: "throwFirstReason",
   requiredBlocks: "none",
   sameSkillBlocks: "lastWins",
 };
 
-// The old short workout throws only in its pool rules, never after the draws.
 export const SHORT_WORKOUT_FINISH_RULES: WorkoutFinishRules = {
   blockOrder: "template",
-  emptyWorkout: "returnEmpty",
   requiredBlocks: "none",
   sameSkillBlocks: "keepAll",
 };
 
-// Takes the built blocks in build order and every block result in template
-// order, for rules that depend on an empty block.
-export type SetListBuilder<TEntry> = (
-  blocks: BuiltBlockResult[],
-  results: readonly BlockResult[],
-) => TEntry[];
+// Takes the built blocks in build order.
+export type SetListBuilder<TEntry> = (blocks: BuiltBlockResult[]) => TEntry[];
 
 export interface FinishedWorkout<TEntry> {
   blocks: BuiltBlockResult[];
@@ -100,9 +90,10 @@ const requireEveryBlock = (results: readonly BlockResult[]): void => {
 };
 
 /**
- * Builds the set list from the filled blocks in build order. The empty check
- * reads the built set list, as the old generator does, because the builder
- * drops branches without a catalog exercise.
+ * Builds the set list from the filled blocks in build order. An empty set
+ * list throws the reason of the first empty block in template order. The
+ * empty check reads the built set list, as the old generator does, because
+ * the builder drops branches without a catalog exercise.
  */
 export const finishWorkout = <TEntry>(
   results: readonly BlockResult[],
@@ -119,8 +110,8 @@ export const finishWorkout = <TEntry>(
     rules.blockOrder === "section"
       ? sortBlockResultsBySectionOrder(filledBlocks)
       : filledBlocks;
-  const setList = buildSetList(blocks, results);
-  if (setList.length === 0 && rules.emptyWorkout === "throwFirstReason") {
+  const setList = buildSetList(blocks);
+  if (setList.length === 0) {
     for (const result of results) {
       if (result.status === "empty" && result.reason) throw result.reason;
     }

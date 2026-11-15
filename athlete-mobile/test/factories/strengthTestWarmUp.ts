@@ -14,7 +14,7 @@ import { generateTreeBranch } from "./skillTree";
  * generateStrengthTestWarmUpBlock()
  * → { kind: "picks", skill: "WU", picks: [{ tags: ["REGION_LOWER_BODY"], count: 1 }, ...,
  *     { tags: [], count: 2 }], countBy: "exercises", fallbackToWholeTree: true,
- *     sets: 1, superset: "none", setDuration: 60, rest: { ... } }
+ *     sets: 1, superset: "singles", setDuration: 60, rest: { ... } }
  */
 export const generateStrengthTestWarmUpBlock = (
   overrides: Partial<PicksBlock> = {},
@@ -30,7 +30,7 @@ export const generateStrengthTestWarmUpBlock = (
   countBy: "exercises",
   fallbackToWholeTree: true,
   sets: 1,
-  superset: "none",
+  superset: "singles",
   setDuration: 60,
   rest: {
     withinSuperset: 10,

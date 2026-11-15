@@ -28,10 +28,7 @@ import type {
   BlockHandlerRegistry,
   InterpretedWorkout,
 } from "./stages/blockWalk";
-import {
-  createSetListBuilder,
-  STRENGTH_TEST_SET_LIST_RULES,
-} from "./stages/setListBuilding";
+import { createSetListBuilder } from "./stages/setListBuilding";
 import type { WorkoutFinishRules } from "./stages/workoutFinish";
 import { checkStrengthTestTemplate } from "./strengthTestTemplateCheck";
 import { interpretTemplate } from "./templateInterpreter";
@@ -39,7 +36,6 @@ import { interpretTemplate } from "./templateInterpreter";
 // A test without its warm-up is incomplete, so every block must fill.
 const STRENGTH_TEST_FINISH_RULES: WorkoutFinishRules = {
   blockOrder: "template",
-  emptyWorkout: "throwFirstReason",
   requiredBlocks: "every",
   sameSkillBlocks: "keepAll",
 };
@@ -122,7 +118,7 @@ export const generateStrengthTest = (
     handlers: STRENGTH_TEST_HANDLERS,
     finishRules: STRENGTH_TEST_FINISH_RULES,
     createSetListBuilder: (workoutInput) =>
-      createSetListBuilder(workoutInput, STRENGTH_TEST_SET_LIST_RULES, {
+      createSetListBuilder(workoutInput, {
         [lifts.skill]: createStrengthTestSetListBuilder(loadData),
       }),
     skillTrees,

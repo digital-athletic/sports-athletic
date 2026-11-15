@@ -19,6 +19,7 @@ import { maintainBranchLevels } from "@/features/training/utils/branchMaintenanc
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { daysSinceLastTraining } from "@/features/training/utils/trainingGapUtils";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
+import { useNavigationLock } from "@/hooks/useNavigationLock";
 import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
 import { useAuthStore } from "@/store/authStore";
@@ -295,33 +296,33 @@ export function useTrainingGeneration(params: TrainingGenerationParams) {
   const { t } = useTranslation();
   const { maybeShowPainAlert } = useTrainingAlerts();
   const context = useGenerationContext();
+  const { runLocked, release } = useNavigationLock();
 
   const generateTraining = (place: PlaceType) => {
-    setGenerating(true);
+    runLocked(() => {
+      setGenerating(true);
 
-    try {
-      const exerciseList = generateExerciseList(place, params, context);
+      try {
+        const exerciseList = generateExerciseList(place, params, context);
 
-      const startTraining = () => {
-        router.navigate({
-          pathname: "/training/training-overview",
-          params: { ...params, place },
+        const startTraining = () => {
+          router.navigate({
+            pathname: "/training/training-overview",
+            params: { ...params, place },
+          });
+          setGenerating(false);
+        };
+
+        const { tags } = context.workoutData;
+        maybeShowPainAlert(params.type, exerciseList, tags, startTraining);
+      } catch (e) {
+        showGenerationError(e, t, () => {
+          setGenerating(false);
+          release();
+          router.replace("/(tabs)/(home)");
         });
-        setGenerating(false);
-      };
-
-      maybeShowPainAlert(
-        params.type,
-        exerciseList,
-        context.workoutData.tags,
-        startTraining,
-      );
-    } catch (e) {
-      showGenerationError(e, t, () => {
-        setGenerating(false);
-        router.replace("/(tabs)/(home)");
-      });
-    }
+      }
+    });
   };
 
   return { generating, generateTraining };

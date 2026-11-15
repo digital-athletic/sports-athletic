@@ -14,6 +14,7 @@ import {
   dropExpiredMarks,
   updateSorenessMarks,
 } from "@/features/training/utils/sorenessMarks";
+import { useFocusedHardwareBackHandler } from "@/hooks/useFocusedHardwareBackHandler";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
@@ -21,7 +22,6 @@ import { Card } from "@/theme/Card";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { BackHandler } from "react-native";
 
 type ScreenState = "SORENESS" | "PLACE";
 
@@ -79,13 +79,7 @@ export default function MuscleSorenessScreen() {
     return true;
   }, [router]);
 
-  useEffect(() => {
-    const handler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      handleBack,
-    );
-    return () => handler.remove();
-  }, [handleBack]);
+  useFocusedHardwareBackHandler(handleBack);
 
   const setMuscles = (tags: string[]) => {
     setTemporalData(updateSorenessMarks(temporalData ?? [], tags, Date.now()));

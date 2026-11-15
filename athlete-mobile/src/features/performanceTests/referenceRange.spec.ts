@@ -1,4 +1,9 @@
-import { formatRangeNumber, referenceRangeFor } from "./referenceRange";
+import {
+  type AthleteProfile,
+  formatRangeNumber,
+  referenceRangeFor,
+  referenceRangeOnDate,
+} from "./referenceRange";
 import { generateReferenceValue, generateSportTest } from "./testFixtures";
 
 const femaleWingAged13To14 = generateReferenceValue();
@@ -163,5 +168,77 @@ describe("formatRangeNumber: language", () => {
 
   it("shows a whole number without decimals", () => {
     expect(formatRangeNumber(3, "en")).toBe("3");
+  });
+});
+
+/**
+ * A female handball wing player born on 2012-06-15, so she turns 15 on 2027-06-15, e.g.
+ * generateAthleteProfile({ position: undefined }) returns
+ * { sport: "SPORT_HANDBALL", gender: "FEMALE", position: undefined, birthday: "2012-06-15" }
+ */
+const generateAthleteProfile = (
+  overrides: Partial<AthleteProfile> = {},
+): AthleteProfile => ({
+  sport: "SPORT_HANDBALL",
+  gender: "FEMALE",
+  position: "WING",
+  birthday: "2012-06-15",
+  ...overrides,
+});
+
+describe("referenceRangeOnDate: age on the date", () => {
+  const aged13To14 = generateReferenceValue({ rangeStart: 9.87 });
+  const aged15To16 = generateReferenceValue({
+    minAge: 15,
+    maxAge: 16,
+    rangeStart: 9.12,
+  });
+
+  it("picks the range for ages 13 to 14 the day before the 15th birthday", () => {
+    const test = generateSportTest("FAKE_TEST", [aged15To16, aged13To14]);
+
+    const range = referenceRangeOnDate(
+      test,
+      generateAthleteProfile(),
+      "2027-06-14",
+    );
+
+    expect(range).toEqual(aged13To14);
+  });
+
+  it("picks the range for ages 15 to 16 on the 15th birthday", () => {
+    const test = generateSportTest("FAKE_TEST", [aged13To14, aged15To16]);
+
+    const range = referenceRangeOnDate(
+      test,
+      generateAthleteProfile(),
+      "2027-06-15",
+    );
+
+    expect(range).toEqual(aged15To16);
+  });
+
+  it("returns null when no range covers the age on the date", () => {
+    const test = generateSportTest("FAKE_TEST", [aged13To14, aged15To16]);
+
+    const range = referenceRangeOnDate(
+      test,
+      generateAthleteProfile(),
+      "2015-01-01",
+    );
+
+    expect(range).toBeNull();
+  });
+
+  it("returns null when the athlete has no position", () => {
+    const test = generateSportTest("FAKE_TEST", [aged13To14]);
+
+    const range = referenceRangeOnDate(
+      test,
+      generateAthleteProfile({ position: undefined }),
+      "2027-06-14",
+    );
+
+    expect(range).toBeNull();
   });
 });

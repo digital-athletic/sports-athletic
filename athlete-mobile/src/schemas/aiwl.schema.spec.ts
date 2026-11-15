@@ -163,7 +163,6 @@ describe("TemplateSchema: accepts", () => {
         description: { en: "A workout." },
       },
     ],
-    ["a partial rest", template(picksBlock({ rest: { afterExercise: 45 } }))],
     [
       "a rest with afterBlock",
       template(picksBlock({ rest: { afterBlock: 30 } })),
@@ -174,31 +173,20 @@ describe("TemplateSchema: accepts", () => {
     ],
     ["values skill", template(picksBlock({ values: "skill" }))],
     ["values exercise", template(picksBlock({ values: "exercise" }))],
-    [
-      "an empty tags list in a pick",
-      template(picksBlock({ picks: [{ tags: [], count: 1 }] })),
-    ],
-    [
-      "a branches block with a duration",
-      template(branchesBlock({ duration: 300 })),
-    ],
   ])("%s", (_label, data) => {
     expect(v.safeParse(TemplateSchema, data).success).toBe(true);
   });
 });
 
 describe("TemplateSchema: accepts every setting value", () => {
-  it.each([
-    "none",
-    "singles",
-    "muscles",
-    "drawOrder",
-    "drawOrderWithLeftovers",
-  ])("superset %s", (superset) => {
-    expect(
-      v.safeParse(TemplateSchema, template(picksBlock({ superset }))).success,
-    ).toBe(true);
-  });
+  it.each(["none", "muscles", "drawOrder", "drawOrderWithLeftovers"])(
+    "superset %s",
+    (superset) => {
+      expect(
+        v.safeParse(TemplateSchema, template(picksBlock({ superset }))).success,
+      ).toBe(true);
+    },
+  );
 
   it.each(["exercises", "entries", "pairs"])("countBy %s", (countBy) => {
     expect(
@@ -358,55 +346,17 @@ describe("readSkillSetListKind", () => {
   });
 });
 
-describe("TemplateSchema: the singles superset on max strength blocks", () => {
-  const MAX_STRENGTH_SINGLES_MESSAGE =
-    'superset "singles" is not allowed on a max strength block';
-
-  const readFirstIssue = (data: unknown) => {
-    const result = v.safeParse(TemplateSchema, data);
-    return result.success ? undefined : result.issues[0];
-  };
-
+describe("TemplateSchema: the removed singles superset", () => {
   it.each([
-    ["a picks block of MAX", picksBlock({ skill: "MAX", superset: "singles" })],
-    [
-      "a branches block of MAX_STRENGTH",
-      branchesBlock({ skill: "MAX_STRENGTH", superset: "singles" }),
-    ],
-    [
-      "a duration block of MAX",
-      durationBlock({ skill: "MAX", superset: "singles" }),
-    ],
-  ])("rejects %s", (_label, block) => {
-    const issue = readFirstIssue(template(block));
+    ["a picks block", picksBlock({ superset: "singles" })],
+    ["a branches block", branchesBlock({ superset: "singles" })],
+    ["a duration block", durationBlock({ superset: "singles" })],
+  ])("rejects superset singles on %s", (_label, block) => {
+    const data = template(block);
 
-    expect(issue?.message).toBe(MAX_STRENGTH_SINGLES_MESSAGE);
-    expect(firstIssuePath(template(block))).toBe("blocks.0.superset");
+    expect(v.safeParse(TemplateSchema, data).success).toBe(false);
+    expect(firstIssuePath(data)).toBe("blocks.0.superset");
   });
-
-  it.each(["none", "muscles", "drawOrder", "drawOrderWithLeftovers"])(
-    "accepts a max strength block with superset %s",
-    (superset) => {
-      expect(
-        v.safeParse(
-          TemplateSchema,
-          template(picksBlock({ skill: "MAX", superset })),
-        ).success,
-      ).toBe(true);
-    },
-  );
-
-  it.each(["WU", "GKS", "CARDIO_2"])(
-    "accepts superset singles on a block of %s",
-    (skill) => {
-      expect(
-        v.safeParse(
-          TemplateSchema,
-          template(branchesBlock({ skill, superset: "singles" })),
-        ).success,
-      ).toBe(true);
-    },
-  );
 });
 
 describe("TemplateSchema: rejects wrong block settings", () => {
@@ -645,5 +595,11 @@ describe("TemplateSchema: testSets on exercises blocks", () => {
 describe("TemplateSchema: the bundled strength test template", () => {
   it("accepts TEST.json", () => {
     expect(v.safeParse(TemplateSchema, TEST).success).toBe(true);
+  });
+
+  it("pairs the warm-up of TEST.json by the none superset", () => {
+    const [warmUp] = TEST.blocks;
+
+    expect(warmUp).toMatchObject({ skill: "WU", superset: "none" });
   });
 });

@@ -35,7 +35,7 @@ type TimingFields = {
   startRepetitions?: number;
   startDuration?: number;
   // Block defaults: a block overrides them with fields of the same name.
-  superset?: "none" | "singles" | "muscles" | "drawOrder" | "drawOrderWithLeftovers";
+  superset?: "none" | "muscles" | "drawOrder" | "drawOrderWithLeftovers";
   sets?: number;
   rest?: {
     withinSuperset: number;
@@ -59,7 +59,7 @@ type SkillTreeEntry = TimingFields & {
 type TimingEntry = TimingFields;
 ```
 
-`FocusArea` comes from `src/schemas/sync.schema.ts`. `rest` sets all three values, so a partial rest fails the load. `rest.afterBlock` is optional: it sets the closing rest of the skill's block in templates and plan workouts. Only `WUSPEZIAL` sets it, to 30 s.
+`FocusArea` comes from `src/schemas/sync.schema.ts`. `rest` sets all three values, so a partial rest fails the load. `rest.afterBlock` is optional: it sets the closing rest of the skill's block in templates, training days and plan workouts. The block timing reads it after the block's own `afterBlock`; without either, the block closes on `rest.afterExercise`. Only `WUSPEZIAL` sets it, to 30 s.
 
 A skill catalog entry either names a skill tree or is timing-only:
 
@@ -73,7 +73,7 @@ A skill catalog entry either names a skill tree or is timing-only:
   A picks block accepts only these 25 skills; a picks block on any other skill fails with `NO_EXERCISES/SKILL_TREE`. The 11 training day entries set no `focusArea` and no `progression`, so the stats credit the area of `mapSkillCodeToFocusArea` and progression stays on, as on training days. Plyometrics credit no area, as `PLYO` on training days.
 - **Timing-only.** The 12 training day skills without a picks block: power endurance (`SA`, `SAKG`, `SAS`, `SASKG`), `GKSKG`, the six cardio zones, and `PLYO`, the code the plan generator stores plyometrics under. Their skill trees stay with `getSkillTree`. A timing-only entry sets none of `skillTree`, `focusArea`, `progression`, `painRegions`, `countBy`, and `fallbackToWholeTree`.
 
-An entry defines `sets` and `rest` together or neither. Every bundled entry defines both, together with `superset`, so a timing change is a data edit. The six cardio zones store the sets, superset `none` and rests of their training day blocks. The max strength builder ignores sets and rests, but `MAX` and `MAX_STRENGTH` set the training day values, 4 sets and rests of 10, 10 and 180 s, because a picks block resolves its timing from the catalog. `PLYO`, `PLYO_HIGH` and `PLYO_MEDIUM` set the same values: 2 sets, superset by muscles, rests of 60, 180 and 60 s.
+An entry defines `sets` and `rest` together or neither. Every bundled entry defines both, together with `superset`, so a timing change is a data edit. The six cardio zones store the sets, superset `none` and rests of their training day blocks. A cardio block reads none of these three: it needs no superset, because it pairs nothing, and the generator logs a warning for a cardio block that sets them. The max strength builder ignores sets and rests, but `MAX` and `MAX_STRENGTH` set the training day values, 4 sets and rests of 10, 10 and 180 s, because a picks block resolves its timing from the catalog. `PLYO`, `PLYO_HIGH` and `PLYO_MEDIUM` set the same values: 2 sets, superset by muscles, rests of 60, 180 and 60 s.
 
 ### Skill properties
 

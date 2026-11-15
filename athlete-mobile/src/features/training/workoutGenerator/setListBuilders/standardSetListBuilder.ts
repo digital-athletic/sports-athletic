@@ -18,7 +18,6 @@ import {
   readExerciseStartValues,
 } from "../exerciseValues/exerciseStartValues";
 import type { SetListBlock, SkillSetListBuilder } from "./setListBuilder";
-import { readSkillCatalogEntry } from "../generationInput/skillCatalogEntry";
 
 // The exercise ID of a branch that resolved to no exercise.
 const UNRESOLVED_EXERCISE_ID = "-1";
@@ -28,7 +27,6 @@ interface StandardSetListContext {
   block: SetListBlock;
   source: ExerciseStartValueSource;
   exerciseMap: ExerciseMap;
-  catalogAfterBlock: number | undefined;
 }
 
 interface StartValuePair {
@@ -80,15 +78,13 @@ const trainsSameRegionAndPrimaryMuscle = (
 const readClosingRest = (
   pairs: readonly ExercisePair[],
   index: number,
-  { block, exerciseMap, catalogAfterBlock }: StandardSetListContext,
+  { block, exerciseMap }: StandardSetListContext,
 ): number => {
   const nextPair = pairs
     .slice(index + 1)
     .find((pair) => isBuildablePair(pair, exerciseMap));
   if (!nextPair) {
-    return (
-      block.rest.afterBlock ?? catalogAfterBlock ?? block.rest.afterExercise
-    );
+    return block.rest.afterBlock ?? block.rest.afterExercise;
   }
   return trainsSameRegionAndPrimaryMuscle(pairs[index], nextPair)
     ? block.rest.betweenSets
@@ -221,9 +217,8 @@ const buildPairSetList = (
 /**
  * Builds the sets of a standard block: per pair an optional warm-up set, then
  * the block's sets with their rests. Pairs with an unresolved exercise or a
- * lead missing from the catalog build nothing. Without `rest.afterBlock` the
- * last pair closes on the skill catalog entry's afterBlock, then on
- * `rest.afterExercise`.
+ * lead missing from the catalog build nothing. The last pair closes on the
+ * resolved `rest.afterBlock`, else on `rest.afterExercise`.
  */
 export const buildStandardSetList: SkillSetListBuilder = (
   pairs,
@@ -238,8 +233,6 @@ export const buildStandardSetList: SkillSetListBuilder = (
       storedProgress: input.exerciseData,
     },
     exerciseMap: createExerciseMap(input.exerciseCatalog),
-    catalogAfterBlock: readSkillCatalogEntry(input.skillCatalog, block.skill)
-      ?.rest?.afterBlock,
   };
   return pairs.flatMap((pair, index) => {
     const values = readPairStartValues(pair, context);

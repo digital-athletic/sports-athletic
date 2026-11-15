@@ -15,7 +15,7 @@
       "countBy": "exercises",
       "fallbackToWholeTree": true,
       "sets": 1,
-      "superset": "singles",
+      "superset": "none",
       "setDuration": 60,
       "rest": {
         "withinSuperset": 10,

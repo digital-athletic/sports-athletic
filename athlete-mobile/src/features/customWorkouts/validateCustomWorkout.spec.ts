@@ -296,7 +296,7 @@ describe("validateCustomWorkoutText: unsupported content", () => {
     expect(result).toEqual({ success: false, error: "UNSUPPORTED_CONTENT" });
   });
 
-  it("returns UNSUPPORTED_CONTENT for order on a picks block", () => {
+  it("accepts order on a picks block", () => {
     const template = generateTemplateWithBlock({
       kind: "picks",
       skill: "GKS",
@@ -309,7 +309,7 @@ describe("validateCustomWorkoutText: unsupported content", () => {
       getAllSkillTrees(),
     );
 
-    expect(result).toEqual({ success: false, error: "UNSUPPORTED_CONTENT" });
+    expect(result.success).toBe(true);
   });
 
   it("returns UNSUPPORTED_CONTENT when only the weighted picks have an unknown tag", () => {
@@ -562,6 +562,17 @@ describe("isTemplateRunnable: cardio duration blocks", () => {
     });
 
     expect(isTemplateRunnable(template, getAllSkillTrees())).toBe(false);
+  });
+
+  it("returns true for a cardio duration block with order", () => {
+    const template = generateTemplateWithBlock({
+      kind: "duration",
+      skill: "CARDIO_2",
+      duration: 1200,
+      order: "asDrawn",
+    });
+
+    expect(isTemplateRunnable(template, getAllSkillTrees())).toBe(true);
   });
 
   it("returns false for a cardio zone without a tree", () => {

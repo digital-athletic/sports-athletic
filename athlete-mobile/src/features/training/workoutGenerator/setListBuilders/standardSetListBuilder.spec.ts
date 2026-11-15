@@ -148,6 +148,12 @@ describe("standardSetListBuilder: closing the block", () => {
     ["an afterBlock of 0", "SWR2", { afterBlock: 0 }, 0],
     ["the block's afterBlock first", "WUSPEZIAL", { afterBlock: 5 }, 5],
     ["the rest after an exercise without afterBlock", "SWR2", {}, 60],
+    [
+      "the rest after an exercise where only the skill catalog sets afterBlock",
+      "WUSPEZIAL",
+      {},
+      60,
+    ],
   ] as const)("closes the last pair on %s", (_label, skill, rest, closing) => {
     const { chest, quads } = generateBodyweightReferences();
     const block = generateSetListBlock(skill);
@@ -172,7 +178,7 @@ describe("standardSetListBuilder: closing the block", () => {
     expect(listPauseDurations(setList)).toEqual([90, 40]);
   });
 
-  it("reads afterBlock from the skill catalog of the generation input", () => {
+  it("ignores the afterBlock of the skill catalog of the generation input", () => {
     const { chest } = generateBodyweightReferences();
     const exerciseCatalog = generateReferenceCatalog([chest]);
     const input = generateRuleFamilyInput({ exerciseCatalog });
@@ -189,7 +195,7 @@ describe("standardSetListBuilder: closing the block", () => {
       { ...input, skillCatalog },
     );
 
-    expect(listPauseDurations(setList)).toEqual([90, 45]);
+    expect(listPauseDurations(setList)).toEqual([90, 60]);
   });
 });
 

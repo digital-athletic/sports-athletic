@@ -13,7 +13,6 @@ describe("trainingDayTiming: readTrainingDayTimingDefaults", () => {
     ["CARDIO_5", 1, "none", [10, 10, 10]],
     ["WU", 1, "muscles", [10, 10, 30]],
     ["WUSKSA", 1, "muscles", [30, 30, 30]],
-    ["WUSPEZIAL", 1, "muscles", [10, 10, 10]],
     ["MOB", 1, "muscles", [10, 10, 10]],
     ["BR", 1, "muscles", [10, 10, 10]],
     ["CD", 1, "muscles", [10, 10, 10]],
@@ -44,6 +43,50 @@ describe("trainingDayTiming: readTrainingDayTimingDefaults", () => {
       });
     },
   );
+
+  it("passes the afterBlock of the skill catalog through", () => {
+    expect(
+      readTrainingDayTimingDefaults("WUSPEZIAL", loadSkillCatalog()),
+    ).toEqual({
+      sets: 1,
+      superset: "muscles",
+      rest: {
+        withinSuperset: 10,
+        betweenSets: 10,
+        afterExercise: 10,
+        afterBlock: 30,
+      },
+    });
+  });
+
+  it("reads a changed afterBlock of the skill catalog", () => {
+    const skillCatalog = {
+      ...loadSkillCatalog(),
+      BAS: generateTreeCatalogEntry({
+        sets: 3,
+        superset: "none",
+        rest: {
+          withinSuperset: 20,
+          betweenSets: 40,
+          afterExercise: 50,
+          afterBlock: 70,
+        },
+      }),
+    };
+
+    expect(readTrainingDayTimingDefaults("BAS", skillCatalog).rest).toEqual({
+      withinSuperset: 20,
+      betweenSets: 40,
+      afterExercise: 50,
+      afterBlock: 70,
+    });
+  });
+
+  it("sets no afterBlock for a skill whose catalog entry sets none", () => {
+    expect(
+      readTrainingDayTimingDefaults("SWR2", loadSkillCatalog()).rest.afterBlock,
+    ).toBeUndefined();
+  });
 
   it("reads a changed skill catalog entry", () => {
     const skillCatalog = {

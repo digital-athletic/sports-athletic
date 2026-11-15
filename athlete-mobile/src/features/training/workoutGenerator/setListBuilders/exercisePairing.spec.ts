@@ -173,37 +173,25 @@ describe("exercisePairing: pairBranchExercises without muscle pairing", () => {
     ).toEqual([["ea", "ez"], ["eo", "eoRight"], ["eb"], ["ep", "epRight"]]);
   });
 
-  it("trains every exercise alone in draw order, without its other side, for singles", () => {
+  it("pairs a one sided exercise with its other side for the none superset", () => {
     const { chest, latissimus } = generateUpperBodyReferences();
     const lunge = generateOneSidedReference("lunge", [
       "MUSCLE_QUADRICEPS",
       "REGION_LOWER_BODY",
     ]);
     const branches = [chest, lunge, latissimus];
-    const random = jest.fn(generateSequenceRandom([]));
 
     const pairs = pairBranchExercises(
       branches,
       generateReferenceCatalog(branches),
-      "singles",
-      random,
-    );
-
-    expect(listPairExerciseIds(pairs)).toEqual([["ec"], ["elunge"], ["el"]]);
-    expect(random).not.toHaveBeenCalled();
-  });
-
-  it("keeps a singles exercise missing from the catalog", () => {
-    const { chest } = generateUpperBodyReferences();
-
-    const pairs = pairBranchExercises(
-      [chest],
-      [],
-      "singles",
+      "none",
       generateSequenceRandom([]),
     );
 
-    expect(listPairExerciseIds(pairs)).toEqual([["ec"]]);
+    expect(listPairExerciseIds(pairs)).toContainEqual([
+      "elunge",
+      "elungeRight",
+    ]);
   });
 
   it("pairs two exercises that follow each other in draw order", () => {

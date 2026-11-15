@@ -17,8 +17,8 @@ export interface SetListBlock {
   // builder's length.
   readonly minutes: number;
   readonly sets: number;
-  // The caller passes only the block's own afterBlock, never the catalog's,
-  // because the builder applies the catalog fallback itself.
+  // afterBlock is the block's own value, else the skill catalog's; without
+  // either, the block closes on afterExercise.
   readonly rest: CatalogRest;
   readonly setDuration?: number;
   readonly values?: BlockValues;
@@ -49,7 +49,7 @@ export type ExercisesBlockSetting = Exclude<
  * data its builder needs, so the set list stage passes none.
  */
 export interface PrescribedSetListBuilder {
-  // The block settings the builder reads; a block setting any other fails.
+  // The block settings the builder reads; a block setting any other warns.
   readonly blockSettings: readonly ExercisesBlockSetting[];
   readonly build: (
     exercises: readonly PrescribedExerciseReference[],

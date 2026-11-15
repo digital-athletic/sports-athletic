@@ -62,14 +62,13 @@ Power endurance (`SA`, `SAKG`, `SAS`) has no picks block yet. The [skill catalog
 
 [ADR: Workout generator architecture](./workout-generator-architecture.md#stored-workouts) describes how a training day reads its stored branches and lists the compatibility exceptions. The [strength test source](./workout-generator-architecture.md#strength-test-source) authors the protocol of the old strength test in `TEST.json`, and the router does not call it yet.
 
-The schema accepts four parts a short workout rejects with `OTHER/BLOCK_KIND`:
+The schema accepts three parts a short workout rejects with `OTHER/BLOCK_KIND`:
 
 1. the `duration` block of a skill other than a cardio zone, until a follow-up implements it
-2. the `order` field of any block, until a follow-up implements it
-3. the `bodyParts` field of a picks or duration block, until a follow-up implements it
-4. the `exercises` block, which only the strength test source runs
+2. the `bodyParts` field of a picks or duration block, until a follow-up implements it
+3. the `exercises` block, which only the strength test source runs
 
-A stored day workout holds none of them, so the check fires for short workouts only.
+A stored day workout holds none of them, so the check fires for short workouts only. The `order` field passes the check; the generator ignores it and logs a warning.
 
 ## Schema
 
@@ -112,7 +111,7 @@ type BlockBase = {
   order?: "asDrawn" | "muscleGroups";
   countBy?: "exercises" | "entries" | "pairs";
   fallbackToWholeTree?: boolean;
-  superset?: "none" | "singles" | "muscles" | "drawOrder" | "drawOrderWithLeftovers";
+  superset?: "none" | "muscles" | "drawOrder" | "drawOrderWithLeftovers";
   sets?: number;
   setDuration?: number;
   values?: "skill" | "exercise";
@@ -163,7 +162,7 @@ The workout has no total time field. Its length is the sum of the block duration
 | `skill` | yes | | Skill code of the skill catalog. Selects skill tree, intensity, set list builder, and defaults. | A block trains one skill, and the skill code names it. The catalog supplies the values the block omits. |
 | `picks` | in a picks block | | Branches to draw from the skill tree, by tags and count. A list applies at every training place. `{ withWeights, withoutWeights }` gives a training place with weights and one without its own list, with the same keys as the catalog's `skillTree`. | All 13 bundled trainings draw by tags and counts. Full-body stability uses the two-list form: 4 entries with weights, 3 upper body + 2 full body entries without. |
 | `duration` | in a duration block; optional in a branches block | | Cardio duration block: the length the cardio builder fills. Any other duration block: the length whose minutes the [minutes table](#minutes-table) chooser reads. Branches block: the planned length, which the preview shows. | Plan creation stores minutes per skill, a trainer sets minutes per skill, and the cardio builder fills a length. |
-| `order` | no | `asDrawn` | Order of the block's exercises. `asDrawn` keeps the order in which the block drew them. `muscleGroups` sorts them per [Exercise order inside a skill](./exercise-order.md): alternating body regions, big muscle groups first inside a region, max strength lower body first. The blocks themselves always run in template order. The generator rejects `order` with `BLOCK_KIND` until a follow-up supports it. | Training days sort by muscle groups, and focus trainings keep the drawn order. One skill appears in both, so the catalog cannot store one value. |
+| `order` | no | `asDrawn` | Order of the block's exercises. `asDrawn` keeps the order in which the block drew them. `muscleGroups` sorts them per [Exercise order inside a skill](./exercise-order.md): alternating body regions, big muscle groups first inside a region, max strength lower body first. The blocks themselves always run in template order. The generator does not read `order` yet: it orders the exercises by its own rule and logs a warning. | Training days sort by muscle groups, and focus trainings keep the drawn order. One skill appears in both, so the catalog cannot store one value. |
 | `bodyParts` | no, in a picks or duration block | all | The body parts the block trains, at two levels of detail. See [generation](#generation), step 3. The generator rejects `bodyParts` with `BLOCK_KIND` until a follow-up supports it. | A trainer restricts a block to parts of the body, so three blocks of one workout can train three different muscles. One field holds both levels, so one filter rule covers them. |
 | `bodyParts.regions` | no | all | Body regions. `upperBody`, `lowerBody`, `core`, and `fullBody` stand for the region tags `REGION_UPPER_BODY`, `REGION_LOWER_BODY`, `REGION_CORE`, and `REGION_FULL_BODY`. | The trainer picks body regions. |
 | `bodyParts.muscles` | no | all | Muscles, for example glutes and hamstrings. | A trainer can build a block for single muscles. No bundled training sets it. |
@@ -178,8 +177,8 @@ The workout has no total time field. Its length is the sum of the block duration
 | `rest.withinSuperset` | no | catalog | Seconds of rest after each exercise of a superset pair, before its partner. | A block without it rests like a training day block of its skill. |
 | `rest.betweenSets` | no | catalog | Seconds of rest between the sets of a single exercise. | Same as `rest.withinSuperset`. |
 | `rest.afterExercise` | no | catalog | Seconds of rest after the last set of an exercise or pair. The generator uses `betweenSets` instead when the next exercise trains the same region and primary muscle. | Focus trainings rest less than training days: warm-up 10 s instead of 30 s, leg axis stability 30 s instead of 60 s, full-body stability 45 s instead of 60 s. |
-| `rest.afterBlock` | no | catalog `rest.afterBlock`, then `rest.afterExercise` | Seconds of rest between this block and the next block. It replaces the closing rest of the block's last exercise or pair. The last block of a workout has no trailing rest. The `WUSPEZIAL` catalog entry sets 30 s, so the special warm-up ends with 30 s in prevention trainings and in plan workouts, whatever block follows. | The special warm-up rests 30 s before the next block, while its own exercises rest 10 s. Plan workouts pass no template, so the catalog carries the value for both paths. |
-| `superset` | no | catalog | `none`: no pairs. `singles`: each exercise trains alone, without its other side, in draw order; a max strength block rejects it. `muscles`: pairs opposing muscles. `drawOrder`: pairs neighbours in the order the block drew them; an exercise without a free neighbour trains alone. `drawOrderWithLeftovers`: pairs like `drawOrder`, then pairs the exercises that train alone with each other. Outside `singles`, a one-sided exercise always pairs with its other side. | Training days pair by muscles. Warm-up, mobility, foam roller, and cool-down trainings use `none`, prevention trainings `drawOrderWithLeftovers`, and leg axis stability `drawOrder`. The strength test warm-up uses `singles`. |
+| `rest.afterBlock` | no | catalog `rest.afterBlock`, then `rest.afterExercise` | Seconds of rest between this block and the next block. The block timing resolves the block value, then the catalog value of the same skill; without either, the set list builder closes on `rest.afterExercise`. It replaces the closing rest of the block's last exercise or pair. The last block of a workout has no trailing rest. The `WUSPEZIAL` catalog entry sets 30 s, so the special warm-up ends with 30 s in prevention trainings and in plan workouts, whatever block follows. | The special warm-up rests 30 s before the next block, while its own exercises rest 10 s. Plan workouts pass no template, so the catalog carries the value for both paths. |
+| `superset` | no | catalog, then `none` for a cardio zone | The value states how exercises pair. `none`: no pairs. `muscles`: pairs opposing muscles. `drawOrder`: pairs neighbours in the order the block drew them; an exercise without a free neighbour trains alone. `drawOrderWithLeftovers`: pairs like `drawOrder`, then pairs the exercises that train alone with each other. Every value trains the other side of a one-sided exercise right after it. A max strength block always pairs by `none`, so the generator ignores any other value there and logs a warning. A cardio block pairs nothing, so the generator ignores every value there and logs a warning. | Training days pair by muscles. Warm-up, mobility, foam roller, and cool-down trainings use `none`, prevention trainings `drawOrderWithLeftovers`, and leg axis stability `drawOrder`. The strength test warm-up uses `none`. |
 
 ### Picks and tags
 
@@ -245,7 +244,7 @@ Minutes keys of the `default` variant:
 
 The generator turns a template into a set list for one athlete. It resolves every block first, from the skill catalog and the training place. Then it applies the athlete's rules to the union of the picks block pools and runs the blocks in template order. A picks block skips every branch an earlier block of the workout used, so a drawn branch repeats no earlier branch. A branches block keeps its list, even when an earlier block used one of its branches.
 
-Status: the generator runs `picks`, `branches` and cardio `duration` blocks, alone or mixed. A duration block of any other skill, the `order` field of any block, and the `bodyParts` field of a picks or duration block are accepted by the schema and rejected with error `OTHER/BLOCK_KIND`. The params name the block path and the kind or field, for example `["GKS.blocks[0]", "order"]`.
+Status: the generator runs `picks`, `branches` and cardio `duration` blocks, alone or mixed. A duration block of any other skill and the `bodyParts` field of a picks or duration block are accepted by the schema and rejected with error `OTHER/BLOCK_KIND`. The params name the block path and the kind or field, for example `["GKS.blocks[0]", "bodyParts"]`. A setting the set list builder of the block's skill does not read builds the same set list as a block without it, and the generator logs one warning per block that names the skill and the ignored settings, for example `MAX: the generator ignores order, sets`. The `order` field is ignored on every block; `countBy` and `fallbackToWholeTree` outside picks blocks; `superset` other than `none`, `sets`, `setDuration`, `values` and `rest` on max strength blocks; `superset`, `sets` and `rest` on cardio blocks, and `setDuration` and `values` on the steady zones `CARDIO_4` and `CARDIO_5`. `duration` is never reported, because a training day stores it on every branches block.
 
 1. **Pool.** Each block's pool holds the branches of its skill's trees for the training place: the `withWeights` names when the place has weights, the `withoutWeights` names otherwise. Tree names are literal. For example, `STABILITY` without weights reads `GKS`. A special warm-up block (`WUSPEZIAL`) narrows its tree to the pain regions of the workout's prevention skills, which are the skills of the blocks whose catalog focus area is `PREVENTION`. Without `fallbackToWholeTree`, the pool keeps only the branches that match at least one pick of the block. A block whose pool ends up empty aborts the workout with `NO_EXERCISES/SKILL_TREE` and the block's skill code.
    - A pick that matches no branch draws nothing. No runtime check throws for it. `loadTemplates.spec.ts` asserts that every bundled block matches a branch at both training places, so that guard applies to bundled data only.
@@ -261,9 +260,9 @@ Status: the generator runs `picks`, `branches` and cardio `duration` blocks, alo
    - A cardio duration block draws one branch of its zone's tree, as plan creation stores one branch per cardio day. The draw takes a branch that the athlete's pains, age group, gender, muscle soreness, equipment and level allow, then runs the branches block rules below on it. Without an allowed branch, the block hands on a blocked one and the branches block rules treat it as a training day treats a blocked stored branch: lower body soreness, for example, swaps the block for the CARDIO_5 run of at most 20 minutes. The cardio builder fills the block's `duration`.
    - Any other duration block runs the [minutes table](#minutes-table) chooser. Not yet supported.
    - A branches block keeps its list. The branch lookup index supplies each branch, and the generator drops a listed branch the athlete's pains, age group or gender rule out, as plan creation does before it stores a branch. When a rule drops every listed branch, the workout aborts with `NO_EXERCISES` and the subtype of that rule (`PAIN`, `AGE`, or `GENDER`), as for the picks pool in step 2. The block then runs the rules of [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session): soreness, equipment and level filters, the [duplicate exercise](./duplicate-exercises.md) check inside the block, and the replacement of blocked branches. Each timing value comes from the block, else from the skill catalog entry, else from 2 sets, a superset by muscles and 10 s rests.
-5. **Order.** The exercises keep the order in which the block drew them. `order: "muscleGroups"` is not yet supported.
+5. **Order.** The exercises keep the order in which the block drew them. The generator ignores the `order` field and logs a warning.
 6. **Branch level.** Every branch resolves to the exercise of the athlete's branch level. A branch whose exercise the workout already holds is skipped, so no exercise repeats.
-7. **Set list.** The block's `superset` pairs its exercises: `none`, `singles`, `muscles`, `drawOrder`, or `drawOrderWithLeftovers`. `sets` and `setDuration` come from the block, and a block's `rest` fields override the catalog's `rest` field by field. The set list builder then emits the sets.
+7. **Set list.** The block's `superset` pairs its exercises: `none`, `muscles`, `drawOrder`, or `drawOrderWithLeftovers`. Each value trains the other side of a one-sided exercise. A cardio block needs no `superset`, because it pairs nothing. `sets` and `setDuration` come from the block, and a block's `rest` fields override the catalog's `rest` field by field, `afterBlock` included. The set list builder then emits the sets.
 
 The preview estimates a block's length from the generated set list: all work and rest entries, with a repetition counted as 5 seconds. A single exercise takes sets × set duration + (sets − 1) × `betweenSets` + one closing rest. The last exercise of the workout has no closing rest.
 
@@ -329,7 +328,7 @@ The special warm-up block draws 3 exercises from `WUSPEZIAL`, narrowed to the sh
 
 This example shows the target stored format: one branches block per skill, in the plan's section order. The skill defaults supply sets, rests, and supersets.
 
-Training days do not store AIWL yet. With the AIWL generator flag on, the generator writes the stored branch entries and minutes as branches blocks of this shape at generation time, without the `order` field. The training day finish rules sort the exercises by muscle groups instead. The generator rejects `order` with `BLOCK_KIND` until a follow-up implements it.
+Training days do not store AIWL yet. With the AIWL generator flag on, the generator writes the stored branch entries and minutes as branches blocks of this shape at generation time, without the `order` field. The training day finish rules sort the exercises by muscle groups instead. A block that sets `order` builds the same set list and logs a warning.
 
 ```json
 {
@@ -418,7 +417,7 @@ AIWL follows none of them. The set list the generator produces fits fixed steps 
 - Pro: one format for bundled trainings, training days, and trainer workouts. The generator reads the bundled trainings through it today, and training days behind the AIWL generator flag.
 - Pro: the AIWL path reproduces the 13 bundled trainings, except BR at a place without foam roller or foam ball.
 - Pro: templates stay short, since the skill catalog supplies the skill values.
-- Con: the generator supports picks, branches and cardio duration blocks only. Other duration blocks, and the `order` and `bodyParts` fields, fail with `BLOCK_KIND` until a follow-up implements them.
+- Con: the generator supports picks, branches and cardio duration blocks only. Other duration blocks and the `bodyParts` field fail with `BLOCK_KIND` until a follow-up implements them. The `order` field and the other settings a builder does not read only log a warning, so a template author learns about them in development builds only.
 - Con: training days still store branch entries and minutes. The generator runs them as a stored day workout, and only with the AIWL generator flag on. With the flag off, training days run the old path.
 - Con: `duration` means a length or a minutes table key, depending on the block type.
 - Con: the generator picks `afterExercise` or `betweenSets` for the rest after an exercise, by the next exercise. A template that wants one rest after every exercise sets both fields to the same value.

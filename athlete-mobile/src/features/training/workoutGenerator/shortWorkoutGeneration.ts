@@ -50,8 +50,9 @@ const SHORT_WORKOUT_HANDLERS: BlockHandlerRegistry = {
 /**
  * Generates a short workout from its template. A template without blocks
  * throws the pain error of an empty pool, whatever the athlete's pains. A
- * duration block of a skill other than a cardio zone, an `order` field or
- * `bodyParts` throws OTHER/BLOCK_KIND before any picks workout rule runs.
+ * duration block of a skill other than a cardio zone or `bodyParts` throws
+ * OTHER/BLOCK_KIND before any picks workout rule runs; an `order` field is
+ * ignored with a warning.
  * Picks, branches and cardio duration blocks then run in template order, and
  * an empty block adds nothing. A workout that draws no exercise throws the
  * error of its first empty block.

@@ -5,6 +5,7 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
+import { describeSetListEntries } from "@test/factories/setListDescription";
 import { validateCustomWorkoutValue } from "./validateCustomWorkout";
 
 const SEEDS = Array.from({ length: 30 }, (_, index) => index + 1);
@@ -110,5 +111,120 @@ describe("builder template count: SWR1 pairing without equipment", () => {
     const runs = runIds("SWR1", [], "entries");
 
     expect(runs.some(hasOtherSidePair)).toBe(true);
+  });
+});
+
+// Locks the set list of a template as the trainer web builder writes it, for a
+// fixed seed: the same template must keep generating the same rows.
+describe("builder template: generated set list lock", () => {
+  const generateSetList = (blocks: unknown[]) => {
+    const parsed = validateCustomWorkoutValue(
+      { ...builderTemplate("PREV"), blocks },
+      getAllSkillTrees(),
+    );
+    if (!parsed.success) throw new Error("builder template is invalid");
+    return describeSetListEntries(
+      generateShortWorkoutFromTemplate(
+        parsed.template,
+        generateRuleFamilyInput({
+          exerciseCatalog: loadExercises(),
+          equipment: [],
+          random: generateSeededRandom(7),
+        }),
+        getAllSkillTrees(),
+      ),
+    );
+  };
+
+  it("keeps the set list of a picks block with countBy entries", () => {
+    expect(
+      generateSetList([
+        {
+          kind: "picks",
+          skill: "PREV",
+          countBy: "entries",
+          picks: [{ tags: ["PREVENTION_SHOULDER"], count: 4 }],
+        },
+      ]),
+    ).toEqual([
+      "126 1/2",
+      "pause 30",
+      "825 1/2",
+      "pause 30",
+      "126 2/2",
+      "pause 30",
+      "825 2/2",
+      "pause 60",
+      "247 1/2",
+      "pause 30",
+      "866 1/2",
+      "pause 30",
+      "247 2/2",
+      "pause 30",
+      "866 2/2",
+    ]);
+  });
+
+  it("keeps the set list of a picks block without countBy", () => {
+    expect(
+      generateSetList([
+        {
+          kind: "picks",
+          skill: "PREV",
+          picks: [{ tags: ["PREVENTION_SHOULDER"], count: 4 }],
+        },
+      ]),
+    ).toEqual([
+      "126 1/2",
+      "pause 30",
+      "825 1/2",
+      "pause 30",
+      "126 2/2",
+      "pause 30",
+      "825 2/2",
+      "pause 60",
+      "1188 1/2",
+      "pause 60",
+      "1188 2/2",
+      "pause 60",
+      "1061 1/2",
+      "pause 60",
+      "1061 2/2",
+      "pause 60",
+      "541 1/2",
+      "pause 30",
+      "946 1/2",
+      "pause 30",
+      "541 2/2",
+      "pause 30",
+      "946 2/2",
+      "pause 60",
+      "247 1/2",
+      "pause 30",
+      "866 1/2",
+      "pause 30",
+      "247 2/2",
+      "pause 30",
+      "866 2/2",
+    ]);
+  });
+
+  it("keeps the set list of a cardio duration block", () => {
+    expect(
+      generateSetList([
+        { kind: "duration", skill: "CARDIO_2", duration: 1200 },
+      ]),
+    ).toEqual([
+      "38 1/1",
+      "42 1/4",
+      "39 1/4",
+      "42 2/4",
+      "39 2/4",
+      "42 3/4",
+      "39 3/4",
+      "42 4/4",
+      "39 4/4",
+      "38 1/1",
+    ]);
   });
 });

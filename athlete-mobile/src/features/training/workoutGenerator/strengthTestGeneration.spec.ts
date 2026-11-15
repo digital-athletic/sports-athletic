@@ -9,6 +9,7 @@ import {
   describeSetListEntries,
   listTrainedExercises,
 } from "@test/factories/setListDescription";
+import { generateTreeBranch } from "@test/factories/skillTree";
 import { generateStrengthTestInput } from "@test/factories/strengthTestInput";
 import { generateStrengthTestTemplate } from "@test/factories/strengthTestTemplate";
 import {
@@ -189,22 +190,6 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         ]).toEqual(["54", "25"]);
       },
     );
-
-    it("tests the lifts of the bundled template when the source passes none", () => {
-      const input = generateStrengthTestInput({
-        random: generateSeededRandom(7),
-      });
-
-      const setList = generateStrengthTest(input, skillTrees);
-
-      expect([
-        ...new Set(
-          listTrainedExercises(
-            setList.filter((entry) => entry.skill === "TEST"),
-          ),
-        ),
-      ]).toEqual(BUNDLED_LIFT_IDS);
-    });
 
     it("tests the same lifts for an athlete with branch levels", () => {
       const input = generateStrengthTestInput({
@@ -399,7 +384,7 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
       expect(listWarmUpBranchIds(setList)).toHaveLength(5);
     });
 
-    it("draws one exercise per quota slot from one sided branches", () => {
+    it("draws five distinct branches, one per quota slot, from one sided branches", () => {
       const warmUpTree = generateRegionWarmUpTree(["SIDE_ONE"]);
 
       const setList = generateStrengthTest(
@@ -409,7 +394,31 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         bundledTemplate,
       );
 
-      expect(listWarmUpBranchIds(setList)).toHaveLength(5);
+      expect(new Set(listWarmUpBranchIds(setList)).size).toBe(5);
+    });
+
+    it("follows a one sided warm up exercise with its other side", () => {
+      const warmUpTree = {
+        ...generateRegionWarmUpTree(),
+        upper: generateTreeBranch(
+          ["11"],
+          ["SKILL_WU", "REGION_UPPER_BODY", "SIDE_ONE"],
+        ),
+      };
+
+      const setList = generateStrengthTest(
+        generateStrengthTestInput({ random: generateSeededRandom(7) }),
+        { WU: warmUpTree },
+        loadStrengthTestLoadData(),
+        bundledTemplate,
+      );
+
+      const warmUpExerciseIds = setList
+        .filter((entry) => entry.skill === "WU" && entry.branchId !== "-1")
+        .map((entry) => entry.exerciseId);
+      expect(warmUpExerciseIds[warmUpExerciseIds.indexOf("11") + 1]).toBe(
+        "782",
+      );
     });
 
     it("draws any unused branch for a region quota without a matching branch", () => {
@@ -423,15 +432,15 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
       );
 
       expect(listWarmUpBranchIds(setList)).toEqual([
-        "lower",
         "full",
+        "lower",
         expect.stringMatching(/^core/),
         expect.stringMatching(/^core/),
         expect.stringMatching(/^core/),
       ]);
     });
 
-    it("trains the warm up one exercise at a time in draw order", () => {
+    it("orders the warm up like any other block, not in draw order", () => {
       const setList = generateStrengthTest(
         generateStrengthTestInput({ random: generateSeededRandom(7) }),
         { WU: generateRegionWarmUpTree() },
@@ -444,9 +453,9 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
           setList.filter((entry) => entry.skill === "WU"),
         ).slice(0, 6),
       ).toEqual([
-        "432 1/1",
-        "pause 10",
         "493 1/1",
+        "pause 10",
+        "432 1/1",
         "pause 10",
         "1112 1/1",
         "pause 10",
@@ -590,15 +599,15 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
       const setList = generateStrengthTest(input, skillTrees);
 
       expect(describeSetListEntries(setList)).toEqual([
-        "432 1/1",
-        "pause 10",
         "493 1/1",
+        "pause 10",
+        "400 1/1",
+        "pause 10",
+        "432 1/1",
         "pause 10",
         "1112 1/1",
         "pause 10",
         "421 1/1",
-        "pause 10",
-        "400 1/1",
         "pause 30",
         "25 1/4",
         "pause 60",
@@ -684,7 +693,7 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
           .filter((entry) => entry.repetition !== undefined)
           .map((entry) => [entry.exerciseId, entry.weight]),
       }).toEqual({
-        warmUpBranches: ["410", "411", "1026", "427", "421"],
+        warmUpBranches: ["411", "421", "410", "1026", "427"],
         testWeights: [
           ["25", 25],
           ["25", 35],

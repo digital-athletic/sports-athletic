@@ -535,16 +535,6 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       "bodyParts",
       generatePicksBlock("MOB", { bodyParts: { regions: ["core"] } }),
     ],
-    [
-      "order on a picks block",
-      "order",
-      generatePicksBlock("MOB", { order: "asDrawn" }),
-    ],
-    [
-      "order on a branches block",
-      "order",
-      generateUntimedBranchesBlock("MOB", { order: "muscleGroups" }),
-    ],
   ])(
     "rejects %s before the picks workout rules run",
     (_label, unsupported, block) => {
@@ -565,6 +555,48 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       });
     },
   );
+
+  it.each(["asDrawn", "muscleGroups"] as const)(
+    "generates the same workout with order %s on a picks block as without it for the same seed",
+    (order) => {
+      const generate = (block: Block) =>
+        generateShortWorkoutFromTemplate(
+          generateShortTemplate([generatePicksBlock("BR"), block]),
+          generateRuleFamilyInput({
+            exerciseCatalog: loadExercises(),
+            random: generateSeededRandom(7),
+          }),
+          getAllSkillTrees(),
+        );
+
+      expect(generate(generatePicksBlock("BAS", { order }))).toEqual(
+        generate(generatePicksBlock("BAS")),
+      );
+    },
+  );
+
+  it("generates the same workout with order on a branches block as without it for the same seed", () => {
+    const skillTrees = generateMixedSkillTrees();
+    const generate = (order?: "muscleGroups") =>
+      generateShortWorkoutFromTemplate(
+        generateShortTemplate([
+          generateUntimedBranchesBlock("CD", { branches: ["4"], order }),
+          generateUntimedBranchesBlock("BR", { branches: ["3"] }),
+        ]),
+        generateRuleFamilyInput({
+          exerciseCatalog: generateMixedExerciseCatalog(),
+          skillTrees,
+          random: generateSeededRandom(7),
+        }),
+        skillTrees,
+      );
+
+    expect(listTrainedExercises(generate("muscleGroups"))).toEqual([
+      "e4",
+      "e3",
+    ]);
+    expect(generate("muscleGroups")).toEqual(generate());
+  });
 
   it("names the template id in the path of a rejected block", () => {
     const template = generateTemplate(

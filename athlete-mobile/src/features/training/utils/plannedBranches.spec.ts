@@ -25,7 +25,7 @@ const catalog = buildBranchLookupIndex({
   },
 });
 
-const oldTraining: LegacyTrainingType = {
+const legacyTraining: LegacyTrainingType = {
   weekday: 1,
   focus: "PHASE",
   skills: {
@@ -39,8 +39,8 @@ const aiwlTraining = (
 ) => createAiwlTraining({ workout: generateTemplate(blocks) });
 
 describe("plannedBranches: readPlannedBranches", () => {
-  it("returns the copied branches of an old training", () => {
-    expect(readPlannedBranches(oldTraining, catalog)).toBe(oldTraining.skills);
+  it("returns the copied branches of a legacy training", () => {
+    expect(readPlannedBranches(legacyTraining, catalog)).toBe(legacyTraining.skills);
   });
 
   it("resolves the branch IDs of an AIWL training through the catalog with tags and an exercise per level", () => {
@@ -92,7 +92,7 @@ describe("plannedBranches: readPlannedBranches", () => {
 describe("plannedBranches: listPlannedExerciseIds", () => {
   it("lists the exercises of every level of old and AIWL trainings once", () => {
     const trainings = [
-      oldTraining,
+      legacyTraining,
       aiwlTraining([generateBranchesBlock("GKS", ["10", "11", "10"])]),
     ];
 

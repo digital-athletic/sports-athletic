@@ -185,7 +185,7 @@ describe("userWorkoutStore", () => {
       expect(result.current.trainingPlan).toEqual(plan);
     });
 
-    it("replaces the copied branch of an old training with the new branches", async () => {
+    it("replaces the copied branch of a legacy training with the new branches", async () => {
       const { result } = await renderHook(() => useUserWorkoutStore());
 
       await act(() => {

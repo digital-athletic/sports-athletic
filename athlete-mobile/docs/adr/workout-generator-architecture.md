@@ -235,9 +235,9 @@ A plan training may already store the target shape, an AIWL training. `generateT
 2. The branches handler takes a missing branch rule. Under `"replace"`, the AIWL training rule, each distinct branch ID the catalog lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. Legacy trainings and short workouts keep the `"drop"` rule.
 3. An AIWL training holds branches blocks only. The other handlers throw.
 
-The plan features outside the generator read both shapes. `readPlannedBranches` returns the copied branches of an old training, and for an AIWL training the catalog branches of its branch IDs. Every feature skips a branch ID the catalog lacks, because the generator replaces it at run time.
+The plan features outside the generator read both shapes. `readPlannedBranches` returns the copied branches of a legacy training, and for an AIWL training the catalog branches of its branch IDs. Every feature skips a branch ID the catalog lacks, because the generator replaces it at run time.
 
-| Feature | Old training | AIWL training |
+| Feature | Legacy training | AIWL training |
 |---|---|---|
 | Strength test prompt | exercises of every level of each copied branch | exercises of every level of each resolved branch |
 | Exercise swap | swaps a branch copy in the generated day | swaps a branch ID in the generated day |

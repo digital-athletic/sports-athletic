@@ -53,16 +53,9 @@ const TIMING_CODES = [
   "CARDIO_3",
   "CARDIO_4",
   "CARDIO_5",
+  "PLYO",
 ];
 const CODES = [...TREE_CODES, ...TIMING_CODES];
-const WITHOUT_TIMING = [
-  "CARDIO_1_SHORT",
-  "CARDIO_1_LAKTAT",
-  "CARDIO_2",
-  "CARDIO_3",
-  "CARDIO_4",
-  "CARDIO_5",
-];
 
 interface Timing {
   sets?: number;
@@ -172,27 +165,56 @@ const TIMING: Record<string, Timing> = {
   PLYO_HIGH: { sets: 2, rest: [60, 180, 60], superset: "muscles" },
   PLYO_MEDIUM: { sets: 2, rest: [60, 180, 60], superset: "muscles" },
   CARDIO_1_SHORT: {
+    sets: 10,
+    rest: [50, 10, 50],
+    superset: "none",
     intensity: "CARDIO_1_SHORT",
     startRepetitions: 3,
     startDuration: 10,
   },
   CARDIO_1_LAKTAT: {
+    sets: 4,
+    rest: [240, 10, 240],
+    superset: "none",
     intensity: "CARDIO_1_LAKTAT",
     startRepetitions: 3,
     startDuration: 30,
   },
-  CARDIO_2: { intensity: "CARDIO_2", startRepetitions: 3, startDuration: 60 },
-  CARDIO_3: { intensity: "CARDIO_3", startRepetitions: 3, startDuration: 120 },
+  CARDIO_2: {
+    sets: 8,
+    rest: [60, 10, 60],
+    superset: "none",
+    intensity: "CARDIO_2",
+    startRepetitions: 3,
+    startDuration: 60,
+  },
+  CARDIO_3: {
+    sets: 6,
+    rest: [60, 10, 60],
+    superset: "none",
+    intensity: "CARDIO_3",
+    startRepetitions: 3,
+    startDuration: 120,
+  },
   CARDIO_4: {
+    sets: 1,
+    rest: [10, 10, 10],
+    superset: "none",
     intensity: "DEFAULTKG",
     startRepetitions: 3,
     startDuration: 1800,
   },
   CARDIO_5: {
+    sets: 1,
+    rest: [10, 10, 10],
+    superset: "none",
     intensity: "DEFAULTKG",
     startRepetitions: 3,
     startDuration: 600,
   },
+  // PLYO names the plyometric skill of a stored training plan; the tree keys
+  // PLYO_HIGH and PLYO_MEDIUM carry their own entries.
+  PLYO: { sets: 2, rest: [60, 180, 60], superset: "muscles" },
 };
 
 interface Facts {
@@ -267,7 +289,7 @@ const treeNamesOf = (entry: SkillCatalogEntry): string[] => {
 };
 
 describe("loadSkillCatalog: real file", () => {
-  it("lists the 36 skill codes", () => {
+  it("lists the 37 skill codes", () => {
     expect(Object.keys(loadSkillCatalog()).sort()).toEqual([...CODES].sort());
   });
 
@@ -359,22 +381,13 @@ describe("loadSkillCatalog: timing and start values", () => {
     }).toEqual({ ...expected, rest: restOf(expected.rest) });
   });
 
-  it.each(WITHOUT_TIMING)("omits sets and rest for %s", (code) => {
+  it.each(CODES)("defines sets, superset and rest for %s", (code) => {
     const entry = entryOf(code);
 
-    expect(entry.sets).toBeUndefined();
-    expect(entry.rest).toBeUndefined();
+    expect(entry.sets).toBeDefined();
+    expect(entry.superset).toBeDefined();
+    expect(entry.rest).toBeDefined();
   });
-
-  it.each(CODES.filter((code) => !WITHOUT_TIMING.includes(code)))(
-    "defines sets and rest for %s",
-    (code) => {
-      const entry = entryOf(code);
-
-      expect(entry.sets).toBeDefined();
-      expect(entry.rest).toBeDefined();
-    },
-  );
 });
 
 describe("loadSkillCatalog: bundled facts", () => {

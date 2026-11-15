@@ -45,7 +45,7 @@ describe("trainingDayTiming: readTrainingDayTimingDefaults", () => {
     },
   );
 
-  it("reads a skill without override from the skill catalog", () => {
+  it("reads a changed skill catalog entry", () => {
     const skillCatalog = {
       ...loadSkillCatalog(),
       BAS: generateTreeCatalogEntry({
@@ -62,30 +62,25 @@ describe("trainingDayTiming: readTrainingDayTimingDefaults", () => {
     });
   });
 
-  it("takes the training day override before the skill catalog value", () => {
-    const skillCatalog = {
-      ...loadSkillCatalog(),
-      CARDIO_2: generateTreeCatalogEntry({ sets: 3 }),
-    };
+  it.each(["CARDIO_2", "PLYO"])(
+    "reads the timing of %s from the skill catalog",
+    (skill) => {
+      const skillCatalog = {
+        ...loadSkillCatalog(),
+        [skill]: generateTreeCatalogEntry({
+          sets: 3,
+          superset: "drawOrder",
+          rest: { withinSuperset: 20, betweenSets: 40, afterExercise: 50 },
+        }),
+      };
 
-    expect(readTrainingDayTimingDefaults("CARDIO_2", skillCatalog).sets).toBe(
-      8,
-    );
-  });
-
-  it("reads the skill catalog for a field the override leaves open", () => {
-    const skillCatalog = {
-      ...loadSkillCatalog(),
-      CARDIO_2: generateTreeCatalogEntry({
+      expect(readTrainingDayTimingDefaults(skill, skillCatalog)).toEqual({
         sets: 3,
+        superset: "drawOrder",
         rest: { withinSuperset: 20, betweenSets: 40, afterExercise: 50 },
-      }),
-    };
-
-    expect(
-      readTrainingDayTimingDefaults("CARDIO_2", skillCatalog).rest.betweenSets,
-    ).toBe(40);
-  });
+      });
+    },
+  );
 
   it("falls back to 2 sets, a superset by muscles and 10 second rests for an unknown skill", () => {
     expect(readTrainingDayTimingDefaults("UNKNOWN", {})).toEqual({

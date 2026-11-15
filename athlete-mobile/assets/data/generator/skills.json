@@ -299,34 +299,57 @@
     "sets": 2,
     "rest": { "withinSuperset": 60, "betweenSets": 180, "afterExercise": 60 }
   },
+  "PLYO": {
+    "superset": "muscles",
+    "sets": 2,
+    "rest": { "withinSuperset": 60, "betweenSets": 180, "afterExercise": 60 }
+  },
   "CARDIO_1_SHORT": {
     "intensity": "CARDIO_1_SHORT",
     "startRepetitions": 3,
-    "startDuration": 10
+    "startDuration": 10,
+    "superset": "none",
+    "sets": 10,
+    "rest": { "withinSuperset": 50, "betweenSets": 10, "afterExercise": 50 }
   },
   "CARDIO_1_LAKTAT": {
     "intensity": "CARDIO_1_LAKTAT",
     "startRepetitions": 3,
-    "startDuration": 30
+    "startDuration": 30,
+    "superset": "none",
+    "sets": 4,
+    "rest": { "withinSuperset": 240, "betweenSets": 10, "afterExercise": 240 }
   },
   "CARDIO_2": {
     "intensity": "CARDIO_2",
     "startRepetitions": 3,
-    "startDuration": 60
+    "startDuration": 60,
+    "superset": "none",
+    "sets": 8,
+    "rest": { "withinSuperset": 60, "betweenSets": 10, "afterExercise": 60 }
   },
   "CARDIO_3": {
     "intensity": "CARDIO_3",
     "startRepetitions": 3,
-    "startDuration": 120
+    "startDuration": 120,
+    "superset": "none",
+    "sets": 6,
+    "rest": { "withinSuperset": 60, "betweenSets": 10, "afterExercise": 60 }
   },
   "CARDIO_4": {
     "intensity": "DEFAULTKG",
     "startRepetitions": 3,
-    "startDuration": 1800
+    "startDuration": 1800,
+    "superset": "none",
+    "sets": 1,
+    "rest": { "withinSuperset": 10, "betweenSets": 10, "afterExercise": 10 }
   },
   "CARDIO_5": {
     "intensity": "DEFAULTKG",
     "startRepetitions": 3,
-    "startDuration": 600
+    "startDuration": 600,
+    "superset": "none",
+    "sets": 1,
+    "rest": { "withinSuperset": 10, "betweenSets": 10, "afterExercise": 10 }
   }
 }

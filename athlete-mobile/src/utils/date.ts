@@ -81,31 +81,40 @@ export const addDays = (date: Date, days: number): Date => {
 };
 
 /**
- * Calculates age in years from an ISO 8601 birthday string.
- * @returns Age in years, or null if the birthday is invalid
+ * Calculates the age in years the person born on the birthday has on the given date.
+ * @returns Age in years, or null if the birthday or the date is invalid
  */
-export const calculateAgeFromBirthday = (
+export const ageOnDate = (
   birthday: ISODateString,
+  date: ISODateString,
 ): number | null => {
-  if (!isISODate(birthday)) {
+  if (!isISODate(birthday) || !isISODate(date)) {
     return null;
   }
 
   const birthDate = ISODateToDate(birthday);
-  const today = new Date();
+  const onDate = ISODateToDate(date);
 
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
+  let age = onDate.getFullYear() - birthDate.getFullYear();
+  const monthDiff = onDate.getMonth() - birthDate.getMonth();
 
   if (
     monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    (monthDiff === 0 && onDate.getDate() < birthDate.getDate())
   ) {
     age--;
   }
 
   return age;
 };
+
+/**
+ * Calculates age in years from an ISO 8601 birthday string.
+ * @returns Age in years, or null if the birthday is invalid
+ */
+export const calculateAgeFromBirthday = (
+  birthday: ISODateString,
+): number | null => ageOnDate(birthday, formatDateToISO(new Date()));
 
 /**
  * Returns the date on which an athlete born on the birthday reaches the age.

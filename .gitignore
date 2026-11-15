@@ -3,6 +3,7 @@ docker-compose.override.yml
 .claude
 .planning/
 .b310/
+.omc/
 node_modules/
 
 # pnpm

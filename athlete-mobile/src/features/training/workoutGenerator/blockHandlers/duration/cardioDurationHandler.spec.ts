@@ -120,7 +120,7 @@ describe("cardioDurationHandler: createCardioDurationHandler", () => {
   // pain blocks every CARDIO_2 branch, so the branches handler swaps the block instead of throwing PAIN
   it("swaps the block for the CARDIO_5 run when pain blocks every branch of the tree", () => {
     const handleBlock = createCardioDurationHandler(
-      createBranchesBlockHandler(lookUpStoredBranchInCatalog, "drop"),
+      createBranchesBlockHandler(lookUpStoredBranchInCatalog),
     );
     const input = generateWorkoutInput({
       pains: ["KNEE_LEFT"],

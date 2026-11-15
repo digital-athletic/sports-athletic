@@ -17,14 +17,11 @@ const exerciseCatalog = loadExercises();
 const NO_BRANCHES = new Set<string>();
 
 describe("branchesHandler: createBranchesBlockHandler", () => {
-  const handleBlock = createBranchesBlockHandler(
-    lookUpStoredBranchInCatalog,
-    "drop",
-  );
+  const handleBlock = createBranchesBlockHandler(lookUpStoredBranchInCatalog);
 
   // a forgotten lookup would read the catalog instead of a stored snapshot
-  it("takes the stored branch lookup and the missing branch rule without a default", () => {
-    expect(createBranchesBlockHandler).toHaveLength(2);
+  it("takes the stored branch lookup without a default", () => {
+    expect(createBranchesBlockHandler).toHaveLength(1);
   });
 
   it("resolves every stored branch in stored order at the athlete level", () => {
@@ -159,7 +156,6 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
       ["510", "523"],
       ["BARBELL"],
     ],
-    ["no stored ID resolves", "GKS", ["999999"], []],
   ])(
     "ends empty with the equipment reason when %s",
     (_, skill, ids, params) => {
@@ -180,10 +176,7 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
 });
 
 describe("branchesHandler: a branch ID the catalog lacks", () => {
-  const handleBlock = createBranchesBlockHandler(
-    lookUpStoredBranchInCatalog,
-    "replace",
-  );
+  const handleBlock = createBranchesBlockHandler(lookUpStoredBranchInCatalog);
   const input = generateWorkoutInput({
     equipment: ["DUMBBELL", "BARBELL"],
     exerciseCatalog,
@@ -233,21 +226,6 @@ describe("branchesHandler: a branch ID the catalog lacks", () => {
 
     expect(listBranchIds(result)).toHaveLength(2);
   });
-
-  it("drops the missing branch ID under the drop rule", () => {
-    const handleDropBlock = createBranchesBlockHandler(
-      lookUpStoredBranchInCatalog,
-      "drop",
-    );
-
-    const result = handleDropBlock(
-      generateBranchesBlock("GKS", ["510", "900001"]),
-      input,
-      NO_BRANCHES,
-    );
-
-    expect(listBranchIds(result)).toEqual(["510"]);
-  });
 });
 
 describe("branchesHandler: stored day entries", () => {
@@ -259,7 +237,6 @@ describe("branchesHandler: stored day entries", () => {
           generateStoredDayEntry("900001", ["REGION_CORE"], "16"),
         ],
       }),
-      "drop",
     );
     const input = generateWorkoutInput({ exerciseCatalog });
 
@@ -293,7 +270,6 @@ describe("branchesHandler: stored day entries", () => {
           generateStoredDayEntry("2", [], "20"),
         ],
       }),
-      "drop",
     );
     const input = generateWorkoutInput({ exerciseCatalog });
 
@@ -317,10 +293,7 @@ describe("branchesHandler: stored day entries", () => {
 });
 
 describe("branchesHandler: cardio swap", () => {
-  const handleBlock = createBranchesBlockHandler(
-    lookUpStoredBranchInCatalog,
-    "drop",
-  );
+  const handleBlock = createBranchesBlockHandler(lookUpStoredBranchInCatalog);
   // sore quadriceps block every cardio skill, so each requests a lower body replacement
   const soreInput = generateWorkoutInput({
     soreMuscles: ["QUADRICEPS"],
@@ -459,7 +432,6 @@ describe("branchesHandler: duplicate exercises", () => {
           generateStoredDayEntry("2", ["REGION_UPPER_BODY"], "336"),
         ],
       }),
-      "drop",
     );
     const input = generateWorkoutInput({
       equipment: ["DUMBBELL", "BARBELL"],
@@ -493,7 +465,6 @@ describe("branchesHandler: duplicate exercises", () => {
           generateStoredDayEntry("2", [], "336"),
         ],
       }),
-      "drop",
     );
     const input = generateWorkoutInput({ exerciseCatalog });
 
@@ -525,7 +496,6 @@ describe("branchesHandler: duplicate exercises", () => {
             generateStoredDayEntry("3", ["REGION_UPPER_BODY"], "16"),
           ],
         }),
-        "drop",
       );
       const input = generateWorkoutInput({
         pains,

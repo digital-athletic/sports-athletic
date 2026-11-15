@@ -841,7 +841,9 @@
       "noReference": "No reference for your training stage",
       "empty": "There are no performance tests for your sport yet.",
       "notFound": "This performance test does not exist.",
-      "loadError": "The app could not load the performance tests. Check your connection and try again."
+      "loadError": "The app could not load the performance tests. Check your connection and try again.",
+      "chartSummary_one": "Line chart with {{count}} value over time",
+      "chartSummary_other": "Line chart with {{count}} values over time"
     }
   },
   "performanceTests": {

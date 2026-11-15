@@ -17,6 +17,8 @@ interface TextInputFieldProps {
   onFocus?: () => void;
   onBlur?: () => void;
   testID?: string;
+  /** Short text behind the input, such as a unit. Screen readers skip it, so name it in the label. */
+  suffix?: string;
 }
 
 /**
@@ -34,6 +36,7 @@ export const TextInputField: FC<TextInputFieldProps> = ({
   onFocus,
   onBlur,
   testID,
+  suffix,
 }) => {
   const [focused, setFocused] = useState(false);
 
@@ -67,6 +70,18 @@ export const TextInputField: FC<TextInputFieldProps> = ({
           testID={testID}
           style={styles.input}
         />
+        {suffix ? (
+          <Text
+            variant="body"
+            color="darkGrey1"
+            marginRight="m"
+            testID={testID ? `${testID}-suffix` : undefined}
+            accessibilityElementsHidden
+            importantForAccessibility="no"
+          >
+            {suffix}
+          </Text>
+        ) : null}
       </FieldShell>
     </Box>
   );

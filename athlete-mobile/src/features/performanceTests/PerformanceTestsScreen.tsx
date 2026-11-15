@@ -1,16 +1,12 @@
-import { ActivityIndicator } from "react-native";
 import { useTranslation } from "react-i18next";
-import { liveRegionProps } from "@/common/announce";
 import { HeadlineScreen } from "@/common/HeadlineScreen";
-import { useUserProfileStore } from "@/store/userProfileStore";
-import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
-import { Button } from "@/theme/Button";
-import { Card } from "@/theme/Card";
-import { Text } from "@/theme/Text";
+import { formatDateToISO } from "@/utils/date";
 import { type SportTest } from "./models/SportTest";
 import { PerformanceTestRow } from "./PerformanceTestRow";
-import { referenceRangeFor } from "./referenceRange";
+import { PerformanceTestsNotice } from "./PerformanceTestsNotice";
+import { referenceRangeOnDate } from "./referenceRange";
+import { useAthleteProfile } from "./useAthleteProfile";
 import { usePerformanceTests } from "./usePerformanceTests";
 
 /** Lists the performance tests of the athlete's sport with the athlete's reference range. */
@@ -25,39 +21,12 @@ export default function PerformanceTestsScreen() {
       description={t("more.performanceTests.description")}
     >
       <Box gap="s">
-        {state.status === "loading" && (
-          <ActivityIndicator
-            testID="performance-tests-loading"
-            accessibilityLabel={t("common.loading")}
-          />
-        )}
-
-        {state.status === "error" && (
-          <Box>
-            <Text
-              variant="body"
-              color="error"
-              marginBottom="m"
-              accessibilityRole="alert"
-              {...liveRegionProps}
-            >
-              {t("more.performanceTests.loadError")}
-            </Text>
-            <Button testID="performance-tests-retry" onPress={reload}>
-              {t("common.retry")}
-            </Button>
-          </Box>
+        {state.status !== "loaded" && (
+          <PerformanceTestsNotice kind={state.status} onRetry={reload} />
         )}
 
         {state.status === "loaded" && state.tests.length === 0 && (
-          <Card
-            variant="outlined"
-            backgroundColor="lightGrey1"
-            padding="l"
-            testID="performance-tests-empty"
-          >
-            <Text variant="body">{t("more.performanceTests.empty")}</Text>
-          </Card>
+          <PerformanceTestsNotice kind="empty" onRetry={reload} />
         )}
 
         {state.status === "loaded" && state.tests.length > 0 && (
@@ -69,11 +38,8 @@ export default function PerformanceTestsScreen() {
 }
 
 function PerformanceTestList({ tests }: { tests: SportTest[] }) {
-  const position = useUserWorkoutStore(
-    (state) => state.workoutData.tags.POSITION?.[0],
-  );
-  const gender = useUserProfileStore((state) => state.personalData.gender);
-  const age = useUserProfileStore((state) => state.getAge());
+  const athlete = useAthleteProfile();
+  const today = formatDateToISO(new Date());
 
   return (
     <>
@@ -81,7 +47,7 @@ function PerformanceTestList({ tests }: { tests: SportTest[] }) {
         <PerformanceTestRow
           key={test.id}
           test={test}
-          range={referenceRangeFor(test, { gender, position, age })}
+          range={referenceRangeOnDate(test, athlete, today)}
         />
       ))}
     </>

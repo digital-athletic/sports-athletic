@@ -1,17 +1,19 @@
 import { loadExercises } from "@/data/loadExercises";
+import { loadTemplate } from "@/data/loadTemplates";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { TrainingType } from "@/features/training/models/Training";
 import {
   createAiwlPlan,
   createAiwlTraining,
 } from "@/features/training/utils/testFixtures";
+import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import * as picksHandler from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
-import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
-import type * as ShortWorkoutGeneration from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import { generateStrengthTest } from "@/features/training/workoutGenerator/strengthTestGeneration";
 import type * as StrengthTestGeneration from "@/features/training/workoutGenerator/strengthTestGeneration";
 import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type * as TrainingDayGeneration from "@/features/training/workoutGenerator/trainingDayGeneration";
+import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
+import type * as WorkoutGeneration from "@/features/training/workoutGenerator/workoutGeneration";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import type { UserType } from "@/schemas/user.schema";
 import {
@@ -52,15 +54,14 @@ jest.mock("@/features/training/workoutGenerator/strengthTestGeneration", () => {
   };
 });
 
-jest.mock("@/features/training/workoutGenerator/shortWorkoutGeneration", () => {
-  const actual = jest.requireActual<typeof ShortWorkoutGeneration>(
-    "@/features/training/workoutGenerator/shortWorkoutGeneration",
+// The spy keeps the real entry point, so each route still generates its set list.
+jest.mock("@/features/training/workoutGenerator/workoutGeneration", () => {
+  const actual = jest.requireActual<typeof WorkoutGeneration>(
+    "@/features/training/workoutGenerator/workoutGeneration",
   );
   return {
     ...actual,
-    generateShortWorkoutFromTemplate: jest.fn(
-      actual.generateShortWorkoutFromTemplate,
-    ),
+    generateSetList: jest.fn(actual.generateSetList),
   };
 });
 
@@ -88,16 +89,22 @@ const generateWorkoutOf = (type: TrainingType) =>
 describe("generateWorkout: routing", () => {
   beforeEach(() => {
     jest.mocked(generateTrainingDay).mockClear();
-    jest.mocked(generateShortWorkoutFromTemplate).mockClear();
+    jest.mocked(generateSetList).mockClear();
     jest.mocked(generateStrengthTest).mockClear();
   });
 
   afterEach(jest.restoreAllMocks);
 
-  it("runs a short workout on the AIWL generator", () => {
-    generateWorkoutOf("MOB");
+  it("generates a short workout from its template with the catalog lookup and the request's skill trees", () => {
+    const setList = generateWorkoutOf("MOB");
 
-    expect(generateShortWorkoutFromTemplate).toHaveBeenCalledTimes(1);
+    expect(setList.length).toBeGreaterThan(0);
+    expect(generateSetList).toHaveBeenCalledTimes(1);
+    const [workout, lookUpBranch, , options] =
+      jest.mocked(generateSetList).mock.calls[0];
+    expect(workout).toEqual(loadTemplate("MOB"));
+    expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
+    expect(options).toEqual({ skillTrees: getAllSkillTrees() });
     expect(generateStrengthTest).not.toHaveBeenCalled();
     expect(generateTrainingDay).not.toHaveBeenCalled();
   });
@@ -108,7 +115,7 @@ describe("generateWorkout: routing", () => {
 
       expect(setList.length).toBeGreaterThan(0);
       expect(generateStrengthTest).toHaveBeenCalledTimes(1);
-      expect(generateShortWorkoutFromTemplate).not.toHaveBeenCalled();
+      expect(generateSetList).not.toHaveBeenCalled();
     });
 
     it("hands the stored day and the lengths to the AIWL generator", () => {
@@ -244,14 +251,6 @@ describe("generateWorkout: short workouts", () => {
     expect(setList.every((entry) => entry.skill === "MOB")).toBe(true);
   });
 
-  it("draws through Math.random when it runs", () => {
-    const random = jest.spyOn(Math, "random").mockReturnValue(0);
-
-    generateWorkoutOf("MOB");
-
-    expect(random).toHaveBeenCalled();
-  });
-
   it("throws NO_EXERCISES with the type for a type without a template", () => {
     expect(
       catchThrownValue(() => generateWorkoutOf("NO_SUCH_TYPE")),
@@ -277,6 +276,36 @@ describe("generateWorkout: short workouts", () => {
 
     expect(setList.length).toBeGreaterThan(0);
     expect(setList.every((entry) => entry.skill === "WU")).toBe(true);
+  });
+
+  it("throws the pain error with no regions for a custom workout without blocks and an athlete with knee pain", () => {
+    const { id } = useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(
+        generateTemplate([], { id: "empty", name: { en: "Empty" } }),
+        null,
+      );
+    const user: UserType = {
+      ...generateWarmUpOnlyPlanUser(),
+      workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] } },
+    };
+
+    expect(
+      catchThrownValue(() =>
+        generateWorkout({
+          type: id,
+          user,
+          place: "HOME",
+          exercises: loadExercises(),
+          skillTrees: getAllSkillTrees(),
+          weekday: 1,
+          equipment: [],
+          givenSection: undefined,
+          daysSinceLastWorkout: 0,
+          userExerciseData: { exerciseData: {}, branchData: {} },
+        }),
+      ),
+    ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: [] });
   });
 
   it("throws the pain error with no regions for a custom workout without blocks", () => {

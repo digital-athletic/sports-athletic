@@ -3,6 +3,7 @@ import type { ExerciseBranchType } from "@/features/training/models/ExerciseBran
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
+import { DEFAULT_PICKS_POOL_RULES } from "@/features/training/workoutGenerator/blockHandlers/picks/picksWorkoutRules";
 import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
 import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { toUserExerciseData } from "@/schemas/generator.schema";
@@ -397,7 +398,7 @@ describe("exerciseSwap: swap in an AIWL training day, then generate the day", ()
         ),
         usedExerciseIds: others.map(({ exerciseId }) => exerciseId),
       },
-      setUpWorkout(generateInput()),
+      setUpWorkout(generateInput(), DEFAULT_PICKS_POOL_RULES),
     );
     expect(alternatives.length).toBeGreaterThan(0);
     const generateSwappedDay = (alternative: StoredBranch) =>

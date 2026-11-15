@@ -246,9 +246,16 @@ The plan features outside the generator read both shapes. `readPlannedBranches` 
 
 The router `src/features/training/workoutGeneratorRouter.ts` sends every training type to the AIWL generator and picks the entry point per type:
 
-1. Short workouts and custom workouts run from their template.
+1. Short workouts and custom workouts run from their template through the entry point `generateSetList(workout, lookUpBranch, input, { skillTrees })` in `workoutGenerator/workoutGeneration.ts`, with the branch lookup index.
 2. The strength test runs from the strength test source.
 3. Plan training days run as a stored day workout.
+
+A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A template without blocks throws `NO_EXERCISES/PAIN` without regions, whatever the athlete's pains.
+
+`generateSetList` runs a workout with one handler registry and one finish rule:
+
+1. The block kind check rejects an exercises block, a duration block of a skill other than a cardio zone and `bodyParts` on a picks or duration block with `OTHER/BLOCK_KIND`. An `order` field passes the check; set list building ignores it with a warning.
+2. The template interpreter runs the blocks with the picks handler, the branches handler on the given lookup and the cardio duration handler. It applies the short workout picks pool rules and builds the blocks that fill.
 
 The old training generator and its flag `EXPO_PUBLIC_AIWL_GENERATOR_ENABLED` are deleted. The old plan generator in `generators/PlanGenerator.ts` stays behind its own flag `EXPO_PUBLIC_PLAN_GENERATOR_ENABLED`.
 
@@ -289,8 +296,8 @@ The generator deviates from the target architecture in these places, so that sto
 
 ### Remaining work
 
-1. The duration handler with the minutes table chooser.
-2. The `order` field, which the generator ignores with a warning, and the `bodyParts` filter.
+1. The duration handler of a skill other than a cardio zone, with the minutes table chooser. Until then, the block kind check rejects such a block.
+2. The `order` field, which the generator ignores with a warning, and the `bodyParts` filter, which the block kind check rejects until then.
 3. The stored plan migration.
 
 ### Errors
@@ -306,7 +313,7 @@ The generator raises three classes of error:
 - **Discriminated unions.** Block kinds, block results and errors are tagged unions, and every `switch` over them is exhaustive.
 - **No mutation.** Every stage returns new values and changes neither the template nor the generation input.
 - **Random source.** The generation input carries the random function, with `Math.random` as the default, and every component draws through it. Tests pass a fixed sequence. Each component draws in a fixed order.
-- **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: one entry module per workout source, the stored day workout, and the template interpreter they hand the workout to. The interpreter delegates to one subfolder per component of the patterns diagram:
+- **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: the entry point `workoutGeneration.ts` for short and custom workouts, one entry module per other workout source, the stored day workout, and the template interpreter they hand the workout to. The interpreter delegates to one subfolder per component of the patterns diagram:
 
   | Folder                    | Component                                | Modules                                                                                   |
   | ------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------- |

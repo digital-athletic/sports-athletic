@@ -41,9 +41,9 @@ export const interpretTemplate = <TEntry>(
 ): FinishedWorkout<TEntry> => {
   const workoutInput = setUpWorkout(
     input,
+    picksPoolRules,
     template,
     skillTrees,
-    picksPoolRules,
   );
   return finishWorkout(
     walkTemplateBlocks(template, workoutInput, handlers),

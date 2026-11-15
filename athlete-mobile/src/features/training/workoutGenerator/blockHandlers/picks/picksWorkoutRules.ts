@@ -44,7 +44,7 @@ export interface PicksPoolRules {
   readonly equipment: "applied" | "ignored";
 }
 
-export const SHORT_WORKOUT_PICKS_POOL_RULES: PicksPoolRules = {
+export const DEFAULT_PICKS_POOL_RULES: PicksPoolRules = {
   pain: "applied",
   equipment: "applied",
 };
@@ -61,7 +61,7 @@ export const SHORT_WORKOUT_PICKS_POOL_RULES: PicksPoolRules = {
 export const filterPoolByPicksWorkoutRules = (
   pool: SkillTreeType,
   input: GenerationInput,
-  rules: PicksPoolRules = SHORT_WORKOUT_PICKS_POOL_RULES,
+  rules: PicksPoolRules,
 ): SkillTreeType => {
   let remaining = pool;
   if (rules.pain === "applied") {
@@ -99,17 +99,16 @@ export const filterPoolByPicksWorkoutRules = (
  * Resolves the picks blocks of a template, filters their union pool once and
  * builds the branch draws from that pool at the athlete level. A template
  * without picks blocks gets an empty picks workout, and a block of another
- * kind gets no entry. `rules` picks the families the pool filter applies;
- * the default is the short workout rules.
+ * kind gets no entry. `rules` picks the families the pool filter applies.
  *
- * resolvePicksWorkout({ blocks: [WU picks block] }, femaleInput)
+ * resolvePicksWorkout({ blocks: [WU picks block] }, femaleInput, DEFAULT_PICKS_POOL_RULES)
  * → { pool: { ...WU branches without 1026 }, blocks: Map { WU block → { skill: "WU", ... } }, draw }
  */
 export const resolvePicksWorkout = (
   template: InterpretedWorkout,
   input: GenerationInput & { readonly athleteLevel: string },
+  rules: PicksPoolRules,
   skillTrees: Readonly<Record<string, SkillTreeType>> = getAllSkillTrees(),
-  rules?: PicksPoolRules,
 ): PicksWorkout => {
   if (!template.blocks.some((block) => block.kind === "picks")) {
     return createEmptyPicksWorkout();

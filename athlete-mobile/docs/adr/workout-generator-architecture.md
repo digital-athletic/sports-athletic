@@ -128,7 +128,7 @@ One function, `createSetListBuilder`, builds the set list of every workout sourc
 | Max strength   | each exercise on its own, with the other side of a one-sided exercise | opens away from the exercise that ended the block before, lower body first |
 | Any other      | by the block's superset                                   | opens away from the exercise that ended the block before                               |
 
-A singles block is a block with the superset setting `"singles"`; the strength test warm-up sets it. The set list drops the rest at its very end, so every workout ends on a set. A fix to a step reaches every source.
+A singles block is a block with the superset setting `"singles"`; the strength test warm-up sets it. A max strength block always pairs as the table says, so the AIWL block schema rejects `"singles"` on a max strength skill with `superset "singles" is not allowed on a max strength block`. The schema and set list building both name the builder of a skill with `readSkillSetListKind`, so the two cannot drift. TypeScript cannot exclude the combination in the block type, because a skill is a free string. The set list drops the rest at its very end, so every workout ends on a set. A fix to a step reaches every source.
 
 The strength test lifts keep their own builder, the prescribed strength test builder above.
 

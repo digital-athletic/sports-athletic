@@ -65,6 +65,36 @@ const BodyPartsSchema = v.strictObject({
   muscles: v.optional(v.array(NonEmptyStringSchema)),
 });
 
+/** The set list builder a skill runs with. */
+export type SkillSetListKind = "cardio" | "maxStrength" | "standard";
+
+/**
+ * Names the set list builder of a skill: cardio first, then max strength,
+ * else standard. Set list building and the block schema both read it.
+ *
+ * readSkillSetListKind("CARDIO_5") → "cardio"
+ * readSkillSetListKind("MAX_STRENGTH") → "maxStrength"
+ */
+export const readSkillSetListKind = (skill: string): SkillSetListKind => {
+  if (skill.includes("CARDIO")) return "cardio";
+  if (skill.includes("MAX")) return "maxStrength";
+  return "standard";
+};
+
+// A max strength block always trains each exercise with its other side,
+// lower body first, so "singles" cannot be authored on one.
+const MAX_STRENGTH_SINGLES_MESSAGE =
+  'superset "singles" is not allowed on a max strength block';
+
+const isAllowedSuperset = ({
+  skill,
+  superset,
+}: {
+  skill: string;
+  superset?: Superset;
+}): boolean =>
+  superset !== "singles" || readSkillSetListKind(skill) !== "maxStrength";
+
 const blockBase = {
   skill: SkillCodeSchema,
   order: v.optional(BlockOrderSchema),
@@ -76,24 +106,54 @@ const blockBase = {
   values: v.optional(BlockValuesSchema),
   rest: v.optional(BlockRestSchema),
 };
-const PicksBlockSchema = v.strictObject({
+const PicksBlockEntriesSchema = v.strictObject({
   kind: v.literal("picks"),
   ...blockBase,
   picks: PlacePicksSchema,
   bodyParts: v.optional(BodyPartsSchema),
 });
-const DurationBlockSchema = v.strictObject({
+const PicksBlockSchema = v.pipe(
+  PicksBlockEntriesSchema,
+  v.forward(
+    v.check<v.InferOutput<typeof PicksBlockEntriesSchema>, string>(
+      isAllowedSuperset,
+      MAX_STRENGTH_SINGLES_MESSAGE,
+    ),
+    ["superset"],
+  ),
+);
+const DurationBlockEntriesSchema = v.strictObject({
   kind: v.literal("duration"),
   ...blockBase,
   duration: PositiveSecondsSchema,
   bodyParts: v.optional(BodyPartsSchema),
 });
-const BranchesBlockSchema = v.strictObject({
+const DurationBlockSchema = v.pipe(
+  DurationBlockEntriesSchema,
+  v.forward(
+    v.check<v.InferOutput<typeof DurationBlockEntriesSchema>, string>(
+      isAllowedSuperset,
+      MAX_STRENGTH_SINGLES_MESSAGE,
+    ),
+    ["superset"],
+  ),
+);
+const BranchesBlockEntriesSchema = v.strictObject({
   kind: v.literal("branches"),
   ...blockBase,
   branches: v.pipe(v.array(NonEmptyStringSchema), v.minLength(1)),
   duration: v.optional(PositiveSecondsSchema),
 });
+const BranchesBlockSchema = v.pipe(
+  BranchesBlockEntriesSchema,
+  v.forward(
+    v.check<v.InferOutput<typeof BranchesBlockEntriesSchema>, string>(
+      isAllowedSuperset,
+      MAX_STRENGTH_SINGLES_MESSAGE,
+    ),
+    ["superset"],
+  ),
+);
 
 /** A part of a load: above 0, at most the whole load. */
 export const ShareSchema = v.pipe(v.number(), v.gtValue(0), v.maxValue(1));

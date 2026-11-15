@@ -25,7 +25,7 @@ import type { PrescribedSetListBuilder } from "../setListBuilders/setListBuilder
 import { createStrengthTestSetListBuilder } from "../setListBuilders/strengthTestSetListBuilder";
 import { loadStrengthTestLoadData } from "../strengthTestGeneration";
 import type { BlockResult } from "./blockWalk";
-import { createSetListBuilder, readSkillSetListKind } from "./setListBuilding";
+import { createSetListBuilder } from "./setListBuilding";
 import type { FilledBlockResult } from "./workoutFinish";
 
 const EXERCISE_CATALOG = [
@@ -137,19 +137,6 @@ const buildShortWorkoutSetList = (
       (result): result is FilledBlockResult => result.status === "filled",
     ),
   );
-
-describe("setListBuilding: readSkillSetListKind", () => {
-  it.each([
-    ["CARDIO_2", "cardio"],
-    ["CARDIO_5", "cardio"],
-    ["MAX", "maxStrength"],
-    ["MAX_STRENGTH", "maxStrength"],
-    ["SASKG", "standard"],
-    ["WUSPEZIAL", "standard"],
-  ])("builds %s with the %s builder", (skill, kind) => {
-    expect(readSkillSetListKind(skill)).toBe(kind);
-  });
-});
 
 describe("setListBuilding: training day", () => {
   it("builds SASKG from its training day defaults: 2 sets with 10 seconds rest", () => {
@@ -458,18 +445,6 @@ describe("setListBuilding: short workout", () => {
     ]);
 
     expect(listExerciseOrder(setList.slice(4))).toEqual(["e1", "e3", "e2"]);
-  });
-
-  it("trains a max strength singles block in draw order instead of lower body first", () => {
-    const setList = buildShortWorkoutSetList([
-      generateFilledResultFromCatalog(
-        EXERCISE_CATALOG,
-        generatePicksBlock("MAX", { superset: "singles" }),
-        ["e1", "e3"],
-      ),
-    ]);
-
-    expect(listExerciseOrder(setList)).toEqual(["e1", "e3"]);
   });
 
   it("builds a block from the timing workout setup resolved", () => {

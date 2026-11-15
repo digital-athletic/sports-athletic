@@ -1,9 +1,11 @@
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type {
-  BranchSelectingBlock,
-  ExercisesBlock,
-  Superset,
+import {
+  type BranchSelectingBlock,
+  type ExercisesBlock,
+  readSkillSetListKind,
+  type SkillSetListKind,
+  type Superset,
 } from "@/schemas/aiwl.schema";
 import { readResolvedPicksBlockTiming } from "../blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
@@ -31,27 +33,12 @@ import { orderExerciseUnits, readEndingExerciseId } from "./exerciseOrder";
 import type { FilledBlockResult, SetListBuilder } from "./workoutFinish";
 import type { WorkoutInput } from "./workoutSetup";
 
-export type SkillSetListKind = "cardio" | "maxStrength" | "standard";
-
 const SECONDS_PER_MINUTE = 60;
 
 const SKILL_SET_LIST_BUILDERS: Record<SkillSetListKind, SkillSetListBuilder> = {
   cardio: buildCardioSetList,
   maxStrength: buildMaxStrengthSetList,
   standard: buildStandardSetList,
-};
-
-/**
- * Names the set list builder of a skill: cardio first, then max strength,
- * else standard.
- *
- * readSkillSetListKind("CARDIO_5") → "cardio"
- * readSkillSetListKind("MAX_STRENGTH") → "maxStrength"
- */
-export const readSkillSetListKind = (skill: string): SkillSetListKind => {
-  if (skill.includes("CARDIO")) return "cardio";
-  if (skill.includes("MAX")) return "maxStrength";
-  return "standard";
 };
 
 type SetListBuildingInput = GenerationInput &
@@ -72,17 +59,16 @@ const readBlockTiming = (
 
 /**
  * Names the superset a block pairs by. A max strength block trains each
- * exercise on its own, with the other side of a one-sided exercise ("none"),
- * unless the block sets "singles"; every other block pairs by its own
- * superset.
+ * exercise on its own, with the other side of a one-sided exercise ("none");
+ * the block schema rejects "singles" on it. Every other block pairs by its
+ * own superset.
  *
  * readPairingSuperset("maxStrength", "muscles") → "none"
  */
 const readPairingSuperset = (
   kind: Exclude<SkillSetListKind, "cardio">,
   superset: Superset,
-): Superset =>
-  kind === "maxStrength" && superset !== "singles" ? "none" : superset;
+): Superset => (kind === "maxStrength" ? "none" : superset);
 
 interface PairingContext {
   readonly input: GenerationInput;

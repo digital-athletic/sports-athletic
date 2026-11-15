@@ -1,6 +1,7 @@
+import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { requireWorkoutData } from "@/features/training/utils/userDataUtils";
-import type { Template } from "@/schemas/aiwl.schema";
+import type { Block, Template } from "@/schemas/aiwl.schema";
 import { createBranchesBlockHandler } from "./blockHandlers/branches/branchesHandler";
 import {
   createStoredDayBranchLookup,
@@ -13,7 +14,6 @@ import type {
   InterpretedWorkout,
 } from "./stages/blockWalk";
 import { createSetListBuilder } from "./stages/setListBuilding";
-import { TRAINING_DAY_FINISH_RULES } from "./stages/workoutFinish";
 import {
   createStoredDayWorkout,
   type StoredTrainingDay,
@@ -60,15 +60,31 @@ const AIWL_TRAINING_HANDLERS = createTrainingDayHandlers(
   createBranchesBlockHandler(lookUpStoredBranchInCatalog, "replace"),
 );
 
+// Stable; a skill missing from SECTION_ORDER has index -1 and sorts first.
+const sortBlocksBySectionOrder = <TBlock extends Block>(
+  blocks: readonly TBlock[],
+): TBlock[] =>
+  [...blocks].sort(
+    (a, b) =>
+      WorkoutConstants.SECTION_ORDER.indexOf(a.skill) -
+      WorkoutConstants.SECTION_ORDER.indexOf(b.skill),
+  );
+
+// The plan generator writes an AIWL day in skill priority order, so both day
+// shapes run their blocks sorted by section order.
 const runTrainingDayWorkout = (
   workout: InterpretedWorkout,
   input: GenerationInput,
   handlers: BlockHandlerRegistry,
 ): GeneratedSetListEntry[] => {
   requireWorkoutData(input.athlete);
-  return interpretTemplate(workout, input, {
+  const sortedWorkout = {
+    ...workout,
+    blocks: sortBlocksBySectionOrder(workout.blocks),
+  };
+  return interpretTemplate(sortedWorkout, input, {
     handlers,
-    finishRules: TRAINING_DAY_FINISH_RULES,
+    finishRules: { requiredBlocks: "none" },
     createSetListBuilder,
     picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
   }).setList;
@@ -98,8 +114,8 @@ export const generateTrainingDayFromStoredDay = (
  * Generates the set list of a plan training day. A legacy training runs
  * its stored day with the branches it saved. An AIWL training runs its workout
  * with the branches of the skill catalog, and a branch ID the catalog lacks
- * draws a replacement from the same skill. A block of another kind than
- * branches throws.
+ * draws a replacement from the same skill. Both shapes run their blocks in
+ * section order. A block of another kind than branches throws.
  *
  * generateTrainingDay({ aiwl: 1, blocks: [{ kind: "branches", skill: "WU", branches: ["410"], duration: 300 }], ... }, input)
  * → [{ branchId: "410", skill: "WU", set: [1, 1], ... }, ...]

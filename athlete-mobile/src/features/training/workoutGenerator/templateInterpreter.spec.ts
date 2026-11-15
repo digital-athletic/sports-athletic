@@ -13,16 +13,13 @@ import {
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { SHORT_WORKOUT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
-import {
-  type BuiltBlockResult,
-  TRAINING_DAY_FINISH_RULES,
-} from "./stages/workoutFinish";
+import type { BuiltBlockResult } from "./stages/workoutFinish";
 import type { WorkoutInput } from "./stages/workoutSetup";
 import { interpretTemplate } from "./templateInterpreter";
 
 /**
  * A stored training day in stored skill order, which differs from the
- * section order BR, GKS, SWR2KG, CD.
+ * section order BR, GKS, SWR2KG, CD. The interpreter keeps the stored order.
  *
  * { blocks: [SWR2KG ["79"], CD ["2"], GKS ["510"], BR ["1"]] }
  */
@@ -42,7 +39,7 @@ const buildSkillSetList = (blocks: BuiltBlockResult[]): string[] =>
   blocks.map((result) => result.block.skill);
 
 describe("templateInterpreter: interpretTemplate", () => {
-  it("sets the workout up once, walks the stored order and builds in section order", () => {
+  it("sets the workout up once, walks the stored order and builds in the same order", () => {
     const receivedInputs: WorkoutInput[] = [];
     const visits: string[] = [];
     const handlers = generateHandlerRegistry(undefined, {
@@ -62,7 +59,7 @@ describe("templateInterpreter: interpretTemplate", () => {
       generateRuleFamilyInput({ pains: ["KNEE_LEFT"] }),
       {
         handlers,
-        finishRules: TRAINING_DAY_FINISH_RULES,
+        finishRules: { requiredBlocks: "none" },
         createSetListBuilder: (input) => {
           receivedInputs.push(input);
           return buildSkillSetList;
@@ -76,7 +73,7 @@ describe("templateInterpreter: interpretTemplate", () => {
     // the four handlers and the set list builder share one workout input
     expect(receivedInputs).toHaveLength(5);
     expect(new Set(receivedInputs).size).toBe(1);
-    expect(workout.setList).toEqual(["BR", "GKS", "SWR2KG", "CD"]);
+    expect(workout.setList).toEqual(["SWR2KG", "CD", "GKS", "BR"]);
   });
 
   it("hands each picks block the workout input that resolved it in workout setup", () => {
@@ -93,7 +90,7 @@ describe("templateInterpreter: interpretTemplate", () => {
 
     interpretTemplate(template, generateRuleFamilyInput(), {
       handlers,
-      finishRules: TRAINING_DAY_FINISH_RULES,
+      finishRules: { requiredBlocks: "none" },
       createSetListBuilder: () => buildSkillSetList,
       picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
     });
@@ -115,7 +112,7 @@ describe("templateInterpreter: interpretTemplate", () => {
 
     interpretTemplate(template, generateRuleFamilyInput(), {
       handlers,
-      finishRules: TRAINING_DAY_FINISH_RULES,
+      finishRules: { requiredBlocks: "none" },
       createSetListBuilder: () => buildSkillSetList,
       skillTrees: { ...skillTrees, WU: { "409": warmUpBranch } },
       picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
@@ -136,7 +133,7 @@ describe("templateInterpreter: interpretTemplate", () => {
     expect(() =>
       interpretTemplate(STORED_TRAINING_DAY, generateRuleFamilyInput(), {
         handlers,
-        finishRules: TRAINING_DAY_FINISH_RULES,
+        finishRules: { requiredBlocks: "none" },
         createSetListBuilder: () => buildSkillSetList,
         picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
       }),

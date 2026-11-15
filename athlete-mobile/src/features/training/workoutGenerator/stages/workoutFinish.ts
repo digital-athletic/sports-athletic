@@ -1,4 +1,3 @@
-import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { BlockResult } from "./blockWalk";
 
@@ -7,73 +6,19 @@ export type FilledBlockResult = Extract<BlockResult, { status: "filled" }>;
 export type BuiltBlockResult = Exclude<BlockResult, { status: "empty" }>;
 
 export interface WorkoutFinishRules {
-  // "section" builds the skills in SECTION_ORDER, "template" in block order.
-  readonly blockOrder: "template" | "section";
   // "every" throws for the first empty block in template order, with its
-  // reason, so a source whose blocks belong together never returns a part of
+  // reason, so a workout whose blocks belong together never returns a part of
   // it; "none" builds the blocks that are not empty.
   readonly requiredBlocks: "every" | "none";
-  // "lastWins" keeps one branch selecting block per skill, the last one in
-  // template order, as a stored day holds one entry per skill, and keeps every
-  // prescribed block; "keepAll" builds every block.
-  readonly sameSkillBlocks: "keepAll" | "lastWins";
 }
 
-export const TRAINING_DAY_FINISH_RULES: WorkoutFinishRules = {
-  blockOrder: "section",
-  requiredBlocks: "none",
-  sameSkillBlocks: "lastWins",
-};
-
-export const SHORT_WORKOUT_FINISH_RULES: WorkoutFinishRules = {
-  blockOrder: "template",
-  requiredBlocks: "none",
-  sameSkillBlocks: "keepAll",
-};
-
-// Takes the built blocks in build order.
+// Takes the built blocks in template order.
 export type SetListBuilder<TEntry> = (blocks: BuiltBlockResult[]) => TEntry[];
 
 export interface FinishedWorkout<TEntry> {
   blocks: BuiltBlockResult[];
   setList: TEntry[];
 }
-
-// A prescribed block keeps its template slot; the filled blocks fill the
-// other slots in section order, so no source order moves a prescribed list.
-const sortBlockResultsBySectionOrder = (
-  results: BuiltBlockResult[],
-): BuiltBlockResult[] => {
-  const sortedFilled = results
-    .filter((result) => result.status === "filled")
-    .sort(
-      (a, b) =>
-        WorkoutConstants.SECTION_ORDER.indexOf(a.block.skill) -
-        WorkoutConstants.SECTION_ORDER.indexOf(b.block.skill),
-    );
-  let nextFilled = 0;
-  return results.map((result) =>
-    result.status === "prescribed" ? result : sortedFilled[nextFilled++],
-  );
-};
-
-// An empty block counts: it replaces an earlier filled block of its skill. A
-// prescribed block neither replaces a block nor gets replaced, so the rule
-// never drops an exercise the template prescribes.
-const listLastResultPerSkill = (
-  results: readonly BlockResult[],
-): BlockResult[] =>
-  results.filter(
-    (result, index) =>
-      result.status === "prescribed" ||
-      !results
-        .slice(index + 1)
-        .some(
-          (later) =>
-            later.status !== "prescribed" &&
-            later.block.skill === result.block.skill,
-        ),
-  );
 
 // Some handlers still end empty without a reason, so the rule names the skill.
 const requireEveryBlock = (results: readonly BlockResult[]): void => {
@@ -90,10 +35,10 @@ const requireEveryBlock = (results: readonly BlockResult[]): void => {
 };
 
 /**
- * Builds the set list from the filled blocks in build order. An empty set
- * list throws the reason of the first empty block in template order. The
- * empty check reads the built set list, as the old generator does, because
- * the builder drops branches without a catalog exercise.
+ * Builds the set list from the blocks that are not empty, in template order.
+ * An empty set list throws the reason of the first empty block in template
+ * order. The empty check reads the built set list, as the old generator does,
+ * because the builder drops branches without a catalog exercise.
  */
 export const finishWorkout = <TEntry>(
   results: readonly BlockResult[],
@@ -101,15 +46,9 @@ export const finishWorkout = <TEntry>(
   buildSetList: SetListBuilder<TEntry>,
 ): FinishedWorkout<TEntry> => {
   if (rules.requiredBlocks === "every") requireEveryBlock(results);
-  const filledBlocks = (
-    rules.sameSkillBlocks === "lastWins"
-      ? listLastResultPerSkill(results)
-      : results
-  ).filter((result): result is BuiltBlockResult => result.status !== "empty");
-  const blocks =
-    rules.blockOrder === "section"
-      ? sortBlockResultsBySectionOrder(filledBlocks)
-      : filledBlocks;
+  const blocks = results.filter(
+    (result): result is BuiltBlockResult => result.status !== "empty",
+  );
   const setList = buildSetList(blocks);
   if (setList.length === 0) {
     for (const result of results) {

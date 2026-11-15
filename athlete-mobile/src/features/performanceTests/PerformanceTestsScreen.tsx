@@ -1,11 +1,14 @@
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { HeadlineScreen } from "@/common/HeadlineScreen";
+import { usePerformanceTestValuesStore } from "@/store/performanceTestValuesStore";
 import { Box } from "@/theme/Box";
 import { formatDateToISO } from "@/utils/date";
 import { type SportTest } from "./models/SportTest";
 import { PerformanceTestRow } from "./PerformanceTestRow";
 import { PerformanceTestsNotice } from "./PerformanceTestsNotice";
 import { referenceRangeOnDate } from "./referenceRange";
+import { latestResult, valuesOfTest } from "./testValues";
 import { useAthleteProfile } from "./useAthleteProfile";
 import { usePerformanceTests } from "./usePerformanceTests";
 
@@ -38,8 +41,17 @@ export default function PerformanceTestsScreen() {
 }
 
 function PerformanceTestList({ tests }: { tests: SportTest[] }) {
+  const router = useRouter();
   const athlete = useAthleteProfile();
+  const values = usePerformanceTestValuesStore((state) => state.values);
   const today = formatDateToISO(new Date());
+
+  const openDetail = (testCode: string) => {
+    router.navigate({
+      pathname: "/(tabs)/(more)/performance-test/[testCode]",
+      params: { testCode },
+    });
+  };
 
   return (
     <>
@@ -48,6 +60,12 @@ function PerformanceTestList({ tests }: { tests: SportTest[] }) {
           key={test.id}
           test={test}
           range={referenceRangeOnDate(test, athlete, today)}
+          latest={latestResult(
+            test,
+            athlete,
+            valuesOfTest(values, athlete.sport, test.code),
+          )}
+          onPress={() => openDetail(test.code)}
         />
       ))}
     </>

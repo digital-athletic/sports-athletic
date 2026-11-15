@@ -13,6 +13,7 @@ import {
 } from "@test/factories/setListDescription";
 import {
   generateBreathingTrees,
+  generateLowerBodyBranch,
   generateMixedSkillTrees,
   generateTreeBranch,
 } from "@test/factories/skillTree";
@@ -24,7 +25,10 @@ import {
   generateUntimedBranchesBlock,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import { generateMixedExerciseCatalog } from "@test/factories/valueExercise";
+import {
+  generateLowerBodyExercises,
+  generateMixedExerciseCatalog,
+} from "@test/factories/valueExercise";
 import * as picksHandler from "./blockHandlers/picks/picksHandler";
 import { generateShortWorkoutFromTemplate } from "./shortWorkoutGeneration";
 
@@ -293,31 +297,32 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     expect(listTrainedExercises(setList)).toEqual(["e2"]);
   });
 
-  it("throws the pain error of the picks rules when pain blocks every listed branch of a branches block", () => {
+  it("trains a replacement branch of the same skill when pain blocks every listed branch", () => {
+    // MOB branch 1 is blocked for knee pain, branch 2 is free
+    const skillTrees = {
+      MOB: {
+        "1": generateLowerBodyBranch({ 1: { exerciseId: "e1" } }, [
+          "BLOCK_KNEE",
+        ]),
+        "2": generateLowerBodyBranch({ 1: { exerciseId: "e2" } }),
+      },
+    };
     const template = generateShortTemplate([
       generateUntimedBranchesBlock("MOB", { branches: ["1"] }),
     ]);
-    const skillTrees = {
-      MOB: { "1": generateTreeBranch(["e1"], ["BLOCK_KNEE"]) },
-    };
 
-    expect(
-      catchThrownValue(() =>
-        generateShortWorkoutFromTemplate(
-          template,
-          generateRuleFamilyInput({
-            exerciseCatalog: generateMixedExerciseCatalog(),
-            skillTrees,
-            pains: ["KNEE_LEFT"],
-          }),
-          skillTrees,
-        ),
-      ),
-    ).toStrictEqual({
-      type: "NO_EXERCISES",
-      subtype: "PAIN",
-      params: ["KNEE"],
-    });
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: generateLowerBodyExercises(["e1", "e2"]),
+        skillTrees,
+        pains: ["KNEE_LEFT"],
+        random: () => 0,
+      }),
+      skillTrees,
+    );
+
+    expect(listTrainedExercises(setList)).toEqual(["e2"]);
   });
 
   it("runs a cardio branches block that sets only its duration", () => {

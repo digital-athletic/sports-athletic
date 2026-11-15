@@ -10,7 +10,7 @@ The plan is authored days or weeks ahead. By start time the athlete may be sore,
 
 ## Solution
 
-Filter today's pre-selected branches by soreness, equipment, and level, replace the blocked ones from the skill tree, then resolve each branch to the athlete's level. Workouts the athlete starts without a plan run the same filters over a pool drawn straight from the skill trees: [Plan-Independent Workouts](./plan-independent-workouts.md).
+Filter today's pre-selected branches by pain, age group, gender, soreness, equipment, and level, replace the blocked ones from the skill tree, then resolve each branch to the athlete's level. Workouts the athlete starts without a plan run the same filters over a pool drawn straight from the skill trees: [Plan-Independent Workouts](./plan-independent-workouts.md).
 
 Max strength opens with its lower-body main lifts. Every other skill preferably starts with a large muscle group and then rotates body regions as a soft priority. Region changes take precedence over muscle-group size when ordering subsequent exercises or superset pairs.
 
@@ -98,7 +98,7 @@ flowchart TD
 
 1. **Section and day**: apply the training gap rule from [Training Plan Creation](../planning/training-plan-creation-from-anamnesis.md), then take the section with the latest start date not after today.
 2. **Training for today**: use the training matching today's weekday; when none matches, the generator falls back to the section's first training. This weekday fallback is the decided model: a session-time focus choice for planned workouts, where the athlete would pick one of the four focus types for a single session, is deliberately not specified and not implemented. The focus types themselves exist: plan creation assigns one per training day. An athlete who wants a different emphasis today starts a focus training instead, one of the plan-independent short workouts ([Plan-Independent Workouts](./plan-independent-workouts.md)).
-3. **Filter** each skill's pre-selected branches by soreness, equipment, and level, then by uniqueness: a kept branch resolving to an exercise ID that an earlier kept branch of the skill already holds counts as blocked. Every removed branch records its body region as a replacement request.
+3. **Filter** each skill's pre-selected branches by pain, age group and gender, then by soreness, equipment, and level, then by uniqueness. Plan creation already applies pain, age group and gender. A profile change creates a new plan, so these three filters remove a branch only from the authored branches block of a short workout. Uniqueness: a kept branch resolving to an exercise ID that an earlier kept branch of the skill already holds counts as blocked. Every removed branch records its body region as a replacement request.
 4. **Replace** blocked branches per skill:
    - A blocked cardio skill gives way wholesale to steady zone 5 cardio, capped at 20 minutes.
    - Otherwise candidates come from the skill's tree, run through the same filter chain plus age, excluding branch IDs already kept for this skill and branches resolving to an exercise ID already used in it. Prefer candidates matching the blocked region; failing that, the least-used regions, capped at 5 exercises per region (6 for professionals) with a one-sided branch counting twice. The final pick is uniformly random.

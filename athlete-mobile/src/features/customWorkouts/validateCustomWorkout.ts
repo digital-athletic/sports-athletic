@@ -3,8 +3,8 @@ import * as v from "valibot";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { loadSkillCatalog } from "@/data/loadSkillCatalog";
 import { resolvePicksBlocks } from "@/features/training/workoutGenerator/blockHandlers/picks/picksBlockResolution";
-import { readSkillSetListKind } from "@/features/training/workoutGenerator/stages/setListBuilding";
 import {
+  readSkillSetListKind,
   TemplateSchema,
   type Block,
   type BlockPicks,

@@ -56,23 +56,23 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     [
       "WU",
       [
-        "399 1/1",
-        "pause 10",
         "407 1/1",
         "pause 10",
-        "387 1/1",
-        "pause 10",
-        "402 1/1",
-        "pause 10",
-        "392 1/1",
+        "135 1/1",
         "pause 10",
         "401 1/1",
         "pause 10",
         "1112 1/1",
         "pause 10",
+        "399 1/1",
+        "pause 10",
+        "402 1/1",
+        "pause 10",
+        "387 1/1",
+        "pause 10",
         "432 1/1",
         "pause 10",
-        "135 1/1",
+        "392 1/1",
         "pause 10",
         "421 1/1",
       ],
@@ -80,14 +80,6 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     [
       "BAS",
       [
-        "530 1/2",
-        "pause 30",
-        "533 1/2",
-        "pause 30",
-        "530 2/2",
-        "pause 30",
-        "533 2/2",
-        "pause 30",
         "1082 1/2",
         "pause 30",
         "1083 1/2",
@@ -95,15 +87,19 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
         "1082 2/2",
         "pause 30",
         "1083 2/2",
+        "pause 30",
+        "530 1/2",
+        "pause 30",
+        "533 1/2",
+        "pause 30",
+        "530 2/2",
+        "pause 30",
+        "533 2/2",
       ],
     ],
     [
       "GKS",
       [
-        "357 1/2",
-        "pause 45",
-        "357 2/2",
-        "pause 45",
         "242 1/2",
         "pause 45",
         "862 1/2",
@@ -111,6 +107,10 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
         "242 2/2",
         "pause 45",
         "862 2/2",
+        "pause 45",
+        "357 1/2",
+        "pause 45",
+        "357 2/2",
       ],
     ],
     [
@@ -120,18 +120,10 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
         "pause 10",
         "1132 1/1",
         "pause 10",
-        "425 1/1",
-        "pause 10",
         "389 1/1",
+        "pause 10",
+        "425 1/1",
         "pause 30",
-        "1149 1/2",
-        "pause 30",
-        "1150 1/2",
-        "pause 30",
-        "1149 2/2",
-        "pause 30",
-        "1150 2/2",
-        "pause 60",
         "1001 1/2",
         "pause 30",
         "1192 1/2",
@@ -139,6 +131,14 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
         "1001 2/2",
         "pause 30",
         "1192 2/2",
+        "pause 60",
+        "1149 1/2",
+        "pause 30",
+        "1150 1/2",
+        "pause 30",
+        "1149 2/2",
+        "pause 30",
+        "1150 2/2",
         "pause 60",
         "514 1/2",
         "pause 30",
@@ -184,6 +184,42 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     );
 
     expect(listTrainedSkills(setList)).toEqual(["MOB", "BR", "CD"]);
+  });
+
+  it("throws the error of the first empty block when no block draws an exercise", () => {
+    jest
+      .spyOn(PICKS_BLOCK_HANDLER, "handleBlock")
+      .mockImplementation((block) => ({
+        status: "empty",
+        block,
+        reason: {
+          type: "NO_EXERCISES",
+          subtype: "SKILL_TREE",
+          params: [block.skill],
+        },
+        usedBranchIds: [],
+      }));
+    const skillTrees = generateMixedSkillTrees();
+
+    expect(
+      catchThrownValue(() =>
+        generateShortWorkoutFromTemplate(
+          generateShortTemplate([
+            generatePicksBlock("MOB"),
+            generatePicksBlock("CD"),
+          ]),
+          generateRuleFamilyInput({
+            exerciseCatalog: generateMixedExerciseCatalog(),
+            skillTrees,
+          }),
+          skillTrees,
+        ),
+      ),
+    ).toStrictEqual({
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: ["MOB"],
+    });
   });
 
   it("skips the branch a branches block trained when a later picks block draws", () => {

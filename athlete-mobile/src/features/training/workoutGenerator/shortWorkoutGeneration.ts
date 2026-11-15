@@ -10,10 +10,7 @@ import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
 import { SHORT_WORKOUT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "./generationInput/generationInput";
 import type { BlockHandlerRegistry } from "./stages/blockWalk";
-import {
-  createSetListBuilder,
-  SHORT_WORKOUT_SET_LIST_RULES,
-} from "./stages/setListBuilding";
+import { createSetListBuilder } from "./stages/setListBuilding";
 import { requireSupportedTemplateBlocks } from "./stages/templateBlockCheck";
 import { SHORT_WORKOUT_FINISH_RULES } from "./stages/workoutFinish";
 import { interpretTemplate } from "./templateInterpreter";
@@ -56,7 +53,8 @@ const SHORT_WORKOUT_HANDLERS: BlockHandlerRegistry = {
  * duration block of a skill other than a cardio zone, an `order` field or
  * `bodyParts` throws OTHER/BLOCK_KIND before any picks workout rule runs.
  * Picks, branches and cardio duration blocks then run in template order, and
- * an empty block adds nothing.
+ * an empty block adds nothing. A workout that draws no exercise throws the
+ * error of its first empty block.
  *
  * generateShortWorkoutFromTemplate(mobilityTemplate, input, getAllSkillTrees())
  * → [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...]
@@ -77,8 +75,7 @@ export const generateShortWorkoutFromTemplate = (
   return interpretTemplate(template, input, {
     handlers: SHORT_WORKOUT_HANDLERS,
     finishRules: SHORT_WORKOUT_FINISH_RULES,
-    createSetListBuilder: (workoutInput) =>
-      createSetListBuilder(workoutInput, SHORT_WORKOUT_SET_LIST_RULES),
+    createSetListBuilder,
     skillTrees,
     picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
   }).setList;

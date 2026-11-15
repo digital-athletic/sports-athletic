@@ -1,6 +1,9 @@
 import type { GeneratorError } from "@/features/training/models/GeneratorError";
-import type { Block, Template } from "@/schemas/aiwl.schema";
-import { readSkillSetListKind } from "./setListBuilding";
+import {
+  type Block,
+  readSkillSetListKind,
+  type Template,
+} from "@/schemas/aiwl.schema";
 
 // Names the kind or field of a block the generator cannot run yet. A duration
 // block runs only for a skill whose set list builder fills a length: cardio.

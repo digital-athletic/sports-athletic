@@ -72,23 +72,6 @@ describe("workoutFinish: finishWorkout", () => {
     expect(workout.setList).toEqual(["CD 10", "WU 10"]);
   });
 
-  it("hands the builder every block result in template order", () => {
-    const results = [
-      generateFilledBranchesResult("CD"),
-      generateEmptyBranchesResult("WU", undefined),
-      generateFilledBranchesResult("BR"),
-    ];
-
-    const workout = finishWorkout(
-      results,
-      TRAINING_DAY_FINISH_RULES,
-      (_blocks, allResults) =>
-        allResults.map((result) => `${result.block.skill} ${result.status}`),
-    );
-
-    expect(workout.setList).toEqual(["CD filled", "WU empty", "BR filled"]);
-  });
-
   it("drops the empty blocks and throws nothing while the set list holds an entry", () => {
     const results = [
       generateEmptyBranchesResult("SWR2KG", generateEquipmentError(["BAR"])),
@@ -167,14 +150,18 @@ describe("workoutFinish: finishWorkout", () => {
     ).toEqual({ blocks: [], setList: [] });
   });
 
-  it("never throws for an empty short workout, even with a reason", () => {
+  it("throws the reason of the first empty block of an empty short workout", () => {
+    const wuError = generateEquipmentError(["DUMBBELL"]);
     const results = [
-      generateEmptyBranchesResult("WU", generateEquipmentError(["DUMBBELL"])),
+      generateEmptyBranchesResult("WU", wuError),
+      generateEmptyBranchesResult("CD", generateEquipmentError(["BARBELL"])),
     ];
 
     expect(
-      finishWorkout(results, SHORT_WORKOUT_FINISH_RULES, buildStubSetList),
-    ).toEqual({ blocks: [], setList: [] });
+      catchThrownValue(() =>
+        finishWorkout(results, SHORT_WORKOUT_FINISH_RULES, buildStubSetList),
+      ),
+    ).toBe(wuError);
   });
 
   // a stored day holds one entry per skill, so a swapped CARDIO_5 replaces a stored one

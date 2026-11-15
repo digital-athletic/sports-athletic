@@ -12,10 +12,7 @@ import type {
   BlockHandlerRegistry,
   InterpretedWorkout,
 } from "./stages/blockWalk";
-import {
-  createSetListBuilder,
-  TRAINING_DAY_SET_LIST_RULES,
-} from "./stages/setListBuilding";
+import { createSetListBuilder } from "./stages/setListBuilding";
 import { TRAINING_DAY_FINISH_RULES } from "./stages/workoutFinish";
 import {
   createStoredDayWorkout,
@@ -77,8 +74,7 @@ const runTrainingDayWorkout = (
   return interpretTemplate(workout, input, {
     handlers,
     finishRules: TRAINING_DAY_FINISH_RULES,
-    createSetListBuilder: (workoutInput) =>
-      createSetListBuilder(workoutInput, TRAINING_DAY_SET_LIST_RULES),
+    createSetListBuilder,
     picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
   }).setList;
 };
@@ -107,8 +103,8 @@ export const generateTrainingDayFromStoredDay = (
  * Generates the set list of a plan training day. A legacy training runs
  * its stored day with the branches it saved. An AIWL training runs its workout
  * with the branches of the skill catalog, and a branch ID the catalog lacks
- * draws a replacement from the same skill. Both use the training day set list
- * rules. A block of another kind than branches throws.
+ * draws a replacement from the same skill. A block of another kind than
+ * branches throws.
  *
  * generateTrainingDay({ aiwl: 1, blocks: [{ kind: "branches", skill: "WU", branches: ["410"], duration: 300 }], ... }, input)
  * → [{ branchId: "410", skill: "WU", set: [1, 1], ... }, ...]

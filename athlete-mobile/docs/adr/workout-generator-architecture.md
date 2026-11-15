@@ -119,33 +119,29 @@ Builders of exercises blocks share one contract, `PrescribedSetListBuilder`: a `
 
 ### Set list building rules
 
-One function, `createSetListBuilder`, builds the set list of every workout source. For each filled block it reads the timing, pairs the exercises, orders the pairs and calls the set list builder of the skill. Each source passes a rules object. The rules object names every intended difference between the sources:
+One function, `createSetListBuilder`, builds the set list of every workout source: short workouts, training days and the strength test. For each filled block it reads the timing, pairs the exercises, orders the pairs and calls the set list builder of the skill. The sources pass no rules; set list building reads only the block:
 
-| Rule                 | Short workout                                                       | Training day                                                                                                 | Strength test |
-| -------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------- |
-| `blockTiming`        | `workoutSetup`: the timing that workout setup resolved                   | `trainingDayDefaults`: the block's own values, then the training day defaults                                | `trainingDayDefaults`: the warm-up block sets every value |
-| `cardioPairing`      | `bySuperset`: pairs cardio like every other block                   | `drawOne`: draws one cardio branch                                                                           | `bySuperset`, unused |
-| `maxStrengthPairing` | `bySuperset`: pairs by the superset and trains the lead             | `singles`: trains every max strength exercise on its own                                                     | `bySuperset`, unused |
-| `branchPairing`      | `bySuperset`: pairs by the block's superset                          | `bySuperset`                                                                                                 | `singlesAsDrawn`: trains every warm-up exercise alone, in draw order, one side only |
-| `exerciseOrder`      | `asPaired`: keeps the order of the pairs                            | `awayFromPreviousBlock`: opens each block away from the block before, max strength lower body first, cardio as drawn | `asPaired` |
-| `closingRest`        | `lastTemplateBlock`: drops the closing rest of a filled last block  | `setListEnd`: drops the rest that closes the set list                                                        | `setListEnd`: ends on the last test set |
+| Block          | Pairing                                                   | Order                                                                                   |
+| -------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Cardio         | draws one branch                                          | as drawn                                                                                |
+| Singles        | each exercise alone, without its other side               | draw order                                                                              |
+| Max strength   | each exercise on its own, with the other side of a one-sided exercise | opens away from the exercise that ended the block before, lower body first |
+| Any other      | by the block's superset                                   | opens away from the exercise that ended the block before                               |
 
-A new difference between sources adds a rule to this object. A fix to a step reaches every source.
+A singles block is a block with the superset setting `"singles"`; the strength test warm-up sets it. A max strength block always pairs as the table says, so the AIWL block schema rejects `"singles"` on a max strength skill with `superset "singles" is not allowed on a max strength block`. The schema and set list building both name the builder of a skill with `readSkillSetListKind`, so the two cannot drift. TypeScript cannot exclude the combination in the block type, because a skill is a free string. The set list drops the rest at its very end, so every workout ends on a set. A fix to a step reaches every source.
 
-#### Defaults
+The strength test lifts keep their own builder, the prescribed strength test builder above.
 
-The block's own values come first. The two sources differ in where their defaults come from:
+A short workout that draws no exercise throws the error of its first empty block, as a training day does.
 
-- **Short workouts** read the skill catalog (`skills.json`) during workout setup. A missing default throws an error that names the block.
-- **Training days** read `readTrainingDayTimingDefaults`. That function checks three layers in order for each field:
-  1. the training day overrides
-  2. the skill catalog
-  3. the fallback: 2 sets, a superset by muscles and 10 s rests
+#### Timing
 
-The training day overrides keep stored plans as they were. They only hold the values the catalog lacks:
+The block's own values come first. The defaults depend on the block kind:
 
-- the sets, superset and rests of the cardio skills
-- the PLYO skill, which has no catalog entry. The catalog entries `PLYO_HIGH` and `PLYO_MEDIUM` carry the same values for picks blocks.
+- A **picks block** takes the timing that workout setup resolved from the skill catalog (`skills.json`). A missing default throws an error that names the block.
+- **Every other block** reads `readTrainingDayTimingDefaults`: the skill catalog, then the fallback of 2 sets, a superset by muscles and 10 s rests.
+
+The skill catalog stores the sets, superset and rests of the six cardio skills and of `PLYO`, the plyometric skill of stored training plans. A timing change is a data edit in `skills.json`. The catalog entries `PLYO_HIGH` and `PLYO_MEDIUM` carry the same values for picks blocks.
 
 ### Block handlers (Strategy)
 
@@ -266,7 +262,7 @@ The router selects the stored training day of the plan with its own copy of the 
 
 The builder binds the test set loads per lift, gender and fitness level from `strengthTest.json` and the share of the last estimated 1RM a test set loads per fitness level from `oneRepMaxShares.json`. A lift without an estimated 1RM and without a test set load for the athlete's gender fails the builder instead of building at 0 kg. Lifts no longer vary by fitness level or gender in this source; the template lists them.
 
-Source checks run before any block. `loadStrengthTestTemplate` parses `TEST.json` with the AIWL `TemplateSchema` and checks the id `TEST`. `checkStrengthTestTemplate` checks the template first and throws a configuration error naming the path: the lifts block holds `testSets`, and `checkTestSetWorkout` runs the checks every workout with test sets passes: the warm-up picks block of skill `WU` comes first, the exercises block of lifts second and last, its `testSets` end on their one `amrap` set, and every lift has test set loads for both genders in `strengthTest.json`. The generic interpreter holds none of these rules. The athlete checks follow: workout data, no athlete under 16 (`NO_EXERCISES/AGE`), no muscle soreness (`TOO_MUCH_SORENESS/TEST_WORKOUT`). The source runs the shared workout setup and the shared picks handler. The pain, equipment, age group and gender rules filter the warm-up pool and throw their pool errors `NO_EXERCISES/PAIN`, `EQUIPMENT`, `AGE` and `GENDER`. `TEST.json` names the region quotas with `REGION_` tags and sets `countBy: "exercises"` on the warm-up, so a one-sided branch fills one quota slot, and `fallbackToWholeTree: true`, so a region quota without a matching branch draws any unused branch. The strength test set list rules keep the warm-up exercises one at a time in draw order. A lift missing from the catalog fails the whole test with a template error. The athlete picks no place for the test and the app passes the STUDIO equipment, so the source sets the exercises rule `equipment: "ignored"` and missing lift equipment blocks no lift. Setting the rule to `"required"` turns the check on and throws `NO_EXERCISES/EQUIPMENT`. The source sets the finish rule `requiredBlocks: "every"`, so a warm-up that draws no exercise fails the test with `NO_EXERCISES/SKILL_TREE` and the skill `WU`. Lift entries keep the placeholder branch ID, so session storage, resume, completion, statistics and the estimated 1RM update read them as before and write no branch progression.
+Source checks run before any block. `loadStrengthTestTemplate` parses `TEST.json` with the AIWL `TemplateSchema` and checks the id `TEST`. `checkStrengthTestTemplate` checks the template first and throws a configuration error naming the path: the lifts block holds `testSets`, and `checkTestSetWorkout` runs the checks every workout with test sets passes: the warm-up picks block of skill `WU` comes first, the exercises block of lifts second and last, its `testSets` end on their one `amrap` set, and every lift has test set loads for both genders in `strengthTest.json`. The generic interpreter holds none of these rules. The athlete checks follow: workout data, no athlete under 16 (`NO_EXERCISES/AGE`), no muscle soreness (`TOO_MUCH_SORENESS/TEST_WORKOUT`). The source runs the shared workout setup and the shared picks handler. The pain, equipment, age group and gender rules filter the warm-up pool and throw their pool errors `NO_EXERCISES/PAIN`, `EQUIPMENT`, `AGE` and `GENDER`. `TEST.json` names the region quotas with `REGION_` tags and sets `countBy: "exercises"` on the warm-up, so a one-sided branch fills one quota slot, and `fallbackToWholeTree: true`, so a region quota without a matching branch draws any unused branch. `TEST.json` sets `superset: "singles"` on the warm-up, so the warm-up trains its exercises one at a time in draw order. A lift missing from the catalog fails the whole test with a template error. The athlete picks no place for the test and the app passes the STUDIO equipment, so the source sets the exercises rule `equipment: "ignored"` and missing lift equipment blocks no lift. Setting the rule to `"required"` turns the check on and throws `NO_EXERCISES/EQUIPMENT`. The source sets the finish rule `requiredBlocks: "every"`, so a warm-up that draws no exercise fails the test with `NO_EXERCISES/SKILL_TREE` and the skill `WU`. Lift entries keep the placeholder branch ID, so session storage, resume, completion, statistics and the estimated 1RM update read them as before and write no branch progression.
 
 The router sends every strength test to this source. Compared with the deleted old path, it adds the age check.
 
@@ -278,8 +274,6 @@ The generator deviates from the target architecture in these places, so that sto
 |---|---|---|
 | Training days store branch entries and minutes instead of a template | Stored plans predate AIWL | Stored plan migration |
 | Planned branches read the saved branch entries, replacements read the catalog | No catalog update changes a planned workout without a migration | Stored plan migration |
-| Training day overrides for the cardio skills and PLYO | The skill catalog lacks these values | The catalog holds the values |
-| The set list rules differ by source | Each source keeps the set lists of its old path | A decision unifies or keeps each rule |
 | Training days store cardio as a branches block | Plan creation stores cardio branches, so this ADR amends AIWL rule 1 | Plan creation writes duration blocks |
 
 ### Remaining work

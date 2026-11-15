@@ -1,7 +1,7 @@
 import * as v from "valibot";
 
 import TEST from "../../assets/data/templates/TEST.json";
-import { TemplateSchema } from "./aiwl.schema";
+import { readSkillSetListKind, TemplateSchema } from "./aiwl.schema";
 import { generateRawExercisesBlock } from "@test/factories/rawExercisesBlock";
 import {
   generateRawBlock,
@@ -188,14 +188,17 @@ describe("TemplateSchema: accepts", () => {
 });
 
 describe("TemplateSchema: accepts every setting value", () => {
-  it.each(["none", "muscles", "drawOrder", "drawOrderWithLeftovers"])(
-    "superset %s",
-    (superset) => {
-      expect(
-        v.safeParse(TemplateSchema, template(picksBlock({ superset }))).success,
-      ).toBe(true);
-    },
-  );
+  it.each([
+    "none",
+    "singles",
+    "muscles",
+    "drawOrder",
+    "drawOrderWithLeftovers",
+  ])("superset %s", (superset) => {
+    expect(
+      v.safeParse(TemplateSchema, template(picksBlock({ superset }))).success,
+    ).toBe(true);
+  });
 
   it.each(["exercises", "entries", "pairs"])("countBy %s", (countBy) => {
     expect(
@@ -340,6 +343,70 @@ describe("TemplateSchema: rejects wrong picks and body parts", () => {
   ])("%s", (_label, block, path) => {
     expect(firstIssuePath(template(block))?.startsWith(path)).toBe(true);
   });
+});
+
+describe("readSkillSetListKind", () => {
+  it.each([
+    ["CARDIO_2", "cardio"],
+    ["CARDIO_5", "cardio"],
+    ["MAX", "maxStrength"],
+    ["MAX_STRENGTH", "maxStrength"],
+    ["SASKG", "standard"],
+    ["WUSPEZIAL", "standard"],
+  ])("builds %s with the %s builder", (skill, kind) => {
+    expect(readSkillSetListKind(skill)).toBe(kind);
+  });
+});
+
+describe("TemplateSchema: the singles superset on max strength blocks", () => {
+  const MAX_STRENGTH_SINGLES_MESSAGE =
+    'superset "singles" is not allowed on a max strength block';
+
+  const readFirstIssue = (data: unknown) => {
+    const result = v.safeParse(TemplateSchema, data);
+    return result.success ? undefined : result.issues[0];
+  };
+
+  it.each([
+    ["a picks block of MAX", picksBlock({ skill: "MAX", superset: "singles" })],
+    [
+      "a branches block of MAX_STRENGTH",
+      branchesBlock({ skill: "MAX_STRENGTH", superset: "singles" }),
+    ],
+    [
+      "a duration block of MAX",
+      durationBlock({ skill: "MAX", superset: "singles" }),
+    ],
+  ])("rejects %s", (_label, block) => {
+    const issue = readFirstIssue(template(block));
+
+    expect(issue?.message).toBe(MAX_STRENGTH_SINGLES_MESSAGE);
+    expect(firstIssuePath(template(block))).toBe("blocks.0.superset");
+  });
+
+  it.each(["none", "muscles", "drawOrder", "drawOrderWithLeftovers"])(
+    "accepts a max strength block with superset %s",
+    (superset) => {
+      expect(
+        v.safeParse(
+          TemplateSchema,
+          template(picksBlock({ skill: "MAX", superset })),
+        ).success,
+      ).toBe(true);
+    },
+  );
+
+  it.each(["WU", "GKS", "CARDIO_2"])(
+    "accepts superset singles on a block of %s",
+    (skill) => {
+      expect(
+        v.safeParse(
+          TemplateSchema,
+          template(branchesBlock({ skill, superset: "singles" })),
+        ).success,
+      ).toBe(true);
+    },
+  );
 });
 
 describe("TemplateSchema: rejects wrong block settings", () => {

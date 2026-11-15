@@ -54,7 +54,8 @@ const checkLiftLoads = (
   }
 };
 
-const holdsTestSets = ({ blocks }: InterpretedWorkout): boolean =>
+/** True for a workout with an exercises block of test sets. */
+export const holdsTestSets = ({ blocks }: InterpretedWorkout): boolean =>
   blocks.some(
     (block) => block.kind === "exercises" && block.testSets !== undefined,
   );

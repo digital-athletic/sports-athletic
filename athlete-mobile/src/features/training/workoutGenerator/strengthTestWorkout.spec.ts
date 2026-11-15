@@ -1,8 +1,10 @@
 import * as v from "valibot";
 
 import TEST from "../../../../assets/data/templates/TEST.json";
+import { loadStrengthTestTemplate } from "@/data/loadStrengthTestTemplate";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { TemplateSchema } from "@/schemas/aiwl.schema";
+import { generateExercisesBlock } from "@test/factories/exercisesBlock";
 import { generateMaxValues } from "@test/factories/maxValues";
 import { generateSeededRandom } from "@test/factories/seededRandom";
 import {
@@ -12,21 +14,18 @@ import {
 import { generateTreeBranch } from "@test/factories/skillTree";
 import { generateStrengthTestInput } from "@test/factories/strengthTestInput";
 import { generateStrengthTestTemplate } from "@test/factories/strengthTestTemplate";
-import {
-  generateRegionWarmUpTree,
-  generateStrengthTestWarmUpBlock,
-} from "@test/factories/strengthTestWarmUp";
+import { generateRegionWarmUpTree } from "@test/factories/strengthTestWarmUp";
 import {
   generateAuthoredTestSets,
+  generateBundledTestSets,
   generateOneRepMaxShares,
   generateTestSetLoads,
 } from "@test/factories/testSets";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import {
-  generateStrengthTest,
-  loadStrengthTestLoadData,
-} from "./strengthTestGeneration";
+import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
+import { loadStrengthTestLoadData } from "./strengthTestLoadData";
+import { generateSetList } from "./workoutGeneration";
 
 const LEVELS = ["BEGINNER", "ADVANCED", "PROFESSIONAL"] as const;
 const GENDERS = ["MALE", "FEMALE"] as const;
@@ -42,7 +41,7 @@ const listWarmUpBranchIds = (setList: GeneratedSetListEntry[]): string[] =>
     .filter((entry) => entry.skill === "WU" && entry.branchId !== "-1")
     .map((entry) => entry.branchId);
 
-describe("strengthTestGeneration: generateStrengthTest", () => {
+describe("strengthTestWorkout: generateSetList of the strength test", () => {
   const skillTrees = getAllSkillTrees();
 
   beforeEach(() => {
@@ -55,57 +54,39 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
   });
 
   describe("source checks", () => {
-    it("throws NO_EXERCISES SKILL_TREE and returns no lifts when the warm up draws no exercise", () => {
-      const input = generateStrengthTestInput();
-
-      expect(catchThrownValue(() => generateStrengthTest(input, {}))).toEqual({
-        type: "NO_EXERCISES",
-        subtype: "SKILL_TREE",
-        params: ["WU"],
-      });
-    });
-
-    it("throws the anamnesis error for an athlete without workout data", () => {
-      const input = generateStrengthTestInput({ withoutWorkoutData: true });
-
-      expect(
-        catchThrownValue(() => generateStrengthTest(input, skillTrees)),
-      ).toEqual({
-        type: "NO_ANAMNESIS",
-        subtype: "MISSING_WORKOUT_DATA",
-        params: [],
-      });
-    });
-
-    it("throws the template error for a template without a lifts block", () => {
+    it("throws the template error for a test set workout without a warm up", () => {
       const template = generateStrengthTestTemplate({
-        blocks: [generateStrengthTestWarmUpBlock()],
+        blocks: [
+          generateExercisesBlock(["25"], "TEST", {
+            testSets: generateBundledTestSets(),
+          }),
+        ],
       });
       const input = generateStrengthTestInput({
         random: generateSeededRandom(7),
       });
 
       expect(() =>
-        generateStrengthTest(
-          input,
+        generateSetList(template, lookUpStoredBranchInCatalog, input, {
           skillTrees,
-          loadStrengthTestLoadData(),
-          template,
-        ),
+        }),
       ).toThrow(
-        "TEST.blocks[1]: the strength test needs an exercises block of lifts after the warm-up",
+        "TEST.blocks[0]: the strength test starts with a warm-up picks block of skill WU",
       );
     });
 
     it("throws the template error for a lift without test set loads", () => {
       const template = generateStrengthTestTemplate({ exercises: ["25"] });
-      const strengthTest = { ...loadStrengthTestLoadData(), testSetLoads: {} };
+      const loadData = { ...loadStrengthTestLoadData(), testSetLoads: {} };
       const input = generateStrengthTestInput({
         random: generateSeededRandom(7),
       });
 
       expect(() =>
-        generateStrengthTest(input, skillTrees, strengthTest, template),
+        generateSetList(template, lookUpStoredBranchInCatalog, input, {
+          skillTrees,
+          loadData,
+        }),
       ).toThrow(
         "TEST.blocks[1].exercises: lift 25 has no test set loads for both genders",
       );
@@ -113,28 +94,41 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
 
     it("throws the template error before the AGE error for an athlete under 16", () => {
       const template = generateStrengthTestTemplate({
-        blocks: [generateStrengthTestWarmUpBlock()],
+        blocks: [
+          generateExercisesBlock(["25"], "TEST", {
+            testSets: generateBundledTestSets(),
+          }),
+        ],
       });
       const input = generateStrengthTestInput({ birthday: "2010-10-25" });
 
       expect(() =>
-        generateStrengthTest(
-          input,
+        generateSetList(template, lookUpStoredBranchInCatalog, input, {
           skillTrees,
-          loadStrengthTestLoadData(),
-          template,
-        ),
+        }),
       ).toThrow(
-        "TEST.blocks[1]: the strength test needs an exercises block of lifts after the warm-up",
+        "TEST.blocks[0]: the strength test starts with a warm-up picks block of skill WU",
       );
     });
 
-    it("throws NO_EXERCISES AGE for an athlete under 16", () => {
-      const input = generateStrengthTestInput({ birthday: "2010-10-25" });
+    it("throws NO_EXERCISES AGE for an athlete under 16 before any draw", () => {
+      const random = jest.fn(() => 0);
+      const input = generateStrengthTestInput({
+        birthday: "2010-10-25",
+        random,
+      });
 
       expect(
-        catchThrownValue(() => generateStrengthTest(input, skillTrees)),
+        catchThrownValue(() =>
+          generateSetList(
+            loadStrengthTestTemplate(),
+            lookUpStoredBranchInCatalog,
+            input,
+            { skillTrees },
+          ),
+        ),
       ).toEqual({ type: "NO_EXERCISES", subtype: "AGE", params: [] });
+      expect(random).not.toHaveBeenCalled();
     });
 
     it("generates the test for an athlete who turned 16 yesterday", () => {
@@ -144,20 +138,15 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
       });
 
       expect(
-        listTrainedExercises(generateStrengthTest(input, skillTrees)),
+        listTrainedExercises(
+          generateSetList(
+            loadStrengthTestTemplate(),
+            lookUpStoredBranchInCatalog,
+            input,
+            { skillTrees },
+          ),
+        ),
       ).toContain("25");
-    });
-
-    it("throws TOO_MUCH_SORENESS for any current muscle soreness", () => {
-      const input = generateStrengthTestInput({ soreMuscles: ["CHEST"] });
-
-      expect(
-        catchThrownValue(() => generateStrengthTest(input, skillTrees)),
-      ).toEqual({
-        type: "TOO_MUCH_SORENESS",
-        subtype: "TEST_WORKOUT",
-        params: [],
-      });
     });
   });
 
@@ -174,11 +163,11 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
           exercises: ["54", "25"],
         });
 
-        const setList = generateStrengthTest(
-          input,
-          skillTrees,
-          loadStrengthTestLoadData(),
+        const setList = generateSetList(
           template,
+          lookUpStoredBranchInCatalog,
+          input,
+          { skillTrees, loadData: loadStrengthTestLoadData() },
         );
 
         expect([
@@ -198,7 +187,12 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         random: generateSeededRandom(7),
       });
 
-      const setList = generateStrengthTest(input, skillTrees);
+      const setList = generateSetList(
+        loadStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees },
+      );
 
       expect([
         ...new Set(
@@ -215,7 +209,12 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         random: generateSeededRandom(7),
       });
 
-      const setList = generateStrengthTest(input, skillTrees);
+      const setList = generateSetList(
+        loadStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees },
+      );
 
       expect([
         ...new Set(
@@ -236,7 +235,7 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
       });
       // Loads for the unknown lift pass the template check, so the catalog
       // lookup of the exercises handler decides.
-      const strengthTest = {
+      const loadData = {
         ...loadStrengthTestLoadData(),
         testSetLoads: generateTestSetLoads({
           "99999999": generateTestSetLoads()["25"],
@@ -244,7 +243,10 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
       };
 
       expect(() =>
-        generateStrengthTest(input, skillTrees, strengthTest, template),
+        generateSetList(template, lookUpStoredBranchInCatalog, input, {
+          skillTrees,
+          loadData,
+        }),
       ).toThrow("TEST.blocks[1]: exercise 99999999 is no catalog exercise");
     });
   });
@@ -259,11 +261,11 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         testSets: generateAuthoredTestSets(),
       });
 
-      const setList = generateStrengthTest(
-        input,
-        skillTrees,
-        loadStrengthTestLoadData(),
+      const setList = generateSetList(
         template,
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees, loadData: loadStrengthTestLoadData() },
       );
 
       expect(
@@ -282,11 +284,11 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         testSets: generateAuthoredTestSets(),
       });
 
-      const setList = generateStrengthTest(
-        input,
-        skillTrees,
-        loadStrengthTestLoadData(),
+      const setList = generateSetList(
         template,
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees, loadData: loadStrengthTestLoadData() },
       );
 
       expect(
@@ -303,7 +305,7 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         maxValues: generateMaxValues({ kneeDominant: 100 }),
         random: generateSeededRandom(7),
       });
-      const strengthTest = {
+      const loadData = {
         ...loadStrengthTestLoadData(),
         oneRepMaxShares: generateOneRepMaxShares({ beginner: 0.5 }),
       };
@@ -312,11 +314,11 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         testSets: generateAuthoredTestSets(),
       });
 
-      const setList = generateStrengthTest(
-        input,
-        skillTrees,
-        strengthTest,
+      const setList = generateSetList(
         template,
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees, loadData },
       );
 
       expect(
@@ -338,12 +340,14 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
       ) =>
         SEEDS.map((seed) =>
           listWarmUpBranchIds(
-            generateStrengthTest(
+            generateSetList(
+              loadStrengthTestTemplate(),
+              lookUpStoredBranchInCatalog,
               generateStrengthTestInput({
                 ...options,
                 random: generateSeededRandom(seed),
               }),
-              skillTrees,
+              { skillTrees },
             ),
           ),
         );
@@ -359,11 +363,14 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         random: generateSeededRandom(7),
       });
 
-      const setList = generateStrengthTest(
-        input,
-        { WU: generateRegionWarmUpTree(["BLOCK_KNEE"]) },
-        loadStrengthTestLoadData(),
+      const setList = generateSetList(
         bundledTemplate,
+        lookUpStoredBranchInCatalog,
+        input,
+        {
+          skillTrees: { WU: generateRegionWarmUpTree(["BLOCK_KNEE"]) },
+          loadData: loadStrengthTestLoadData(),
+        },
       );
 
       expect(listWarmUpBranchIds(setList)).toHaveLength(5);
@@ -374,11 +381,14 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         random: generateSeededRandom(7),
       });
 
-      const setList = generateStrengthTest(
-        input,
-        { WU: generateRegionWarmUpTree(["EQ_DUMBBELL"]) },
-        loadStrengthTestLoadData(),
+      const setList = generateSetList(
         bundledTemplate,
+        lookUpStoredBranchInCatalog,
+        input,
+        {
+          skillTrees: { WU: generateRegionWarmUpTree(["EQ_DUMBBELL"]) },
+          loadData: loadStrengthTestLoadData(),
+        },
       );
 
       expect(listWarmUpBranchIds(setList)).toHaveLength(5);
@@ -387,11 +397,14 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
     it("draws five distinct branches, one per quota slot, from one sided branches", () => {
       const warmUpTree = generateRegionWarmUpTree(["SIDE_ONE"]);
 
-      const setList = generateStrengthTest(
-        generateStrengthTestInput({ random: generateSeededRandom(7) }),
-        { WU: warmUpTree },
-        loadStrengthTestLoadData(),
+      const setList = generateSetList(
         bundledTemplate,
+        lookUpStoredBranchInCatalog,
+        generateStrengthTestInput({ random: generateSeededRandom(7) }),
+        {
+          skillTrees: { WU: warmUpTree },
+          loadData: loadStrengthTestLoadData(),
+        },
       );
 
       expect(new Set(listWarmUpBranchIds(setList)).size).toBe(5);
@@ -406,11 +419,14 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         ),
       };
 
-      const setList = generateStrengthTest(
-        generateStrengthTestInput({ random: generateSeededRandom(7) }),
-        { WU: warmUpTree },
-        loadStrengthTestLoadData(),
+      const setList = generateSetList(
         bundledTemplate,
+        lookUpStoredBranchInCatalog,
+        generateStrengthTestInput({ random: generateSeededRandom(7) }),
+        {
+          skillTrees: { WU: warmUpTree },
+          loadData: loadStrengthTestLoadData(),
+        },
       );
 
       const warmUpExerciseIds = setList
@@ -424,11 +440,14 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
     it("draws any unused branch for a region quota without a matching branch", () => {
       const { upper: _upper, ...warmUpTree } = generateRegionWarmUpTree();
 
-      const setList = generateStrengthTest(
-        generateStrengthTestInput({ random: generateSeededRandom(7) }),
-        { WU: warmUpTree },
-        loadStrengthTestLoadData(),
+      const setList = generateSetList(
         bundledTemplate,
+        lookUpStoredBranchInCatalog,
+        generateStrengthTestInput({ random: generateSeededRandom(7) }),
+        {
+          skillTrees: { WU: warmUpTree },
+          loadData: loadStrengthTestLoadData(),
+        },
       );
 
       expect(listWarmUpBranchIds(setList)).toEqual([
@@ -441,11 +460,14 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
     });
 
     it("orders the warm up like any other block, not in draw order", () => {
-      const setList = generateStrengthTest(
-        generateStrengthTestInput({ random: generateSeededRandom(7) }),
-        { WU: generateRegionWarmUpTree() },
-        loadStrengthTestLoadData(),
+      const setList = generateSetList(
         bundledTemplate,
+        lookUpStoredBranchInCatalog,
+        generateStrengthTestInput({ random: generateSeededRandom(7) }),
+        {
+          skillTrees: { WU: generateRegionWarmUpTree() },
+          loadData: loadStrengthTestLoadData(),
+        },
       );
 
       expect(
@@ -463,9 +485,11 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
     });
 
     it("times every warm up exercise as one 60 second set with 10 second rests and 30 seconds before the lifts", () => {
-      const setList = generateStrengthTest(
+      const setList = generateSetList(
+        loadStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
         generateStrengthTestInput({ random: generateSeededRandom(5) }),
-        skillTrees,
+        { skillTrees },
       );
 
       expect(
@@ -503,11 +527,11 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         },
       });
 
-      const setList = generateStrengthTest(
-        generateStrengthTestInput({ random: generateSeededRandom(5) }),
-        skillTrees,
-        loadStrengthTestLoadData(),
+      const setList = generateSetList(
         template,
+        lookUpStoredBranchInCatalog,
+        generateStrengthTestInput({ random: generateSeededRandom(5) }),
+        { skillTrees, loadData: loadStrengthTestLoadData() },
       );
 
       expect(
@@ -558,13 +582,22 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         random: generateSeededRandom(3),
       });
 
-      const setList = generateStrengthTest(kneeInput, skillTrees);
+      const setList = generateSetList(
+        loadStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        kneeInput,
+        { skillTrees },
+      );
+      const painFreeSetList = generateSetList(
+        loadStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        painFreeInput,
+        { skillTrees },
+      );
 
       const warmUpIds = listWarmUpBranchIds(setList);
       expect(warmUpIds).toHaveLength(5);
-      expect(warmUpIds).toEqual(
-        listWarmUpBranchIds(generateStrengthTest(painFreeInput, skillTrees)),
-      );
+      expect(warmUpIds).toEqual(listWarmUpBranchIds(painFreeSetList));
       expect(
         setList
           .filter((entry) => entry.skill === "WU" && entry.branchId !== "-1")
@@ -581,7 +614,7 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         ),
       );
       expect(describeTestSets(setList)).toEqual(
-        describeTestSets(generateStrengthTest(painFreeInput, skillTrees)),
+        describeTestSets(painFreeSetList),
       );
     });
   });
@@ -596,7 +629,12 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         random: generateSeededRandom(7),
       });
 
-      const setList = generateStrengthTest(input, skillTrees);
+      const setList = generateSetList(
+        loadStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees },
+      );
 
       expect(describeSetListEntries(setList)).toEqual([
         "493 1/1",
@@ -657,11 +695,11 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         random: generateSeededRandom(7),
       });
 
-      const testEntries = generateStrengthTest(
-        input,
-        skillTrees,
-        loadStrengthTestLoadData(),
+      const testEntries = generateSetList(
         template,
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees, loadData: loadStrengthTestLoadData() },
       ).filter(
         (entry) => entry.skill === "TEST" && entry.repetition !== undefined,
       );
@@ -682,7 +720,12 @@ describe("strengthTestGeneration: generateStrengthTest", () => {
         random: generateSeededRandom(7),
       });
 
-      const setList = generateStrengthTest(input, skillTrees);
+      const setList = generateSetList(
+        loadStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees },
+      );
 
       expect({
         warmUpBranches: setList

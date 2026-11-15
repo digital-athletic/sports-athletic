@@ -1,7 +1,10 @@
 import { generateExercisesBlock } from "@test/factories/exercisesBlock";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
+import { generateSeededRandom } from "@test/factories/seededRandom";
 import { listTrainedExercises } from "@test/factories/setListDescription";
 import { generateLowerBodyBranch } from "@test/factories/skillTree";
+import { generateStrengthTestInput } from "@test/factories/strengthTestInput";
+import { generateStrengthTestTemplate } from "@test/factories/strengthTestTemplate";
 import {
   generateShortTemplate,
   generateUntimedBranchesBlock,
@@ -10,6 +13,84 @@ import { catchThrownValue } from "@test/factories/thrownValue";
 import { generateLowerBodyExercises } from "@test/factories/valueExercise";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import { generateSetList } from "./workoutGeneration";
+
+describe("workoutGeneration: generateSetList of a workout with test sets", () => {
+  // Muscle soreness counts on the day the factory dates it.
+  beforeEach(() => {
+    jest.useFakeTimers({ now: new Date("2026-10-24T12:00:00Z") });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("throws TOO_MUCH_SORENESS TEST_WORKOUT for an athlete with muscle soreness before any draw", () => {
+    const random = jest.fn(() => 0);
+    const input = generateStrengthTestInput({
+      soreMuscles: ["CHEST"],
+      random,
+    });
+
+    const thrown = catchThrownValue(() =>
+      generateSetList(
+        generateStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        input,
+      ),
+    );
+
+    expect(thrown).toEqual({
+      type: "TOO_MUCH_SORENESS",
+      subtype: "TEST_WORKOUT",
+      params: [],
+    });
+    expect(random).not.toHaveBeenCalled();
+  });
+
+  it("throws NO_ANAMNESIS MISSING_WORKOUT_DATA for an athlete without workout data before any draw", () => {
+    const random = jest.fn(() => 0);
+    const input = generateStrengthTestInput({
+      withoutWorkoutData: true,
+      random,
+    });
+
+    const thrown = catchThrownValue(() =>
+      generateSetList(
+        generateStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        input,
+      ),
+    );
+
+    expect(thrown).toEqual({
+      type: "NO_ANAMNESIS",
+      subtype: "MISSING_WORKOUT_DATA",
+      params: [],
+    });
+    expect(random).not.toHaveBeenCalled();
+  });
+
+  it("throws NO_EXERCISES SKILL_TREE when the warm up draws no exercise", () => {
+    const input = generateStrengthTestInput({
+      random: generateSeededRandom(7),
+    });
+
+    const thrown = catchThrownValue(() =>
+      generateSetList(
+        generateStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees: {} },
+      ),
+    );
+
+    expect(thrown).toEqual({
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: ["WU"],
+    });
+  });
+});
 
 describe("workoutGeneration: generateSetList of a short workout", () => {
   it("trains a replacement branch of the same skill when pain blocks every listed branch", () => {

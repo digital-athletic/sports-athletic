@@ -1,4 +1,5 @@
 import { loadExercises } from "@/data/loadExercises";
+import { loadStrengthTestTemplate } from "@/data/loadStrengthTestTemplate";
 import { loadTemplate } from "@/data/loadTemplates";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { TrainingType } from "@/features/training/models/Training";
@@ -8,8 +9,6 @@ import {
 } from "@/features/training/utils/testFixtures";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import * as picksHandler from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
-import { generateStrengthTest } from "@/features/training/workoutGenerator/strengthTestGeneration";
-import type * as StrengthTestGeneration from "@/features/training/workoutGenerator/strengthTestGeneration";
 import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type * as TrainingDayGeneration from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
@@ -41,16 +40,6 @@ jest.mock("@/features/training/workoutGenerator/trainingDayGeneration", () => {
   return {
     ...actual,
     generateTrainingDay: jest.fn(actual.generateTrainingDay),
-  };
-});
-
-jest.mock("@/features/training/workoutGenerator/strengthTestGeneration", () => {
-  const actual = jest.requireActual<typeof StrengthTestGeneration>(
-    "@/features/training/workoutGenerator/strengthTestGeneration",
-  );
-  return {
-    ...actual,
-    generateStrengthTest: jest.fn(actual.generateStrengthTest),
   };
 });
 
@@ -90,7 +79,6 @@ describe("generateWorkout: routing", () => {
   beforeEach(() => {
     jest.mocked(generateTrainingDay).mockClear();
     jest.mocked(generateSetList).mockClear();
-    jest.mocked(generateStrengthTest).mockClear();
   });
 
   afterEach(jest.restoreAllMocks);
@@ -105,17 +93,19 @@ describe("generateWorkout: routing", () => {
     expect(workout).toEqual(loadTemplate("MOB"));
     expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
     expect(options).toEqual({ skillTrees: getAllSkillTrees() });
-    expect(generateStrengthTest).not.toHaveBeenCalled();
     expect(generateTrainingDay).not.toHaveBeenCalled();
   });
 
   describe("AIWL routes", () => {
-    it("runs the strength test on the AIWL generator", () => {
+    it("generates the bundled strength test with the catalog lookup", () => {
       const setList = generateWorkoutOf("TEST_WORKOUT");
 
       expect(setList.length).toBeGreaterThan(0);
-      expect(generateStrengthTest).toHaveBeenCalledTimes(1);
-      expect(generateSetList).not.toHaveBeenCalled();
+      expect(generateSetList).toHaveBeenCalledTimes(1);
+      const [workout, lookUpBranch] =
+        jest.mocked(generateSetList).mock.calls[0];
+      expect(workout).toEqual(loadStrengthTestTemplate());
+      expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
     });
 
     it("hands the stored day and the lengths to the AIWL generator", () => {

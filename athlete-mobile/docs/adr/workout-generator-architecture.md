@@ -115,7 +115,7 @@ Each box in a layer implements the contract the layer title names. The code defi
 
 Workout finish builds the filled blocks in template order, every block of a skill included. An exercises block keeps its list through workout finish and set list building. No pairing or exercise order rule changes that list. Its result has the status `prescribed` and holds catalog exercise references without a branch.
 
-Builders of exercises blocks share one contract, `PrescribedSetListBuilder`: a `build` function and the block settings the builder reads. A source passes its builders to `createSetListBuilder` by skill and binds the data each builder needs; the strength test source binds its test set loads and 1RM shares. The set list stage resolves the builder by the block's skill and holds no protocol data and reads no skill catalog field for it. A skill without a builder fails; a block setting the builder does not read logs a warning and changes nothing.
+Builders of exercises blocks share one contract, `PrescribedSetListBuilder`: a `build` function and the block settings the builder reads. The entry point passes the builders to `createSetListBuilder` by skill and binds the data each builder needs; for a workout with test sets it binds the test set loads and 1RM shares. The set list stage resolves the builder by the block's skill and holds no protocol data and reads no skill catalog field for it. A skill without a builder fails; a block setting the builder does not read logs a warning and changes nothing.
 
 ### Set list building rules
 
@@ -158,7 +158,7 @@ Resolution runs inside selection, because the specs drop a candidate whose exerc
 | Picks      | [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout)       |
 | Branches   | [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session), see [duplicate exercises](./duplicate-exercises.md) |
 | Duration   | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR; a cardio duration block draws one branch of its tree and hands it to the branches handler |
-| Exercises  | [AIWL rules 5 and 6](./athletic-intelligence-workout-language.md#rules): catalog lookup in list order, equipment check per exercise unless the source sets `equipment: "ignored"`; uses no branch |
+| Exercises  | [AIWL rules 5 and 6](./athletic-intelligence-workout-language.md#rules): catalog lookup in list order, equipment check per exercise unless the workout holds test sets; uses no branch |
 
 The block walk hands every block the branches all earlier blocks used, whatever the kind of either block. The branches handler reads no used branches. The registry of each source maps each block kind to its handler function, so one template can mix block kinds: a short workout runs picks and branches blocks in template order.
 
@@ -247,15 +247,16 @@ The plan features outside the generator read both shapes. `readPlannedBranches` 
 The router `src/features/training/workoutGeneratorRouter.ts` sends every training type to the AIWL generator and picks the entry point per type:
 
 1. Short workouts and custom workouts run from their template through the entry point `generateSetList(workout, lookUpBranch, input, { skillTrees })` in `workoutGenerator/workoutGeneration.ts`, with the branch lookup index.
-2. The strength test runs from the strength test source.
+2. The strength test runs through the same entry point from `loadStrengthTestTemplate`, the bundled `TEST.json`, with the branch lookup index; the entry point checks it with `checkStrengthTestTemplate`.
 3. Plan training days run as a stored day workout.
 
 A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A template without blocks throws `NO_EXERCISES/PAIN` without regions, whatever the athlete's pains.
 
-`generateSetList` runs a workout with one handler registry and one finish rule:
+`generateSetList` runs every workout it receives with one handler registry and one finish rule:
 
-1. The block kind check rejects an exercises block, a duration block of a skill other than a cardio zone and `bodyParts` on a picks or duration block with `OTHER/BLOCK_KIND`. An `order` field passes the check; set list building ignores it with a warning.
-2. The template interpreter runs the blocks with the picks handler, the branches handler on the given lookup and the cardio duration handler. It applies the short workout picks pool rules and builds the blocks that fill.
+1. The block kind check rejects an exercises block without `testSets`, a duration block of a skill other than a cardio zone and `bodyParts` on a picks or duration block with `OTHER/BLOCK_KIND`. An `order` field passes the check; set list building ignores it with a warning.
+2. A workout with test sets runs the test set checks with the load data, then the athlete checks of the strength test section, before any block runs. Only such a workout loads the bundled load data.
+3. The template interpreter runs the blocks with the picks handler, the branches handler on the given lookup, the cardio duration handler and the exercises handler. A workout with test sets ignores pain and equipment in the picks pool and equipment in the exercises handler, builds its lifts with the strength test builder, and requires every block to fill. Every other workout applies the short workout picks pool rules, checks exercise equipment and builds the blocks that fill.
 
 The old training generator and its flag `EXPO_PUBLIC_AIWL_GENERATOR_ENABLED` are deleted. The old plan generator in `generators/PlanGenerator.ts` stays behind its own flag `EXPO_PUBLIC_PLAN_GENERATOR_ENABLED`.
 
@@ -263,16 +264,16 @@ The router selects the stored training day of the plan with its own copy of the 
 
 ### Strength test source
 
-`strengthTestGeneration.ts` runs the bundled template `templates/TEST.json`. `loadStrengthTestTemplate` loads it apart from the short workout templates, so no short workout resolves it. The template holds:
+`strengthTestLoadData.ts` loads the bundled test set loads and 1RM shares. The router loads the bundled template `templates/TEST.json` and the entry point runs and checks it. `loadStrengthTestTemplate` loads it apart from the short workout templates, so no short workout resolves it. The template holds:
 
 1. a picks block of skill `WU` whose picks are the warm-up region quotas, timed as one 60 s set per exercise with 10 s rests and 30 s before the first lift
 2. an exercises block of skill `TEST` with the lifts in authored order and the `testSets`: 40, 60 and 85 % of the test set load for 6, 4 and 2 repetitions, then the AMRAP test set
 
 The builder binds the test set loads per lift, gender and fitness level from `strengthTest.json` and the share of the last estimated 1RM a test set loads per fitness level from `oneRepMaxShares.json`. A lift without an estimated 1RM and without a test set load for the athlete's gender fails the builder instead of building at 0 kg. Lifts no longer vary by fitness level or gender in this source; the template lists them.
 
-Source checks run before any block. `loadStrengthTestTemplate` parses `TEST.json` with the AIWL `TemplateSchema` and checks the id `TEST`. `checkStrengthTestTemplate` checks the template first and throws a configuration error naming the path: the lifts block holds `testSets`, and `checkTestSetWorkout` runs the checks every workout with test sets passes: the warm-up picks block of skill `WU` comes first, the exercises block of lifts second and last, its `testSets` end on their one `amrap` set, and every lift has test set loads for both genders in `strengthTest.json`. The generic interpreter holds none of these rules. The athlete checks follow: workout data, no athlete under 16 (`NO_EXERCISES/AGE`), no muscle soreness (`TOO_MUCH_SORENESS/TEST_WORKOUT`). The source runs the shared workout setup and the shared picks handler. The pain, equipment, age group and gender rules filter the warm-up pool and throw their pool errors `NO_EXERCISES/PAIN`, `EQUIPMENT`, `AGE` and `GENDER`. `TEST.json` names the region quotas with `REGION_` tags and sets `countBy: "exercises"` on the warm-up, so a one-sided branch fills one quota slot, and `fallbackToWholeTree: true`, so a region quota without a matching branch draws any unused branch. `TEST.json` sets `superset: "none"` on the warm-up, so the warm-up trains each exercise on its own, follows a one-sided exercise with its other side, and orders its exercises like any other block. A lift missing from the catalog fails the whole test with a template error. The athlete picks no place for the test and the app passes the STUDIO equipment, so the source sets the exercises rule `equipment: "ignored"` and missing lift equipment blocks no lift. Setting the rule to `"required"` turns the check on and throws `NO_EXERCISES/EQUIPMENT`. The source sets the finish rule `requiredBlocks: "every"`, so a warm-up that draws no exercise fails the test with `NO_EXERCISES/SKILL_TREE` and the skill `WU`. Lift entries keep the placeholder branch ID, so session storage, resume, completion, statistics and the estimated 1RM update read them as before and write no branch progression.
+The test set checks come from the workout: the entry point runs them for every workout that holds test sets, whatever its source. `loadStrengthTestTemplate` parses `TEST.json` with the AIWL `TemplateSchema` and checks the id `TEST`. `checkStrengthTestTemplate` checks the template first and throws a configuration error naming the path: the lifts block holds `testSets`, and `checkTestSetWorkout` runs the checks every workout with test sets passes: the warm-up picks block of skill `WU` comes first, the exercises block of lifts second and last, its `testSets` end on their one `amrap` set, and every lift has test set loads for both genders in `strengthTest.json`. The template interpreter holds none of these rules. The athlete checks follow: workout data, no athlete under 16 (`NO_EXERCISES/AGE`), no muscle soreness (`TOO_MUCH_SORENESS/TEST_WORKOUT`). The entry point runs the test with the shared workout setup and the shared picks handler. The pain, equipment, age group and gender rules filter the warm-up pool and throw their pool errors `NO_EXERCISES/PAIN`, `EQUIPMENT`, `AGE` and `GENDER`. `TEST.json` names the region quotas with `REGION_` tags and sets `countBy: "exercises"` on the warm-up, so a one-sided branch fills one quota slot, and `fallbackToWholeTree: true`, so a region quota without a matching branch draws any unused branch. `TEST.json` sets `superset: "none"` on the warm-up, so the warm-up trains each exercise on its own, follows a one-sided exercise with its other side, and orders its exercises like any other block. A lift missing from the catalog fails the whole test with a template error. The athlete picks no place for the test and the app passes the STUDIO equipment, so the entry point sets the exercises rule `equipment: "ignored"` for a workout with test sets. Missing lift equipment then blocks no lift. Setting the rule to `"required"` turns the check on and throws `NO_EXERCISES/EQUIPMENT`. For the same workout the entry point sets the finish rule `requiredBlocks: "every"`, so a warm-up that draws no exercise fails the test with `NO_EXERCISES/SKILL_TREE` and the skill `WU`. Lift entries keep the placeholder branch ID, so session storage, resume, completion, statistics and the estimated 1RM update read them as before and write no branch progression.
 
-The router sends every strength test to this source. Compared with the deleted old path, it adds the age check.
+The router runs every strength test from this template. Compared with the deleted old path, the test adds the age check.
 
 ### Behaviour changes
 
@@ -313,7 +314,7 @@ The generator raises three classes of error:
 - **Discriminated unions.** Block kinds, block results and errors are tagged unions, and every `switch` over them is exhaustive.
 - **No mutation.** Every stage returns new values and changes neither the template nor the generation input.
 - **Random source.** The generation input carries the random function, with `Math.random` as the default, and every component draws through it. Tests pass a fixed sequence. Each component draws in a fixed order.
-- **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: the entry point `workoutGeneration.ts` for short and custom workouts, one entry module per other workout source, the stored day workout, and the template interpreter they hand the workout to. The interpreter delegates to one subfolder per component of the patterns diagram:
+- **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: the entry point `workoutGeneration.ts` for short and custom workouts and the strength test, the plan day entry module `trainingDayGeneration.ts`, the modules that load a workout's data (`strengthTestLoadData.ts`, the stored day workout), the test set checks, and the template interpreter they hand the workout to. The interpreter delegates to one subfolder per component of the patterns diagram:
 
   | Folder                    | Component                                | Modules                                                                                   |
   | ------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------- |

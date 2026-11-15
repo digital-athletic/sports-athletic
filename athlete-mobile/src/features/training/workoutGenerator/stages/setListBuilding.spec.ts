@@ -24,7 +24,7 @@ import { readSkillCatalogEntry } from "../generationInput/skillCatalogEntry";
 import { resolveBlockTiming } from "../setListBuilders/blockTiming";
 import type { PrescribedSetListBuilder } from "../setListBuilders/setListBuilder";
 import { createStrengthTestSetListBuilder } from "../setListBuilders/strengthTestSetListBuilder";
-import { loadStrengthTestLoadData } from "../strengthTestGeneration";
+import { loadStrengthTestLoadData } from "../strengthTestLoadData";
 import type { BlockResult } from "./blockWalk";
 import { createSetListBuilder } from "./setListBuilding";
 import type { FilledBlockResult } from "./workoutFinish";

@@ -1,0 +1,26 @@
+{
+  "active": true,
+  "current_phase": "trace-executing",
+  "source": "deep-dive",
+  "slug": "investigate-two-things-1-weight",
+  "trace_lanes": [
+    "Short-workout progression: the weight is written at completion but lost or not read back at the next generation (type-keyed completion gate, skill-keyed lookup, progression:false templates)",
+    "Statistics per-workout formula: calculateWorkoutTotals overcounts moved weight (set loop, skipped sets, F-Max conversion, rounding, warm-up and pause entries, unit of dumbbell loads)",
+    "Aggregation and expectation: the per-workout number is right but totals are inflated by duplicate saved or synced workouts, or both behaviours match the spec and differ from what is expected"
+  ],
+  "trace_result": null,
+  "trace_path": null,
+  "spec_path": null,
+  "state": {
+    "interview_id": "3f1c2a8e-6b4d-4e57-9a1f-0d2c7b5e8a41",
+    "type": "brownfield",
+    "initial_idea": "investigate two things: 1) weight progression for short workouts is this correctly stored and used ? 2) statistic weight calculation seems too high please double check if correct",
+    "rounds": [],
+    "current_ambiguity": 1.0,
+    "threshold": 0.2,
+    "codebase_context": "Topic 1: completion in athlete-mobile/src/features/training/hooks/useExerciseCompletion.ts -> exerciseProgressStore.updateExercise (exerciseProgress[skill][exerciseId]) -> AsyncStorage + SyncService.syncExerciseData (user_exercises) -> read via useTrainingGeneration -> workoutGeneratorRouter.generateShortWorkout -> exerciseStartValues.readExerciseStartValues -> exerciseProgressLookup. Gate: exerciseDataUtils.shouldProcessExerciseValues, skills.json progression flags (false for WU, MOB, BR, CD). Topic 2: workoutUtils.calculateWorkoutTotals (weight += deriveEntryWeight x repetition per completed set) -> training-success.tsx movedWeight -> completedWorkoutsStore -> SyncService moved_weight -> useWorkoutsData reduce -> Workouts.tsx / TrainingSummary.tsx; trainer-web evaluations.ts formatWeight.",
+    "challenge_modes_used": [],
+    "ontology_snapshots": [],
+    "topology": null
+  }
+}

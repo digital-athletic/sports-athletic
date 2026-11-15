@@ -114,6 +114,13 @@ jest.mock("@/store/placesStore", () => ({
   }),
 }));
 
+const mockResetPerformanceTestValues = jest.fn();
+jest.mock("@/store/performanceTestValuesStore", () => ({
+  usePerformanceTestValuesStore: () => ({
+    reset: mockResetPerformanceTestValues,
+  }),
+}));
+
 const mockResetSettings = jest.fn();
 const mockSetConsentStatus = jest.fn();
 jest.mock("@/store/userSettingsStore", () => ({
@@ -169,6 +176,8 @@ function storeCallCounts() {
     clearWorkoutHistory: mockClearWorkoutHistory.mock.calls.length,
     resetTrainingSchedule: mockResetTrainingSchedule.mock.calls.length,
     resetPlaces: mockResetPlaces.mock.calls.length,
+    resetPerformanceTestValues:
+      mockResetPerformanceTestValues.mock.calls.length,
     resetSettings: mockResetSettings.mock.calls.length,
     clearUserItems: mockClearUserItems.mock.calls.length,
     clearTraining: mockClearTraining.mock.calls.length,
@@ -186,6 +195,7 @@ const ALL_STORES_CALLED_ONCE = {
   clearWorkoutHistory: 1,
   resetTrainingSchedule: 1,
   resetPlaces: 1,
+  resetPerformanceTestValues: 1,
   resetSettings: 1,
   clearUserItems: 1,
   clearTraining: 1,

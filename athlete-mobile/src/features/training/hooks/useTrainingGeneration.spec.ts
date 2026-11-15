@@ -115,19 +115,7 @@ describe("useTrainingGeneration: generator error", () => {
   });
 });
 
-describe("useTrainingGeneration: pain alert closed without OK", () => {
-  const showPainAlertAndDismiss = async (
-    generateTraining: (place: "STUDIO") => void,
-  ) => {
-    await act(() => {
-      generateTraining("STUDIO");
-    });
-    const [, , , options] = alertSpy.mock.calls[0];
-    await act(() => {
-      options?.onDismiss?.();
-    });
-  };
-
+describe("useTrainingGeneration: pain alert", () => {
   beforeEach(() => {
     useUserWorkoutStore.setState({
       workoutData: {
@@ -137,29 +125,30 @@ describe("useTrainingGeneration: pain alert closed without OK", () => {
     });
   });
 
-  it("sets generating to false", async () => {
+  it("shows one pain alert for two synchronous calls", async () => {
     const { result } = await renderHook(() =>
       useTrainingGeneration(generateTestWorkoutParams()),
     );
 
-    await showPainAlertAndDismiss(result.current.generateTraining);
-
-    expect(alertSpy).toHaveBeenCalledTimes(1);
-    expect(result.current.generating).toBe(false);
-  });
-
-  it("generates again on a new call", async () => {
-    const { result } = await renderHook(() =>
-      useTrainingGeneration(generateTestWorkoutParams()),
-    );
-
-    await showPainAlertAndDismiss(result.current.generateTraining);
     await act(() => {
+      result.current.generateTraining("STUDIO");
       result.current.generateTraining("STUDIO");
     });
 
-    expect(mockGenerateWorkout).toHaveBeenCalledTimes(2);
-    expect(alertSpy).toHaveBeenCalledTimes(2);
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(alertSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("navigates once after the pain alert is confirmed", async () => {
+    const { result } = await renderHook(() =>
+      useTrainingGeneration(generateTestWorkoutParams()),
+    );
+
+    await act(() => {
+      result.current.generateTraining("STUDIO");
+    });
+    await pressAlertOk(0);
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(result.current.generating).toBe(false);
   });
 });

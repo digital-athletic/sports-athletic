@@ -36,16 +36,18 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
     const { result } = await renderHook(() => useTrainingAlerts());
 
     await act(() => {
-      result.current.maybeShowPainAlert("TEST_WORKOUT", [], kneePain, {
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
         onContinue,
-      });
+      );
     });
 
     expect(Alert.alert).toHaveBeenCalledWith(
       "training.active.strengthTestAlert.title",
       "training.active.strengthTestAlert.message",
       expect.any(Array),
-      expect.objectContaining({ cancelable: true }),
     );
     expect(onContinue).not.toHaveBeenCalled();
 
@@ -58,7 +60,7 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
     const { result } = await renderHook(() => useTrainingAlerts());
 
     await act(() => {
-      result.current.maybeShowPainAlert("BAS", [], kneePain, { onContinue });
+      result.current.maybeShowPainAlert("BAS", [], kneePain, onContinue);
     });
 
     expect(Alert.alert).not.toHaveBeenCalled();
@@ -69,9 +71,12 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
     const { result } = await renderHook(() => useTrainingAlerts());
 
     await act(() => {
-      result.current.maybeShowPainAlert("TEST_WORKOUT", [], kneePain, {
-        onContinue: jest.fn(),
-      });
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        jest.fn(),
+      );
     });
     await pressOk(0);
 
@@ -83,15 +88,21 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
     const { result } = await renderHook(() => useTrainingAlerts());
 
     await act(() => {
-      result.current.maybeShowPainAlert("TEST_WORKOUT", [], kneePain, {
-        onContinue: jest.fn(),
-      });
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        jest.fn(),
+      );
     });
     await pressOk(0);
     await act(() => {
-      result.current.maybeShowPainAlert("TEST_WORKOUT", [], kneePain, {
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
         onContinue,
-      });
+      );
     });
 
     expect(Alert.alert).toHaveBeenCalledTimes(1);
@@ -102,75 +113,25 @@ describe("useTrainingAlerts: maybeShowPainAlert", () => {
     const { result } = await renderHook(() => useTrainingAlerts());
 
     await act(() => {
-      result.current.maybeShowPainAlert("TEST_WORKOUT", [], kneePain, {
-        onContinue: jest.fn(),
-      });
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        jest.fn(),
+      );
     });
     await pressOk(0);
     useUserProfileStore.getState().setWarningSeen("painAlertSeen", false);
     await act(() => {
-      result.current.maybeShowPainAlert("TEST_WORKOUT", [], kneePain, {
-        onContinue: jest.fn(),
-      });
+      result.current.maybeShowPainAlert(
+        "TEST_WORKOUT",
+        [],
+        kneePain,
+        jest.fn(),
+      );
     });
 
     expect(Alert.alert).toHaveBeenCalledTimes(2);
-  });
-
-  it("makes the pain alert cancelable", async () => {
-    const { result } = await renderHook(() => useTrainingAlerts());
-
-    await act(() => {
-      result.current.maybeShowPainAlert("TEST_WORKOUT", [], kneePain, {
-        onContinue: jest.fn(),
-        onCancel: jest.fn(),
-      });
-    });
-
-    const [, , , options] = (Alert.alert as jest.Mock).mock.calls[0];
-    expect(options).toEqual(
-      expect.objectContaining({
-        cancelable: true,
-        onDismiss: expect.any(Function),
-      }),
-    );
-  });
-
-  it("calls onCancel and not onContinue when the pain alert is dismissed", async () => {
-    const onContinue = jest.fn();
-    const onCancel = jest.fn();
-    const { result } = await renderHook(() => useTrainingAlerts());
-
-    await act(() => {
-      result.current.maybeShowPainAlert("TEST_WORKOUT", [], kneePain, {
-        onContinue,
-        onCancel,
-      });
-    });
-    const [, , , options] = (Alert.alert as jest.Mock).mock.calls[0];
-    await act(() => {
-      options?.onDismiss?.();
-    });
-
-    expect(onCancel).toHaveBeenCalledTimes(1);
-    expect(onContinue).not.toHaveBeenCalled();
-  });
-
-  it("keeps the seen flag unset when the pain alert is dismissed", async () => {
-    const { result } = await renderHook(() => useTrainingAlerts());
-
-    await act(() => {
-      result.current.maybeShowPainAlert("TEST_WORKOUT", [], kneePain, {
-        onContinue: jest.fn(),
-        onCancel: jest.fn(),
-      });
-    });
-    const [, , , options] = (Alert.alert as jest.Mock).mock.calls[0];
-    await act(() => {
-      options?.onDismiss?.();
-    });
-
-    expect(useUserProfileStore.getState().warnings.painAlertSeen).toBe(false);
   });
 });
 

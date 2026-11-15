@@ -19,6 +19,7 @@ import { maintainBranchLevels } from "@/features/training/utils/branchMaintenanc
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { daysSinceLastTraining } from "@/features/training/utils/trainingGapUtils";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
+import { useNavigationLock } from "@/hooks/useNavigationLock";
 import { type UserType, parseUserType } from "@/schemas/user.schema";
 import { Logger } from "@/services/Logger";
 import { useAuthStore } from "@/store/authStore";
@@ -28,7 +29,6 @@ import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { useNavigationLock } from "@/hooks/useNavigationLock";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { useRouter } from "expo-router";
 import { type TFunction } from "i18next";
@@ -298,11 +298,6 @@ export function useTrainingGeneration(params: TrainingGenerationParams) {
   const context = useGenerationContext();
   const { runLocked, release } = useNavigationLock();
 
-  const stopGenerating = () => {
-    setGenerating(false);
-    release();
-  };
-
   const generateTraining = (place: PlaceType) => {
     runLocked(() => {
       setGenerating(true);
@@ -319,13 +314,11 @@ export function useTrainingGeneration(params: TrainingGenerationParams) {
         };
 
         const { tags } = context.workoutData;
-        maybeShowPainAlert(params.type, exerciseList, tags, {
-          onContinue: startTraining,
-          onCancel: stopGenerating,
-        });
+        maybeShowPainAlert(params.type, exerciseList, tags, startTraining);
       } catch (e) {
         showGenerationError(e, t, () => {
-          stopGenerating();
+          setGenerating(false);
+          release();
           router.replace("/(tabs)/(home)");
         });
       }

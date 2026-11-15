@@ -3,7 +3,6 @@ import { MuscleType } from "@/bodyParts/types";
 import { BackHeader } from "@/common/BackHeader";
 import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { Loading } from "@/common/Loading";
-import { useFocusedHardwareBackHandler } from "@/hooks/useFocusedHardwareBackHandler";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
 import {
   checksSoreness,
@@ -15,6 +14,7 @@ import {
   dropExpiredMarks,
   updateSorenessMarks,
 } from "@/features/training/utils/sorenessMarks";
+import { useFocusedHardwareBackHandler } from "@/hooks/useFocusedHardwareBackHandler";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";

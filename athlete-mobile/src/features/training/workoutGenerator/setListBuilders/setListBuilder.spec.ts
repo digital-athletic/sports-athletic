@@ -1,5 +1,10 @@
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import { removeTrailingPause } from "./setListBuilder";
+import {
+  isPauseExercise,
+  PAUSE_EXERCISE_ID,
+  PLACEHOLDER_BRANCH_ID,
+} from "@/features/training/models/IdTypes";
+import { buildPauseEntry, removeTrailingPause } from "./setListBuilder";
 
 const exercise: GeneratedSetListEntry = {
   branchId: "b1",
@@ -35,5 +40,23 @@ describe("setListBuilder: removeTrailingPause", () => {
     removeTrailingPause(setList);
 
     expect(setList).toEqual([exercise, pause]);
+  });
+});
+
+describe("setListBuilder: buildPauseEntry", () => {
+  it("builds a pause entry with the placeholder branch and the given set, skill and duration", () => {
+    expect(buildPauseEntry([1, 2], "GKS", 45)).toEqual({
+      branchId: PLACEHOLDER_BRANCH_ID,
+      exerciseId: PAUSE_EXERCISE_ID,
+      set: [1, 2],
+      skill: "GKS",
+      duration: 45,
+    });
+  });
+
+  it("builds an entry that is recognised as a pause exercise", () => {
+    expect(isPauseExercise(buildPauseEntry([1, 2], "GKS", 45).exerciseId)).toBe(
+      true,
+    );
   });
 });

@@ -1,8 +1,5 @@
 import type { LevelTag } from "@/constants/workoutConstants";
-import {
-  PAUSE_EXERCISE_ID,
-  PLACEHOLDER_BRANCH_ID,
-} from "@/features/training/models/IdTypes";
+import { PLACEHOLDER_BRANCH_ID } from "@/features/training/models/IdTypes";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { getUserGender } from "@/features/training/utils/userDataUtils";
@@ -16,7 +13,10 @@ import { readExerciseFMax } from "../exerciseValues/exerciseFMax";
 import { roundWeight } from "../exerciseValues/weightRounding";
 import type { GenerationInput } from "../generationInput/generationInput";
 import type { PrescribedExerciseReference } from "../stages/blockWalk";
-import type { PrescribedSetListBuilder } from "./setListBuilder";
+import {
+  buildPauseEntry,
+  type PrescribedSetListBuilder,
+} from "./setListBuilder";
 
 /** The strength test data the builder reads beside the block. */
 export interface StrengthTestLoadData {
@@ -94,13 +94,7 @@ const buildLiftSetList = (
         repetition: repetitions === "amrap" ? AMRAP_REPETITION : repetitions,
         skill,
       },
-      {
-        branchId: PLACEHOLDER_BRANCH_ID,
-        exerciseId: PAUSE_EXERCISE_ID,
-        set,
-        duration: rest,
-        skill,
-      },
+      buildPauseEntry(set, skill, rest),
     ];
   });
 

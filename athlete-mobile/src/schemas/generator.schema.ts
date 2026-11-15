@@ -181,12 +181,6 @@ export const FallbackSectionSchema = v.looseObject({
 });
 export type FallbackSection = v.InferOutput<typeof FallbackSectionSchema>;
 
-// Exercise levels schema (from skillTree)
-export const ExerciseLevelsSchema = v.record(
-  v.string(),
-  v.object({ exerciseId: v.string() }),
-);
-
 // SkillBranch with ID schema (for possibleBranches validation in plan generator)
 export const SkillBranchWithIdSchema = v.object({
   branchId: v.string(),
@@ -194,18 +188,6 @@ export const SkillBranchWithIdSchema = v.object({
   levels: v.record(v.string(), v.object({ exerciseId: v.string() })),
 });
 export type SkillBranchWithId = v.InferOutput<typeof SkillBranchWithIdSchema>;
-
-// Set list entry schema (for warmup sets)
-export const SetListEntrySchema = v.looseObject({
-  branchId: v.optional(v.string()),
-  exerciseId: v.optional(v.string()),
-  weight: v.optional(v.number()),
-  repetition: v.optional(v.number()),
-  duration: v.optional(v.number()),
-});
-
-// Workout/Exercise array schema (loose, for generic validation)
-export const WorkoutArraySchema = v.array(v.looseObject({}));
 
 // Schema for numeric string keys that transform to number
 const NumericKeySchema = v.pipe(
@@ -222,19 +204,6 @@ export const ExerciseBranchSchema = v.object({
   exercises: v.record(NumericKeySchema, v.object({ exerciseId: v.string() })),
 });
 export const ExerciseBranchArraySchema = v.array(ExerciseBranchSchema);
-export type ExerciseBranchArray = v.InferOutput<
-  typeof ExerciseBranchArraySchema
->;
-
-// Transform schema (for CSS transforms in bodyParts)
-export const TransformSchema = v.array(
-  v.looseObject({
-    rotate: v.optional(v.string()),
-    scale: v.optional(v.number()),
-    translateX: v.optional(v.number()),
-    translateY: v.optional(v.number()),
-  }),
-);
 
 // User exercise data map type (used across multiple generator methods)
 
@@ -242,7 +211,7 @@ export const TransformSchema = v.array(
  * Parameter type for user exercise progress data passed to generator methods.
  * Contains the exercise progress per skill, the shared record per exercise and
  * branch-level progression data. The AIWL generator reads the records per
- * skill; the legacy generator reads `exerciseData` only.
+ * skill.
  */
 export type UserExerciseDataMapType = ExerciseProgressSourceType & {
   branchData: Record<string, UserExerciseBranchDataType | undefined>;
@@ -267,7 +236,6 @@ export const SkillTypeSchema = v.picklist([
   "FOAM_ROLLER",
   "POWER_ENDURANCE_SPECIAL",
 ]);
-export type SkillTypeFromSchema = v.InferOutput<typeof SkillTypeSchema>;
 
 /**
  * Complete set of all valid skill values used during training generation.
@@ -506,46 +474,6 @@ export function toUserExerciseDataList(
 }
 
 // ============================================================================
-// Cardio Exercise Types (for getCardioExercisePairs)
-// ============================================================================
-
-/**
- * Skill identifier with associated duration/length.
- * Used in cardio training methods where the skill type determines
- * the interval pattern and length determines total duration.
- */
-export const SkillWithLengthSchema = v.object({
-  skill: v.string(),
-  length: v.number(),
-});
-export type SkillWithLength = v.InferOutput<typeof SkillWithLengthSchema>;
-
-/**
- * Simplified branch reference for cardio exercises.
- * Unlike BranchExerciseReference, this omits branchId as cardio
- * exercises are identified solely by their tags and exercise ID.
- */
-export const CardioBranchReferenceSchema = v.object({
-  branchTags: v.array(v.string()),
-  exerciseId: v.string(),
-});
-export type CardioBranchReference = v.InferOutput<
-  typeof CardioBranchReferenceSchema
->;
-
-/**
- * Exercise pair for cardio training intervals.
- * First exercise is always required (the main cardio activity).
- * Second is optional, used for alternating interval patterns
- * in lower-intensity cardio types (CARDIO_1 through CARDIO_3).
- */
-export const CardioExercisePairSchema = v.object({
-  first: CardioBranchReferenceSchema,
-  second: v.optional(CardioBranchReferenceSchema),
-});
-export type CardioExercisePair = v.InferOutput<typeof CardioExercisePairSchema>;
-
-// ============================================================================
 // Exercise Start Values (for getExerciseStartValues return type)
 // ============================================================================
 
@@ -737,28 +665,6 @@ export type FilterResult = {
   keep: Record<string, SkillBranchData>;
   replace: string[];
 };
-
-/**
- * Nested lookup structure: gender -> level -> value.
- * Used by getValueByGenderAndLevel helper function.
- */
-export type GenderLevelValueMap =
-  | Record<string, Record<string, number> | number | undefined>
-  | undefined;
-
-/**
- * Exercise value configuration with start/target values.
- */
-export type ExerciseValueConfig = {
-  startValue?: GenderLevelValueMap;
-  targetValue?: GenderLevelValueMap;
-  type?: { type: string };
-};
-
-/**
- * Full exercise values configuration keyed by parameter type.
- */
-export type ExerciseValuesConfig = Record<string, ExerciseValueConfig>;
 
 /**
  * Extracted start values for all exercise value types.

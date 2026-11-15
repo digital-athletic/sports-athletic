@@ -28,26 +28,6 @@ export type ExercisePair = {
 };
 
 /**
- * Result from selecting a branch from a skill tree.
- * Contains the exercise reference and the branch ID.
- */
-export type BranchSelectionResult = {
-  branch: BranchExerciseReference;
-  /** The branch ID from skill tree */
-  branchId: string;
-};
-
-/**
- * Result from selecting a superset pair branch.
- * May include a fill-up branch for completing the superset.
- */
-export type SuperSetBranchSelectionResult = {
-  branch: BranchExerciseReference;
-  branchId: string;
-  fillUpBranchAndId?: BranchSelectionResult;
-};
-
-/**
  * Skill list entry containing branches for a specific skill.
  * Used during training generation to organize exercises by skill type.
  */

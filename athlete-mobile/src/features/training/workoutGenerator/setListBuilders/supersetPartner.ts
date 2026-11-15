@@ -3,6 +3,7 @@ import type { BranchExerciseReference } from "@/features/training/models/Exercis
 import { getOpposingExerciseDirection } from "@/features/training/utils/exerciseUtils";
 import { getTagValues } from "@/utils/tagUtils";
 import { isBigMuscleExercise, readPrimaryMuscleGroups } from "./muscleGroups";
+import { sharesAnyValue } from "./sharedValues";
 
 const ONE_SIDED = ["ONE", "LEFT", "RIGHT"];
 
@@ -11,9 +12,6 @@ const listMovementPatterns = (entry: BranchExerciseReference): string[] =>
   getTagValues(entry.branchTags, TagGroups.EXERCISE_DIRECTION).filter(
     (direction) => getOpposingExerciseDirection(direction) !== "",
   );
-
-const sharesAnyValue = (a: string[], b: string[]): boolean =>
-  a.some((value) => b.includes(value));
 
 const isBothSidedExercise = (entry: BranchExerciseReference): boolean =>
   !sharesAnyValue(getTagValues(entry.branchTags, TagGroups.SIDE), ONE_SIDED);

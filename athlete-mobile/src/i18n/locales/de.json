@@ -841,7 +841,9 @@
       "noReference": "Keine Referenz für deine Trainingsstufe",
       "empty": "Für deine Sportart gibt es noch keine Leistungstests.",
       "notFound": "Diesen Leistungstest gibt es nicht.",
-      "loadError": "Die App konnte die Leistungstests nicht laden. Prüfe deine Verbindung und versuche es erneut."
+      "loadError": "Die App konnte die Leistungstests nicht laden. Prüfe deine Verbindung und versuche es erneut.",
+      "chartSummary_one": "Liniendiagramm mit {{count}} Wert im Zeitverlauf",
+      "chartSummary_other": "Liniendiagramm mit {{count}} Werten im Zeitverlauf"
     }
   },
   "performanceTests": {

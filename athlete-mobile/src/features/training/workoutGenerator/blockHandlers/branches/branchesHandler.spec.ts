@@ -17,7 +17,7 @@ const exerciseCatalog = loadExercises();
 const NO_BRANCHES = new Set<string>();
 
 describe("branchesHandler: createBranchesBlockHandler", () => {
-  const { handleBlock, usedBranchScope } = createBranchesBlockHandler(
+  const handleBlock = createBranchesBlockHandler(
     lookUpStoredBranchInCatalog,
     "drop",
   );
@@ -177,14 +177,10 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
       });
     },
   );
-
-  it("gives every block its own used branches", () => {
-    expect(usedBranchScope).toBe("block");
-  });
 });
 
 describe("branchesHandler: a branch ID the catalog lacks", () => {
-  const { handleBlock } = createBranchesBlockHandler(
+  const handleBlock = createBranchesBlockHandler(
     lookUpStoredBranchInCatalog,
     "replace",
   );
@@ -239,7 +235,7 @@ describe("branchesHandler: a branch ID the catalog lacks", () => {
   });
 
   it("drops the missing branch ID under the drop rule", () => {
-    const { handleBlock: handleDropBlock } = createBranchesBlockHandler(
+    const handleDropBlock = createBranchesBlockHandler(
       lookUpStoredBranchInCatalog,
       "drop",
     );
@@ -256,7 +252,7 @@ describe("branchesHandler: a branch ID the catalog lacks", () => {
 
 describe("branchesHandler: stored day entries", () => {
   it("generates from the stored entries, including an ID no skill tree holds", () => {
-    const { handleBlock } = createBranchesBlockHandler(
+    const handleBlock = createBranchesBlockHandler(
       createStoredDayBranchLookup({
         GKS: [
           generateStoredDayEntry("510", ["REGION_UPPER_BODY"], "336"),
@@ -286,7 +282,7 @@ describe("branchesHandler: stored day entries", () => {
   });
 
   it("resolves a branch a family removed without a region to -1 when nothing requests a region", () => {
-    const { handleBlock } = createBranchesBlockHandler(
+    const handleBlock = createBranchesBlockHandler(
       createStoredDayBranchLookup({
         GKS: [
           // level 3 only, which the athlete level does not reach
@@ -321,7 +317,7 @@ describe("branchesHandler: stored day entries", () => {
 });
 
 describe("branchesHandler: cardio swap", () => {
-  const { handleBlock } = createBranchesBlockHandler(
+  const handleBlock = createBranchesBlockHandler(
     lookUpStoredBranchInCatalog,
     "drop",
   );
@@ -456,7 +452,7 @@ describe("branchesHandler: cardio swap", () => {
 
 describe("branchesHandler: duplicate exercises", () => {
   it("refills the region of a later branch that trains an exercise an earlier branch holds", () => {
-    const { handleBlock } = createBranchesBlockHandler(
+    const handleBlock = createBranchesBlockHandler(
       createStoredDayBranchLookup({
         GKS: [
           generateStoredDayEntry("1", ["REGION_UPPER_BODY"], "336"),
@@ -490,7 +486,7 @@ describe("branchesHandler: duplicate exercises", () => {
   });
 
   it("keeps both branches when the later duplicate has no region to refill", () => {
-    const { handleBlock } = createBranchesBlockHandler(
+    const handleBlock = createBranchesBlockHandler(
       createStoredDayBranchLookup({
         GKS: [
           generateStoredDayEntry("1", [], "336"),
@@ -521,7 +517,7 @@ describe("branchesHandler: duplicate exercises", () => {
   ])("%s with the pains %j", (skill, pains, expectedBranchIds) => {
     // the stored duplicate "2" drops out and only its slot is refilled, after the kept branches
     it("refills the duplicate slot after the kept branches", () => {
-      const { handleBlock } = createBranchesBlockHandler(
+      const handleBlock = createBranchesBlockHandler(
         createStoredDayBranchLookup({
           [skill]: [
             generateStoredDayEntry("1", ["REGION_LOWER_BODY"], "336"),

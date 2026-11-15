@@ -1,5 +1,5 @@
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
-import { PICKS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
+import * as picksHandler from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
 
 /**
  * Spies on the picks handler and returns a reader for the branches it drew.
@@ -14,9 +14,9 @@ import { PICKS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/blockH
 export const spyOnDrawnBranches = (): ((
   skill?: string,
 ) => BranchExerciseReference[]) => {
-  const handleBlock = jest.spyOn(PICKS_BLOCK_HANDLER, "handleBlock");
+  const handlePicksBlock = jest.spyOn(picksHandler, "handlePicksBlock");
   return (skill) => {
-    const results = handleBlock.mock.results.flatMap((entry) =>
+    const results = handlePicksBlock.mock.results.flatMap((entry) =>
       entry.type === "return" ? [entry.value] : [],
     );
     const result =

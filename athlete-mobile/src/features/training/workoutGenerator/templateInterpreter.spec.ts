@@ -46,17 +46,14 @@ describe("templateInterpreter: interpretTemplate", () => {
     const receivedInputs: WorkoutInput[] = [];
     const visits: string[] = [];
     const handlers = generateHandlerRegistry(undefined, {
-      branches: {
-        usedBranchScope: "block",
-        handleBlock: (block, input) => {
-          receivedInputs.push(input);
-          visits.push(block.skill);
-          return generateBlockResult("filled", {
-            block,
-            usedBranchIds: block.branches,
-            exercises: [],
-          });
-        },
+      branches: (block, input) => {
+        receivedInputs.push(input);
+        visits.push(block.skill);
+        return generateBlockResult("filled", {
+          block,
+          usedBranchIds: block.branches,
+          exercises: [],
+        });
       },
     });
 
@@ -88,12 +85,9 @@ describe("templateInterpreter: interpretTemplate", () => {
     ]);
     const resolvedSkills: (string | undefined)[] = [];
     const handlers = generateHandlerRegistry(undefined, {
-      picks: {
-        usedBranchScope: "workout",
-        handleBlock: (block, input) => {
-          resolvedSkills.push(input.picksWorkout.blocks.get(block)?.skill);
-          return generateEmptyBlockResult(block);
-        },
+      picks: (block, input) => {
+        resolvedSkills.push(input.picksWorkout.blocks.get(block)?.skill);
+        return generateEmptyBlockResult(block);
       },
     });
 
@@ -113,12 +107,9 @@ describe("templateInterpreter: interpretTemplate", () => {
     const warmUpBranch = skillTrees.WU["409"];
     const poolKeys: string[][] = [];
     const handlers = generateHandlerRegistry(undefined, {
-      picks: {
-        usedBranchScope: "workout",
-        handleBlock: (block, input) => {
-          poolKeys.push(Object.keys(input.picksWorkout.pool));
-          return generateEmptyBlockResult(block);
-        },
+      picks: (block, input) => {
+        poolKeys.push(Object.keys(input.picksWorkout.pool));
+        return generateEmptyBlockResult(block);
       },
     });
 
@@ -135,14 +126,11 @@ describe("templateInterpreter: interpretTemplate", () => {
 
   it("names the first empty skill in stored order on a day where every skill empties", () => {
     const handlers = generateHandlerRegistry(undefined, {
-      branches: {
-        usedBranchScope: "block",
-        handleBlock: (block) =>
-          generateEmptyBlockResult(
-            block,
-            generateEquipmentError([`missing for ${block.skill}`]),
-          ),
-      },
+      branches: (block) =>
+        generateEmptyBlockResult(
+          block,
+          generateEquipmentError([`missing for ${block.skill}`]),
+        ),
     });
 
     expect(() =>

@@ -34,19 +34,14 @@ const throwUnreachableTrainingDayBlock = (): never => {
   throw new Error("A training day runs branches blocks only");
 };
 
-const UNREACHABLE_TRAINING_DAY_HANDLER = {
-  usedBranchScope: "workout",
-  handleBlock: throwUnreachableTrainingDayBlock,
-} as const;
-
 // A training day holds branches blocks only, so the other handlers throw.
 const createTrainingDayHandlers = (
   branches: BlockHandlerRegistry["branches"],
 ): BlockHandlerRegistry => ({
-  picks: UNREACHABLE_TRAINING_DAY_HANDLER,
+  picks: throwUnreachableTrainingDayBlock,
   branches,
-  duration: UNREACHABLE_TRAINING_DAY_HANDLER,
-  exercises: UNREACHABLE_TRAINING_DAY_HANDLER,
+  duration: throwUnreachableTrainingDayBlock,
+  exercises: throwUnreachableTrainingDayBlock,
 });
 
 // A legacy training reads its saved copies, which hold every planned branch.

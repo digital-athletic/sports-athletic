@@ -6,7 +6,7 @@ import { createBranchesBlockHandler } from "./blockHandlers/branches/branchesHan
 import { createCardioDurationHandler } from "./blockHandlers/duration/cardioDurationHandler";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import { restrictTemplateBranchesBlock } from "./blockHandlers/branches/templateBranchRestriction";
-import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
+import { handlePicksBlock } from "./blockHandlers/picks/picksHandler";
 import { SHORT_WORKOUT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "./generationInput/generationInput";
 import type { BlockHandlerRegistry } from "./stages/blockWalk";
@@ -19,11 +19,6 @@ const throwUnreachableShortWorkoutBlock = (): never => {
   throw new Error("A short workout runs no exercises blocks");
 };
 
-const UNREACHABLE_SHORT_WORKOUT_HANDLER = {
-  usedBranchScope: "workout",
-  handleBlock: throwUnreachableShortWorkoutBlock,
-} as const;
-
 const CATALOG_BRANCHES_HANDLER = createBranchesBlockHandler(
   lookUpStoredBranchInCatalog,
   "drop",
@@ -31,21 +26,19 @@ const CATALOG_BRANCHES_HANDLER = createBranchesBlockHandler(
 
 // requireSupportedTemplateBlocks rejects exercises blocks and duration blocks
 // of other skills than the cardio zones first, so those never reach a handler.
-const SHORT_WORKOUT_HANDLERS: BlockHandlerRegistry = {
-  picks: PICKS_BLOCK_HANDLER,
-  branches: {
-    usedBranchScope: CATALOG_BRANCHES_HANDLER.usedBranchScope,
-    handleBlock: (block, input, usedBranches, earlierResults) =>
-      CATALOG_BRANCHES_HANDLER.handleBlock(
-        restrictTemplateBranchesBlock(block, input),
-        input,
-        usedBranches,
-        earlierResults,
-      ),
-  },
+// The registry reads the picks handler per run, so a spy on it takes effect.
+const createShortWorkoutHandlers = (): BlockHandlerRegistry => ({
+  picks: handlePicksBlock,
+  branches: (block, input, usedBranches, walk) =>
+    CATALOG_BRANCHES_HANDLER(
+      restrictTemplateBranchesBlock(block, input),
+      input,
+      usedBranches,
+      walk,
+    ),
   duration: createCardioDurationHandler(CATALOG_BRANCHES_HANDLER),
-  exercises: UNREACHABLE_SHORT_WORKOUT_HANDLER,
-};
+  exercises: throwUnreachableShortWorkoutBlock,
+});
 
 /**
  * Generates a short workout from its template. A template without blocks
@@ -74,7 +67,7 @@ export const generateShortWorkoutFromTemplate = (
   }
   requireSupportedTemplateBlocks(template);
   return interpretTemplate(template, input, {
-    handlers: SHORT_WORKOUT_HANDLERS,
+    handlers: createShortWorkoutHandlers(),
     finishRules: SHORT_WORKOUT_FINISH_RULES,
     createSetListBuilder,
     skillTrees,

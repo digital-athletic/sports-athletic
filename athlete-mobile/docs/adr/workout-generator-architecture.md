@@ -153,14 +153,14 @@ A handler is one function. It takes the block, the generation input, the set of 
 
 Resolution runs inside selection, because the specs drop a candidate whose exercise already appears.
 
-| Block kind | Rules                                                                                          | Scope of the used branches                                     |
-| ---------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Picks      | [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout)       | Whole workout                                                  |
-| Branches   | [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session)  | One block, see [duplicate exercises](./duplicate-exercises.md) |
-| Duration   | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR | Whole workout                                                  |
-| Exercises  | [AIWL rules 5 and 6](./athletic-intelligence-workout-language.md#rules): catalog lookup in list order, equipment check per exercise unless the source sets `equipment: "ignored"` | Whole workout; uses no branch |
+| Block kind | Rules                                                                                          |
+| ---------- | ---------------------------------------------------------------------------------------------- |
+| Picks      | [Plan-Independent Workouts](../specs/session/plan-independent-workouts.md#short-workout)       |
+| Branches   | [Plan Workout Generation](../specs/session/plan-workout-generation.md#generating-the-session), see [duplicate exercises](./duplicate-exercises.md) |
+| Duration   | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR; a cardio duration block draws one branch of its tree and hands it to the branches handler |
+| Exercises  | [AIWL rules 5 and 6](./athletic-intelligence-workout-language.md#rules): catalog lookup in list order, equipment check per exercise unless the source sets `equipment: "ignored"`; uses no branch |
 
-A block of whole workout scope receives the branches every earlier block used, whatever the kind of that block. A block of one block scope starts with an empty set. One template can mix block kinds: a short workout runs picks and branches blocks in template order.
+The block walk hands every block the branches all earlier blocks used, whatever the kind of either block. The branches handler reads no used branches. The registry of each source maps each block kind to its handler function, so one template can mix block kinds: a short workout runs picks and branches blocks in template order.
 
 A later picks block skips the exercises of an earlier exercises block, and an exercises block keeps an exercise an earlier block trained.
 

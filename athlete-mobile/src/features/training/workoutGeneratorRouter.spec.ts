@@ -5,7 +5,7 @@ import {
   createAiwlPlan,
   createAiwlTraining,
 } from "@/features/training/utils/testFixtures";
-import { PICKS_BLOCK_HANDLER } from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
+import * as picksHandler from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
 import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import type * as ShortWorkoutGeneration from "@/features/training/workoutGenerator/shortWorkoutGeneration";
 import { generateStrengthTest } from "@/features/training/workoutGenerator/strengthTestGeneration";
@@ -235,11 +235,11 @@ describe("generateWorkout: short workouts", () => {
   afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
 
   it("draws the block of the MOB template through the picks block handler", () => {
-    const handleBlock = jest.spyOn(PICKS_BLOCK_HANDLER, "handleBlock");
+    const handlePicksBlock = jest.spyOn(picksHandler, "handlePicksBlock");
 
     const setList = generateWorkoutOf("MOB");
 
-    expect(handleBlock).toHaveBeenCalledTimes(1);
+    expect(handlePicksBlock).toHaveBeenCalledTimes(1);
     expect(setList.length).toBeGreaterThan(0);
     expect(setList.every((entry) => entry.skill === "MOB")).toBe(true);
   });

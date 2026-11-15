@@ -75,15 +75,8 @@ export type BlockHandler<K extends BlockKind> = (
   walk?: BlockWalkContext,
 ) => BlockResult;
 
-// "workout" hands each block the branches every earlier block used, whatever
-// its scope; "block" hands each block an empty set, as the old training day does.
-export type UsedBranchScope = "workout" | "block";
-
 export type BlockHandlerRegistry = {
-  readonly [K in BlockKind]: {
-    readonly usedBranchScope: UsedBranchScope;
-    readonly handleBlock: BlockHandler<K>;
-  };
+  readonly [K in BlockKind]: BlockHandler<K>;
 };
 
 interface BlockContext {
@@ -99,19 +92,20 @@ const handleBlockByKind = (
 ): BlockResult => {
   switch (block.kind) {
     case "picks":
-      return handlers.picks.handleBlock(block, input, usedBranches, walk);
+      return handlers.picks(block, input, usedBranches, walk);
     case "branches":
-      return handlers.branches.handleBlock(block, input, usedBranches, walk);
+      return handlers.branches(block, input, usedBranches, walk);
     case "duration":
-      return handlers.duration.handleBlock(block, input, usedBranches, walk);
+      return handlers.duration(block, input, usedBranches, walk);
     case "exercises":
-      return handlers.exercises.handleBlock(block, input, usedBranches, walk);
+      return handlers.exercises(block, input, usedBranches, walk);
   }
 };
 
 /**
  * Visits the blocks in template order, so the handlers draw from the random
- * source in that order, and returns one result per block.
+ * source in that order, and returns one result per block. Every block receives
+ * the branches all earlier blocks used.
  */
 export const walkTemplateBlocks = (
   template: InterpretedWorkout,
@@ -121,10 +115,9 @@ export const walkTemplateBlocks = (
   let workoutUsedBranches: ReadonlySet<string> = new Set();
   const results: BlockResult[] = [];
   for (const [index, block] of template.blocks.entries()) {
-    const isWorkoutScope = handlers[block.kind].usedBranchScope === "workout";
     const result = handleBlockByKind(block, handlers, {
       input,
-      usedBranches: isWorkoutScope ? workoutUsedBranches : new Set(),
+      usedBranches: workoutUsedBranches,
       walk: {
         earlierResults: results,
         blockPath: `${template.id}.blocks[${index}]`,

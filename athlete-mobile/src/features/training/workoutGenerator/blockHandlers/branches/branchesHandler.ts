@@ -266,12 +266,12 @@ const applyBlockRuleChain = (
  * saved at plan creation. The missing branch rule decides what a branch ID
  * the lookup lacks does. No defaults, so a caller always picks both.
  */
-export const createBranchesBlockHandler = (
-  lookUpStoredBranch: StoredBranchLookup,
-  missingBranchRule: MissingBranchRule,
-): BlockHandlerRegistry["branches"] => ({
-  usedBranchScope: "block",
-  handleBlock: (storedBlock, input, _usedBranches, walk): BlockResult => {
+export const createBranchesBlockHandler =
+  (
+    lookUpStoredBranch: StoredBranchLookup,
+    missingBranchRule: MissingBranchRule,
+  ): BlockHandlerRegistry["branches"] =>
+  (storedBlock, input, _usedBranches, walk): BlockResult => {
     // A block whose skill an earlier cardio swap took over reads the swapped
     // entry, which holds no tags and no levels, in place of its stored branches.
     const earlierSwap = findEarlierCardioSwap(
@@ -317,5 +317,4 @@ export const createBranchesBlockHandler = (
               : chain.emptyReason,
           usedBranchIds: [],
         };
-  },
-});
+  };

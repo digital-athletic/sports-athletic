@@ -12,7 +12,7 @@ import {
   generateShortTemplate,
   generateTemplate,
 } from "@test/factories/templateBlock";
-import { SHORT_WORKOUT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
+import { DEFAULT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
 import type { BuiltBlockResult } from "./stages/workoutFinish";
 import type { WorkoutInput } from "./stages/workoutSetup";
 import { interpretTemplate } from "./templateInterpreter";
@@ -64,7 +64,7 @@ describe("templateInterpreter: interpretTemplate", () => {
           receivedInputs.push(input);
           return buildSkillSetList;
         },
-        picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
+        picksPoolRules: DEFAULT_PICKS_POOL_RULES,
       },
     );
 
@@ -92,7 +92,7 @@ describe("templateInterpreter: interpretTemplate", () => {
       handlers,
       finishRules: { requiredBlocks: "none" },
       createSetListBuilder: () => buildSkillSetList,
-      picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
+      picksPoolRules: DEFAULT_PICKS_POOL_RULES,
     });
 
     expect(resolvedSkills).toEqual(["WU"]);
@@ -115,7 +115,7 @@ describe("templateInterpreter: interpretTemplate", () => {
       finishRules: { requiredBlocks: "none" },
       createSetListBuilder: () => buildSkillSetList,
       skillTrees: { ...skillTrees, WU: { "409": warmUpBranch } },
-      picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
+      picksPoolRules: DEFAULT_PICKS_POOL_RULES,
     });
 
     expect(poolKeys).toEqual([["409"]]);
@@ -135,7 +135,7 @@ describe("templateInterpreter: interpretTemplate", () => {
         handlers,
         finishRules: { requiredBlocks: "none" },
         createSetListBuilder: () => buildSkillSetList,
-        picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
+        picksPoolRules: DEFAULT_PICKS_POOL_RULES,
       }),
     ).toThrow(
       expect.objectContaining({

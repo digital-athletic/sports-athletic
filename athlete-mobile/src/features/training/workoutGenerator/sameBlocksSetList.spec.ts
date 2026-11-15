@@ -7,9 +7,10 @@ import {
   generateBranchesBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
+import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import type { GenerationInput } from "./generationInput/generationInput";
-import { generateShortWorkoutFromTemplate } from "./shortWorkoutGeneration";
 import { generateTrainingDay } from "./trainingDayGeneration";
+import { generateSetList } from "./workoutGeneration";
 
 const exerciseCatalog = loadExercises();
 
@@ -42,10 +43,11 @@ const workout = generateTemplate([
 
 describe("sameBlocksSetList: a short workout and a training day of the same blocks", () => {
   it("generate the same set list", () => {
-    const shortWorkout = generateShortWorkoutFromTemplate(
+    const shortWorkout = generateSetList(
       workout,
+      lookUpStoredBranchInCatalog,
       generateInput(),
-      getAllSkillTrees(),
+      { skillTrees: getAllSkillTrees() },
     );
     const trainingDay = generateTrainingDay(workout, generateInput());
 
@@ -53,10 +55,11 @@ describe("sameBlocksSetList: a short workout and a training day of the same bloc
   });
 
   it("train every block and end on a set", () => {
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       workout,
+      lookUpStoredBranchInCatalog,
       generateInput(),
-      getAllSkillTrees(),
+      { skillTrees: getAllSkillTrees() },
     );
 
     expect([...new Set(setList.map(({ skill }) => skill))]).toEqual([

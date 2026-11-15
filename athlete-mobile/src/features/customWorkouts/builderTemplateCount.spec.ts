@@ -2,7 +2,8 @@ import { loadExercises } from "@/data/loadExercises";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import { generateShortWorkoutFromTemplate } from "@/features/training/workoutGenerator/shortWorkoutGeneration";
+import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
+import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
 import { describeSetListEntries } from "@test/factories/setListDescription";
@@ -72,14 +73,15 @@ const runIds = (
     );
     if (!parsed.success) throw new Error("builder template is invalid");
     return rowIds(
-      generateShortWorkoutFromTemplate(
+      generateSetList(
         parsed.template,
+        lookUpStoredBranchInCatalog,
         generateRuleFamilyInput({
           exerciseCatalog: loadExercises(),
           equipment,
           random: generateSeededRandom(seed),
         }),
-        getAllSkillTrees(),
+        { skillTrees: getAllSkillTrees() },
       ),
     );
   });
@@ -117,28 +119,29 @@ describe("builder template count: SWR1 pairing without equipment", () => {
 // Locks the set list of a template as the trainer web builder writes it, for a
 // fixed seed: the same template must keep generating the same rows.
 describe("builder template: generated set list lock", () => {
-  const generateSetList = (blocks: unknown[]) => {
+  const describeBuilderSetList = (blocks: unknown[]) => {
     const parsed = validateCustomWorkoutValue(
       { ...builderTemplate("PREV"), blocks },
       getAllSkillTrees(),
     );
     if (!parsed.success) throw new Error("builder template is invalid");
     return describeSetListEntries(
-      generateShortWorkoutFromTemplate(
+      generateSetList(
         parsed.template,
+        lookUpStoredBranchInCatalog,
         generateRuleFamilyInput({
           exerciseCatalog: loadExercises(),
           equipment: [],
           random: generateSeededRandom(7),
         }),
-        getAllSkillTrees(),
+        { skillTrees: getAllSkillTrees() },
       ),
     );
   };
 
   it("keeps the set list of a picks block with countBy entries", () => {
     expect(
-      generateSetList([
+      describeBuilderSetList([
         {
           kind: "picks",
           skill: "PREV",
@@ -167,7 +170,7 @@ describe("builder template: generated set list lock", () => {
 
   it("keeps the set list of a picks block without countBy", () => {
     expect(
-      generateSetList([
+      describeBuilderSetList([
         {
           kind: "picks",
           skill: "PREV",
@@ -211,7 +214,7 @@ describe("builder template: generated set list lock", () => {
 
   it("keeps the set list of a cardio duration block", () => {
     expect(
-      generateSetList([
+      describeBuilderSetList([
         { kind: "duration", skill: "CARDIO_2", duration: 1200 },
       ]),
     ).toEqual([

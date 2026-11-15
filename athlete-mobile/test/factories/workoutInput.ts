@@ -2,6 +2,7 @@ import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import type { Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
+import { DEFAULT_PICKS_POOL_RULES } from "@/features/training/workoutGenerator/blockHandlers/picks/picksWorkoutRules";
 import {
   setUpWorkout,
   type WorkoutInput,
@@ -48,7 +49,12 @@ export const generateWorkoutInput = ({
   pickTrees,
   ...generationOptions
 }: WorkoutInputFactoryOptions = {}): WorkoutInput =>
-  setUpWorkout(generateGenerationInput(generationOptions), template, pickTrees);
+  setUpWorkout(
+    generateGenerationInput(generationOptions),
+    DEFAULT_PICKS_POOL_RULES,
+    template,
+    pickTrees,
+  );
 
 /**
  * Builds the workout input of the replacement specs: the workout input of a

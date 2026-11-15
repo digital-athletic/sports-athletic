@@ -34,14 +34,13 @@ const createFrozenList = (list: string[]): readonly string[] =>
  * Adds the derived inputs that several blocks share and applies the picks
  * workout rules of the template. The muscle soreness check stays in its rule
  * family, which throws only for a skill it filters. `picksPoolRules` picks
- * the families the picks pool filter applies; the default is the short
- * workout rules.
+ * the families the picks pool filter applies.
  */
 export const setUpWorkout = (
   input: GenerationInput,
+  picksPoolRules: PicksPoolRules,
   template?: InterpretedWorkout,
   skillTrees?: Readonly<Record<string, SkillTreeType>>,
-  picksPoolRules?: PicksPoolRules,
 ): WorkoutInput => {
   const pains = getUserTagValues(
     input.athlete.workoutData?.tags,
@@ -58,8 +57,8 @@ export const setUpWorkout = (
       ? resolvePicksWorkout(
           template,
           { ...input, athleteLevel },
-          skillTrees,
           picksPoolRules,
+          skillTrees,
         )
       : createEmptyPicksWorkout(),
   });

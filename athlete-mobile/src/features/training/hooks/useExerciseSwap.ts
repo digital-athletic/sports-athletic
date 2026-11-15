@@ -20,6 +20,7 @@ import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySe
 import type { SwapControls } from "@/features/training/SwapExerciseButton";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
+import { DEFAULT_PICKS_POOL_RULES } from "@/features/training/workoutGenerator/blockHandlers/picks/picksWorkoutRules";
 import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
 import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
@@ -70,7 +71,7 @@ const listAllAlternatives = (
   session: readonly UserExerciseDataType[],
 ): Record<string, ExerciseSwapState> => {
   const basis = createSwapBasis(request);
-  const input = setUpWorkout(basis.input);
+  const input = setUpWorkout(basis.input, DEFAULT_PICKS_POOL_RULES);
   const swaps: Record<string, ExerciseSwapState> = {};
   for (const { branchId, skill } of listSwappableBranches(session, basis.day)) {
     const others = session.filter((entry) => entry.branchId !== branchId);

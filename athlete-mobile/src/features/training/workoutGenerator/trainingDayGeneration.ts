@@ -7,7 +7,7 @@ import {
   createStoredDayBranchLookup,
   lookUpStoredBranchInCatalog,
 } from "./blockHandlers/branches/storedBranchLookup";
-import { SHORT_WORKOUT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
+import { DEFAULT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "./generationInput/generationInput";
 import type {
   BlockHandlerRegistry,
@@ -83,7 +83,7 @@ const runTrainingDayWorkout = (
     handlers,
     finishRules: { requiredBlocks: "none" },
     createSetListBuilder,
-    picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,
+    picksPoolRules: DEFAULT_PICKS_POOL_RULES,
   }).setList;
 };
 

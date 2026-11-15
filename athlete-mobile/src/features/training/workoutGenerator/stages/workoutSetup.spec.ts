@@ -4,6 +4,7 @@ import {
   generatePicksBlock,
   generateShortTemplate,
 } from "@test/factories/templateBlock";
+import { DEFAULT_PICKS_POOL_RULES } from "../blockHandlers/picks/picksWorkoutRules";
 import { setUpWorkout } from "./workoutSetup";
 
 describe("workoutSetup: setUpWorkout", () => {
@@ -14,7 +15,7 @@ describe("workoutSetup: setUpWorkout", () => {
       equipment: ["DUMBBELL"],
     });
 
-    const workoutInput = setUpWorkout(input);
+    const workoutInput = setUpWorkout(input, DEFAULT_PICKS_POOL_RULES);
 
     expect(workoutInput.athleteLevel).toBe("PROFESSIONAL");
     expect(workoutInput.blockedRegions).toEqual(["KNEE", "HIP"]);
@@ -23,7 +24,10 @@ describe("workoutSetup: setUpWorkout", () => {
   });
 
   it("derives no pain regions and no weights for an athlete without pain at a place without weights", () => {
-    const workoutInput = setUpWorkout(generateRuleFamilyInput());
+    const workoutInput = setUpWorkout(
+      generateRuleFamilyInput(),
+      DEFAULT_PICKS_POOL_RULES,
+    );
 
     expect(workoutInput.athleteLevel).toBe("ADVANCED");
     expect(workoutInput.blockedRegions).toEqual([]);
@@ -37,6 +41,7 @@ describe("workoutSetup: setUpWorkout", () => {
         withoutPersonalData: true,
         withoutWorkoutData: true,
       }),
+      DEFAULT_PICKS_POOL_RULES,
     );
 
     expect(workoutInput.athleteLevel).toBe("BEGINNER");
@@ -47,7 +52,7 @@ describe("workoutSetup: setUpWorkout", () => {
   it("keeps the generation input and returns a new frozen object", () => {
     const input = generateRuleFamilyInput({ pains: ["SHOULDER_LEFT"] });
 
-    const workoutInput = setUpWorkout(input);
+    const workoutInput = setUpWorkout(input, DEFAULT_PICKS_POOL_RULES);
 
     expect(workoutInput).not.toBe(input);
     expect(workoutInput.athlete).toBe(input.athlete);
@@ -64,7 +69,7 @@ describe("workoutSetup: setUpWorkout", () => {
       soreMuscles: ["CHEST", "QUADRICEPS"],
     });
 
-    expect(() => setUpWorkout(input)).not.toThrow();
+    expect(() => setUpWorkout(input, DEFAULT_PICKS_POOL_RULES)).not.toThrow();
   });
 
   it("applies the picks workout rules of the template before any block runs", () => {
@@ -72,7 +77,12 @@ describe("workoutSetup: setUpWorkout", () => {
     const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
 
     expect(() =>
-      setUpWorkout(input, template, generateKneeSkillTrees()),
+      setUpWorkout(
+        input,
+        DEFAULT_PICKS_POOL_RULES,
+        template,
+        generateKneeSkillTrees(),
+      ),
     ).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
@@ -83,7 +93,10 @@ describe("workoutSetup: setUpWorkout", () => {
   });
 
   it("holds an empty picks workout without a template", () => {
-    const { picksWorkout } = setUpWorkout(generateRuleFamilyInput());
+    const { picksWorkout } = setUpWorkout(
+      generateRuleFamilyInput(),
+      DEFAULT_PICKS_POOL_RULES,
+    );
 
     expect(picksWorkout.pool).toEqual({});
     expect(picksWorkout.blocks.size).toBe(0);
@@ -92,8 +105,10 @@ describe("workoutSetup: setUpWorkout", () => {
   it("gives each setup its own picks workout maps", () => {
     const input = generateRuleFamilyInput();
 
-    expect(setUpWorkout(input).picksWorkout.blocks).not.toBe(
-      setUpWorkout(input).picksWorkout.blocks,
+    expect(
+      setUpWorkout(input, DEFAULT_PICKS_POOL_RULES).picksWorkout.blocks,
+    ).not.toBe(
+      setUpWorkout(input, DEFAULT_PICKS_POOL_RULES).picksWorkout.blocks,
     );
   });
 });

@@ -14,6 +14,7 @@ import {
 import { generateLeveledInput } from "@test/factories/workoutInput";
 import {
   createEmptyPicksWorkout,
+  DEFAULT_PICKS_POOL_RULES,
   filterPoolByPicksWorkoutRules,
   readResolvedPicksBlockTiming,
   resolvePicksWorkout,
@@ -37,17 +38,20 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
       ...generateSkillTreeBranches("GKSKG", ["547"]),
     };
 
-    expect(Object.keys(filterPoolByPicksWorkoutRules(pool, input))).toEqual([
-      "510",
-      "547",
-    ]);
+    expect(
+      Object.keys(
+        filterPoolByPicksWorkoutRules(pool, input, DEFAULT_PICKS_POOL_RULES),
+      ),
+    ).toEqual(["510", "547"]);
   });
 
   it("throws the pain error when pain and missing equipment both empty the pool", () => {
     const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
     const pool = generateSkillTreeBranches("GKS", ["523"]);
 
-    expect(() => filterPoolByPicksWorkoutRules(pool, input)).toThrow(
+    expect(() =>
+      filterPoolByPicksWorkoutRules(pool, input, DEFAULT_PICKS_POOL_RULES),
+    ).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
         subtype: "PAIN",
@@ -60,7 +64,9 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
     const input = generateRuleFamilyInput({ birthday: CHILD_BIRTHDAY });
     const pool = generateSkillTreeBranches("GKS", ["510"]);
 
-    expect(() => filterPoolByPicksWorkoutRules(pool, input)).toThrow(
+    expect(() =>
+      filterPoolByPicksWorkoutRules(pool, input, DEFAULT_PICKS_POOL_RULES),
+    ).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
         subtype: "EQUIPMENT",
@@ -76,7 +82,9 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
     });
     const pool = generateSkillTreeBranches("WU", ["1026"]);
 
-    expect(() => filterPoolByPicksWorkoutRules(pool, input)).toThrow(
+    expect(() =>
+      filterPoolByPicksWorkoutRules(pool, input, DEFAULT_PICKS_POOL_RULES),
+    ).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
         subtype: "AGE",
@@ -89,7 +97,9 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
     const input = generateRuleFamilyInput({ gender: "FEMALE" });
     const pool = generateSkillTreeBranches("WU", ["1026"]);
 
-    expect(() => filterPoolByPicksWorkoutRules(pool, input)).toThrow(
+    expect(() =>
+      filterPoolByPicksWorkoutRules(pool, input, DEFAULT_PICKS_POOL_RULES),
+    ).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
         subtype: "GENDER",
@@ -231,6 +241,7 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     const picksWorkout = resolvePicksWorkout(
       generateShortTemplate([warmUpBlock]),
       input,
+      DEFAULT_PICKS_POOL_RULES,
       skillTrees,
     );
 
@@ -259,6 +270,7 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     const picksWorkout = resolvePicksWorkout(
       template,
       input,
+      DEFAULT_PICKS_POOL_RULES,
       generateKneeSkillTrees(),
     );
 
@@ -273,7 +285,12 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
     expect(() =>
-      resolvePicksWorkout(template, input, generateKneeSkillTrees()),
+      resolvePicksWorkout(
+        template,
+        input,
+        DEFAULT_PICKS_POOL_RULES,
+        generateKneeSkillTrees(),
+      ),
     ).toThrow(
       expect.objectContaining({
         type: "NO_EXERCISES",
@@ -290,8 +307,8 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     const picksWorkout = resolvePicksWorkout(
       template,
       input,
-      generateKneeSkillTrees(),
       { pain: "ignored", equipment: "ignored" },
+      generateKneeSkillTrees(),
     );
 
     expect(Object.keys(picksWorkout.pool)).toEqual(["1"]);
@@ -309,6 +326,7 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     const picksWorkout = resolvePicksWorkout(
       template,
       generateLeveledInput(),
+      DEFAULT_PICKS_POOL_RULES,
       generateKneeSkillTrees(),
     );
 
@@ -330,6 +348,7 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     const picksWorkout = resolvePicksWorkout(
       template,
       input,
+      DEFAULT_PICKS_POOL_RULES,
       generateKneeSkillTrees(),
     );
 
@@ -342,7 +361,11 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     ]);
     const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
 
-    const picksWorkout = resolvePicksWorkout(template, input);
+    const picksWorkout = resolvePicksWorkout(
+      template,
+      input,
+      DEFAULT_PICKS_POOL_RULES,
+    );
 
     expect(picksWorkout.pool).toEqual({});
     expect(picksWorkout.blocks.size).toBe(0);
@@ -355,8 +378,16 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     ]);
     const input = generateLeveledInput();
 
-    const first = resolvePicksWorkout(template, input);
-    const second = resolvePicksWorkout(template, input);
+    const first = resolvePicksWorkout(
+      template,
+      input,
+      DEFAULT_PICKS_POOL_RULES,
+    );
+    const second = resolvePicksWorkout(
+      template,
+      input,
+      DEFAULT_PICKS_POOL_RULES,
+    );
 
     expect(first.blocks).not.toBe(second.blocks);
     expect(first.pool).not.toBe(second.pool);
@@ -369,6 +400,7 @@ describe("picksWorkoutRules: readResolvedPicksBlockTiming", () => {
     const picksWorkout = resolvePicksWorkout(
       generateShortTemplate([block]),
       generateLeveledInput(),
+      DEFAULT_PICKS_POOL_RULES,
       generateKneeSkillTrees(),
     );
 

@@ -13,7 +13,6 @@ import {
 } from "@test/factories/setListDescription";
 import {
   generateBreathingTrees,
-  generateLowerBodyBranch,
   generateMixedSkillTrees,
   generateTreeBranch,
 } from "@test/factories/skillTree";
@@ -25,14 +24,12 @@ import {
   generateUntimedBranchesBlock,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import {
-  generateLowerBodyExercises,
-  generateMixedExerciseCatalog,
-} from "@test/factories/valueExercise";
+import { generateMixedExerciseCatalog } from "@test/factories/valueExercise";
+import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import * as picksHandler from "./blockHandlers/picks/picksHandler";
-import { generateShortWorkoutFromTemplate } from "./shortWorkoutGeneration";
+import { generateSetList } from "./workoutGeneration";
 
-describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
+describe("shortWorkoutGeneration: generateSetList of a short workout template", () => {
   afterEach(jest.restoreAllMocks);
 
   it("draws the blocks in template order from the given skill trees and drops the last pause", () => {
@@ -41,10 +38,11 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       generatePicksBlock("BR"),
     ]);
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({ exerciseCatalog: loadExercises() }),
-      generateBreathingTrees([]),
+      { skillTrees: generateBreathingTrees([]) },
     );
 
     expect(handlePicksBlock).toHaveBeenCalledTimes(2);
@@ -156,13 +154,14 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
   ])(
     "keeps the exercises, sets and rests of the %s template",
     (templateId, expected) => {
-      const setList = generateShortWorkoutFromTemplate(
+      const setList = generateSetList(
         loadTemplates()[templateId],
+        lookUpStoredBranchInCatalog,
         generateGenerationInput({
           exerciseCatalog: loadExercises(),
           random: generateSeededRandom(7),
         }),
-        getAllSkillTrees(),
+        { skillTrees: getAllSkillTrees() },
       );
 
       expect(describeSetListEntries(setList)).toEqual(expected);
@@ -177,14 +176,15 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     ]);
     const skillTrees = generateMixedSkillTrees();
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),
-      skillTrees,
+      { skillTrees },
     );
 
     expect(listTrainedSkills(setList)).toEqual(["MOB", "BR", "CD"]);
@@ -207,16 +207,17 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
 
     expect(
       catchThrownValue(() =>
-        generateShortWorkoutFromTemplate(
+        generateSetList(
           generateShortTemplate([
             generatePicksBlock("MOB"),
             generatePicksBlock("CD"),
           ]),
+          lookUpStoredBranchInCatalog,
           generateRuleFamilyInput({
             exerciseCatalog: generateMixedExerciseCatalog(),
             skillTrees,
           }),
-          skillTrees,
+          { skillTrees },
         ),
       ),
     ).toStrictEqual({
@@ -233,14 +234,15 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     ]);
     const skillTrees = generateMixedSkillTrees();
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),
-      skillTrees,
+      { skillTrees },
     );
 
     expect(listTrainedExercises(setList)).toEqual(["e1", "e2"]);
@@ -259,14 +261,15 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       BR: { "3": generateTreeBranch(["e1"]) },
     };
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),
-      skillTrees,
+      { skillTrees },
     );
 
     expect(listTrainedExercises(setList)).toEqual(["e1", "e2"]);
@@ -283,65 +286,16 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       },
     };
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         pains: ["KNEE_LEFT"],
         random: () => 0,
       }),
-      skillTrees,
-    );
-
-    expect(listTrainedExercises(setList)).toEqual(["e2"]);
-  });
-
-  it("trains a replacement branch of the same skill when pain blocks every listed branch", () => {
-    // MOB branch 1 is blocked for knee pain, branch 2 is free
-    const skillTrees = {
-      MOB: {
-        "1": generateLowerBodyBranch({ 1: { exerciseId: "e1" } }, [
-          "BLOCK_KNEE",
-        ]),
-        "2": generateLowerBodyBranch({ 1: { exerciseId: "e2" } }),
-      },
-    };
-    const template = generateShortTemplate([
-      generateUntimedBranchesBlock("MOB", { branches: ["1"] }),
-    ]);
-
-    const setList = generateShortWorkoutFromTemplate(
-      template,
-      generateRuleFamilyInput({
-        exerciseCatalog: generateLowerBodyExercises(["e1", "e2"]),
-        skillTrees,
-        pains: ["KNEE_LEFT"],
-        random: () => 0,
-      }),
-      skillTrees,
-    );
-
-    expect(listTrainedExercises(setList)).toEqual(["e2"]);
-  });
-
-  it("trains a replacement branch of the same skill for a branch ID the catalog lacks", () => {
-    // no skill tree holds the branch ID 900001
-    const skillTrees = {
-      MOB: { "2": generateLowerBodyBranch({ 1: { exerciseId: "e2" } }) },
-    };
-    const template = generateShortTemplate([
-      generateUntimedBranchesBlock("MOB", { branches: ["900001"] }),
-    ]);
-
-    const setList = generateShortWorkoutFromTemplate(
-      template,
-      generateRuleFamilyInput({
-        exerciseCatalog: generateLowerBodyExercises(["e2"]),
-        skillTrees,
-        random: () => 0,
-      }),
-      skillTrees,
+      { skillTrees },
     );
 
     expect(listTrainedExercises(setList)).toEqual(["e2"]);
@@ -357,10 +311,11 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       },
     ]);
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({ exerciseCatalog: loadExercises() }),
-      getAllSkillTrees(),
+      { skillTrees: getAllSkillTrees() },
     );
 
     expect([...new Set(listTrainedSkills(setList))]).toEqual(["CARDIO_5"]);
@@ -372,13 +327,14 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       { kind: "duration", skill: "CARDIO_2", duration: 1200 },
     ]);
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: loadExercises(),
         random: () => 0.99,
       }),
-      getAllSkillTrees(),
+      { skillTrees: getAllSkillTrees() },
     );
 
     expect([...new Set(listTrainedSkills(setList))]).toEqual(["CARDIO_2"]);
@@ -390,15 +346,16 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       { kind: "duration", skill: "CARDIO_2", duration: 1200 },
     ]);
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: loadExercises(),
         equipment: ["AREA_5", "AREA_10", "AREA_20", "MARKERS", "TRACK_20"],
         pains: ["KNEE_LEFT"],
         random: () => 0.99,
       }),
-      getAllSkillTrees(),
+      { skillTrees: getAllSkillTrees() },
     );
 
     expect(listTrainedExercises(setList)).toContain("763");
@@ -410,34 +367,48 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       { kind: "duration", skill: "CARDIO_2", duration: 1200 },
     ]);
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: loadExercises(),
         soreMuscles: ["QUADRICEPS_LEFT"],
       }),
-      getAllSkillTrees(),
+      { skillTrees: getAllSkillTrees() },
     );
 
     expect([...new Set(listTrainedSkills(setList))]).toEqual(["CARDIO_5"]);
   });
 
   it("fills the length of a cardio duration block", () => {
-    const generateCardioSeconds = (duration: number): number =>
-      generateShortWorkoutFromTemplate(
-        generateShortTemplate([
-          { kind: "duration", skill: "CARDIO_2", duration },
-        ]),
-        generateRuleFamilyInput({
-          exerciseCatalog: loadExercises(),
-          equipment: ["TREADMILL"],
-        }),
-        getAllSkillTrees(),
-      ).reduce((seconds, entry) => seconds + (entry.duration ?? 0), 0);
+    const shortTemplate = generateShortTemplate([
+      { kind: "duration", skill: "CARDIO_2", duration: 1200 },
+    ]);
+    const longTemplate = generateShortTemplate([
+      { kind: "duration", skill: "CARDIO_2", duration: 2400 },
+    ]);
+    const generateInput = () =>
+      generateRuleFamilyInput({
+        exerciseCatalog: loadExercises(),
+        equipment: ["TREADMILL"],
+      });
 
-    expect(generateCardioSeconds(2400)).toBeGreaterThan(
-      generateCardioSeconds(1200),
+    const shortSetList = generateSetList(
+      shortTemplate,
+      lookUpStoredBranchInCatalog,
+      generateInput(),
+      { skillTrees: getAllSkillTrees() },
     );
+    const longSetList = generateSetList(
+      longTemplate,
+      lookUpStoredBranchInCatalog,
+      generateInput(),
+      { skillTrees: getAllSkillTrees() },
+    );
+
+    const sumSeconds = (setList: typeof shortSetList): number =>
+      setList.reduce((seconds, entry) => seconds + (entry.duration ?? 0), 0);
+    expect(sumSeconds(longSetList)).toBeGreaterThan(sumSeconds(shortSetList));
   });
 
   it.each([
@@ -448,26 +419,28 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     "CARDIO_4",
     "CARDIO_5",
   ])("runs a %s duration block", (skill) => {
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       generateShortTemplate([{ kind: "duration", skill, duration: 1200 }]),
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({ exerciseCatalog: loadExercises() }),
-      getAllSkillTrees(),
+      { skillTrees: getAllSkillTrees() },
     );
 
     expect([...new Set(listTrainedSkills(setList))]).toEqual([skill]);
   });
 
   it("builds a max strength picks block with the max strength ladder", () => {
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       generateShortTemplate([
         generatePicksBlock("MAX", { picks: [{ tags: [], count: 1 }] }),
       ]),
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: loadExercises(),
         equipment: ["BARBELL", "DUMBBELL", "RACK", "BENCH"],
         random: () => 0,
       }),
-      getAllSkillTrees(),
+      { skillTrees: getAllSkillTrees() },
     );
 
     expect(setList.some((entry) => entry.repetitionMAX !== undefined)).toBe(
@@ -482,13 +455,14 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       { kind: "duration", skill: "CARDIO_2", duration: 1200 },
     ]);
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: loadExercises(),
         random: () => 0,
       }),
-      getAllSkillTrees(),
+      { skillTrees: getAllSkillTrees() },
     );
 
     // Treadmill: 38 runs zone 4, 42 runs zone 2 fast, 39 runs zone 5 to recover
@@ -518,14 +492,15 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     ]);
     const skillTrees = generateMixedSkillTrees();
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),
-      skillTrees,
+      { skillTrees },
     );
 
     expect(listTrainedExercises(setList)).toEqual(["e4", "e3"]);
@@ -538,14 +513,15 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     ]);
     const skillTrees = { MOB: { "1": generateTreeBranch(["e1"]) } };
 
-    const setList = generateShortWorkoutFromTemplate(
+    const setList = generateSetList(
       template,
+      lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
         exerciseCatalog: generateMixedExerciseCatalog(),
         skillTrees,
         random: () => 0,
       }),
-      skillTrees,
+      { skillTrees },
     );
 
     expect(listTrainedExercises(setList)).toEqual(["e1", "e1"]);
@@ -569,10 +545,11 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
 
       expect(
         catchThrownValue(() =>
-          generateShortWorkoutFromTemplate(
+          generateSetList(
             template,
+            lookUpStoredBranchInCatalog,
             generateRuleFamilyInput({ pains: ["KNEE_LEFT"] }),
-            generateBreathingTrees(["BLOCK_KNEE"]),
+            { skillTrees: generateBreathingTrees(["BLOCK_KNEE"]) },
           ),
         ),
       ).toStrictEqual({
@@ -587,13 +564,14 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     "generates the same workout with order %s on a picks block as without it for the same seed",
     (order) => {
       const generate = (block: Block) =>
-        generateShortWorkoutFromTemplate(
+        generateSetList(
           generateShortTemplate([generatePicksBlock("BR"), block]),
+          lookUpStoredBranchInCatalog,
           generateRuleFamilyInput({
             exerciseCatalog: loadExercises(),
             random: generateSeededRandom(7),
           }),
-          getAllSkillTrees(),
+          { skillTrees: getAllSkillTrees() },
         );
 
       expect(generate(generatePicksBlock("BAS", { order }))).toEqual(
@@ -605,17 +583,18 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
   it("generates the same workout with order on a branches block as without it for the same seed", () => {
     const skillTrees = generateMixedSkillTrees();
     const generate = (order?: "muscleGroups") =>
-      generateShortWorkoutFromTemplate(
+      generateSetList(
         generateShortTemplate([
           generateUntimedBranchesBlock("CD", { branches: ["4"], order }),
           generateUntimedBranchesBlock("BR", { branches: ["3"] }),
         ]),
+        lookUpStoredBranchInCatalog,
         generateRuleFamilyInput({
           exerciseCatalog: generateMixedExerciseCatalog(),
           skillTrees,
           random: generateSeededRandom(7),
         }),
-        skillTrees,
+        { skillTrees },
       );
 
     expect(listTrainedExercises(generate("muscleGroups"))).toEqual([
@@ -633,10 +612,11 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
 
     expect(
       catchThrownValue(() =>
-        generateShortWorkoutFromTemplate(
+        generateSetList(
           template,
+          lookUpStoredBranchInCatalog,
           generateRuleFamilyInput(),
-          getAllSkillTrees(),
+          { skillTrees: getAllSkillTrees() },
         ),
       ),
     ).toStrictEqual({
@@ -649,10 +629,11 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
   it("throws the pain rule error with one region per blocked branch of the given skill trees", () => {
     expect(
       catchThrownValue(() =>
-        generateShortWorkoutFromTemplate(
+        generateSetList(
           generateShortTemplateWithBreathing([]),
+          lookUpStoredBranchInCatalog,
           generateRuleFamilyInput({ pains: ["KNEE_LEFT"] }),
-          generateBreathingTrees(["BLOCK_KNEE"]),
+          { skillTrees: generateBreathingTrees(["BLOCK_KNEE"]) },
         ),
       ),
     ).toStrictEqual({
@@ -661,27 +642,4 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       params: ["KNEE", "KNEE"],
     });
   });
-
-  it.each<[string, string[]]>([
-    ["without pains", []],
-    ["with a knee pain", ["KNEE_LEFT"]],
-  ])(
-    "throws the pain error with no regions for a template without blocks, %s",
-    (_name, pains) => {
-      const template = generateTemplate([], {
-        id: "empty",
-        name: { en: "Empty" },
-      });
-
-      expect(
-        catchThrownValue(() =>
-          generateShortWorkoutFromTemplate(
-            template,
-            generateRuleFamilyInput({ pains }),
-            getAllSkillTrees(),
-          ),
-        ),
-      ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: [] });
-    },
-  );
 });

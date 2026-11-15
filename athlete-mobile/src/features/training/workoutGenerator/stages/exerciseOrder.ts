@@ -2,6 +2,7 @@ import { TagGroups } from "@/constants/tagGroups";
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import { getTagValues } from "@/utils/tagUtils";
 import { isBigMuscleExercise } from "../setListBuilders/muscleGroups";
+import { sharesAnyValue } from "../setListBuilders/sharedValues";
 
 const REGION_ROTATION = ["FULL_BODY", "LOWER_BODY", "UPPER_BODY", "CORE"];
 
@@ -38,10 +39,11 @@ const unitsShareTagValue = (
   a: ExercisePair,
   b: ExercisePair,
   tagGroup: string,
-): boolean => {
-  const values = listUnitTagValues(a, tagGroup);
-  return listUnitTagValues(b, tagGroup).some((value) => values.includes(value));
-};
+): boolean =>
+  sharesAnyValue(
+    listUnitTagValues(a, tagGroup),
+    listUnitTagValues(b, tagGroup),
+  );
 
 const isUnitInRegion = (region: string) => (unit: ExercisePair) =>
   listUnitTagValues(unit, TagGroups.REGION).includes(region);

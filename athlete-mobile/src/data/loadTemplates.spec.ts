@@ -6,7 +6,7 @@ import {
   readLocalizedTemplateName,
 } from "./loadTemplates";
 import { getAllSkillTrees } from "./skillTreeRegistry";
-import { filterByTags } from "@/features/training/generators/focusTrainingSelection";
+import { filterBranchesByTags } from "@/features/training/workoutGenerator/blockHandlers/picks/branchTagFilter";
 import type {
   BlockPick,
   PicksBlock,
@@ -377,7 +377,8 @@ describe("loadTemplates: pool guard", () => {
         return picksAt(block.picks, place)
           .filter(
             (pick) =>
-              Object.keys(filterByTags(branches, pick.tags)).length === 0,
+              Object.keys(filterBranchesByTags(branches, pick.tags)).length ===
+              0,
           )
           .map((pick) => `${index}: ${pick.tags.join(",")}`);
       });

@@ -1,10 +1,6 @@
 import type { SetTuple } from "@/common/types/SetTuple";
 import { TagGroups } from "@/constants/tagGroups";
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
-import {
-  PAUSE_EXERCISE_ID,
-  PLACEHOLDER_BRANCH_ID,
-} from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import {
   createExerciseMap,
@@ -17,7 +13,12 @@ import {
   type ExerciseStartValueSource,
   readExerciseStartValues,
 } from "../exerciseValues/exerciseStartValues";
-import type { SetListBlock, SkillSetListBuilder } from "./setListBuilder";
+import {
+  buildPauseEntry,
+  type SetListBlock,
+  type SkillSetListBuilder,
+} from "./setListBuilder";
+import { sharesAnyValue } from "./sharedValues";
 
 // The exercise ID of a branch that resolved to no exercise.
 const UNRESOLVED_EXERCISE_ID = "-1";
@@ -52,9 +53,6 @@ const listPairTagValues = (pair: ExercisePair, tagGroup: string): string[] =>
   [pair.first, pair.second].flatMap((entry) =>
     entry ? getTagValues(entry.branchTags, tagGroup) : [],
   );
-
-const sharesAnyValue = (a: string[], b: string[]): boolean =>
-  a.some((value) => b.includes(value));
 
 /**
  * True when the next pair trains the same body region and the same primary
@@ -118,18 +116,6 @@ const readPairStartValues = (
   };
 };
 
-const buildPause = (
-  set: SetTuple,
-  skill: SetListBlock["skill"],
-  duration: number,
-): GeneratedSetListEntry => ({
-  branchId: PLACEHOLDER_BRANCH_ID,
-  exerciseId: PAUSE_EXERCISE_ID,
-  set,
-  skill,
-  duration,
-});
-
 const isWeightedEntry = (entry: ExerciseStartValues | undefined): boolean =>
   !!entry && getTagValues(entry.tags, TagGroups.EQ_TYPE).includes("WEIGHTS");
 
@@ -168,7 +154,7 @@ const buildWarmUpSet = (
             height: entry.height,
             weightType: entry.weightType,
           },
-          buildPause(set, skill, pause),
+          buildPauseEntry(set, skill, pause),
         ]
       : [],
   );
@@ -185,12 +171,12 @@ const buildWorkSet = (
   const roundRest = values.second ? rest.withinSuperset : rest.betweenSets;
   const pause = set[0] === set[1] ? closingRest : roundRest;
   const lead = { ...values.first, set, skill };
-  if (!values.second) return [lead, buildPause(set, skill, pause)];
+  if (!values.second) return [lead, buildPauseEntry(set, skill, pause)];
   return [
     lead,
-    buildPause(set, skill, rest.withinSuperset),
+    buildPauseEntry(set, skill, rest.withinSuperset),
     { ...values.second, set, skill },
-    buildPause(set, skill, pause),
+    buildPauseEntry(set, skill, pause),
   ];
 };
 

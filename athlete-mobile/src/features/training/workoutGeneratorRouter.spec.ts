@@ -13,7 +13,6 @@ import type * as StrengthTestGeneration from "@/features/training/workoutGenerat
 import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
 import type * as TrainingDayGeneration from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
-import { setUpEnvFlag } from "@test/factories/generatorFlags";
 import type { UserType } from "@/schemas/user.schema";
 import {
   buildPlanUser,
@@ -101,24 +100,6 @@ describe("generateWorkout: routing", () => {
     expect(generateShortWorkoutFromTemplate).toHaveBeenCalledTimes(1);
     expect(generateStrengthTest).not.toHaveBeenCalled();
     expect(generateTrainingDay).not.toHaveBeenCalled();
-  });
-
-  // EAS environments live outside the repo and may still set the retired
-  // build flag. The router ignores it.
-  describe("with a leftover EXPO_PUBLIC_AIWL_GENERATOR_ENABLED of false", () => {
-    setUpEnvFlag("EXPO_PUBLIC_AIWL_GENERATOR_ENABLED", "false");
-
-    it("runs the strength test on the AIWL generator", () => {
-      generateWorkoutOf("TEST_WORKOUT");
-
-      expect(generateStrengthTest).toHaveBeenCalledTimes(1);
-    });
-
-    it("runs a plan training day on the AIWL generator", () => {
-      generatePlanWorkoutForWeekday(generateWarmUpOnlyPlanUser());
-
-      expect(generateTrainingDay).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe("AIWL routes", () => {

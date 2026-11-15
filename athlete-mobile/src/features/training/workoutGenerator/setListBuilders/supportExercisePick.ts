@@ -19,6 +19,7 @@ import { isEquipmentPartAvailable } from "../ruleFamilies/equipmentAvailability"
 import { readGenderTag } from "../exerciseValues/exerciseStartValues";
 import type { GenerationInput } from "../generationInput/generationInput";
 import { readGenderLevelValue } from "../exerciseValues/startAndTargetValues";
+import { sharesAnyValue } from "./sharedValues";
 
 const SUPPORT_SET_SECONDS = 30;
 const SUPPORT_SET_REPETITIONS = 8;
@@ -42,9 +43,6 @@ export interface SupportExercisePick {
   exercise: ExerciseType;
   tally: SupportExerciseTally;
 }
-
-const sharesAnyValue = (a: string[], b: string[]): boolean =>
-  a.some((value) => b.includes(value));
 
 const hasEquipmentForExercise = (
   exercise: ExerciseType,

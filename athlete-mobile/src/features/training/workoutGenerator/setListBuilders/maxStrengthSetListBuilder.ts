@@ -2,10 +2,6 @@ import type { SetTuple } from "@/common/types/SetTuple";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import {
-  PAUSE_EXERCISE_ID,
-  PLACEHOLDER_BRANCH_ID,
-} from "@/features/training/models/IdTypes";
-import {
   DEFAULT_MAX_VALUES,
   type MaxValuesType,
 } from "@/features/training/models/MaxValues";
@@ -24,7 +20,7 @@ import {
   readMaxTrainingRepetitions,
   readMaxTrainingWeights,
 } from "./maxStrengthLadder";
-import type { SkillSetListBuilder } from "./setListBuilder";
+import { buildPauseEntry, type SkillSetListBuilder } from "./setListBuilder";
 import {
   buildSupportSets,
   EMPTY_SUPPORT_EXERCISE_TALLY,
@@ -112,18 +108,6 @@ const readMaxStrengthSets = (
   };
 };
 
-const buildPause = (
-  set: SetTuple,
-  skill: SkillCode,
-  duration: number,
-): GeneratedSetListEntry => ({
-  branchId: PLACEHOLDER_BRANCH_ID,
-  exerciseId: PAUSE_EXERCISE_ID,
-  set,
-  skill,
-  duration,
-});
-
 const buildLiftSet = (
   lead: BranchExerciseReference,
   sets: MaxStrengthSets,
@@ -149,7 +133,7 @@ const buildRestBetweenWorkingSets = (
   const pick = pickSupportExercise(pool, tally, weightedShare, input.random);
   if (!pick) {
     return {
-      setList: [buildPause(set, skill, workingSetRests.withoutSupport)],
+      setList: [buildPauseEntry(set, skill, workingSetRests.withoutSupport)],
       tally,
     };
   }
@@ -161,11 +145,11 @@ const buildRestBetweenWorkingSets = (
   );
   return {
     setList: [
-      buildPause(set, skill, BEFORE_SUPPORT_REST_SECONDS),
+      buildPauseEntry(set, skill, BEFORE_SUPPORT_REST_SECONDS),
       firstSet,
-      buildPause(set, skill, BETWEEN_SUPPORT_SETS_REST_SECONDS),
+      buildPauseEntry(set, skill, BETWEEN_SUPPORT_SETS_REST_SECONDS),
       secondSet,
-      buildPause(set, skill, workingSetRests.afterSupport),
+      buildPauseEntry(set, skill, workingSetRests.afterSupport),
     ],
     tally: pick.tally,
   };
@@ -188,9 +172,9 @@ const buildExerciseSetList = (
     const set: SetTuple = [index + 1, sets.weights.length];
     setList.push(buildLiftSet(lead, sets, index, skill));
     if (index < sets.warmUpCount) {
-      setList.push(buildPause(set, skill, WARM_UP_REST_SECONDS));
+      setList.push(buildPauseEntry(set, skill, WARM_UP_REST_SECONDS));
     } else if (index === sets.weights.length - 1) {
-      setList.push(buildPause(set, skill, LAST_WORKING_SET_REST_SECONDS));
+      setList.push(buildPauseEntry(set, skill, LAST_WORKING_SET_REST_SECONDS));
     } else {
       const built = buildRestBetweenWorkingSets(
         pool,

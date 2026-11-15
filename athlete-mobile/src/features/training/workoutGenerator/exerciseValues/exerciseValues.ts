@@ -2,6 +2,7 @@ import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import type { IntensityData } from "@/features/training/models/Intensity";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import { readSkillSetListKind } from "@/schemas/aiwl.schema";
 import type { TrainingParameterType } from "@/schemas/common.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type {
@@ -161,8 +162,7 @@ const isClampedSkill = (
   skill: string | undefined,
 ) =>
   skill === undefined ||
-  (skill !== "MAX" &&
-    skill !== "MAX_STRENGTH" &&
+  (readSkillSetListKind(skill) !== "maxStrength" &&
     !isSkillWithoutProgression(skillCatalog, skill));
 
 const clampRangeValues = (

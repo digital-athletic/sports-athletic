@@ -389,10 +389,9 @@ The workout runs 30 minutes as planned. The mobility estimate is 10 × 60 s per 
 
 ## Conformance
 
-Three specs pin the bundled trainings:
+Two specs pin the bundled trainings:
 
 - `src/data/loadTemplates.spec.ts` pins the resolved values and pools of the 13 bundled templates.
-- `src/features/training/generators/resolveTemplate.spec.ts` pins how the resolver turns template blocks into pools and values.
 - `src/features/training/generators/shortWorkoutEquipment.spec.ts` pins the foam roller training (BR) at a place without foam roller or foam ball.
 
 The bundled trainings reproduce the set lists of the old `focusTrainings.json` file, with one exception: the foam roller training at a place without foam roller or foam ball. Before the switch, an athlete in that situation got the error `NO_EXERCISES/EQUIPMENT`. Now the generator draws the BR branches that the athlete's equipment allows, for example branch 565.

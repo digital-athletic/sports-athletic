@@ -1,5 +1,10 @@
+import type { SetTuple } from "@/common/types/SetTuple";
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
-import { isPauseExercise } from "@/features/training/models/IdTypes";
+import {
+  isPauseExercise,
+  PAUSE_EXERCISE_ID,
+  PLACEHOLDER_BRANCH_ID,
+} from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type {
   BlockValues,
@@ -62,6 +67,22 @@ export interface PrescribedSetListBuilder {
 export type PrescribedSetListBuilders = Readonly<
   Partial<Record<SkillCode, PrescribedSetListBuilder>>
 >;
+
+/**
+ * Builds a rest between sets. The entry uses the placeholder branch, so
+ * completing it changes no branch progression.
+ */
+export const buildPauseEntry = (
+  set: SetTuple,
+  skill: SkillCode,
+  duration: number,
+): GeneratedSetListEntry => ({
+  branchId: PLACEHOLDER_BRANCH_ID,
+  exerciseId: PAUSE_EXERCISE_ID,
+  set,
+  skill,
+  duration,
+});
 
 /** Drops the rest that closes the whole set list, so a workout ends on a set. */
 export const removeTrailingPause = (

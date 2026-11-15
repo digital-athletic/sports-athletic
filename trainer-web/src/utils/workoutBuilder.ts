@@ -80,7 +80,11 @@ export const BUILDER_SKILLS: readonly BuilderSkill[] = [
 const WARM_UP_SKILL = "WU";
 const COOL_DOWN_SKILL = "CD";
 
-/** Exercises for a picks section, minutes for a cardio section. */
+/**
+ * Exercises for a picks section, minutes for a cardio section. An exercise
+ * is one row of the athlete's workout: a one-sided exercise counts as two,
+ * its left and its right side.
+ */
 export const AMOUNT_RANGES: Record<SectionKind, { min: number; max: number }> =
   {
     picks: { min: 1, max: 20 },
@@ -271,28 +275,32 @@ export const validateDraft = (draft: WorkoutDraft): DraftError[] => {
   return [...errors, ...draft.sections.flatMap(validateSection)];
 };
 
+/**
+ * A picks block that draws `count` workout rows. The block names its count
+ * unit, because the athlete app would otherwise count by the skill's own
+ * default, which is superset pairs for prevention.
+ */
+const picksBlock = (
+  skill: string,
+  tags: BuilderTag[],
+  count: number,
+): AiwlBlock => ({
+  kind: "picks",
+  skill,
+  countBy: "entries",
+  picks: [{ tags, count }],
+});
+
 const sectionToBlock = (section: SectionDraft): AiwlBlock =>
   sectionKind(section) === "duration"
     ? { kind: "duration", skill: section.skill, duration: section.amount * 60 }
-    : {
-        kind: "picks",
-        skill: section.skill,
-        picks: [{ tags: section.tags, count: section.amount }],
-      };
+    : picksBlock(section.skill, section.tags, section.amount);
 
 const fixedSectionToBlocks = (
   fixedSection: FixedSectionDraft,
   skill: string,
 ): AiwlBlock[] =>
-  fixedSection.enabled
-    ? [
-        {
-          kind: "picks",
-          skill,
-          picks: [{ tags: [], count: fixedSection.amount }],
-        },
-      ]
-    : [];
+  fixedSection.enabled ? [picksBlock(skill, [], fixedSection.amount)] : [];
 
 /**
  * Converts a draft that passed validateDraft into an AIWL template, e.g.

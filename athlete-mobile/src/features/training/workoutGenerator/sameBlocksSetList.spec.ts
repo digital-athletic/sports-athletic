@@ -32,8 +32,7 @@ const generateInput = (): GenerationInput =>
     random: generateSeededRandom(7),
   });
 
-// The blocks follow the section order of a training day, so the training day
-// builds them in template order, as a short workout does.
+// The blocks follow the section order, so the plan day sort keeps their order.
 const workout = generateTemplate([
   generateBranchesBlock("WU", ["410", "414"]),
   generateBranchesBlock("GKS", ["510", "512", "513"]),

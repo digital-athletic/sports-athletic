@@ -113,7 +113,7 @@ Each box in a layer implements the contract the layer title names. The code defi
    - The standard builder follows [Session Set Structure](../specs/session/session-set-structure.md) and [Standard Exercise Progression](../specs/progression/standard-exercise-progression.md).
    - The strength test builder follows [Weight Calculation from Strength Tests](../specs/progression/weight-calculation-from-strength-tests.md#8-strength-test-reference-load-and-1rm-update). The strength test source passes it for the skill of its lifts block, and it builds exercises blocks only.
 
-An exercises block keeps its list through workout finish and set list building: section order sorts the filled blocks around it, `lastWins` keeps every exercises block, and no pairing or exercise order rule touches it. Its result has the status `prescribed` and holds catalog exercise references without a branch.
+Workout finish builds the filled blocks in template order, every block of a skill included. An exercises block keeps its list through workout finish and set list building. No pairing or exercise order rule changes that list. Its result has the status `prescribed` and holds catalog exercise references without a branch.
 
 Builders of exercises blocks share one contract, `PrescribedSetListBuilder`: a `build` function and the block settings the builder reads. A source passes its builders to `createSetListBuilder` by skill and binds the data each builder needs; the strength test source binds its test set loads and 1RM shares. The set list stage resolves the builder by the block's skill and holds no protocol data and reads no skill catalog field for it. A skill without a builder fails; a block setting the builder does not read logs a warning and changes nothing.
 
@@ -131,7 +131,7 @@ Every superset trains the other side of a one-sided exercise right after it. A m
 
 The strength test lifts keep their own builder, the prescribed strength test builder above.
 
-A short workout that draws no exercise throws the error of its first empty block, as a training day does.
+A workout that draws no exercise throws the error of its first empty block in template order.
 
 #### Timing
 
@@ -228,8 +228,9 @@ A plan training may already store the target shape, an AIWL training. `generateT
 | AIWL | branch lookup index | replaced from the same skill | training day |
 
 1. The training day selection returns the workout of an AIWL training, validated against the AIWL schema. The exercise swap hook generates through the same function.
-2. The branches handler takes a missing branch rule. Under `"replace"`, the AIWL training rule, each distinct branch ID the catalog lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. Legacy trainings and short workouts keep the `"drop"` rule.
-3. An AIWL training holds branches blocks only. The other handlers throw.
+2. `generateTrainingDay` sorts the blocks of both shapes once by section order, stable, with a skill outside the section order first. The plan generator writes an AIWL day in the skill priority order of its budget, so the AIWL shape needs the sort too. `createStoredDayWorkout` keeps the stored order.
+3. The branches handler takes a missing branch rule. Under `"replace"`, the AIWL training rule, each distinct branch ID the catalog lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. Legacy trainings and short workouts keep the `"drop"` rule.
+4. An AIWL training holds branches blocks only. The other handlers throw.
 
 The plan features outside the generator read both shapes. `readPlannedBranches` returns the copied branches of a legacy training, and for an AIWL training the catalog branches of its branch IDs. Every feature skips a branch ID the catalog lacks, because the generator replaces it at run time.
 
@@ -269,6 +270,11 @@ The router sends every strength test to this source. Compared with the deleted o
 ### Behaviour changes
 
 1. A short workout whose branches block loses every listed branch to pain, age group or gender trains replacement branches of the same skill. Before, the deleted template branch restriction threw the rule's `NO_EXERCISES` error. A cardio duration block whose tree pain blocks in full swaps to the CARDIO_5 run instead of throwing.
+
+For an old plan whose stored skills are out of section order, the plan day sort changes two results. We accept both:
+
+1. The handlers draw in section order, not in stored order. A stored day already in section order generates the same set list.
+2. When every block of a day stays empty, the error comes from the first empty block in section order.
 
 ### Compatibility exceptions
 

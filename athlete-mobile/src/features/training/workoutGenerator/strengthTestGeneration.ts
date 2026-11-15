@@ -35,9 +35,7 @@ import { interpretTemplate } from "./templateInterpreter";
 
 // A test without its warm-up is incomplete, so every block must fill.
 const STRENGTH_TEST_FINISH_RULES: WorkoutFinishRules = {
-  blockOrder: "template",
   requiredBlocks: "every",
-  sameSkillBlocks: "keepAll",
 };
 
 // The athlete picks no place for the test; it runs on the fixed STUDIO equipment.

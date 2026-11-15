@@ -1,7 +1,10 @@
 import { loadExercises } from "@/data/loadExercises";
 import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
-import { describeSetListEntries } from "@test/factories/setListDescription";
+import {
+  describeSetListEntries,
+  listTrainedSkills,
+} from "@test/factories/setListDescription";
 import { generateStoredDayEntry } from "@test/factories/storedBranch";
 import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
 import {
@@ -111,6 +114,22 @@ describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () =>
     ]);
   });
 
+  it("runs its blocks in section order whatever order the day stores", () => {
+    // the plan generator writes an AIWL day in skill priority order
+    const setList = generateTrainingDay(
+      generateTemplate([
+        generateBranchesBlock("CARDIO_5", ["576"], { duration: 1500 }),
+        generateBranchesBlock("WU", ["410"], { duration: 300 }),
+      ]),
+      generateInput(),
+    );
+
+    expect([...new Set(listTrainedSkills(setList))]).toEqual([
+      "WU",
+      "CARDIO_5",
+    ]);
+  });
+
   it("throws for a block of another kind than branches", () => {
     expect(() =>
       generateTrainingDay(
@@ -149,6 +168,25 @@ describe("trainingDayGeneration: generateTrainingDay of a legacy training", () =
     expect(generateTrainingDay(day, generateInput())).toEqual(
       generateTrainingDayFromStoredDay(day, generateInput()),
     );
+  });
+
+  it("runs the stored skills in section order whatever their key order", () => {
+    // a stored day in the key order CD, WU, MAX
+    const day = generateStoredTrainingDay(
+      { CD: ["498"], WU: ["410"], MAX: ["520"] },
+      { CD: 5, WU: 5, MAX: 10 },
+    );
+
+    const setList = generateTrainingDay(
+      day,
+      generateGenerationInput({ exerciseCatalog, random: () => 0 }),
+    );
+
+    expect([...new Set(listTrainedSkills(setList))]).toEqual([
+      "WU",
+      "MAX",
+      "CD",
+    ]);
   });
 });
 

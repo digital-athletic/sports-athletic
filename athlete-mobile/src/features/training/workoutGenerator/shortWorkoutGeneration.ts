@@ -11,7 +11,6 @@ import type { GenerationInput } from "./generationInput/generationInput";
 import type { BlockHandlerRegistry } from "./stages/blockWalk";
 import { createSetListBuilder } from "./stages/setListBuilding";
 import { requireSupportedTemplateBlocks } from "./stages/templateBlockCheck";
-import { SHORT_WORKOUT_FINISH_RULES } from "./stages/workoutFinish";
 import { interpretTemplate } from "./templateInterpreter";
 
 const throwUnreachableShortWorkoutBlock = (): never => {
@@ -61,7 +60,7 @@ export const generateShortWorkoutFromTemplate = (
   requireSupportedTemplateBlocks(template);
   return interpretTemplate(template, input, {
     handlers: createShortWorkoutHandlers(),
-    finishRules: SHORT_WORKOUT_FINISH_RULES,
+    finishRules: { requiredBlocks: "none" },
     createSetListBuilder,
     skillTrees,
     picksPoolRules: SHORT_WORKOUT_PICKS_POOL_RULES,

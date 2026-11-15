@@ -37,7 +37,8 @@ const INTERVAL_PROFILE_BY_ZONE = new Map<string, IntervalProfile>([
   ],
 ]);
 
-const STEADY_ZONES = new Set(["CARDIO_4", "CARDIO_5"]);
+// A steady zone runs one continuous run and reads no setDuration or values.
+export const STEADY_ZONES = new Set(["CARDIO_4", "CARDIO_5"]);
 // A steady run with lower body soreness lasts at most 20 minutes.
 const SORE_STEADY_RUN_MAX_MINUTES = 20;
 const WARM_UP_MAX_SECONDS = 5 * 60;

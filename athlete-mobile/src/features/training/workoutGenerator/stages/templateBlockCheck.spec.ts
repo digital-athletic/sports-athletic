@@ -49,26 +49,6 @@ describe("templateBlockCheck: requireSupportedTemplateBlocks", () => {
       what: "bodyParts",
     },
     {
-      behaviour: "the field order on a cardio duration block",
-      block: {
-        kind: "duration",
-        skill: "CARDIO_2",
-        duration: 1200,
-        order: "asDrawn",
-      },
-      what: "order",
-    },
-    {
-      behaviour: "the field order on a picks block",
-      block: generatePicksBlock("MOB", { order: "asDrawn" }),
-      what: "order",
-    },
-    {
-      behaviour: "the field order on a branches block",
-      block: generateBranchesBlock("GKS", ["510"], { order: "muscleGroups" }),
-      what: "order",
-    },
-    {
       behaviour: "the field bodyParts on a picks block",
       block: generatePicksBlock("MOB", { bodyParts: { regions: ["core"] } }),
       what: "bodyParts",
@@ -85,10 +65,34 @@ describe("templateBlockCheck: requireSupportedTemplateBlocks", () => {
     });
   });
 
+  it.each<{ behaviour: string; block: Block }>([
+    {
+      behaviour: "a picks block",
+      block: generatePicksBlock("MOB", { order: "asDrawn" }),
+    },
+    {
+      behaviour: "a branches block",
+      block: generateBranchesBlock("GKS", ["510"], { order: "muscleGroups" }),
+    },
+    {
+      behaviour: "a cardio duration block",
+      block: {
+        kind: "duration",
+        skill: "CARDIO_2",
+        duration: 1200,
+        order: "asDrawn",
+      },
+    },
+  ])("accepts the field order on $behaviour", ({ block }) => {
+    const template = generateShortTemplate([generatePicksBlock("BR"), block]);
+
+    expect(() => requireSupportedTemplateBlocks(template)).not.toThrow();
+  });
+
   it("throws for the first offending block in template order", () => {
     const template = generateShortTemplate([
       generatePicksBlock("MOB"),
-      generatePicksBlock("BAS", { order: "asDrawn" }),
+      generatePicksBlock("BAS", { bodyParts: { regions: ["core"] } }),
       { kind: "duration", skill: "CD", duration: 300 },
     ]);
 
@@ -97,14 +101,14 @@ describe("templateBlockCheck: requireSupportedTemplateBlocks", () => {
     ).toStrictEqual({
       type: "OTHER",
       subtype: "BLOCK_KIND",
-      params: ["short.blocks[1]", "order"],
+      params: ["short.blocks[1]", "bodyParts"],
     });
   });
 
   it("throws for an unsupported field after a valid branches block", () => {
     const template = generateShortTemplate([
       generateBranchesBlock("GKS", ["510"]),
-      generatePicksBlock("MOB", { order: "asDrawn" }),
+      generatePicksBlock("MOB", { bodyParts: { regions: ["core"] } }),
     ]);
 
     expect(
@@ -112,11 +116,11 @@ describe("templateBlockCheck: requireSupportedTemplateBlocks", () => {
     ).toStrictEqual({
       type: "OTHER",
       subtype: "BLOCK_KIND",
-      params: ["short.blocks[1]", "order"],
+      params: ["short.blocks[1]", "bodyParts"],
     });
   });
 
-  it("names bodyParts before order on a picks block with both", () => {
+  it("names bodyParts on a picks block that also sets order", () => {
     const template = generateShortTemplate([
       generatePicksBlock("MOB", {
         order: "asDrawn",
@@ -133,7 +137,7 @@ describe("templateBlockCheck: requireSupportedTemplateBlocks", () => {
     });
   });
 
-  it("names the duration kind before the order field of a duration block", () => {
+  it("names the duration kind of a duration block that also sets order", () => {
     const template = generateShortTemplate([
       { kind: "duration", skill: "CD", duration: 300, order: "asDrawn" },
     ]);

@@ -88,9 +88,7 @@ const isTemplateWithinImportLimits = (template: Template): boolean => {
 };
 
 const isSupportedPicksBlock = (block: Block): block is PicksBlock =>
-  block.kind === "picks" &&
-  block.bodyParts === undefined &&
-  block.order === undefined;
+  block.kind === "picks" && block.bodyParts === undefined;
 
 // Resolves the pools the AIWL generator draws from, so an import passes only
 // what the generator runs.
@@ -158,7 +156,6 @@ const isRunnableCardioBlock = (
   block.kind === "duration" &&
   readSkillSetListKind(block.skill) === "cardio" &&
   block.bodyParts === undefined &&
-  block.order === undefined &&
   Object.hasOwn(skillTrees, block.skill) &&
   Object.keys(skillTrees[block.skill]).length > 0;
 

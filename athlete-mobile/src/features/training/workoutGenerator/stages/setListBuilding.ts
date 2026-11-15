@@ -30,6 +30,10 @@ import {
 } from "../setListBuilders/setListBuilder";
 import { buildStandardSetList } from "../setListBuilders/standardSetListBuilder";
 import { orderExerciseUnits, readEndingExerciseId } from "./exerciseOrder";
+import {
+  listIgnoredBlockSettings,
+  warnIgnoredBlockSettings,
+} from "./ignoredBlockSettings";
 import type { FilledBlockResult, SetListBuilder } from "./workoutFinish";
 import type { WorkoutInput } from "./workoutSetup";
 
@@ -59,9 +63,8 @@ const readBlockTiming = (
 
 /**
  * Names the superset a block pairs by. A max strength block trains each
- * exercise on its own, with the other side of a one-sided exercise ("none");
- * the block schema rejects "singles" on it. Every other block pairs by its
- * own superset.
+ * exercise on its own, with the other side of a one-sided exercise ("none"),
+ * whatever superset it sets. Every other block pairs by its own superset.
  *
  * readPairingSuperset("maxStrength", "muscles") → "none"
  */
@@ -78,9 +81,8 @@ interface PairingContext {
 
 /**
  * Pairs the exercises of a block and orders the pairs. A cardio block draws
- * one branch. A singles block keeps the draw order; every other block opens
- * away from the exercise that ended the block before, max strength lower body
- * first.
+ * one branch. Every other block opens away from the exercise that ended the
+ * block before, max strength lower body first.
  */
 const pairAndOrderBlockExercises = (
   kind: SkillSetListKind,
@@ -91,14 +93,12 @@ const pairAndOrderBlockExercises = (
   if (kind === "cardio") {
     return drawCardioExercisePair(exercises, input.random);
   }
-  const pairingSuperset = readPairingSuperset(kind, superset);
   const pairs = pairBranchExercises(
     exercises,
     input.exerciseCatalog,
-    pairingSuperset,
+    readPairingSuperset(kind, superset),
     input.random,
   );
-  if (pairingSuperset === "singles") return pairs;
   return orderExerciseUnits(
     pairs,
     { lowerBodyFirst: kind === "maxStrength", previousExerciseId },
@@ -167,11 +167,11 @@ const listUnreadBlockSettings = (
 
 /**
  * Resolves the builder of an exercises block: the prescribed builder the
- * source passes for its skill. A skill without one, and a block setting the
- * builder does not read, throw.
+ * source passes for its skill. A skill without one throws; a block setting
+ * the builder does not read logs a warning.
  *
  * resolvePrescribedSetListBuilder({ skill: "TEST", sets: 9, ... }, builders)
- * → throws "TEST: its prescribed builder does not read sets"
+ * → the TEST builder, after the warning "TEST: the generator ignores sets"
  */
 const resolvePrescribedSetListBuilder = (
   block: ExercisesBlock,
@@ -181,12 +181,10 @@ const resolvePrescribedSetListBuilder = (
   if (!builder) {
     throw new Error(`${block.skill}: the source passed no prescribed builder`);
   }
-  const unread = listUnreadBlockSettings(block, builder);
-  if (unread.length > 0) {
-    throw new Error(
-      `${block.skill}: its prescribed builder does not read ${unread.join(", ")}`,
-    );
-  }
+  warnIgnoredBlockSettings(
+    block.skill,
+    listUnreadBlockSettings(block, builder),
+  );
   return builder;
 };
 
@@ -196,6 +194,7 @@ const resolvePrescribedSetListBuilder = (
  * orders the pairs and runs the set list builder of its skill. The draws of
  * one block run in that order, before the next block. An exercises block runs
  * the prescribed builder of its skill from the builders the source passes.
+ * A block setting its builder does not read logs one warning.
  * The set list drops the rest at its very end.
  */
 export const createSetListBuilder =
@@ -217,6 +216,10 @@ export const createSetListBuilder =
       const kind = requireBranchSetListKind(
         result.block.skill,
         prescribedBuilders,
+      );
+      warnIgnoredBlockSettings(
+        result.block.skill,
+        listIgnoredBlockSettings(result.block, kind),
       );
       const timing = readBlockTiming(result.block, input);
       const pairs = pairAndOrderBlockExercises(kind, result, timing.superset, {

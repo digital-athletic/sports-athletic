@@ -1,4 +1,8 @@
-import type { BranchSelectingBlock, Superset } from "@/schemas/aiwl.schema";
+import {
+  type BranchSelectingBlock,
+  readSkillSetListKind,
+  type Superset,
+} from "@/schemas/aiwl.schema";
 import type { SkillCatalogEntry } from "@/schemas/skillCatalog.schema";
 import type { SetListBlock } from "./setListBuilder";
 
@@ -32,15 +36,49 @@ export const createBlockDefaultCheck =
     return value;
   };
 
+// A cardio block draws one branch and pairs nothing, so it needs no superset.
+const resolveSuperset = (
+  block: BranchSelectingBlock,
+  defaults: SkillTimingDefaults | undefined,
+  requireValue: ReturnType<typeof createBlockDefaultCheck>,
+): Superset =>
+  readSkillSetListKind(block.skill) === "cardio"
+    ? (block.superset ?? defaults?.superset ?? "none")
+    : requireValue("superset", block.superset, defaults?.superset);
+
+// afterBlock may stay undefined: the builder then closes on afterExercise.
+const resolveBlockRest = (
+  rest: NonNullable<BranchSelectingBlock["rest"]>,
+  defaultRest: SkillTimingDefaults["rest"] | undefined,
+  requireValue: ReturnType<typeof createBlockDefaultCheck>,
+): ResolvedBlockTiming["rest"] => ({
+  withinSuperset: requireValue(
+    "rest.withinSuperset",
+    rest.withinSuperset,
+    defaultRest?.withinSuperset,
+  ),
+  betweenSets: requireValue(
+    "rest.betweenSets",
+    rest.betweenSets,
+    defaultRest?.betweenSets,
+  ),
+  afterExercise: requireValue(
+    "rest.afterExercise",
+    rest.afterExercise,
+    defaultRest?.afterExercise,
+  ),
+  afterBlock: rest.afterBlock ?? defaultRest?.afterBlock,
+});
+
 /**
  * Resolves the timing of a block: each value of the block itself, else the
- * default. afterBlock comes from the block only, because the standard builder
- * reads the skill catalog's afterBlock itself. The rests resolve before sets
- * and superset, so a block missing several values names the first rest.
+ * default. afterBlock may stay undefined; a cardio superset falls back to
+ * "none". The rests resolve before sets and superset, so a block missing
+ * several values names the first rest.
  *
- * resolveBlockTiming({ skill: "GKS", rest: { betweenSets: 15 }, ... }, readTrainingDayTimingDefaults("GKS", skillCatalog))
- * → { sets: 2, superset: "none",
- *     rest: { withinSuperset: 45, betweenSets: 15, afterExercise: 60, afterBlock: undefined },
+ * resolveBlockTiming({ skill: "WUSPEZIAL", rest: { betweenSets: 15 }, ... }, readTrainingDayTimingDefaults("WUSPEZIAL", skillCatalog))
+ * → { sets: 1, superset: "muscles",
+ *     rest: { withinSuperset: 10, betweenSets: 15, afterExercise: 10, afterBlock: 30 },
  *     setDuration: undefined, values: undefined }
  */
 export const resolveBlockTiming = (
@@ -49,28 +87,14 @@ export const resolveBlockTiming = (
   path?: string,
 ): ResolvedBlockTiming => {
   const requireValue = createBlockDefaultCheck(block.skill, path);
-  const rest = block.rest ?? {};
-  const resolvedRest = {
-    withinSuperset: requireValue(
-      "rest.withinSuperset",
-      rest.withinSuperset,
-      defaults?.rest?.withinSuperset,
-    ),
-    betweenSets: requireValue(
-      "rest.betweenSets",
-      rest.betweenSets,
-      defaults?.rest?.betweenSets,
-    ),
-    afterExercise: requireValue(
-      "rest.afterExercise",
-      rest.afterExercise,
-      defaults?.rest?.afterExercise,
-    ),
-    afterBlock: rest.afterBlock,
-  };
+  const resolvedRest = resolveBlockRest(
+    block.rest ?? {},
+    defaults?.rest,
+    requireValue,
+  );
   return {
     sets: requireValue("sets", block.sets, defaults?.sets),
-    superset: requireValue("superset", block.superset, defaults?.superset),
+    superset: resolveSuperset(block, defaults, requireValue),
     rest: resolvedRest,
     setDuration: block.setDuration,
     values: block.values,

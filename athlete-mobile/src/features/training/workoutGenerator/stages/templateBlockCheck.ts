@@ -18,15 +18,14 @@ const findUnsupportedBlockPart = (block: Block): string | undefined => {
   if (block.kind !== "branches" && block.bodyParts !== undefined) {
     return "bodyParts";
   }
-  if (block.order !== undefined) return "order";
   return undefined;
 };
 
 /**
  * Rejects a template block a short workout cannot run: an exercises block, a
- * duration block of a skill other than a cardio zone, an `order` field, or
- * `bodyParts` on a picks or duration block. The first offending block in template order throws
- * OTHER/BLOCK_KIND.
+ * duration block of a skill other than a cardio zone, or `bodyParts` on a
+ * picks or duration block. The first offending block in template order throws
+ * OTHER/BLOCK_KIND. An `order` field passes; set list building ignores it.
  *
  * requireSupportedTemplateBlocks(durationTemplate)
  * → throws { type: "OTHER", subtype: "BLOCK_KIND", params: ["short.blocks[1]", "duration"] }

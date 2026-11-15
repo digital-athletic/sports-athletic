@@ -7,6 +7,10 @@ export class Logger {
     if (__DEV__) console.log("Event log: ", eventName, params);
   };
 
+  static logWarning = (message: string): void => {
+    if (__DEV__) console.warn(message);
+  };
+
   static logError = async (error: Error) => {
     if (__DEV__) console.error(error);
   };

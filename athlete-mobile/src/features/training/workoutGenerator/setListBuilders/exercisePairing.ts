@@ -206,9 +206,7 @@ const pairLeadsByMuscleSize = (pairing: LeadPairing): ExercisePair[] => {
  * - `muscles`: each lead takes its best ranked superset partner, one draw per
  *   partner found.
  * - `none`: every exercise stays single.
- * - `singles`: every exercise trains alone, in draw order, without its other
- *   side, and no draw runs.
- * Outside `singles`, a one sided lead always pairs with its other side.
+ * A one sided lead always pairs with its other side.
  * The caller resolves the block's `superset`, then the skill catalog entry's.
  */
 export const pairBranchExercises = (
@@ -217,9 +215,6 @@ export const pairBranchExercises = (
   superset: Superset,
   random: () => number,
 ): ExercisePair[] => {
-  if (superset === "singles") {
-    return branches.map((first) => ({ first }));
-  }
   if (superset === "drawOrder") {
     return pairBranchesInDrawOrder(branches, exercises);
   }

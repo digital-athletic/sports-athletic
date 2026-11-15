@@ -2,6 +2,7 @@ import { loadExercises } from "@/data/loadExercises";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Block } from "@/schemas/aiwl.schema";
+import { Logger } from "@/services/Logger";
 import { generateFilledResultFromCatalog } from "@test/factories/blockResult";
 import { generateResolvedPicksBlock } from "@test/factories/resolvedPicksBlock";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
@@ -27,6 +28,10 @@ import { loadStrengthTestLoadData } from "../strengthTestGeneration";
 import type { BlockResult } from "./blockWalk";
 import { createSetListBuilder } from "./setListBuilding";
 import type { FilledBlockResult } from "./workoutFinish";
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 const EXERCISE_CATALOG = [
   generateTaggedExercise("e1", [
@@ -430,22 +435,31 @@ describe("setListBuilding: short workout", () => {
     expect(listExerciseOrder(setList.slice(4))).toEqual(["e2", "e1"]);
   });
 
-  it("trains a singles block in draw order, even after a block that ended on its first exercise", () => {
-    const setList = buildShortWorkoutSetList([
-      generateFilledResultFromCatalog(
-        EXERCISE_CATALOG,
-        generatePicksBlock("GKS"),
-        ["e1"],
-      ),
-      generateFilledResultFromCatalog(
-        EXERCISE_CATALOG,
-        generatePicksBlock("GKSKG", { superset: "singles" }),
-        ["e1", "e3", "e2"],
-      ),
-    ]);
+  it.each(["none", "muscles", "drawOrder", "drawOrderWithLeftovers"] as const)(
+    "trains the other side of a one-sided exercise in a block of superset %s",
+    (superset) => {
+      const catalog = [
+        ...EXERCISE_CATALOG,
+        generateTaggedExercise("eLeft", ["REGION_LOWER_BODY", "SIDE_ONE"], {
+          otherSideExerciseId: "eRight",
+        }),
+        generateTaggedExercise("eRight", ["REGION_LOWER_BODY", "SIDE_ONE"]),
+      ];
 
-    expect(listExerciseOrder(setList.slice(4))).toEqual(["e1", "e3", "e2"]);
-  });
+      const setList = buildShortWorkoutSetList(
+        [
+          generateFilledResultFromCatalog(
+            catalog,
+            generatePicksBlock("GKSKG", { superset }),
+            ["eLeft"],
+          ),
+        ],
+        generateRuleFamilyInput({ exerciseCatalog: catalog, random: () => 0 }),
+      );
+
+      expect(listExerciseOrder(setList)).toEqual(["eLeft", "eRight"]);
+    },
+  );
 
   it("builds a block from the timing workout setup resolved", () => {
     const result = generateFilledResultFromCatalog(
@@ -758,12 +772,13 @@ describe("setListBuilding: strength test", () => {
     ]);
   });
 
-  it("trains every warm-up exercise alone, in draw order, without its other side", () => {
+  it("follows a one-sided warm-up exercise with its other side", () => {
     const catalog = [
       ...EXERCISE_CATALOG,
       generateTaggedExercise("eLeft", ["REGION_LOWER_BODY", "SIDE_ONE"], {
         otherSideExerciseId: "eRight",
       }),
+      generateTaggedExercise("eRight", ["REGION_LOWER_BODY", "SIDE_ONE"]),
     ];
     const warmUp = generateFilledResultFromCatalog(
       catalog,
@@ -780,15 +795,9 @@ describe("setListBuilding: strength test", () => {
       },
     })([warmUp]);
 
-    expect(describeSetListEntries(setList)).toEqual([
-      "e1 1/1",
-      "pause 10",
-      "eLeft 1/1",
-      "pause 10",
-      "e3 1/1",
-      "pause 10",
-      "e2 1/1",
-    ]);
+    const order = listExerciseOrder(setList);
+    expect(order).toHaveLength(5);
+    expect(order[order.indexOf("eLeft") + 1]).toBe("eRight");
   });
 
   it("throws an error naming the skill for a prescribed result whose skill has no strength test builder", () => {
@@ -813,25 +822,8 @@ describe("setListBuilding: strength test", () => {
     ).toThrow("TEST: the source passed no prescribed builder");
   });
 
-  it("accepts the testSets setting of a block for the strength test builder", () => {
-    const results = [
-      generatePrescribedResult("TEST", ["25"], {
-        testSets: generateBundledTestSets(),
-      }),
-    ];
-
-    expect(() =>
-      createSetListBuilder(
-        {
-          ...generateStrengthTestInput(),
-          picksWorkout: createEmptyPicksWorkout(),
-        },
-        { TEST: STRENGTH_TEST_BUILDER },
-      )(results),
-    ).not.toThrow();
-  });
-
-  it("throws for a block setting the strength test builder does not read", () => {
+  it("builds a block with settings the strength test builder does not read and warns once", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
     const results = [
       generatePrescribedResult("TEST", ["25"], {
         testSets: generateBundledTestSets(),
@@ -840,29 +832,85 @@ describe("setListBuilding: strength test", () => {
       }),
     ];
 
-    expect(() =>
+    const setList = createSetListBuilder(
+      {
+        ...generateStrengthTestInput(),
+        picksWorkout: createEmptyPicksWorkout(),
+      },
+      { TEST: STRENGTH_TEST_BUILDER },
+    )(results);
+
+    expect(describeSetListEntries(setList)).toEqual([
+      "25 1/4",
+      "pause 60",
+      "25 2/4",
+      "pause 60",
+      "25 3/4",
+      "pause 120",
+      "25 4/4",
+    ]);
+    expect(logWarning).toHaveBeenCalledTimes(1);
+    expect(logWarning).toHaveBeenCalledWith(
+      "TEST: the generator ignores sets, rest",
+    );
+  });
+
+  it("builds the same set list with and without the settings the builder does not read", () => {
+    jest.spyOn(Logger, "logWarning").mockImplementation();
+    const build = (settings: { sets?: number }) =>
       createSetListBuilder(
         {
           ...generateStrengthTestInput(),
           picksWorkout: createEmptyPicksWorkout(),
         },
         { TEST: STRENGTH_TEST_BUILDER },
-      )(results),
-    ).toThrow("TEST: its prescribed builder does not read sets, rest");
+      )([
+        generatePrescribedResult("TEST", ["25"], {
+          testSets: generateBundledTestSets(),
+          ...settings,
+        }),
+      ]);
+
+    expect(build({ sets: 9 })).toEqual(build({}));
   });
 
-  it("reads the builder of a prescribed result by its skill from the builders the source passes", () => {
-    const results = [generatePrescribedResult("MAX", ["25"], { sets: 9 })];
+  it("does not warn for a block that sets only what the strength test builder reads", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
 
-    expect(() =>
-      createSetListBuilder(
-        {
-          ...generateStrengthTestInput(),
-          picksWorkout: createEmptyPicksWorkout(),
-        },
-        { MAX: STRENGTH_TEST_BUILDER },
-      )(results),
-    ).toThrow("MAX: its prescribed builder does not read sets");
+    createSetListBuilder(
+      {
+        ...generateStrengthTestInput(),
+        picksWorkout: createEmptyPicksWorkout(),
+      },
+      { TEST: STRENGTH_TEST_BUILDER },
+    )([
+      generatePrescribedResult("TEST", ["25"], {
+        testSets: generateBundledTestSets(),
+      }),
+    ]);
+
+    expect(logWarning).not.toHaveBeenCalled();
+  });
+
+  it("builds the block of a prescribed builder by its skill and warns about an unread setting", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
+    const results = [
+      generatePrescribedResult("MAX", ["25"], {
+        testSets: generateBundledTestSets(),
+        sets: 9,
+      }),
+    ];
+
+    const setList = createSetListBuilder(
+      {
+        ...generateStrengthTestInput(),
+        picksWorkout: createEmptyPicksWorkout(),
+      },
+      { MAX: STRENGTH_TEST_BUILDER },
+    )(results);
+
+    expect(setList.length).toBeGreaterThan(0);
+    expect(logWarning).toHaveBeenCalledWith("MAX: the generator ignores sets");
   });
 
   it("builds every block setting a prescribed builder reads", () => {
@@ -907,6 +955,160 @@ describe("setListBuilding: strength test", () => {
         { TEST: STRENGTH_TEST_BUILDER },
       )(results),
     ).toThrow("TEST: its prescribed builder builds exercises blocks only");
+  });
+});
+
+describe("setListBuilding: ignored block settings", () => {
+  const buildMaxStrength = (block: ReturnType<typeof generatePicksBlock>) =>
+    buildShortWorkoutSetList([
+      generateFilledResultFromCatalog(EXERCISE_CATALOG, block, ["e1", "e3"]),
+    ]);
+
+  it("builds a max strength block with superset muscles like one with superset none", () => {
+    jest.spyOn(Logger, "logWarning").mockImplementation();
+
+    expect(
+      buildMaxStrength(generatePicksBlock("MAX", { superset: "muscles" })),
+    ).toEqual(
+      buildMaxStrength(generatePicksBlock("MAX", { superset: "none" })),
+    );
+  });
+
+  it("warns once that a max strength block ignores superset muscles", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
+
+    buildMaxStrength(generatePicksBlock("MAX", { superset: "muscles" }));
+
+    expect(logWarning).toHaveBeenCalledTimes(1);
+    expect(logWarning).toHaveBeenCalledWith(
+      "MAX: the generator ignores superset",
+    );
+  });
+
+  it("does not warn for a max strength block with superset none", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
+
+    buildMaxStrength(generatePicksBlock("MAX", { superset: "none" }));
+
+    expect(logWarning).not.toHaveBeenCalled();
+  });
+
+  it("warns once per block for two max strength blocks", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
+
+    buildShortWorkoutSetList([
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generatePicksBlock("MAX", { sets: 3 }),
+        ["e1"],
+      ),
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generatePicksBlock("MAX_STRENGTH", { values: "skill" }),
+        ["e3"],
+      ),
+    ]);
+
+    expect(logWarning.mock.calls).toEqual([
+      ["MAX: the generator ignores sets"],
+      ["MAX_STRENGTH: the generator ignores values"],
+    ]);
+  });
+
+  it("warns that a cardio block ignores sets", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
+
+    buildShortWorkoutSetList(
+      [
+        generateFilledResultFromCatalog(
+          EXERCISE_CATALOG,
+          generatePicksBlock("CARDIO_4", { sets: 3 }),
+          ["e2"],
+        ),
+      ],
+      generateRuleFamilyInput({
+        exerciseCatalog: EXERCISE_CATALOG,
+        random: generateSequenceRandom([0]),
+      }),
+    );
+
+    expect(logWarning).toHaveBeenCalledTimes(1);
+    expect(logWarning).toHaveBeenCalledWith(
+      "CARDIO_4: the generator ignores sets",
+    );
+  });
+
+  it("warns that a block ignores order and builds it like a block without", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
+    const build = (order?: "asDrawn") =>
+      buildShortWorkoutSetList([
+        generateFilledResultFromCatalog(
+          EXERCISE_CATALOG,
+          generatePicksBlock("GKS", { order }),
+          ["e1", "e2", "e3"],
+        ),
+      ]);
+
+    expect(build("asDrawn")).toEqual(build());
+    expect(logWarning).toHaveBeenCalledTimes(1);
+    expect(logWarning).toHaveBeenCalledWith("GKS: the generator ignores order");
+  });
+
+  it("warns that a training day branches block ignores countBy", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
+
+    buildTrainingDaySetList([
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("GKS", { countBy: "entries" }),
+        ["e1"],
+      ),
+    ]);
+
+    expect(logWarning).toHaveBeenCalledWith(
+      "GKS: the generator ignores countBy",
+    );
+  });
+
+  it("does not warn for a standard picks block that sets only what the generator reads", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
+
+    buildShortWorkoutSetList([
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generatePicksBlock("GKS", {
+          countBy: "entries",
+          fallbackToWholeTree: true,
+          sets: 3,
+          superset: "muscles",
+          setDuration: 30,
+          values: "skill",
+          rest: {
+            withinSuperset: 10,
+            betweenSets: 10,
+            afterExercise: 10,
+            afterBlock: 30,
+          },
+        }),
+        ["e1", "e2"],
+      ),
+    ]);
+
+    expect(logWarning).not.toHaveBeenCalled();
+  });
+
+  it("does not warn for a training day block with a stored duration", () => {
+    const logWarning = jest.spyOn(Logger, "logWarning").mockImplementation();
+
+    buildTrainingDaySetList([
+      generateFilledResultFromCatalog(
+        EXERCISE_CATALOG,
+        generateUntimedBranchesBlock("MAX", { duration: 900 }),
+        ["e1"],
+      ),
+    ]);
+
+    expect(logWarning).not.toHaveBeenCalled();
   });
 });
 

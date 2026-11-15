@@ -28,6 +28,7 @@ import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { useNavigationLock } from "@/hooks/useNavigationLock";
 import { parseBooleanParam, parseIntParam } from "@/utils/router";
 import { useRouter } from "expo-router";
 import { type TFunction } from "i18next";
@@ -295,33 +296,40 @@ export function useTrainingGeneration(params: TrainingGenerationParams) {
   const { t } = useTranslation();
   const { maybeShowPainAlert } = useTrainingAlerts();
   const context = useGenerationContext();
+  const { runLocked, release } = useNavigationLock();
+
+  const stopGenerating = () => {
+    setGenerating(false);
+    release();
+  };
 
   const generateTraining = (place: PlaceType) => {
-    setGenerating(true);
+    runLocked(() => {
+      setGenerating(true);
 
-    try {
-      const exerciseList = generateExerciseList(place, params, context);
+      try {
+        const exerciseList = generateExerciseList(place, params, context);
 
-      const startTraining = () => {
-        router.navigate({
-          pathname: "/training/training-overview",
-          params: { ...params, place },
+        const startTraining = () => {
+          router.navigate({
+            pathname: "/training/training-overview",
+            params: { ...params, place },
+          });
+          setGenerating(false);
+        };
+
+        const { tags } = context.workoutData;
+        maybeShowPainAlert(params.type, exerciseList, tags, {
+          onContinue: startTraining,
+          onCancel: stopGenerating,
         });
-        setGenerating(false);
-      };
-
-      maybeShowPainAlert(
-        params.type,
-        exerciseList,
-        context.workoutData.tags,
-        startTraining,
-      );
-    } catch (e) {
-      showGenerationError(e, t, () => {
-        setGenerating(false);
-        router.replace("/(tabs)/(home)");
-      });
-    }
+      } catch (e) {
+        showGenerationError(e, t, () => {
+          stopGenerating();
+          router.replace("/(tabs)/(home)");
+        });
+      }
+    });
   };
 
   return { generating, generateTraining };

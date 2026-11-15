@@ -3,6 +3,7 @@ import { MuscleType } from "@/bodyParts/types";
 import { BackHeader } from "@/common/BackHeader";
 import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { Loading } from "@/common/Loading";
+import { useFocusedHardwareBackHandler } from "@/hooks/useFocusedHardwareBackHandler";
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
 import {
   checksSoreness,
@@ -21,7 +22,6 @@ import { Card } from "@/theme/Card";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { BackHandler } from "react-native";
 
 type ScreenState = "SORENESS" | "PLACE";
 
@@ -79,13 +79,7 @@ export default function MuscleSorenessScreen() {
     return true;
   }, [router]);
 
-  useEffect(() => {
-    const handler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      handleBack,
-    );
-    return () => handler.remove();
-  }, [handleBack]);
+  useFocusedHardwareBackHandler(handleBack);
 
   const setMuscles = (tags: string[]) => {
     setTemporalData(updateSorenessMarks(temporalData ?? [], tags, Date.now()));

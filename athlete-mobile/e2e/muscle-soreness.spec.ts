@@ -115,6 +115,30 @@ test.describe("Muscle Soreness: selection", () => {
       page.getByRole("heading", { name: "Training Overview" }),
     ).toBeVisible({ timeout: 15000 });
   });
+
+  test("stacks one training overview for a double click on Go on", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+    await navigateToMuscleSoreness(page);
+    const soreness = page.getByRole("heading", {
+      name: "Where are your muscles sore?",
+    });
+    const overview = page.getByRole("heading", { name: "Training Overview" });
+    const goOn = page.getByRole("button", { name: "Go on" });
+
+    await goOn.dblclick();
+    await expect(overview).toBeVisible({ timeout: 15000 });
+
+    // One back step lands on the soreness screen: no second overview is stacked.
+    await page.goBack();
+    await expect(soreness).toBeVisible();
+
+    await goOn.click();
+    await expect(overview).toBeVisible({ timeout: 15000 });
+    await page.goBack();
+    await expect(soreness).toBeVisible();
+  });
 });
 
 // The pain screen renders gender-independent chips, so one profile suffices.

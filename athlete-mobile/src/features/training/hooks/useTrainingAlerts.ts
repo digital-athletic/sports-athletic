@@ -10,9 +10,15 @@ import { shouldShowPainAlert } from "../utils/painUtils";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
+type PainAlertCallbacks = {
+  onContinue: () => void;
+  onCancel?: () => void;
+};
+
 /**
  * Shows the pain alert before a qualifying training until the user confirms
  * it with OK. Saving the anamnesis with changed pains clears the seen flag.
+ * Dismissing it without OK (Android) calls onCancel and keeps the flag unset.
  */
 function usePainAlert() {
   const { t } = useTranslation();
@@ -21,7 +27,7 @@ function usePainAlert() {
     trainingType: TrainingType,
     exerciseList: Pick<UserExerciseDataType, "weightType">[],
     tags: TagsByGroup | undefined,
-    onContinue: () => void,
+    { onContinue, onCancel }: PainAlertCallbacks,
   ) => {
     // Read at call time: the store changes between trainings without a rerender of the caller.
     const { warnings, setWarningSeen } = useUserProfileStore.getState();
@@ -45,6 +51,7 @@ function usePainAlert() {
           },
         },
       ],
+      { cancelable: true, onDismiss: onCancel },
     );
   };
 }

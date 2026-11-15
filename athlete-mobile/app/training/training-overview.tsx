@@ -16,6 +16,7 @@ import { useTrainingStore } from "@/features/training/trainingStore";
 import { getEquipmentList } from "@/features/training/trainingUtils";
 import { getExercisePictureSource } from "@/features/training/utils/exercisePicture";
 import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
+import { useNavigationLock } from "@/hooks/useNavigationLock";
 import { MediaSkeleton } from "@/media/MediaSkeleton";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
@@ -114,6 +115,7 @@ export default function TrainingOverviewScreen() {
     TrainingGenerationParams & { place?: string }
   >();
   const insets = useSafeAreaInsets();
+  const { runLocked } = useNavigationLock();
 
   // Get store data
   const { exerciseList, setTrainingStartTime, setTrainingViewMode } =
@@ -149,23 +151,25 @@ export default function TrainingOverviewScreen() {
     exercises,
   );
 
-  const handleStartTraining = () => {
-    setTrainingStartTime(Date.now());
-    setTrainingViewMode("SEQUENTIAL");
-    router.push({
-      pathname: "/training/training-active",
-      params: params,
+  const handleStartTraining = () =>
+    runLocked(() => {
+      setTrainingStartTime(Date.now());
+      setTrainingViewMode("SEQUENTIAL");
+      router.push({
+        pathname: "/training/training-active",
+        params: params,
+      });
     });
-  };
 
-  const handleStartTrainingAsChecklist = () => {
-    setTrainingStartTime(Date.now());
-    setTrainingViewMode("LIST");
-    router.push({
-      pathname: "/training/training-list",
-      params: params,
+  const handleStartTrainingAsChecklist = () =>
+    runLocked(() => {
+      setTrainingStartTime(Date.now());
+      setTrainingViewMode("LIST");
+      router.push({
+        pathname: "/training/training-list",
+        params: params,
+      });
     });
-  };
 
   const handleShowExerciseInfo = (exerciseId: string) => {
     router.push({

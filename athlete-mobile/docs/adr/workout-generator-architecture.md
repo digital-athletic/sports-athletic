@@ -160,7 +160,7 @@ Resolution runs inside selection, because the specs drop a candidate whose exerc
 | Duration   | The [minutes table](./athletic-intelligence-workout-language.md#minutes-table) of the AIWL ADR; a cardio duration block draws one branch of its tree and hands it to the branches handler |
 | Exercises  | [AIWL rules 5 and 6](./athletic-intelligence-workout-language.md#rules): catalog lookup in list order, equipment check per exercise unless the workout holds test sets; uses no branch |
 
-The block walk hands every block the branches all earlier blocks used, whatever the kind of either block. The branches handler reads no used branches. The registry of each source maps each block kind to its handler function, so one template can mix block kinds: a short workout runs picks and branches blocks in template order.
+The block walk hands every block the branches all earlier blocks used, whatever the kind of either block. The branches handler reads no used branches. One registry maps each block kind to its handler function for every workout, so one workout can mix block kinds: a short workout runs picks and branches blocks in template order.
 
 A later picks block skips the exercises of an earlier exercises block, and an exercises block keeps an exercise an earlier block trained.
 
@@ -220,17 +220,16 @@ Until a migration rewrites the stored plans, a temporary decision applies:
 
 A follow-up issue defines the migration, its trigger, and what happens to a slot whose branch ID the catalog removed. After the migration, training day generation switches from the saved entries to the branch lookup index.
 
-A plan training may already store the target shape, an AIWL training. `generateTrainingDay` runs either shape with the training day set list rules:
+A plan training may already store the target shape, an AIWL training. `readTrainingDayWorkout` reads either shape as a workout and a branch lookup:
 
-| Training | Branch data | Missing branch ID | Set list rules |
+| Training | Workout | Branch data | Missing branch ID |
 |---|---|---|---|
-| legacy | saved branch copies | trains the saved copy | training day |
-| AIWL | branch lookup index | replaced from the same skill | training day |
+| legacy | stored day workout | saved branch copies | trains the saved copy |
+| AIWL | the stored AIWL workout | branch lookup index | replaced from the same skill |
 
-1. The training day selection returns the workout of an AIWL training, validated against the AIWL schema. The exercise swap hook generates through the same function.
-2. `generateTrainingDay` sorts the blocks of both shapes once by section order, stable, with a skill outside the section order first. The plan generator writes an AIWL day in the skill priority order of its budget, so the AIWL shape needs the sort too. `createStoredDayWorkout` keeps the stored order.
+1. The training day selection returns the workout of an AIWL training, validated against the AIWL schema. The exercise swap hook generates through `readTrainingDayWorkout` and the entry point.
+2. `readTrainingDayWorkout` sorts the blocks of both shapes once by section order, stable, with a skill outside the section order first. The plan generator writes an AIWL day in the skill priority order of its budget, so the AIWL shape needs the sort too. `createStoredDayWorkout` keeps the stored order.
 3. Every workout has one missing branch rule: each distinct branch ID the lookup lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. The saved copies of a legacy training hold every branch ID its stored day workout lists, so a legacy training never misses one.
-4. An AIWL training holds branches blocks only. The other handlers throw.
 
 The plan features outside the generator read both shapes. `readPlannedBranches` returns the copied branches of a legacy training, and for an AIWL training the catalog branches of its branch IDs. Every feature skips a branch ID the catalog lacks, because the generator replaces it at run time.
 
@@ -244,15 +243,17 @@ The plan features outside the generator read both shapes. `readPlannedBranches` 
 
 ### Routing
 
-The router `src/features/training/workoutGeneratorRouter.ts` sends every training type to the AIWL generator and picks the entry point per type:
+The router `src/features/training/workoutGeneratorRouter.ts` selects a workout and a branch lookup per training type, then calls the one entry point `generateSetList(workout, lookUpBranch, input, { skillTrees })` in `workoutGenerator/workoutGeneration.ts`:
 
-1. Short workouts and custom workouts run from their template through the entry point `generateSetList(workout, lookUpBranch, input, { skillTrees })` in `workoutGenerator/workoutGeneration.ts`, with the branch lookup index.
-2. The strength test runs through the same entry point from `loadStrengthTestTemplate`, the bundled `TEST.json`, with the branch lookup index; the entry point checks it with `checkStrengthTestTemplate`.
-3. Plan training days run as a stored day workout.
+| Training type | Workout | Branch lookup |
+|---|---|---|
+| `PLAN` | `readTrainingDayWorkout` of the selected plan day | branch lookup index for an AIWL training, saved copies for a legacy training |
+| `TEST_WORKOUT` | `loadStrengthTestTemplate`: the bundled `TEST.json`; the entry point checks it with `checkStrengthTestTemplate` | branch lookup index |
+| any other | the template of the type, short or custom | branch lookup index |
 
 A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A template without blocks throws `NO_EXERCISES/PAIN` without regions, whatever the athlete's pains.
 
-`generateSetList` runs every workout it receives with one handler registry and one finish rule:
+`generateSetList` runs every workout with one handler registry and one finish rule:
 
 1. The block kind check rejects an exercises block without `testSets`, a duration block of a skill other than a cardio zone and `bodyParts` on a picks or duration block with `OTHER/BLOCK_KIND`. An `order` field passes the check; set list building ignores it with a warning.
 2. A workout with test sets runs the test set checks with the load data, then the athlete checks of the strength test section, before any block runs. Only such a workout loads the bundled load data.
@@ -275,7 +276,7 @@ The test set checks come from the workout: the entry point runs them for every w
 
 The router runs every strength test from this template. Compared with the deleted old path, the test adds the age check.
 
-### Behaviour changes
+### Behaviour changes of the one entry point
 
 1. A short workout whose branches block loses every listed branch to pain, age group or gender trains replacement branches of the same skill. Before, the deleted template branch restriction threw the rule's `NO_EXERCISES` error. A cardio duration block whose tree pain blocks in full swaps to the CARDIO_5 run instead of throwing.
 2. A short workout branches block that lists a branch ID the catalog lacks trains a replacement of the same skill. The short workout dropped that slot before.
@@ -314,13 +315,14 @@ The generator raises three classes of error:
 - **Discriminated unions.** Block kinds, block results and errors are tagged unions, and every `switch` over them is exhaustive.
 - **No mutation.** Every stage returns new values and changes neither the template nor the generation input.
 - **Random source.** The generation input carries the random function, with `Math.random` as the default, and every component draws through it. Tests pass a fixed sequence. Each component draws in a fixed order.
-- **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: the entry point `workoutGeneration.ts` for short and custom workouts and the strength test, the plan day entry module `trainingDayGeneration.ts`, the modules that load a workout's data (`strengthTestLoadData.ts`, the stored day workout), the test set checks, and the template interpreter they hand the workout to. The interpreter delegates to one subfolder per component of the patterns diagram:
+- **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: the entry point `workoutGeneration.ts`, the modules that load or read a workout (`trainingDayWorkout.ts`, `strengthTestLoadData.ts`, the stored day workout), the test set checks, and the template interpreter the entry point hands the workout to. The interpreter delegates to one subfolder per component of the patterns diagram:
 
   | Folder                    | Component                                | Modules                                                                                   |
   | ------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------- |
   | `stages/`                 | Stages of the template interpreter       | workout setup, block walk, workout finish, exercise order, set list building              |
   | `blockHandlers/picks/`    | Picks handler                            | the handler, the picks workout rules, the picks draw                                      |
   | `blockHandlers/branches/` | Branches handler                         | the handler, its rule chain, duplicate branches, cardio replacement, stored branch lookup |
+  | `blockHandlers/duration/` | Duration handler                         | the cardio duration handler                                                               |
   | `blockHandlers/exercises/` | Exercises handler                       | the handler                                                                               |
   | `blockHandlers/library/`  | Shared library steps                     | resolution, replacement of blocked branches                                               |
   | `ruleFamilies/`           | Rule chain                               | one module per rule family, plus the family contract                                      |
@@ -328,13 +330,13 @@ The generator raises three classes of error:
   | `exerciseValues/`         | Exercise values the builders read        | start, target and feedback values, weight steps                                           |
   | `generationInput/`        | Generation input and branch lookup index | the input, the index, the skill catalog entry                                             |
 
-  A duration handler goes in `blockHandlers/duration/`. Each module has its spec next to it. No index file only re-exports other modules.
+  Each module has its spec next to it. No index file only re-exports other modules.
 
 - **Naming.** Modules and functions use the glossary terms. A function name is a verb plus a full noun.
 
 ## Pros and cons
 
-- Pro: every workout source runs through one interpreter, so a rule change reaches every source that uses the block kind.
+- Pro: every workout runs through one entry point with one handler registry, so a rule change reaches every workout that uses the block kind.
 - Pro: a new block kind adds one handler and one `switch` case.
 - Pro: the rules of a block kind read as one ordered chain inside one handler.
 - Pro: each handler, each rule family and each stage has its own spec.

@@ -9,8 +9,6 @@ import {
 } from "@/features/training/utils/testFixtures";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import * as picksHandler from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
-import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
-import type * as TrainingDayGeneration from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
 import type * as WorkoutGeneration from "@/features/training/workoutGenerator/workoutGeneration";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
@@ -32,16 +30,6 @@ import {
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { generateWorkout } from "./workoutGeneratorRouter";
-
-jest.mock("@/features/training/workoutGenerator/trainingDayGeneration", () => {
-  const actual = jest.requireActual<typeof TrainingDayGeneration>(
-    "@/features/training/workoutGenerator/trainingDayGeneration",
-  );
-  return {
-    ...actual,
-    generateTrainingDay: jest.fn(actual.generateTrainingDay),
-  };
-});
 
 // The spy keeps the real entry point, so each route still generates its set list.
 jest.mock("@/features/training/workoutGenerator/workoutGeneration", () => {
@@ -77,7 +65,6 @@ const generateWorkoutOf = (type: TrainingType) =>
 
 describe("generateWorkout: routing", () => {
   beforeEach(() => {
-    jest.mocked(generateTrainingDay).mockClear();
     jest.mocked(generateSetList).mockClear();
   });
 
@@ -93,7 +80,6 @@ describe("generateWorkout: routing", () => {
     expect(workout).toEqual(loadTemplate("MOB"));
     expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
     expect(options).toEqual({ skillTrees: getAllSkillTrees() });
-    expect(generateTrainingDay).not.toHaveBeenCalled();
   });
 
   describe("AIWL routes", () => {
@@ -108,22 +94,25 @@ describe("generateWorkout: routing", () => {
       expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
     });
 
-    it("hands the stored day and the lengths to the AIWL generator", () => {
+    it("generates the stored day workout of a legacy plan with the lookup of its saved copies", () => {
       const result = generatePlanWorkoutForWeekday(
         generateWarmUpOnlyPlanUser(),
       );
 
-      expect(generateTrainingDay).toHaveBeenCalledTimes(1);
-      const [training] = jest.mocked(generateTrainingDay).mock.calls[0];
-      expect(training).toMatchObject({
-        skills: { WU: [{ branchId: "410" }] },
-        lengths: { WU: 5 },
+      expect(generateSetList).toHaveBeenCalledTimes(1);
+      const [workout, lookUpBranch] =
+        jest.mocked(generateSetList).mock.calls[0];
+      expect(workout).toEqual({
+        id: "TRAINING_DAY",
+        blocks: [
+          { kind: "branches", skill: "WU", branches: ["410"], duration: 300 },
+        ],
       });
-      expect(Object.keys(training)).not.toContain("aiwl");
+      expect(lookUpBranch).not.toBe(lookUpStoredBranchInCatalog);
       expect(result.map((entry) => entry.skill)).toContain("WU");
     });
 
-    it("runs a training day stored as an AIWL workout on the AIWL generator", () => {
+    it("generates a training day stored as an AIWL workout with the catalog lookup", () => {
       const training = createAiwlTraining();
       const user = {
         ...generateWarmUpOnlyPlanUser(),
@@ -132,16 +121,17 @@ describe("generateWorkout: routing", () => {
 
       const result = generatePlanWorkoutForWeekday(user);
 
-      expect(jest.mocked(generateTrainingDay).mock.calls[0][0]).toEqual(
-        training.workout,
-      );
+      const [workout, lookUpBranch] =
+        jest.mocked(generateSetList).mock.calls[0];
+      expect(workout).toEqual(training.workout);
+      expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
       expect(result.map((entry) => entry.branchId)).toContain("410");
     });
 
     it("reads Math.random when a draw runs, not when the input is built", () => {
       jest.spyOn(Math, "random").mockReturnValue(0);
       generatePlanWorkoutForWeekday(generateWarmUpOnlyPlanUser());
-      const [, input] = jest.mocked(generateTrainingDay).mock.calls[0];
+      const [, , input] = jest.mocked(generateSetList).mock.calls[0];
       jest.spyOn(Math, "random").mockReturnValue(0.75);
 
       expect(input.random()).toBe(0.75);
@@ -157,7 +147,7 @@ describe("generateWorkout: routing", () => {
         subtype: "MISSING_WORKOUT_DATA",
         params: [],
       });
-      expect(generateTrainingDay).not.toHaveBeenCalled();
+      expect(generateSetList).not.toHaveBeenCalled();
     });
   });
 
@@ -181,7 +171,7 @@ describe("generateWorkout: routing", () => {
         expect(
           catchThrownValue(() => generatePlanWorkoutForWeekday(user)),
         ).toEqual(new Error("Invalid data structure for currTraining.skills"));
-        expect(generateTrainingDay).not.toHaveBeenCalled();
+        expect(generateSetList).not.toHaveBeenCalled();
       },
     );
   });

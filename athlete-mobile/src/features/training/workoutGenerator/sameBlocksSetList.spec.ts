@@ -9,12 +9,10 @@ import {
 } from "@test/factories/templateBlock";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import type { GenerationInput } from "./generationInput/generationInput";
-import { generateTrainingDay } from "./trainingDayGeneration";
 import { generateSetList } from "./workoutGeneration";
 
 const exerciseCatalog = loadExercises();
 
-// Each run gets its own draws from the same seed, so both sources draw alike.
 const generateInput = (): GenerationInput =>
   generateGenerationInput({
     exerciseCatalog,
@@ -41,19 +39,7 @@ const workout = generateTemplate([
   generateBranchesBlock("CARDIO_2", ["582", "584", "585"], { duration: 1200 }),
 ]);
 
-describe("sameBlocksSetList: a short workout and a training day of the same blocks", () => {
-  it("generate the same set list", () => {
-    const shortWorkout = generateSetList(
-      workout,
-      lookUpStoredBranchInCatalog,
-      generateInput(),
-      { skillTrees: getAllSkillTrees() },
-    );
-    const trainingDay = generateTrainingDay(workout, generateInput());
-
-    expect(shortWorkout).toEqual(trainingDay);
-  });
-
+describe("sameBlocksSetList: a workout of branches blocks", () => {
   it("train every block and end on a set", () => {
     const setList = generateSetList(
       workout,

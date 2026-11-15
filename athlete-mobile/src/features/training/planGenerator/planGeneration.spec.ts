@@ -5,10 +5,8 @@ import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySelection";
 import { requireAiwlTraining } from "@/features/training/utils/testFixtures";
 import { toExerciseBranch } from "@/features/training/exerciseSwap/exerciseSwap";
-import {
-  generateTrainingDay,
-  generateTrainingDayFromStoredDay,
-} from "@/features/training/workoutGenerator/trainingDayGeneration";
+import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
+import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
 import { TemplateSchema } from "@/schemas/aiwl.schema";
 import type { UserType } from "@/schemas/user.schema";
@@ -253,8 +251,17 @@ describe("generateTrainingPlan: end to end with the workout generator", () => {
       ),
     };
 
-    expect(generateTrainingDay(training.workout, createInput())).toEqual(
-      generateTrainingDayFromStoredDay(legacyDay, createInput()),
+    const aiwlDay = readTrainingDayWorkout(training.workout);
+    const legacyDayWorkout = readTrainingDayWorkout(legacyDay);
+
+    expect(
+      generateSetList(aiwlDay.workout, aiwlDay.lookUpBranch, createInput()),
+    ).toEqual(
+      generateSetList(
+        legacyDayWorkout.workout,
+        legacyDayWorkout.lookUpBranch,
+        createInput(),
+      ),
     );
   });
 

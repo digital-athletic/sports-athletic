@@ -128,7 +128,7 @@ const useSwapState = (request: SwapRequest) => {
     return () => clearTimeout(timeout);
   }, [enabled, hasSession]);
 
-  return { state, swaps: state?.swaps ?? {}, setState };
+  return { enabled, state, swaps: state?.swaps ?? {}, setState };
 };
 
 /** The next step of the swap cycle, or null when the workout cannot be regenerated. */
@@ -164,7 +164,7 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   const ctx = useGenerationContext();
   const setExerciseList = useTrainingStore((s) => s.setExerciseList);
   const request: SwapRequest = { params, ctx, place: fallbackPlace };
-  const { state, swaps, setState } = useSwapState(request);
+  const { enabled, state, swaps, setState } = useSwapState(request);
 
   const swapExercise = (branchId: string | undefined) => {
     const original = branchId && findOriginalBranchId(swaps, branchId);
@@ -184,6 +184,7 @@ export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   };
 
   const swapControls: SwapControls = {
+    supported: enabled,
     canSwap: (branchId) =>
       branchId !== undefined &&
       findOriginalBranchId(swaps, branchId) !== undefined,

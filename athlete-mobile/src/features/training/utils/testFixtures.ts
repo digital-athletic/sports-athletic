@@ -20,6 +20,16 @@ export const requireLegacyTraining = (
   return training;
 };
 
+/** Narrows a training day of an AIWL plan; fails the test for any other. */
+export const requireAiwlTraining = (
+  training: UserTrainingType | undefined,
+): AiwlTrainingType => {
+  if (!training || isLegacyTraining(training)) {
+    throw new Error("Expected a training day of an AIWL plan");
+  }
+  return training;
+};
+
 /** A training day stored as an AIWL workout of one warm-up branch. */
 export const createAiwlTraining = (
   overrides: Partial<AiwlTrainingType> = {},

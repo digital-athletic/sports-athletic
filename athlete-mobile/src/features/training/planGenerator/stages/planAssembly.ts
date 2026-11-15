@@ -1,7 +1,8 @@
-import type { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
+import type { GeneratorError } from "@/features/training/models/GeneratorError";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import type { TrainingSectionType } from "@/features/training/models/TrainingSection";
-import type { LegacyTrainingType } from "@/features/training/models/UserTraining";
+import type { AiwlTrainingType } from "@/features/training/models/UserTraining";
+import type { Block } from "@/schemas/aiwl.schema";
 import type { PlacesData } from "@/store/placesStore";
 import { addDays, formatDateToISO, ISODateToDate } from "@/utils/date";
 import { mapReduce } from "@/utils/functional";
@@ -26,6 +27,7 @@ export interface AssembledSection {
 
 const MONDAY = 1;
 const DAYS_PER_WEEK = 7;
+const SECONDS_PER_MINUTE = 60;
 
 /**
  * Finds the first Monday on or after a date.
@@ -36,58 +38,89 @@ const findFirstMondayFrom = (date: Date): Date =>
   addDays(date, (MONDAY + DAYS_PER_WEEK - date.getDay()) % DAYS_PER_WEEK);
 
 /**
- * Writes a picked branch as the branch copy a stored training day holds.
+ * Writes the branches block of a skill: its branch IDs in pick order and its
+ * minutes as whole seconds. A skill whose minutes round to 0 s gets no
+ * duration, as a stored day without minutes runs.
  *
- * copyBranch({ branchId: "12", tags: ["REGION_CORE"], levels: { 1: { exerciseId: "40" } } })
- * → { branchId: "12", tags: ["REGION_CORE"], exercises: { 1: { exerciseId: "40" } } }
+ * writeBranchesBlock("SWR1", [{ branchId: "7", ... }, { branchId: "9", ... }], 12.5)
+ * → { kind: "branches", skill: "SWR1", branches: ["7", "9"], duration: 750 }
  */
-const copyBranch = ({
-  branchId,
-  tags,
-  levels,
-}: SelectedBranch): ExerciseBranchType => ({
-  branchId,
-  tags: [...tags],
-  exercises: Object.fromEntries(
-    Object.entries(levels).map(([level, { exerciseId }]) => [
-      level,
-      { exerciseId },
-    ]),
-  ),
-});
+const writeBranchesBlock = (
+  skill: string,
+  branches: readonly SelectedBranch[],
+  skillMinutes: number,
+): Block => {
+  const duration = Math.round(skillMinutes * SECONDS_PER_MINUTE);
+  return {
+    kind: "branches",
+    skill,
+    branches: branches.map(({ branchId }) => branchId),
+    ...(duration > 0 ? { duration } : {}),
+  };
+};
 
 /**
- * Writes one training day in the stored shape. An empty skill gets no branch
- * entry but keeps its minutes, as the old generator writes it:
- * src/features/training/generators/PlanGenerator.ts, PlanGenerator.createSection
+ * Writes one branches block per skill with branches, in the order of the
+ * budget's skills. An empty skill gets no block. A day without any block
+ * throws NO_EXERCISES/SKILL_TREE for its first skill, since an AIWL workout
+ * needs a block.
+ */
+const writeTrainingDayBlocks = ({
+  budget,
+  selections,
+}: AssembledTrainingDay): Block[] => {
+  // the selections follow the order of the budget's skills
+  const blocks = budget.skills.flatMap(({ skill, minutes }, index) => {
+    const selection = selections[index];
+    return selection?.type === "BRANCHES" && selection.branches.length > 0
+      ? [writeBranchesBlock(skill, selection.branches, minutes)]
+      : [];
+  });
+  if (blocks.length === 0) {
+    const firstSkill = budget.skills[0]?.skill;
+    throw {
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: firstSkill === undefined ? [] : [firstSkill],
+    } satisfies GeneratorError;
+  }
+  return blocks;
+};
+
+/**
+ * Writes one training day as an AIWL training: weekday, focus and the
+ * equipment of the day's place, and the day's skills as an AIWL workout.
+ *
+ * writeTrainingDay({ budget: { day: { weekday: 3, focus: "PHASE", place: "STUDIO" },
+ *   skills: [{ skill: "WU", minutes: 5 }] }, selections: [WU branch 4] }, trainingPlaces)
+ * → { weekday: 3, focus: "PHASE", equipment: ["BARBELL"],
+ *     workout: { aiwl: 1, id: "TRAINING_DAY_3", name: { en: "Training day" },
+ *       blocks: [{ kind: "branches", skill: "WU", branches: ["4"], duration: 300 }] } }
  */
 const writeTrainingDay = (
-  { budget, selections }: AssembledTrainingDay,
+  day: AssembledTrainingDay,
   trainingPlaces: PlacesData,
-): LegacyTrainingType => ({
-  weekday: budget.day.weekday,
-  skills: Object.fromEntries(
-    selections.flatMap((selection) =>
-      selection.type === "BRANCHES"
-        ? [[selection.skill, selection.branches.map(copyBranch)]]
-        : [],
-    ),
-  ),
-  lengths: Object.fromEntries(
-    budget.skills.map(({ skill, minutes }) => [skill, minutes]),
-  ),
-  focus: budget.day.focus,
-  equipment: [...readPlaceEquipment(trainingPlaces, budget.day.place)],
+): AiwlTrainingType => ({
+  weekday: day.budget.day.weekday,
+  workout: {
+    aiwl: 1,
+    id: `TRAINING_DAY_${day.budget.day.weekday}`,
+    name: { en: "Training day" },
+    blocks: writeTrainingDayBlocks(day),
+  },
+  focus: day.budget.day.focus,
+  equipment: [...readPlaceEquipment(trainingPlaces, day.budget.day.place)],
 });
 
 /**
- * Writes the sections and their training days in today's stored plan shape.
- * The first section starts on the first Monday on or after the plan start, and
- * each later section starts after the weeks of the one before.
+ * Writes the sections and their training days as an AIWL plan. The first
+ * section starts on the first Monday on or after the plan start, and each
+ * later section starts after the weeks of the one before.
  *
  * assembleTrainingPlan([{ section: { type: "BAS", numOfWeeks: 2, ... }, days }, ...],
  *   { planStartDate: "2026-11-04", trainingPlaces })
- * → { start: "2026-11-04", sections: [{ start: "2026-11-09", ... }, { start: "2026-11-23", ... }] }
+ * → { start: "2026-11-04", format: "aiwl",
+ *     sections: [{ start: "2026-11-09", ... }, { start: "2026-11-23", ... }] }
  */
 export const assembleTrainingPlan = (
   sections: readonly AssembledSection[],
@@ -110,5 +143,5 @@ export const assembleTrainingPlan = (
       addDays(start, section.numOfWeeks * DAYS_PER_WEEK),
     ],
   );
-  return { start: planStartDate, sections: datedSections };
+  return { start: planStartDate, format: "aiwl", sections: datedSections };
 };

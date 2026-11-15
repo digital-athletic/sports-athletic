@@ -1,10 +1,19 @@
 import { loadExercises } from "@/data/loadExercises";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
+import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySelection";
-import { requireLegacyTraining } from "@/features/training/utils/testFixtures";
+import { requireAiwlTraining } from "@/features/training/utils/testFixtures";
+import { toExerciseBranch } from "@/features/training/exerciseSwap/exerciseSwap";
+import {
+  generateTrainingDay,
+  generateTrainingDayFromStoredDay,
+} from "@/features/training/workoutGenerator/trainingDayGeneration";
 import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import { TemplateSchema } from "@/schemas/aiwl.schema";
 import type { UserType } from "@/schemas/user.schema";
+import * as v from "valibot";
+import { generateGenerationInput } from "@test/factories/generationInput";
 import { generatePlanGenerationInput } from "@test/factories/planGenerationInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
 import { catchThrownValue } from "@test/factories/thrownValue";
@@ -14,6 +23,7 @@ import type { PlanGenerationInput } from "./planGenerationInput/planGenerationIn
 const SEED = 20261102;
 /** Thursday, the studio day of the default weekly schedule. */
 const STUDIO_WEEKDAY = 3;
+const SECONDS_PER_MINUTE = 60;
 
 /**
  * Builds the athlete's stored user around a generated plan.
@@ -116,7 +126,7 @@ describe("generateTrainingPlan: workout generator day lookup", () => {
     jest.setSystemTime(new Date(`${plan.sections[1].start}T12:00:00`));
     const [firstSectionDay, secondSectionDay] = plan.sections.map(
       ({ trainings }) =>
-        requireLegacyTraining(
+        requireAiwlTraining(
           trainings.filter(({ weekday }) => weekday === STUDIO_WEEKDAY)[0],
         ),
     );
@@ -129,25 +139,35 @@ describe("generateTrainingPlan: workout generator day lookup", () => {
     );
 
     // The sections must differ, or a lookup of the first section passes too.
-    expect(secondSectionDay.skills).not.toEqual(firstSectionDay.skills);
-    expect(storedDay).toEqual({
-      skills: secondSectionDay.skills,
-      lengths: secondSectionDay.lengths,
-    });
+    expect(secondSectionDay.workout).not.toEqual(firstSectionDay.workout);
+    expect(storedDay).toEqual(secondSectionDay.workout);
+  });
+});
+
+describe("generateTrainingPlan: end to end with the workout generator", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
   });
 
-  it("builds a set list from the skills of the weekday's training in the second section", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  /**
+   * Creates a plan with the new plan generator and generates the set list of
+   * the studio day in the second section, as the athlete trains it.
+   */
+  const generateStudioDay = () => {
     const input = generatePlanGenerationInput({
       random: generateSeededRandom(SEED),
     });
     const plan = generateTrainingPlan(input);
     jest.setSystemTime(new Date(`${plan.sections[1].start}T12:00:00`));
-    const secondSectionDay = requireLegacyTraining(
+    const training = requireAiwlTraining(
       plan.sections[1].trainings.filter(
         ({ weekday }) => weekday === STUDIO_WEEKDAY,
       )[0],
     );
-
     const setList = generateWorkout({
       type: "PLAN",
       user: generateUserWithPlan(input, plan),
@@ -160,15 +180,98 @@ describe("generateTrainingPlan: workout generator day lookup", () => {
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
     });
+    // Pause and support entries carry a placeholder branch.
+    const exerciseEntries = setList.filter(
+      ({ branchId }) => !isPlaceholderBranch(branchId),
+    );
+    return { plan, training, setList, exerciseEntries };
+  };
 
-    // Pause entries carry the placeholder branch "-1".
-    const exerciseEntries = setList.filter(({ branchId }) => branchId !== "-1");
-    expect(new Set(exerciseEntries.map(({ branchId }) => branchId))).toEqual(
-      new Set(
-        Object.values(secondSectionDay.skills).flatMap((branches) =>
-          branches.map(({ branchId }) => branchId),
-        ),
+  it("marks the plan as AIWL and writes each training as a valid AIWL workout", () => {
+    const { plan } = generateStudioDay();
+
+    expect(plan.format).toBe("aiwl");
+    for (const { trainings } of plan.sections) {
+      for (const training of trainings) {
+        expect(
+          v.safeParse(TemplateSchema, requireAiwlTraining(training).workout)
+            .success,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("writes the blocks in the order of the section's skills", () => {
+    const { training } = generateStudioDay();
+
+    // the cardio day of the default schedule budgets its skills in this order
+    expect(training.workout.blocks.map(({ skill }) => skill)).toEqual([
+      "CARDIO_2",
+      "MOB",
+      "CD",
+    ]);
+  });
+
+  it("trains the skills of the planned blocks", () => {
+    const { training, setList } = generateStudioDay();
+
+    // the set list builder orders the skills by the training day timing
+    expect(new Set(setList.map(({ skill }) => skill))).toEqual(
+      new Set(training.workout.blocks.map(({ skill }) => skill)),
+    );
+  });
+
+  it("trains the same set list as a legacy training of the same branches and minutes", () => {
+    const { training } = generateStudioDay();
+    const createInput = () =>
+      generateGenerationInput({
+        exerciseCatalog: loadExercises(),
+        equipment:
+          generatePlanGenerationInput().trainingPlaces.STUDIO.equipment,
+        random: generateSeededRandom(SEED),
+      });
+    const { branchLookupIndex } = createInput();
+    const branchesBlocks = training.workout.blocks.flatMap((block) =>
+      block.kind === "branches" ? [block] : [],
+    );
+    const legacyDay = {
+      skills: Object.fromEntries(
+        branchesBlocks.map(({ skill, branches }) => [
+          skill,
+          branches.map((branchId) => {
+            const indexed = branchLookupIndex.get(branchId);
+            if (!indexed) throw new Error(`No catalog branch ${branchId}`);
+            return toExerciseBranch({ branchId, branch: indexed.branch });
+          }),
+        ]),
       ),
+      lengths: Object.fromEntries(
+        branchesBlocks.map(({ skill, duration }) => [
+          skill,
+          (duration ?? 0) / SECONDS_PER_MINUTE,
+        ]),
+      ),
+    };
+
+    expect(generateTrainingDay(training.workout, createInput())).toEqual(
+      generateTrainingDayFromStoredDay(legacyDay, createInput()),
+    );
+  });
+
+  it("trains the planned branches of each block", () => {
+    const { training, exerciseEntries } = generateStudioDay();
+
+    const plannedBranches = new Map(
+      training.workout.blocks.map((block) => [
+        block.skill,
+        block.kind === "branches" ? block.branches : [],
+      ]),
+    );
+    for (const { skill, branchId } of exerciseEntries) {
+      expect(plannedBranches.get(skill)).toContain(branchId);
+    }
+    expect(new Set(exerciseEntries.map(({ branchId }) => branchId))).toEqual(
+      new Set([...plannedBranches.values()].flat()),
     );
   });
 });

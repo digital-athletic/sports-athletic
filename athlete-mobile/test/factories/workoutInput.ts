@@ -2,11 +2,14 @@ import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import type { GenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
 import type { Template } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import { DEFAULT_PICKS_POOL_RULES } from "@/features/training/workoutGenerator/blockHandlers/picks/picksWorkoutRules";
 import {
   setUpWorkout,
   type WorkoutInput,
 } from "@/features/training/workoutGenerator/stages/workoutSetup";
+import {
+  resolveWorkoutFilters,
+  type WorkoutFilters,
+} from "@/features/training/workoutGenerator/workoutFilters";
 import {
   generateGenerationInput,
   type GenerationInputFactoryOptions,
@@ -19,6 +22,8 @@ export interface WorkoutInputFactoryOptions
   template?: Template;
   /** The skill trees the picks of the template draw from. */
   pickTrees?: Record<string, SkillTreeType>;
+  /** The filters the workout switches off; every filter applies by default. */
+  filters?: Partial<WorkoutFilters>;
 }
 
 /**
@@ -40,18 +45,20 @@ export const generateLeveledInput = (
  * Builds the workout input of a generation input: the general generation
  * input with its defaults, set up for the template.
  *
- * generateWorkoutInput({ pains: ["KNEE_LEFT"], skillTrees: { BAS: { "1": branch } } })
+ * generateWorkoutInput({ pains: ["KNEE_LEFT"], filters: { soreness: false } })
  * → { athleteLevel: "ADVANCED", blockedRegions: ["KNEE"], preventionSkills: ["PREVKNEE"],
- *     hasWeights: false, picksWorkout: { pool: {}, blocks: Map {} }, ... }
+ *     hasWeights: false, filters: { soreness: false, pain: true, equipment: true },
+ *     picksWorkout: { pool: {}, blocks: Map {} }, ... }
  */
 export const generateWorkoutInput = ({
   template,
   pickTrees,
+  filters,
   ...generationOptions
 }: WorkoutInputFactoryOptions = {}): WorkoutInput =>
   setUpWorkout(
     generateGenerationInput(generationOptions),
-    DEFAULT_PICKS_POOL_RULES,
+    resolveWorkoutFilters(filters),
     template,
     pickTrees,
   );

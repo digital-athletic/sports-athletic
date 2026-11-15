@@ -24,9 +24,10 @@ const listTreeBranchIds = (skill: string, input: WorkoutInput): string[] =>
 /**
  * Runs a cardio duration block as the one-branch branches block plan creation
  * stores: it draws one branch of the skill's tree that the athlete's pains,
- * age group, gender, soreness, equipment and level allow, then hands it to the
- * branches handler. Without an allowed branch it hands on a blocked one, which
- * the handler treats as a blocked stored branch of a training day: lower body
+ * age group, gender, soreness, equipment and level allow, without the
+ * families the workout filters switch off, then hands it to the branches
+ * handler. Without an allowed branch it hands on a blocked one, which the
+ * handler treats as a blocked stored branch of a training day: lower body
  * soreness, for example, swaps the block for the CARDIO_5 run.
  *
  * handleCardioDurationBlock({ kind: "duration", skill: "CARDIO_2", duration: 1200 }, input, ...)
@@ -52,6 +53,7 @@ export const createCardioDurationHandler =
       listStoredBranches(treeBlock, input, lookUpStoredBranchInCatalog),
       input,
       block.skill,
+      input.filters,
     );
     const allowed = Object.keys(keep);
     const candidates = allowed.length > 0 ? allowed : treeBranchIds;

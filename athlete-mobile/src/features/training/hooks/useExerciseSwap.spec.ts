@@ -1,4 +1,5 @@
 import { loadExercises } from "@/data/loadExercises";
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
@@ -199,6 +200,18 @@ describe("useExerciseSwap: swap in a plan training", () => {
         branches: [expect.not.stringMatching(/^510$/)],
       }),
     );
+  });
+
+  it("generates the swapped day with the skill trees of the plan day route and every filter on", async () => {
+    const result = await renderSwapHook();
+    const generateSetList = jest.spyOn(workoutGeneration, "generateSetList");
+
+    await act(() => {
+      result.current.swapControls.onSwap("510");
+    });
+
+    const [, , , options] = generateSetList.mock.calls[0];
+    expect(options).toEqual({ skillTrees: getAllSkillTrees() });
   });
 
   it("restores the original session after the last alternative", async () => {

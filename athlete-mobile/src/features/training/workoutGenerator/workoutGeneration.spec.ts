@@ -1,4 +1,6 @@
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { generateExercisesBlock } from "@test/factories/exercisesBlock";
+import { generateRegionWarmUpTree } from "@test/factories/strengthTestWarmUp";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
 import { listTrainedExercises } from "@test/factories/setListDescription";
@@ -89,6 +91,122 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
       subtype: "SKILL_TREE",
       params: ["WU"],
     });
+  });
+
+  it("throws NO_EXERCISES EQUIPMENT for a lift the place cannot equip when every filter applies", () => {
+    const input = generateStrengthTestInput({
+      equipment: [],
+      random: generateSeededRandom(7),
+    });
+
+    const thrown = catchThrownValue(() =>
+      generateSetList(
+        generateStrengthTestTemplate({ exercises: ["25"] }),
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees: getAllSkillTrees() },
+      ),
+    );
+
+    expect(thrown).toMatchObject({
+      type: "NO_EXERCISES",
+      subtype: "EQUIPMENT",
+    });
+  });
+
+  it("trains a lift the place cannot equip when the equipment filter is off", () => {
+    const input = generateStrengthTestInput({
+      equipment: [],
+      random: generateSeededRandom(7),
+    });
+
+    const setList = generateSetList(
+      generateStrengthTestTemplate({ exercises: ["25"] }),
+      lookUpStoredBranchInCatalog,
+      input,
+      { skillTrees: getAllSkillTrees(), filters: { equipment: false } },
+    );
+
+    expect(listTrainedExercises(setList)).toContain("25");
+  });
+
+  it("throws NO_EXERCISES PAIN when knee pain blocks every warm up branch and every filter applies", () => {
+    const input = generateStrengthTestInput({
+      pains: ["KNEE_LEFT"],
+      random: generateSeededRandom(7),
+    });
+
+    const thrown = catchThrownValue(() =>
+      generateSetList(
+        generateStrengthTestTemplate(),
+        lookUpStoredBranchInCatalog,
+        input,
+        { skillTrees: { WU: generateRegionWarmUpTree(["BLOCK_KNEE"]) } },
+      ),
+    );
+
+    expect(thrown).toMatchObject({ type: "NO_EXERCISES", subtype: "PAIN" });
+  });
+
+  it("fills the warm up when knee pain blocks every warm up branch and the pain filter is off", () => {
+    const input = generateStrengthTestInput({
+      pains: ["KNEE_LEFT"],
+      random: generateSeededRandom(7),
+    });
+
+    const setList = generateSetList(
+      generateStrengthTestTemplate(),
+      lookUpStoredBranchInCatalog,
+      input,
+      {
+        skillTrees: { WU: generateRegionWarmUpTree(["BLOCK_KNEE"]) },
+        filters: { pain: false },
+      },
+    );
+
+    expect(
+      setList.filter(
+        (entry) => entry.skill === "WU" && entry.branchId !== "-1",
+      ),
+    ).not.toHaveLength(0);
+  });
+});
+
+describe("workoutGeneration: generateSetList with the soreness filter off", () => {
+  // Muscle soreness counts on the day the factory dates it.
+  beforeEach(() => {
+    jest.useFakeTimers({ now: new Date("2026-10-24T12:00:00Z") });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("trains the listed branch of a sore region", () => {
+    // both BAS branches train the lower body, which sore quadriceps block
+    const skillTrees = {
+      BAS: {
+        "1": generateLowerBodyBranch({ 1: { exerciseId: "e1" } }),
+        "2": generateLowerBodyBranch({ 1: { exerciseId: "e2" } }),
+      },
+    };
+    const workout = generateShortTemplate([
+      generateUntimedBranchesBlock("BAS", { branches: ["1"] }),
+    ]);
+
+    const setList = generateSetList(
+      workout,
+      lookUpStoredBranchInCatalog,
+      generateRuleFamilyInput({
+        exerciseCatalog: generateLowerBodyExercises(["e1", "e2"]),
+        skillTrees,
+        soreMuscles: ["QUADRICEPS"],
+        random: () => 0,
+      }),
+      { skillTrees, filters: { soreness: false } },
+    );
+
+    expect([...new Set(listTrainedExercises(setList))]).toEqual(["e1"]);
   });
 });
 

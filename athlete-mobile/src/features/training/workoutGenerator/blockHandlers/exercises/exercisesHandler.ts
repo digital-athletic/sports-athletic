@@ -26,61 +26,50 @@ const listMissingExerciseEquipment = (
 };
 
 /**
- * How an exercises block treats equipment the place lacks: "required" throws
- * NO_EXERCISES/EQUIPMENT, "ignored" prescribes the exercise anyway.
- */
-export interface ExercisesBlockRules {
-  equipment: "required" | "ignored";
-}
-
-/**
  * Resolves the listed exercises from the exercise catalog in list order,
  * whatever the athlete's level, branch levels or used branches. An unknown or
- * duplicate exercise is a template error. Under the "required" equipment rule
- * an exercise the place cannot equip throws NO_EXERCISES/EQUIPMENT with the
+ * duplicate exercise is a template error. With the equipment filter on, an
+ * exercise the place cannot equip throws NO_EXERCISES/EQUIPMENT with the
  * missing equipment. No shortened list reaches the set list.
  *
- * createExercisesBlockHandler({ equipment: "required" })(
- *   { kind: "exercises", skill: "TEST", exercises: ["25"] }, input, used,
- *   { earlierResults: [], blockPath: "TEST.blocks[1]" })
+ * handleExercisesBlock({ kind: "exercises", skill: "TEST", exercises: ["25"] },
+ *   input, used, { earlierResults: [], blockPath: "TEST.blocks[1]" })
  * → { status: "prescribed", exercises: [{ source: "exercise", exerciseId: "25" }], usedBranchIds: [] }
  */
-export const createExercisesBlockHandler =
-  (rules: ExercisesBlockRules): BlockHandler<"exercises"> =>
-  (block, input, _usedBranches, walk) => {
-    const blockPath = walk?.blockPath ?? block.skill;
-    const listed = new Set<string>();
-    const exercises = block.exercises.map(
-      (exerciseId): PrescribedExerciseReference => {
-        if (listed.has(exerciseId)) {
-          throw new Error(
-            `${blockPath}: exercise ${exerciseId} is listed twice`,
-          );
-        }
-        listed.add(exerciseId);
-        const exercise = input.exerciseCatalog.find(
-          ({ id }) => id === exerciseId,
+export const handleExercisesBlock: BlockHandler<"exercises"> = (
+  block,
+  input,
+  _usedBranches,
+  walk,
+) => {
+  const blockPath = walk?.blockPath ?? block.skill;
+  const listed = new Set<string>();
+  const exercises = block.exercises.map(
+    (exerciseId): PrescribedExerciseReference => {
+      if (listed.has(exerciseId)) {
+        throw new Error(`${blockPath}: exercise ${exerciseId} is listed twice`);
+      }
+      listed.add(exerciseId);
+      const exercise = input.exerciseCatalog.find(
+        ({ id }) => id === exerciseId,
+      );
+      if (!exercise) {
+        throw new Error(
+          `${blockPath}: exercise ${exerciseId} is no catalog exercise`,
         );
-        if (!exercise) {
-          throw new Error(
-            `${blockPath}: exercise ${exerciseId} is no catalog exercise`,
-          );
+      }
+      if (input.filters.equipment) {
+        const missing = listMissingExerciseEquipment(exercise, input.equipment);
+        if (missing.length > 0) {
+          throw {
+            type: "NO_EXERCISES",
+            subtype: "EQUIPMENT",
+            params: missing,
+          } satisfies GeneratorError;
         }
-        if (rules.equipment === "required") {
-          const missing = listMissingExerciseEquipment(
-            exercise,
-            input.equipment,
-          );
-          if (missing.length > 0) {
-            throw {
-              type: "NO_EXERCISES",
-              subtype: "EQUIPMENT",
-              params: missing,
-            } satisfies GeneratorError;
-          }
-        }
-        return { source: "exercise", exerciseId };
-      },
-    );
-    return { status: "prescribed", block, exercises, usedBranchIds: [] };
-  };
+      }
+      return { source: "exercise", exerciseId };
+    },
+  );
+  return { status: "prescribed", block, exercises, usedBranchIds: [] };
+};

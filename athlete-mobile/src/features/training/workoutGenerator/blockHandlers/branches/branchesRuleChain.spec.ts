@@ -1,6 +1,7 @@
 import { loadExercises } from "@/data/loadExercises";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateStoredBranches } from "@test/factories/storedBranch";
+import { resolveWorkoutFilters } from "../../workoutFilters";
 import { applyBranchesRuleChain } from "./branchesRuleChain";
 
 const exerciseCatalog = loadExercises();
@@ -28,6 +29,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       generateStoredBranches("GKS", ["510", "523"]),
       input,
       "GKS",
+      resolveWorkoutFilters(),
     );
 
     expect(Object.keys(result.keep)).toEqual(["510", "523"]);
@@ -48,6 +50,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       ],
       input,
       "GKS",
+      resolveWorkoutFilters(),
     );
 
     expect(Object.keys(result.keep)).toEqual(["510", "547"]);
@@ -63,6 +66,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       generateStoredBranches("GKS", ["523", "510", "523"]),
       input,
       "GKS",
+      resolveWorkoutFilters(),
     );
 
     expect(Object.keys(result.keep)).toEqual(["510", "523"]);
@@ -75,6 +79,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       generateStoredBranches("GKS", ["510", "523"]),
       input,
       "GKS",
+      resolveWorkoutFilters(),
     );
 
     expect(result.replace).toEqual(["UPPER_BODY", "FULL_BODY"]);
@@ -97,6 +102,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       generateStoredBranches("GKS", ["523", "510"]),
       input,
       "GKS",
+      resolveWorkoutFilters(),
     );
 
     expect(result.replace).toEqual(["UPPER_BODY", "FULL_BODY"]);
@@ -115,6 +121,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       generateStoredBranches("GKS", ["510", "523"]),
       input,
       "GKS",
+      resolveWorkoutFilters(),
     );
 
     expect(result.emptyReason).toEqual({
@@ -131,6 +138,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       generateStoredBranches("SWR1KG", ["79", "81"]),
       input,
       "SWR2KG",
+      resolveWorkoutFilters(),
     );
 
     expect(result.keep).toEqual({});
@@ -155,6 +163,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       ],
       input,
       "GKS",
+      resolveWorkoutFilters(),
     );
 
     expect(Object.keys(result.keep)).toEqual(["523"]);
@@ -178,6 +187,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       ],
       input,
       "GKS",
+      resolveWorkoutFilters(),
     );
 
     expect(Object.keys(result.keep)).toEqual(["523"]);
@@ -204,6 +214,7 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       ],
       input,
       "GKS",
+      resolveWorkoutFilters(),
     );
 
     expect(Object.keys(result.keep)).toEqual(["523"]);
@@ -211,5 +222,131 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
       result.removals.map(({ branchId, family }) => [branchId, family]),
     ).toEqual([["510", "gender"]]);
     expect(result.replace).toEqual(["UPPER_BODY"]);
+  });
+
+  it("keeps the branch of a sore region when the soreness filter is off", () => {
+    const input = generateRuleFamilyInput({
+      soreMuscles: ["CHEST"],
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+    });
+
+    const result = applyBranchesRuleChain(
+      generateStoredBranches("GKS", ["510", "523"]),
+      input,
+      "GKS",
+      resolveWorkoutFilters({ soreness: false }),
+    );
+
+    expect(Object.keys(result.keep)).toEqual(["510", "523"]);
+    expect(result.replace).toEqual([]);
+  });
+
+  it("throws no soreness error for two sore areas when the soreness filter is off", () => {
+    const input = generateRuleFamilyInput({
+      soreMuscles: ["CHEST", "QUADRICEPS"],
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+    });
+
+    expect(() =>
+      applyBranchesRuleChain(
+        generateStoredBranches("GKS", ["510"]),
+        input,
+        "GKS",
+        resolveWorkoutFilters({ soreness: false }),
+      ),
+    ).not.toThrow();
+  });
+
+  it("keeps the branch that needs missing equipment when the equipment filter is off", () => {
+    const input = generateRuleFamilyInput({ equipment: [], exerciseCatalog });
+
+    const result = applyBranchesRuleChain(
+      generateStoredBranches("GKS", ["510", "523"]),
+      input,
+      "GKS",
+      resolveWorkoutFilters({ equipment: false }),
+    );
+
+    expect(Object.keys(result.keep)).toEqual(["510", "523"]);
+    expect(result.removals).toEqual([]);
+  });
+
+  it("keeps the branch that blocks a painful region when the pain filter is off", () => {
+    const input = generateRuleFamilyInput({
+      pains: ["KNEE_LEFT"],
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+    });
+
+    const result = applyBranchesRuleChain(
+      [
+        generateGksBranchWithTags("510", ["REGION_LOWER_BODY", "BLOCK_KNEE"]),
+        generateGksBranchWithTags("523", ["REGION_LOWER_BODY"]),
+      ],
+      input,
+      "GKS",
+      resolveWorkoutFilters({ pain: false }),
+    );
+
+    expect(Object.keys(result.keep)).toEqual(["510", "523"]);
+    expect(result.replace).toEqual([]);
+  });
+
+  it("removes the branch of the other age group when the pain filter is off", () => {
+    const input = generateRuleFamilyInput({
+      birthday: "2016-06-15",
+      pains: ["KNEE_LEFT"],
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+    });
+
+    const result = applyBranchesRuleChain(
+      [
+        generateGksBranchWithTags("510", [
+          "REGION_CORE",
+          "BLOCK_KNEE",
+          "AGE_ADULT",
+        ]),
+        generateGksBranchWithTags("523", ["REGION_CORE", "BLOCK_KNEE"]),
+      ],
+      input,
+      "GKS",
+      resolveWorkoutFilters({ pain: false }),
+    );
+
+    expect(Object.keys(result.keep)).toEqual(["523"]);
+    expect(
+      result.removals.map(({ branchId, family }) => [branchId, family]),
+    ).toEqual([["510", "ageGroup"]]);
+  });
+
+  it("removes the branch of the other gender when the pain filter is off", () => {
+    const input = generateRuleFamilyInput({
+      gender: "FEMALE",
+      pains: ["KNEE_LEFT"],
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+    });
+
+    const result = applyBranchesRuleChain(
+      [
+        generateGksBranchWithTags("510", [
+          "REGION_UPPER_BODY",
+          "BLOCK_KNEE",
+          "GENDER_MALE",
+        ]),
+        generateGksBranchWithTags("523", ["REGION_UPPER_BODY", "BLOCK_KNEE"]),
+      ],
+      input,
+      "GKS",
+      resolveWorkoutFilters({ pain: false }),
+    );
+
+    expect(Object.keys(result.keep)).toEqual(["523"]);
+    expect(
+      result.removals.map(({ branchId, family }) => [branchId, family]),
+    ).toEqual([["510", "gender"]]);
   });
 });

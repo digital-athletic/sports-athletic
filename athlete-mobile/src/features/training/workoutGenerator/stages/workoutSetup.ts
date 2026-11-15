@@ -10,11 +10,11 @@ import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getUserTagValues } from "@/utils/tagUtils";
 import {
   createEmptyPicksWorkout,
-  type PicksPoolRules,
   type PicksWorkout,
   resolvePicksWorkout,
 } from "../blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
+import type { WorkoutFilters } from "../workoutFilters";
 import type { InterpretedWorkout } from "./blockWalk";
 
 // The old generator derives these values per skill from the same athlete and
@@ -24,6 +24,7 @@ export interface WorkoutInput extends GenerationInput {
   readonly blockedRegions: readonly string[];
   readonly preventionSkills: readonly string[];
   readonly hasWeights: boolean;
+  readonly filters: WorkoutFilters;
   readonly picksWorkout: PicksWorkout;
 }
 
@@ -33,12 +34,12 @@ const createFrozenList = (list: string[]): readonly string[] =>
 /**
  * Adds the derived inputs that several blocks share and applies the picks
  * workout rules of the template. The muscle soreness check stays in its rule
- * family, which throws only for a skill it filters. `picksPoolRules` picks
- * the families the picks pool filter applies.
+ * family, which throws only for a skill it filters. Every block reads
+ * `filters`, the picks pool filter included.
  */
 export const setUpWorkout = (
   input: GenerationInput,
-  picksPoolRules: PicksPoolRules,
+  filters: WorkoutFilters,
   template?: InterpretedWorkout,
   skillTrees?: Readonly<Record<string, SkillTreeType>>,
 ): WorkoutInput => {
@@ -53,11 +54,12 @@ export const setUpWorkout = (
     blockedRegions: createFrozenList(getBlocksFromPains(pains)),
     preventionSkills: createFrozenList(getPreventionsFromPains(pains)),
     hasWeights: hasWeights(input.equipment),
+    filters,
     picksWorkout: template
       ? resolvePicksWorkout(
           template,
           { ...input, athleteLevel },
-          picksPoolRules,
+          filters,
           skillTrees,
         )
       : createEmptyPicksWorkout(),

@@ -15,6 +15,7 @@ import { filterBranchesByGender } from "../../ruleFamilies/genderRule";
 import type { GenerationInput } from "../../generationInput/generationInput";
 import { filterBranchesByPain } from "../../ruleFamilies/painRule";
 import { throwWhenPoolEmpty } from "../../ruleFamilies/ruleFamily";
+import type { WorkoutFilters } from "../../workoutFilters";
 import {
   isPicksBlock,
   type ResolvedPicksBlock,
@@ -39,32 +40,22 @@ const NO_BRANCH_DRAW: BranchDraw = Object.freeze({
 export const createEmptyPicksWorkout = (): PicksWorkout =>
   Object.freeze({ pool: {}, blocks: new Map(), draw: NO_BRANCH_DRAW });
 
-export interface PicksPoolRules {
-  readonly pain: "applied" | "ignored";
-  readonly equipment: "applied" | "ignored";
-}
-
-export const DEFAULT_PICKS_POOL_RULES: PicksPoolRules = {
-  pain: "applied",
-  equipment: "applied",
-};
-
 /**
  * Runs pain, equipment, age group and gender on the union pool of a short
- * workout and throws the error of the first family that empties it. Short
- * workouts ignore muscle soreness. `rules` skips the pain and equipment
- * families; age group and gender always run.
+ * workout and throws the error of the first family that empties it. Picks
+ * blocks ignore muscle soreness. `filters` switches off pain and equipment;
+ * age group and gender always run.
  *
- * filterPoolByPicksWorkoutRules({ "523": <blocked on knee pain> }, kneePainInput)
+ * filterPoolByPicksWorkoutRules({ "523": <blocked on knee pain> }, kneePainInput, resolveWorkoutFilters())
  * → throws { type: "NO_EXERCISES", subtype: "PAIN", params: ["KNEE"] }
  */
 export const filterPoolByPicksWorkoutRules = (
   pool: SkillTreeType,
   input: GenerationInput,
-  rules: PicksPoolRules,
+  filters: WorkoutFilters,
 ): SkillTreeType => {
   let remaining = pool;
-  if (rules.pain === "applied") {
+  if (filters.pain) {
     const painResult = filterBranchesByPain(remaining, input.athlete);
     throwWhenPoolEmpty(
       painResult.keep,
@@ -73,7 +64,7 @@ export const filterPoolByPicksWorkoutRules = (
     );
     remaining = painResult.keep;
   }
-  if (rules.equipment === "applied") {
+  if (filters.equipment) {
     const equipmentResult = filterBranchesByEquipment(
       remaining,
       input.equipment,
@@ -99,22 +90,22 @@ export const filterPoolByPicksWorkoutRules = (
  * Resolves the picks blocks of a template, filters their union pool once and
  * builds the branch draws from that pool at the athlete level. A template
  * without picks blocks gets an empty picks workout, and a block of another
- * kind gets no entry. `rules` picks the families the pool filter applies.
+ * kind gets no entry. `filters` picks the families the pool filter applies.
  *
- * resolvePicksWorkout({ blocks: [WU picks block] }, femaleInput, DEFAULT_PICKS_POOL_RULES)
+ * resolvePicksWorkout({ blocks: [WU picks block] }, femaleInput, resolveWorkoutFilters())
  * → { pool: { ...WU branches without 1026 }, blocks: Map { WU block → { skill: "WU", ... } }, draw }
  */
 export const resolvePicksWorkout = (
   template: InterpretedWorkout,
   input: GenerationInput & { readonly athleteLevel: string },
-  rules: PicksPoolRules,
+  filters: WorkoutFilters,
   skillTrees: Readonly<Record<string, SkillTreeType>> = getAllSkillTrees(),
 ): PicksWorkout => {
   if (!template.blocks.some((block) => block.kind === "picks")) {
     return createEmptyPicksWorkout();
   }
   const resolved = resolvePicksBlocks(template, input, skillTrees);
-  const pool = filterPoolByPicksWorkoutRules(resolved.pool, input, rules);
+  const pool = filterPoolByPicksWorkoutRules(resolved.pool, input, filters);
   // resolvePicksBlocks lists one resolved block per picks block, in this order
   const picksBlocks = template.blocks.filter(isPicksBlock);
   return {

@@ -239,7 +239,12 @@ const applyBlockRuleChain = (
   storedBranches: StoredBranch[],
   input: WorkoutInput,
 ): BranchesRuleChainResult => {
-  const chain = applyBranchesRuleChain(storedBranches, input, block.skill);
+  const chain = applyBranchesRuleChain(
+    storedBranches,
+    input,
+    block.skill,
+    input.filters,
+  );
   return {
     ...chain,
     replace: [

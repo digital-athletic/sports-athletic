@@ -1,5 +1,4 @@
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import type { PicksPoolRules } from "./blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "./generationInput/generationInput";
 import {
   type BlockHandlerRegistry,
@@ -13,6 +12,7 @@ import {
   type WorkoutFinishRules,
 } from "./stages/workoutFinish";
 import { setUpWorkout, type WorkoutInput } from "./stages/workoutSetup";
+import type { WorkoutFilters } from "./workoutFilters";
 
 export interface TemplateInterpreterOptions<TEntry> {
   handlers: BlockHandlerRegistry;
@@ -20,8 +20,8 @@ export interface TemplateInterpreterOptions<TEntry> {
   createSetListBuilder: (input: WorkoutInput) => SetListBuilder<TEntry>;
   /** The skill trees picks blocks resolve from; the bundled trees when absent. */
   skillTrees?: Readonly<Record<string, SkillTreeType>>;
-  /** The families the picks pool filter applies. */
-  picksPoolRules: PicksPoolRules;
+  /** The athlete filters every block applies. */
+  filters: WorkoutFilters;
 }
 
 /**
@@ -36,15 +36,10 @@ export const interpretTemplate = <TEntry>(
     finishRules,
     createSetListBuilder,
     skillTrees,
-    picksPoolRules,
+    filters,
   }: TemplateInterpreterOptions<TEntry>,
 ): FinishedWorkout<TEntry> => {
-  const workoutInput = setUpWorkout(
-    input,
-    picksPoolRules,
-    template,
-    skillTrees,
-  );
+  const workoutInput = setUpWorkout(input, filters, template, skillTrees);
   return finishWorkout(
     walkTemplateBlocks(template, workoutInput, handlers),
     finishRules,

@@ -11,6 +11,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
+import { usePerformanceTestValuesStore } from "@/store/performanceTestValuesStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useSyncQueueStore } from "@/store/syncQueueStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
@@ -96,6 +97,7 @@ export function useDeleteAccount() {
   const { clearCustomWorkouts } = useCustomWorkoutsStore();
   const { resetTrainingSchedule } = useTrainingScheduleStore();
   const { resetPlaces } = usePlacesStore();
+  const { reset: resetPerformanceTestValues } = usePerformanceTestValuesStore();
   const { resetSettings } = useUserSettingsStore();
   const { clearUserItems } = useSyncQueueStore();
   const { clearTraining } = useTrainingStore();
@@ -126,6 +128,7 @@ export function useDeleteAccount() {
           clearCustomWorkouts();
           resetTrainingSchedule();
           resetPlaces();
+          resetPerformanceTestValues();
           resetSettings();
           if (userId) {
             clearUserItems(userId);

@@ -42,7 +42,7 @@ const createInput = (request: WorkoutGenerationRequest) =>
   });
 
 /** Short and custom workouts ignore muscle soreness, as Pain, Soreness, and Prevention defines. */
-const SHORT_WORKOUT_FILTERS: Partial<WorkoutFilters> = Object.freeze({
+export const SHORT_WORKOUT_FILTERS: Partial<WorkoutFilters> = Object.freeze({
   soreness: false,
 });
 

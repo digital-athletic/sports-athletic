@@ -1,12 +1,16 @@
 import type { PlaceType } from "@/constants/workoutConstants";
-import { listSwapAlternatives } from "@/features/training/exerciseSwap/swapAlternatives";
+import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
 import {
   branchIdAt,
   type ExerciseSwapState,
   findNextSwap,
-  listSwappableBranches,
-  swapBranchInTrainingDay,
 } from "@/features/training/exerciseSwap/exerciseSwap";
+import {
+  createPlanSwapSource,
+  createShortWorkoutSwapSource,
+  type SwapSource,
+  supportsExerciseSwap,
+} from "@/features/training/exerciseSwap/swapSource";
 import {
   buildUser,
   calculateDaysSinceLastWorkout,
@@ -16,14 +20,11 @@ import {
   useGenerationContext,
 } from "@/features/training/hooks/useTrainingGeneration";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
+import { isGeneratorError } from "@/features/training/models/GeneratorError";
 import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySelection";
 import type { SwapControls } from "@/features/training/SwapExerciseButton";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
-import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
-import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
-import { generateTrainingDaySetList } from "@/features/training/workoutGenerator/trainingDayWorkout";
-import { resolveWorkoutFilters } from "@/features/training/workoutGenerator/workoutFilters";
 import { Logger } from "@/services/Logger";
 import { parseIntParam } from "@/utils/router";
 import { useEffect, useEffectEvent, useState } from "react";
@@ -36,11 +37,14 @@ interface SwapRequest {
   place: PlaceType;
 }
 
-// A fixed random draw makes each regeneration of a day return the same entries
+// A fixed random draw makes each regeneration of a workout return the same entries
 const FIXED_RANDOM = () => 0;
 
-/** The plan day and generation input of a swap, built once per request. */
-const createSwapBasis = ({ params, ctx, place }: SwapRequest) => {
+/** Builds the swap source of the workout the session holds, or null without a template. */
+const createSwapSource = (
+  { params, ctx, place }: SwapRequest,
+  session: readonly UserExerciseDataType[],
+): SwapSource | null => {
   const user = buildUser(params, ctx);
   const weekday = parseIntParam(params.weekday) ?? 0;
   const selectedPlace = resolveSelectedPlace(
@@ -57,68 +61,29 @@ const createSwapBasis = ({ params, ctx, place }: SwapRequest) => {
     exerciseData: { ...ctx.storedProgress, branchData: ctx.branchData },
     random: FIXED_RANDOM,
   });
-  const day = selectStoredTrainingDay(
-    user,
-    weekday,
-    parseIntParam(params.sectionIndex),
-    calculateDaysSinceLastWorkout(params.type, ctx),
-  );
-  return { day, input, skillTrees: ctx.skillTrees };
-};
-
-const listAllAlternatives = (
-  request: SwapRequest,
-  session: readonly UserExerciseDataType[],
-): Record<string, ExerciseSwapState> => {
-  const basis = createSwapBasis(request);
-  // A plan day applies every filter, so its alternatives do too.
-  const input = setUpWorkout(basis.input, resolveWorkoutFilters());
-  const swaps: Record<string, ExerciseSwapState> = {};
-  for (const { branchId, skill } of listSwappableBranches(session, basis.day)) {
-    const others = session.filter((entry) => entry.branchId !== branchId);
-    try {
-      const alternatives = listSwapAlternatives(
-        {
-          skill,
-          branchId,
-          usedBranchIds: others.flatMap((entry) =>
-            entry.branchId ? [entry.branchId] : [],
-          ),
-          usedExerciseIds: others.map(({ exerciseId }) => exerciseId),
-        },
-        input,
-      );
-      if (alternatives.length > 0) {
-        swaps[branchId] = {
-          skill,
-          position: 0,
-          alternatives,
-          originalEntries: session.filter(
-            (entry) => entry.branchId === branchId,
-          ),
-        };
-      }
-    } catch (e) {
-      // Muscle soreness in two regions makes the listing throw. That exercise
-      // gets no swap button.
-      if (e instanceof Error) Logger.logError(e);
-    }
+  if (params.type === "PLAN") {
+    const day = selectStoredTrainingDay(
+      user,
+      weekday,
+      parseIntParam(params.sectionIndex),
+      calculateDaysSinceLastWorkout(params.type, ctx),
+    );
+    return createPlanSwapSource(day, input, ctx.skillTrees, session);
   }
-  return swaps;
+  const template = lookupTemplate(params.type);
+  if (!template) return null;
+  return createShortWorkoutSwapSource(template, input, ctx.skillTrees, session);
 };
 
-/** Generates the plan day with the alternative in place of the original. */
-const generateSwappedDay = (
-  { day, input, skillTrees }: ReturnType<typeof createSwapBasis>,
-  skill: string,
-  original: string,
-  alternative: StoredBranch,
-) =>
-  generateTrainingDaySetList(
-    swapBranchInTrainingDay(day, skill, original, alternative),
-    input,
-    skillTrees,
-  );
+// A generator error is a plain object; its params can name pains, so only its type is logged.
+const logSwapError = (e: unknown) => {
+  if (e instanceof Error) {
+    Logger.logError(e);
+    return;
+  }
+  const reason = isGeneratorError(e) ? `${e.type}/${e.subtype}` : "unknown";
+  Logger.logError(new Error(`Exercise swap failed: ${reason}`));
+};
 
 /** The original branch whose swap shows the given branch. */
 const findOriginalBranchId = (
@@ -130,64 +95,92 @@ const findOriginalBranchId = (
   );
 
 /**
- * Lists the alternatives of every exercise once the session exists, after the
- * overview has rendered. Each swap state tracks its position in the cycle.
+ * Builds the swap source once the session exists, after the overview has
+ * rendered, from the session as first drawn. Each swap state tracks its
+ * position in the cycle.
  */
 const useSwapState = (request: SwapRequest) => {
-  const enabled =
-    request.params.type === "PLAN" && request.ctx.trainingPlan !== null;
-  const hasSession = useTrainingStore((s) => s.exerciseList !== null);
-  const [swaps, setSwaps] = useState<Record<string, ExerciseSwapState> | null>(
-    null,
+  const enabled = supportsExerciseSwap(
+    request.params.type,
+    request.ctx.trainingPlan !== null,
   );
+  const hasSession = useTrainingStore((s) => s.exerciseList !== null);
+  const [state, setState] = useState<{
+    source: SwapSource;
+    swaps: Record<string, ExerciseSwapState>;
+  } | null>(null);
 
-  const listAlternatives = useEffectEvent(() => {
+  const buildSource = useEffectEvent(() => {
     const session = useTrainingStore.getState().exerciseList;
-    if (swaps === null && session) {
-      setSwaps(listAllAlternatives(request, session));
+    if (state !== null || !session) return;
+    try {
+      const source = createSwapSource(request, session);
+      if (source) setState({ source, swaps: source.swaps });
+    } catch (e) {
+      // A workout that cannot be regenerated keeps its overview without swap buttons.
+      logSwapError(e);
     }
   });
   useEffect(() => {
     if (!enabled || !hasSession) return;
     // The timeout lets the overview paint before the alternatives are listed
-    const timeout = setTimeout(listAlternatives, 0);
+    const timeout = setTimeout(buildSource, 0);
     return () => clearTimeout(timeout);
   }, [enabled, hasSession]);
 
-  return { swaps: swaps ?? {}, setSwaps };
+  return { state, swaps: state?.swaps ?? {}, setState };
+};
+
+/** The next step of the swap cycle, or null when the workout cannot be regenerated. */
+const findNextStep = (
+  source: SwapSource,
+  session: readonly UserExerciseDataType[],
+  original: string,
+  swap: ExerciseSwapState,
+) => {
+  try {
+    return findNextSwap({
+      session,
+      original,
+      swap,
+      generateWith: (alternative) =>
+        source.generateSwapped(swap.skill, original, alternative),
+    });
+  } catch (e) {
+    // The session stays as it is, as for a cycle without a fitting branch.
+    logSwapError(e);
+    return null;
+  }
 };
 
 /**
- * Swap state of a plan training overview. Each tap on an exercise moves it to
- * the next alternative branch. After the last alternative, the next tap
- * restores the original. A swap changes only the current workout; the
- * training plan is unchanged.
+ * Swap state of a training overview, for plan workouts and short workouts but
+ * not the strength test. Each tap on an exercise moves it to the next
+ * alternative branch. After the last alternative, the next tap restores the
+ * original. A swap changes only the current workout; the training plan and
+ * the template are unchanged.
  */
 export function useExerciseSwap(params: SwapParams, fallbackPlace: PlaceType) {
   const ctx = useGenerationContext();
   const setExerciseList = useTrainingStore((s) => s.setExerciseList);
   const request: SwapRequest = { params, ctx, place: fallbackPlace };
-  const { swaps, setSwaps } = useSwapState(request);
+  const { state, swaps, setState } = useSwapState(request);
 
   const swapExercise = (branchId: string | undefined) => {
     const original = branchId && findOriginalBranchId(swaps, branchId);
     const session = useTrainingStore.getState().exerciseList;
-    if (!original || !session) return;
+    if (!original || !session || !state) return;
     const swap = swaps[original];
-    const basis = createSwapBasis(request);
-    const result = findNextSwap({
-      session,
-      original,
-      swap,
-      generateWith: (alternative) =>
-        generateSwappedDay(basis, swap.skill, original, alternative),
-    });
+    const result = findNextStep(state.source, session, original, swap);
     if (!result || result.position === swap.position) {
       Logger.logEvent("exercise_swap_not_possible", { branchId: original });
       return;
     }
     setExerciseList(result.session);
-    setSwaps({ ...swaps, [original]: { ...swap, position: result.position } });
+    setState({
+      source: state.source,
+      swaps: { ...swaps, [original]: { ...swap, position: result.position } },
+    });
   };
 
   const swapControls: SwapControls = {

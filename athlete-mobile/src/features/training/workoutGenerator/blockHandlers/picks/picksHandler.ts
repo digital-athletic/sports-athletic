@@ -1,9 +1,5 @@
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import type {
-  BlockHandler,
-  BlockHandlerRegistry,
-  BlockResult,
-} from "../../stages/blockWalk";
+import type { BlockHandler, BlockResult } from "../../stages/blockWalk";
 import type { WorkoutInput } from "../../stages/workoutSetup";
 import { resolveBranchExerciseId } from "../library/branchResolution";
 import { drawPicksBlock } from "./picksDraw";
@@ -71,9 +67,4 @@ export const handlePicksBlock: BlockHandler<"picks"> = (
         reason: undefined,
         usedBranchIds: drawn.usedBranchIds,
       };
-};
-
-export const PICKS_BLOCK_HANDLER: BlockHandlerRegistry["picks"] = {
-  usedBranchScope: "workout",
-  handleBlock: handlePicksBlock,
 };

@@ -17,7 +17,7 @@ import {
   createExercisesBlockHandler,
   type ExercisesBlockRules,
 } from "./blockHandlers/exercises/exercisesHandler";
-import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
+import { handlePicksBlock } from "./blockHandlers/picks/picksHandler";
 import type { PicksPoolRules } from "./blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "./generationInput/generationInput";
 import {
@@ -55,17 +55,13 @@ const throwUnreachableStrengthTestBlock = (): never => {
   throw new Error("A strength test runs picks and exercises blocks only");
 };
 
-const UNREACHABLE_STRENGTH_TEST_HANDLER = {
-  usedBranchScope: "workout",
-  handleBlock: throwUnreachableStrengthTestBlock,
-} as const;
-
-const STRENGTH_TEST_HANDLERS: BlockHandlerRegistry = {
-  picks: PICKS_BLOCK_HANDLER,
-  branches: UNREACHABLE_STRENGTH_TEST_HANDLER,
-  duration: UNREACHABLE_STRENGTH_TEST_HANDLER,
+// The registry reads the picks handler per run, so a spy on it takes effect.
+const createStrengthTestHandlers = (): BlockHandlerRegistry => ({
+  picks: handlePicksBlock,
+  branches: throwUnreachableStrengthTestBlock,
+  duration: throwUnreachableStrengthTestBlock,
   exercises: createExercisesBlockHandler(STRENGTH_TEST_EXERCISES_RULES),
-};
+});
 
 // The source checks run before any block. The old path checks workout data
 // and soreness only; the age check follows the spec, where the app hid the
@@ -115,7 +111,7 @@ export const generateStrengthTest = (
   const lifts = checkStrengthTestTemplate(template, loadData);
   requireStrengthTestAthlete(input.athlete);
   return interpretTemplate(template, input, {
-    handlers: STRENGTH_TEST_HANDLERS,
+    handlers: createStrengthTestHandlers(),
     finishRules: STRENGTH_TEST_FINISH_RULES,
     createSetListBuilder: (workoutInput) =>
       createSetListBuilder(workoutInput, {

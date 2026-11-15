@@ -30,14 +30,12 @@ const listTreeBranchIds = (skill: string, input: WorkoutInput): string[] =>
  * the handler treats as a blocked stored branch of a training day: lower body
  * soreness, for example, swaps the block for the CARDIO_5 run.
  *
- * handleBlock({ kind: "duration", skill: "CARDIO_2", duration: 1200 }, input, ...)
+ * handleCardioDurationBlock({ kind: "duration", skill: "CARDIO_2", duration: 1200 }, input, ...)
  * → the branches result of { kind: "branches", skill: "CARDIO_2", duration: 1200, branches: ["582"] }
  */
-export const createCardioDurationHandler = (
-  branchesHandler: BranchesBlockHandler,
-): DurationBlockHandler => ({
-  usedBranchScope: branchesHandler.usedBranchScope,
-  handleBlock: (block, input, usedBranches, walk) => {
+export const createCardioDurationHandler =
+  (branchesHandler: BranchesBlockHandler): DurationBlockHandler =>
+  (block, input, usedBranches, walk) => {
     const [first, ...rest] = listTreeBranchIds(block.skill, input);
     if (first === undefined) {
       throw {
@@ -61,6 +59,5 @@ export const createCardioDurationHandler = (
       ...treeBlock,
       branches: [candidates[Math.floor(input.random() * candidates.length)]],
     };
-    return branchesHandler.handleBlock(drawnBlock, input, usedBranches, walk);
-  },
-});
+    return branchesHandler(drawnBlock, input, usedBranches, walk);
+  };

@@ -25,14 +25,14 @@ import {
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { generateMixedExerciseCatalog } from "@test/factories/valueExercise";
-import { PICKS_BLOCK_HANDLER } from "./blockHandlers/picks/picksHandler";
+import * as picksHandler from "./blockHandlers/picks/picksHandler";
 import { generateShortWorkoutFromTemplate } from "./shortWorkoutGeneration";
 
 describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
   afterEach(jest.restoreAllMocks);
 
   it("draws the blocks in template order from the given skill trees and drops the last pause", () => {
-    const handleBlock = jest.spyOn(PICKS_BLOCK_HANDLER, "handleBlock");
+    const handlePicksBlock = jest.spyOn(picksHandler, "handlePicksBlock");
     const template = generateShortTemplateWithBreathing([
       generatePicksBlock("BR"),
     ]);
@@ -43,7 +43,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
       generateBreathingTrees([]),
     );
 
-    expect(handleBlock).toHaveBeenCalledTimes(2);
+    expect(handlePicksBlock).toHaveBeenCalledTimes(2);
     expect([...new Set(setList.map((entry) => entry.branchId))]).toEqual(
       expect.arrayContaining(["990001", "990002"]),
     );
@@ -188,7 +188,7 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
 
   it("throws the error of the first empty block when no block draws an exercise", () => {
     jest
-      .spyOn(PICKS_BLOCK_HANDLER, "handleBlock")
+      .spyOn(picksHandler, "handlePicksBlock")
       .mockImplementation((block) => ({
         status: "empty",
         block,

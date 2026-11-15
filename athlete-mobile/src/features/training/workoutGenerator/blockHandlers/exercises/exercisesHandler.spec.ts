@@ -14,7 +14,7 @@ import { createExercisesBlockHandler } from "./exercisesHandler";
 
 const BLOCK_PATH = "TESTDAY.blocks[1]";
 
-const { handleBlock: handleExercisesBlock } = createExercisesBlockHandler({
+const handleExercisesBlock = createExercisesBlockHandler({
   equipment: "required",
 });
 
@@ -214,7 +214,7 @@ describe("exercisesHandler: handleExercisesBlock", () => {
 
     const result = createExercisesBlockHandler({
       equipment: "ignored",
-    }).handleBlock(block, input, new Set(), {
+    })(block, input, new Set(), {
       earlierResults: [],
       blockPath: BLOCK_PATH,
     });
@@ -223,11 +223,5 @@ describe("exercisesHandler: handleExercisesBlock", () => {
       status: "prescribed",
       exercises: generatePrescribedReferences(["25"]),
     });
-  });
-
-  it("shares the used branches across the whole workout", () => {
-    expect(
-      createExercisesBlockHandler({ equipment: "required" }).usedBranchScope,
-    ).toBe("workout");
   });
 });

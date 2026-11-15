@@ -12,7 +12,7 @@ import {
 import { generateTaggedExercise } from "@test/factories/valueExercise";
 import { generateWorkoutInput } from "@test/factories/workoutInput";
 import { walkTemplateBlocks } from "../../stages/blockWalk";
-import { handlePicksBlock, PICKS_BLOCK_HANDLER } from "./picksHandler";
+import { handlePicksBlock } from "./picksHandler";
 
 // At ADVANCED, branch 1 resolves to its level 2 exercise e1x, as branch 3 does.
 const BAS_SKILL_TREES = {
@@ -168,7 +168,7 @@ describe("picksHandler: handlePicksBlock", () => {
       random: generateSequenceRandom([0, 0]),
     });
     const handlers = generateHandlerRegistry(undefined, {
-      picks: PICKS_BLOCK_HANDLER,
+      picks: handlePicksBlock,
     });
 
     const results = walkTemplateBlocks(template, input, handlers);
@@ -185,10 +185,5 @@ describe("picksHandler: handlePicksBlock", () => {
     expect(() =>
       handlePicksBlock(block, generateWorkoutInput(), new Set()),
     ).toThrow("Workout setup resolved no picks block for skill BAS");
-  });
-
-  it("shares the used branches across the whole workout", () => {
-    expect(PICKS_BLOCK_HANDLER.usedBranchScope).toBe("workout");
-    expect(PICKS_BLOCK_HANDLER.handleBlock).toBe(handlePicksBlock);
   });
 });

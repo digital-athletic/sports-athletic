@@ -5,7 +5,6 @@ import { getTagValues } from "@/utils/tagUtils";
 import { isEquipmentPartAvailable } from "../../ruleFamilies/equipmentAvailability";
 import type {
   BlockHandler,
-  BlockHandlerRegistry,
   PrescribedExerciseReference,
 } from "../../stages/blockWalk";
 
@@ -34,7 +33,19 @@ export interface ExercisesBlockRules {
   equipment: "required" | "ignored";
 }
 
-const createHandleExercisesBlock =
+/**
+ * Resolves the listed exercises from the exercise catalog in list order,
+ * whatever the athlete's level, branch levels or used branches. An unknown or
+ * duplicate exercise is a template error. Under the "required" equipment rule
+ * an exercise the place cannot equip throws NO_EXERCISES/EQUIPMENT with the
+ * missing equipment. No shortened list reaches the set list.
+ *
+ * createExercisesBlockHandler({ equipment: "required" })(
+ *   { kind: "exercises", skill: "TEST", exercises: ["25"] }, input, used,
+ *   { earlierResults: [], blockPath: "TEST.blocks[1]" })
+ * → { status: "prescribed", exercises: [{ source: "exercise", exerciseId: "25" }], usedBranchIds: [] }
+ */
+export const createExercisesBlockHandler =
   (rules: ExercisesBlockRules): BlockHandler<"exercises"> =>
   (block, input, _usedBranches, walk) => {
     const blockPath = walk?.blockPath ?? block.skill;
@@ -73,22 +84,3 @@ const createHandleExercisesBlock =
     );
     return { status: "prescribed", block, exercises, usedBranchIds: [] };
   };
-
-/**
- * Resolves the listed exercises from the exercise catalog in list order,
- * whatever the athlete's level, branch levels or used branches. An unknown or
- * duplicate exercise is a template error. Under the "required" equipment rule
- * an exercise the place cannot equip throws NO_EXERCISES/EQUIPMENT with the
- * missing equipment. No shortened list reaches the set list.
- *
- * createExercisesBlockHandler({ equipment: "required" }).handleBlock(
- *   { kind: "exercises", skill: "TEST", exercises: ["25"] }, input, used,
- *   { earlierResults: [], blockPath: "TEST.blocks[1]" })
- * → { status: "prescribed", exercises: [{ source: "exercise", exerciseId: "25" }], usedBranchIds: [] }
- */
-export const createExercisesBlockHandler = (
-  rules: ExercisesBlockRules,
-): BlockHandlerRegistry["exercises"] => ({
-  usedBranchScope: "workout",
-  handleBlock: createHandleExercisesBlock(rules),
-});

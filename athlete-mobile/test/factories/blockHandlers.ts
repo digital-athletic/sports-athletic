@@ -16,23 +16,20 @@ type HandleAnyBlock = (
 
 /**
  * Builds a block handler registry whose four handlers are the same function,
- * by default one that leaves every block empty. Picks, duration and exercises
- * blocks share their used branches across the workout, branches blocks start
- * empty. The overrides replace the handler of one kind.
+ * by default one that leaves every block empty. The overrides replace the
+ * handler of one kind.
  *
- * generateHandlerRegistry(handleBlock, { picks: PICKS_BLOCK_HANDLER })
- * → { picks: PICKS_BLOCK_HANDLER,
- *     branches: { usedBranchScope: "block", handleBlock },
- *     duration: { usedBranchScope: "workout", handleBlock },
- *     exercises: { usedBranchScope: "workout", handleBlock } }
+ * generateHandlerRegistry(handleBlock, { picks: handlePicksBlock })
+ * → { picks: handlePicksBlock, branches: handleBlock,
+ *     duration: handleBlock, exercises: handleBlock }
  */
 export const generateHandlerRegistry = (
   handleBlock: HandleAnyBlock = (block) => generateEmptyBlockResult(block),
   overrides: Partial<BlockHandlerRegistry> = {},
 ): BlockHandlerRegistry => ({
-  picks: { usedBranchScope: "workout", handleBlock },
-  branches: { usedBranchScope: "block", handleBlock },
-  duration: { usedBranchScope: "workout", handleBlock },
-  exercises: { usedBranchScope: "workout", handleBlock },
+  picks: handleBlock,
+  branches: handleBlock,
+  duration: handleBlock,
+  exercises: handleBlock,
   ...overrides,
 });

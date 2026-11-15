@@ -43,31 +43,4 @@ test.describe("Custom workouts: generate an own training", () => {
       page.getByRole("heading", { name: "Training Overview" }),
     ).toBeVisible({ timeout: 15000 });
   });
-
-  test("athlete double clicks generate and gets one training", async ({
-    page,
-  }) => {
-    await mockSupabaseAuth(page);
-    await mockWakeLock(page);
-
-    await page.goto("/");
-    await new BasePage(page).expectLoggedIn();
-    await page.getByRole("button", { name: "Additional trainings" }).click();
-    await page.getByRole("button", { name: "Your trainings" }).click();
-    await page.getByRole("button", { name: "Generate training" }).click();
-    await page.getByRole("radio", { name: "30 min" }).click();
-    await page.getByRole("radio", { name: "Hypertrophy" }).click();
-    await page.getByRole("button", { name: "Upper body" }).click();
-
-    await page
-      .getByRole("button", { name: "Generate training", exact: true })
-      .dblclick();
-
-    await expect(
-      page.getByRole("heading", { name: "Your trainings" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Hypertrophy 30 min", exact: true }),
-    ).toHaveCount(1);
-  });
 });

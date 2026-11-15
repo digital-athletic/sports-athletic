@@ -31,6 +31,11 @@ jest.mock("@/features/training/hooks/useTrainingGeneration", () => ({
 }));
 
 const mockAddEventListener = jest.spyOn(BackHandler, "addEventListener");
+const originalPlatform = Platform.OS;
+
+afterAll(() => {
+  Platform.OS = originalPlatform;
+});
 
 beforeEach(() => {
   mockFocusEffect = undefined;

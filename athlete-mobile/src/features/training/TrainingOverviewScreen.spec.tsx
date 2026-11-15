@@ -49,4 +49,19 @@ describe("TrainingOverviewScreen: start training", () => {
 
     expect(mockSetTrainingStartTime).toHaveBeenCalledTimes(1);
   });
+
+  it("pushes the training list route once for two presses on the checklist button", async () => {
+    await render(<TrainingOverviewScreen />);
+    const button = screen.getByRole("button", {
+      name: "Start without guidance",
+    });
+
+    await fireEvent.press(button);
+    await fireEvent.press(button);
+
+    expect(mockPush).toHaveBeenCalledTimes(1);
+    expect(mockPush).toHaveBeenCalledWith(
+      expect.objectContaining({ pathname: "/training/training-list" }),
+    );
+  });
 });

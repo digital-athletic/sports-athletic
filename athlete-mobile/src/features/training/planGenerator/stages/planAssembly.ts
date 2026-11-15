@@ -28,6 +28,9 @@ export interface AssembledSection {
 const MONDAY = 1;
 const DAYS_PER_WEEK = 7;
 const SECONDS_PER_MINUTE = 60;
+/** The AIWL header needs an id and a name; no screen shows either for a plan day. */
+const TRAINING_DAY_WORKOUT_ID_PREFIX = "TRAINING_DAY_";
+const TRAINING_DAY_WORKOUT_NAME = { en: "Training day" };
 
 /**
  * Finds the first Monday on or after a date.
@@ -104,8 +107,8 @@ const writeTrainingDay = (
   weekday: day.budget.day.weekday,
   workout: {
     aiwl: 1,
-    id: `TRAINING_DAY_${day.budget.day.weekday}`,
-    name: { en: "Training day" },
+    id: `${TRAINING_DAY_WORKOUT_ID_PREFIX}${day.budget.day.weekday}`,
+    name: { ...TRAINING_DAY_WORKOUT_NAME },
     blocks: writeTrainingDayBlocks(day),
   },
   focus: day.budget.day.focus,

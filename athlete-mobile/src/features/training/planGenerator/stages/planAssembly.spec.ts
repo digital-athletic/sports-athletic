@@ -345,6 +345,27 @@ describe("planAssembly: training day", () => {
     expect(training.workout.blocks[0]).toMatchObject({ duration });
   });
 
+  it("writes no duration for a skill whose minutes round to 0 seconds", () => {
+    const training = assembleSingleTrainingDay([
+      {
+        skill: "SWR1",
+        minutes: 0.001,
+        branches: [generateSelectedBranch("7", [])],
+      },
+    ]);
+
+    expect(training.workout.blocks[0]).not.toHaveProperty("duration");
+  });
+
+  it("writes no block for a skill whose selection holds no branch", () => {
+    const training = assembleSingleTrainingDay([
+      { skill: "MOB", minutes: 5, branches: [] },
+      { skill: "WU", minutes: 5, branches: [generateSelectedBranch("4", [])] },
+    ]);
+
+    expect(training.workout.blocks.map((block) => block.skill)).toEqual(["WU"]);
+  });
+
   it("writes no block for an empty skill", () => {
     const training = assembleSingleTrainingDay([
       { skill: "MOB", minutes: 5 },

@@ -14,8 +14,11 @@ const LocalizedTextSchema = v.objectWithRest(
 
 export const CountBySchema = v.picklist(["exercises", "entries", "pairs"]);
 export type CountBy = v.InferOutput<typeof CountBySchema>;
+// "none" adds the other side of a one-sided exercise; "singles" trains each
+// exercise alone, without its other side, in draw order.
 export const SupersetSchema = v.picklist([
   "none",
+  "singles",
   "muscles",
   "drawOrder",
   "drawOrderWithLeftovers",

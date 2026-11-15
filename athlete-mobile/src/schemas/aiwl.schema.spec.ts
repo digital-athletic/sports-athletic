@@ -188,14 +188,17 @@ describe("TemplateSchema: accepts", () => {
 });
 
 describe("TemplateSchema: accepts every setting value", () => {
-  it.each(["none", "muscles", "drawOrder", "drawOrderWithLeftovers"])(
-    "superset %s",
-    (superset) => {
-      expect(
-        v.safeParse(TemplateSchema, template(picksBlock({ superset }))).success,
-      ).toBe(true);
-    },
-  );
+  it.each([
+    "none",
+    "singles",
+    "muscles",
+    "drawOrder",
+    "drawOrderWithLeftovers",
+  ])("superset %s", (superset) => {
+    expect(
+      v.safeParse(TemplateSchema, template(picksBlock({ superset }))).success,
+    ).toBe(true);
+  });
 
   it.each(["exercises", "entries", "pairs"])("countBy %s", (countBy) => {
     expect(

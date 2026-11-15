@@ -19,7 +19,6 @@ const throwUnreachableShortWorkoutBlock = (): never => {
 
 const CATALOG_BRANCHES_HANDLER = createBranchesBlockHandler(
   lookUpStoredBranchInCatalog,
-  "drop",
 );
 
 // requireSupportedTemplateBlocks rejects exercises blocks and duration blocks

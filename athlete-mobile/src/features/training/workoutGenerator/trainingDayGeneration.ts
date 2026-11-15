@@ -49,15 +49,12 @@ const createLegacyTrainingHandlers = (
   training: StoredTrainingDay,
 ): BlockHandlerRegistry =>
   createTrainingDayHandlers(
-    createBranchesBlockHandler(
-      createStoredDayBranchLookup(training.skills),
-      "drop",
-    ),
+    createBranchesBlockHandler(createStoredDayBranchLookup(training.skills)),
   );
 
-// An AIWL training reads the catalog and replaces a branch the catalog lacks.
+// An AIWL training reads the catalog.
 const AIWL_TRAINING_HANDLERS = createTrainingDayHandlers(
-  createBranchesBlockHandler(lookUpStoredBranchInCatalog, "replace"),
+  createBranchesBlockHandler(lookUpStoredBranchInCatalog),
 );
 
 // Stable; a skill missing from SECTION_ORDER has index -1 and sorts first.

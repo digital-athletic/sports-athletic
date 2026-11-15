@@ -229,7 +229,7 @@ A plan training may already store the target shape, an AIWL training. `generateT
 
 1. The training day selection returns the workout of an AIWL training, validated against the AIWL schema. The exercise swap hook generates through the same function.
 2. `generateTrainingDay` sorts the blocks of both shapes once by section order, stable, with a skill outside the section order first. The plan generator writes an AIWL day in the skill priority order of its budget, so the AIWL shape needs the sort too. `createStoredDayWorkout` keeps the stored order.
-3. The branches handler takes a missing branch rule. Under `"replace"`, the AIWL training rule, each distinct branch ID the catalog lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. Legacy trainings and short workouts keep the `"drop"` rule.
+3. Every workout has one missing branch rule: each distinct branch ID the lookup lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. The saved copies of a legacy training hold every branch ID its stored day workout lists, so a legacy training never misses one.
 4. An AIWL training holds branches blocks only. The other handlers throw.
 
 The plan features outside the generator read both shapes. `readPlannedBranches` returns the copied branches of a legacy training, and for an AIWL training the catalog branches of its branch IDs. Every feature skips a branch ID the catalog lacks, because the generator replaces it at run time.
@@ -270,6 +270,7 @@ The router sends every strength test to this source. Compared with the deleted o
 ### Behaviour changes
 
 1. A short workout whose branches block loses every listed branch to pain, age group or gender trains replacement branches of the same skill. Before, the deleted template branch restriction threw the rule's `NO_EXERCISES` error. A cardio duration block whose tree pain blocks in full swaps to the CARDIO_5 run instead of throwing.
+2. A short workout branches block that lists a branch ID the catalog lacks trains a replacement of the same skill. The short workout dropped that slot before.
 
 For an old plan whose stored skills are out of section order, the plan day sort changes two results. We accept both:
 

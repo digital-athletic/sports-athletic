@@ -325,6 +325,28 @@ describe("shortWorkoutGeneration: generateShortWorkoutFromTemplate", () => {
     expect(listTrainedExercises(setList)).toEqual(["e2"]);
   });
 
+  it("trains a replacement branch of the same skill for a branch ID the catalog lacks", () => {
+    // no skill tree holds the branch ID 900001
+    const skillTrees = {
+      MOB: { "2": generateLowerBodyBranch({ 1: { exerciseId: "e2" } }) },
+    };
+    const template = generateShortTemplate([
+      generateUntimedBranchesBlock("MOB", { branches: ["900001"] }),
+    ]);
+
+    const setList = generateShortWorkoutFromTemplate(
+      template,
+      generateRuleFamilyInput({
+        exerciseCatalog: generateLowerBodyExercises(["e2"]),
+        skillTrees,
+        random: () => 0,
+      }),
+      skillTrees,
+    );
+
+    expect(listTrainedExercises(setList)).toEqual(["e2"]);
+  });
+
   it("runs a cardio branches block that sets only its duration", () => {
     const template = generateShortTemplate([
       {

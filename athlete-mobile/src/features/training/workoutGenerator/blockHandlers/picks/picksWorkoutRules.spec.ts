@@ -97,6 +97,122 @@ describe("picksWorkoutRules: filterPoolByPicksWorkoutRules", () => {
       }),
     );
   });
+
+  it("keeps a branch blocked by knee pain when the pain rule is ignored", () => {
+    const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
+    const pool = {
+      "1": generateTreeBranch(["e1"], ["BLOCK_KNEE"]),
+      "2": generateTreeBranch(["e2"]),
+    };
+
+    const keep = filterPoolByPicksWorkoutRules(pool, input, {
+      pain: "ignored",
+      equipment: "applied",
+    });
+
+    expect(Object.keys(keep)).toEqual(["1", "2"]);
+  });
+
+  it("throws no pain error when the pain rule is ignored and pain empties the pool", () => {
+    const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
+    const pool = { "1": generateTreeBranch(["e1"], ["BLOCK_KNEE"]) };
+
+    expect(() =>
+      filterPoolByPicksWorkoutRules(pool, input, {
+        pain: "ignored",
+        equipment: "applied",
+      }),
+    ).not.toThrow();
+  });
+
+  it("throws the pain error when only the equipment rule is ignored and pain empties the pool", () => {
+    const input = generateRuleFamilyInput({ pains: ["KNEE_LEFT"] });
+    const pool = { "1": generateTreeBranch(["e1"], ["BLOCK_KNEE"]) };
+
+    expect(() =>
+      filterPoolByPicksWorkoutRules(pool, input, {
+        pain: "applied",
+        equipment: "ignored",
+      }),
+    ).toThrow(
+      expect.objectContaining({
+        type: "NO_EXERCISES",
+        subtype: "PAIN",
+        params: ["KNEE"],
+      }),
+    );
+  });
+
+  it("keeps a branch that needs missing equipment when the equipment rule is ignored", () => {
+    const input = generateRuleFamilyInput({ equipment: [] });
+    const pool = {
+      "1": generateTreeBranch(["e1"], ["EQ_DUMBBELL"]),
+      "2": generateTreeBranch(["e2"]),
+    };
+
+    const keep = filterPoolByPicksWorkoutRules(pool, input, {
+      pain: "applied",
+      equipment: "ignored",
+    });
+
+    expect(Object.keys(keep)).toEqual(["1", "2"]);
+  });
+
+  it("throws no equipment error when the equipment rule is ignored and equipment empties the pool", () => {
+    const input = generateRuleFamilyInput({ equipment: [] });
+    const pool = { "1": generateTreeBranch(["e1"], ["EQ_DUMBBELL"]) };
+
+    expect(() =>
+      filterPoolByPicksWorkoutRules(pool, input, {
+        pain: "applied",
+        equipment: "ignored",
+      }),
+    ).not.toThrow();
+  });
+
+  it("throws the age error when pain and equipment are ignored and age empties the pool", () => {
+    const input = generateRuleFamilyInput({ birthday: CHILD_BIRTHDAY });
+    const pool = generateSkillTreeBranches("GKS", ["510"]);
+
+    expect(() =>
+      filterPoolByPicksWorkoutRules(pool, input, {
+        pain: "ignored",
+        equipment: "ignored",
+      }),
+    ).toThrow(
+      expect.objectContaining({
+        type: "NO_EXERCISES",
+        subtype: "AGE",
+        params: [],
+      }),
+    );
+  });
+
+  it("throws the gender error when pain and equipment are ignored and gender empties the pool", () => {
+    const input = generateRuleFamilyInput({
+      gender: "FEMALE",
+      pains: ["KNEE_LEFT"],
+    });
+    const pool = {
+      "1": generateTreeBranch(
+        ["e1"],
+        ["BLOCK_KNEE", "EQ_DUMBBELL", "GENDER_MALE"],
+      ),
+    };
+
+    expect(() =>
+      filterPoolByPicksWorkoutRules(pool, input, {
+        pain: "ignored",
+        equipment: "ignored",
+      }),
+    ).toThrow(
+      expect.objectContaining({
+        type: "NO_EXERCISES",
+        subtype: "GENDER",
+        params: [],
+      }),
+    );
+  });
 });
 
 describe("picksWorkoutRules: resolvePicksWorkout", () => {
@@ -165,6 +281,20 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
         params: ["KNEE"],
       }),
     );
+  });
+
+  it("keeps the pain blocked branch in the pool when the rules ignore pain", () => {
+    const template = generateShortTemplate([generatePicksBlock("BAS")]);
+    const input = generateLeveledInput({ pains: ["KNEE_LEFT"] });
+
+    const picksWorkout = resolvePicksWorkout(
+      template,
+      input,
+      generateKneeSkillTrees(),
+      { pain: "ignored", equipment: "ignored" },
+    );
+
+    expect(Object.keys(picksWorkout.pool)).toEqual(["1"]);
   });
 
   it("maps each picks block to its resolved block and gives a branches block no entry", () => {

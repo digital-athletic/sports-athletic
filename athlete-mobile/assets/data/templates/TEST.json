@@ -7,11 +7,13 @@
       "kind": "picks",
       "skill": "WU",
       "picks": [
-        { "tags": ["LOWER_BODY"], "count": 1 },
-        { "tags": ["FULL_BODY"], "count": 1 },
-        { "tags": ["UPPER_BODY"], "count": 1 },
+        { "tags": ["REGION_LOWER_BODY"], "count": 1 },
+        { "tags": ["REGION_FULL_BODY"], "count": 1 },
+        { "tags": ["REGION_UPPER_BODY"], "count": 1 },
         { "tags": [], "count": 2 }
       ],
+      "countBy": "exercises",
+      "fallbackToWholeTree": true,
       "sets": 1,
       "superset": "none",
       "setDuration": 60,

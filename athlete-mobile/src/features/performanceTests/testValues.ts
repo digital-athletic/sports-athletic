@@ -37,13 +37,6 @@ export function sortNewestFirst(
   return [...values].reverse().sort((a, b) => b.date.localeCompare(a.date));
 }
 
-export function latestValue(
-  values: PerformanceTestValue[],
-): PerformanceTestValue | null {
-  const [newest] = sortNewestFirst(values);
-  return newest ?? null;
-}
-
 /** The values entered for the test with the code in the sport, in stored order. */
 export function valuesOfTest(
   values: PerformanceTestValue[],
@@ -67,8 +60,8 @@ export function latestResult(
   athlete: AthleteProfile,
   values: PerformanceTestValue[],
 ): LatestResult | null {
-  const latest = latestValue(values);
-  if (latest === null) return null;
+  const [latest] = sortNewestFirst(values);
+  if (latest === undefined) return null;
 
   const range = referenceRangeOnDate(test, athlete, latest.date);
   return {

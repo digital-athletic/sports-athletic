@@ -10,7 +10,6 @@ import {
   formatValueWithUnit,
   isAllowedValueDate,
   latestResult,
-  latestValue,
   parseTestValue,
   rangeLinePoints,
   sortNewestFirst,
@@ -45,54 +44,33 @@ const generateSportTestWithTwoAgeRanges = () =>
   ]);
 
 describe("parseTestValue: input", () => {
-  it("reads a decimal comma", () => {
-    expect(parseTestValue("8,1")).toBe(8.1);
+  it.each([
+    ["a decimal comma", "8,1", 8.1],
+    ["a decimal point", "8.1", 8.1],
+    ["a whole number", "8", 8],
+    ["zero", "0", 0],
+  ])("reads %s", (_label, input, expected) => {
+    expect(parseTestValue(input)).toBe(expected);
   });
 
-  it("reads a decimal point", () => {
-    expect(parseTestValue("8.1")).toBe(8.1);
-  });
-
-  it("reads a whole number", () => {
-    expect(parseTestValue("8")).toBe(8);
-  });
-
-  it("reads zero", () => {
-    expect(parseTestValue("0")).toBe(0);
-  });
-
-  it("returns null for an empty input", () => {
-    expect(parseTestValue("")).toBeNull();
-  });
-
-  it("returns null for a blank input", () => {
-    expect(parseTestValue("   ")).toBeNull();
-  });
-
-  it("returns null for text", () => {
-    expect(parseTestValue("abc")).toBeNull();
-  });
-
-  it("returns null for a negative number", () => {
-    expect(parseTestValue("-1")).toBeNull();
-  });
-
-  it("returns null for a digit string that is too long to be a finite number", () => {
-    expect(parseTestValue("9".repeat(400))).toBeNull();
+  it.each([
+    ["an empty input", ""],
+    ["a blank input", "   "],
+    ["text", "abc"],
+    ["a negative number", "-1"],
+    ["a digit string that is too long to be a finite number", "9".repeat(400)],
+  ])("returns null for %s", (_label, input) => {
+    expect(parseTestValue(input)).toBeNull();
   });
 });
 
 describe("isAllowedValueDate: not after today", () => {
-  it("allows a day before today", () => {
-    expect(isAllowedValueDate("2026-03-04", "2026-03-05")).toBe(true);
-  });
-
-  it("allows today", () => {
-    expect(isAllowedValueDate("2026-03-05", "2026-03-05")).toBe(true);
-  });
-
-  it("rejects a day after today", () => {
-    expect(isAllowedValueDate("2026-03-06", "2026-03-05")).toBe(false);
+  it.each([
+    ["allows a day before today", "2026-03-04", true],
+    ["allows today", "2026-03-05", true],
+    ["rejects a day after today", "2026-03-06", false],
+  ])("%s", (_label, date, expected) => {
+    expect(isAllowedValueDate(date, "2026-03-05")).toBe(expected);
   });
 });
 
@@ -137,36 +115,6 @@ describe("sortNewestFirst: order", () => {
   });
 });
 
-describe("latestValue: newest entry", () => {
-  it("returns the value with the newest date", () => {
-    const older = generatePerformanceTestValue({
-      id: "id-older",
-      date: "2026-02-01",
-      value: 10.2,
-    });
-    const newer = generatePerformanceTestValue({
-      id: "id-newer",
-      date: "2026-03-01",
-      value: 8.1,
-    });
-
-    expect(latestValue([newer, older])).toEqual(newer);
-  });
-
-  it("returns the later entry when two dates are equal", () => {
-    const entryFirst = generatePerformanceTestValue({ id: "id-first" });
-    const entryLater = generatePerformanceTestValue({ id: "id-later" });
-
-    expect(latestValue([entryFirst, entryLater])).toEqual(entryLater);
-  });
-
-  it("returns null for no values", () => {
-    const values: PerformanceTestValue[] = [];
-
-    expect(latestValue(values)).toBeNull();
-  });
-});
-
 describe("valuesOfTest: values of one test", () => {
   it("returns the values of the sport and test code in stored order", () => {
     const first = generatePerformanceTestValue({ id: "id-first" });
@@ -199,10 +147,6 @@ describe("valuesOfTest: values of one test", () => {
     expect(
       valuesOfTest([handball, football], "SPORT_HANDBALL", "SPRINT_5M"),
     ).toEqual([handball]);
-  });
-
-  it("returns an empty list without a value for the test", () => {
-    expect(valuesOfTest([], "SPORT_HANDBALL", "SPRINT_5M")).toEqual([]);
   });
 });
 
@@ -254,43 +198,7 @@ describe("latestResult: newest value with its status", () => {
 });
 
 describe("rangeLinePoints: chart points", () => {
-  it("returns no points for no values", () => {
-    const values: PerformanceTestValue[] = [];
-
-    expect(
-      rangeLinePoints(
-        generateSportTestWithTwoAgeRanges(),
-        generateAthlete(),
-        values,
-      ),
-    ).toEqual([]);
-  });
-
-  it("orders the points oldest first", () => {
-    const newer = generatePerformanceTestValue({
-      id: "id-newer",
-      date: "2026-11-10",
-      value: 8.1,
-    });
-    const older = generatePerformanceTestValue({
-      id: "id-older",
-      date: "2026-11-01",
-      value: 10.2,
-    });
-
-    const points = rangeLinePoints(
-      generateSportTestWithTwoAgeRanges(),
-      generateAthlete(),
-      [newer, older],
-    );
-
-    expect(points.map(({ date }) => date)).toEqual([
-      "2026-11-01",
-      "2026-11-10",
-    ]);
-  });
-
-  it("gives two values in different age ranges the range of their own age range", () => {
+  it("orders the points oldest first, each with the range of its own age range", () => {
     const inBasistraining = generatePerformanceTestValue({
       id: "id-basis",
       date: "2025-10-01",

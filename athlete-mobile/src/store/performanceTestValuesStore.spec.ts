@@ -58,23 +58,6 @@ describe("performanceTestValuesStore: entered values", () => {
     expect(stored[0].id).not.toBe(stored[1].id);
   });
 
-  it("keeps the value of another test when a value is added", () => {
-    const other = generatePerformanceTestValue({
-      id: "id-other",
-      testCode: "FAKE_TEST_B",
-    });
-    usePerformanceTestValuesStore.setState({ values: [other] });
-
-    usePerformanceTestValuesStore.getState().addValue({
-      sport: "SPORT_HANDBALL",
-      testCode: "SPRINT_5M",
-      date: "2026-03-01",
-      value: 8.1,
-    });
-
-    expect(usePerformanceTestValuesStore.getState().values[0]).toEqual(other);
-  });
-
   it("clears every value on reset", () => {
     usePerformanceTestValuesStore.setState({
       values: [

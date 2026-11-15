@@ -5,7 +5,7 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { TrainingType } from "@/features/training/models/Training";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
-import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
+import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
 import {
   generateSetList,
   type SelectedWorkout,
@@ -61,36 +61,35 @@ const selectShortWorkout = (type: TrainingType): SelectedWorkout => {
   return { workout: template, lookUpBranch: lookUpStoredBranchInCatalog };
 };
 
-const selectWorkout = (type: TrainingType): SelectedWorkout => {
-  if (type === "TEST_WORKOUT") {
+const selectWorkout = (request: WorkoutGenerationRequest): SelectedWorkout => {
+  if (request.type === "TEST_WORKOUT") {
     return {
       workout: loadStrengthTestTemplate(),
       lookUpBranch: lookUpStoredBranchInCatalog,
     };
   }
-  return selectShortWorkout(type);
-};
-
-/**
- * Picks the AIWL entry point per training type: a plan training day, or the
- * strength test or a short workout from its template through the one entry
- * point.
- */
-export const generateWorkout = (
-  request: WorkoutGenerationRequest,
-): GeneratedSetListEntry[] => {
   if (request.type === "PLAN") {
-    return generateTrainingDay(
+    return readTrainingDayWorkout(
       selectStoredTrainingDay(
         request.user,
         request.weekday,
         request.givenSection,
         request.daysSinceLastWorkout,
       ),
-      createInput(request),
     );
   }
-  const { workout, lookUpBranch } = selectWorkout(request.type);
+  return selectShortWorkout(request.type);
+};
+
+/**
+ * Selects the workout and the branch lookup per training type, then
+ * generates its set list through the one entry point: the strength test, a
+ * plan training day, or a short workout from its template.
+ */
+export const generateWorkout = (
+  request: WorkoutGenerationRequest,
+): GeneratedSetListEntry[] => {
+  const { workout, lookUpBranch } = selectWorkout(request);
   return generateSetList(workout, lookUpBranch, createInput(request), {
     skillTrees: request.skillTrees,
   });

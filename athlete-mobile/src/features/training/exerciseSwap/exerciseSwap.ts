@@ -8,7 +8,7 @@ import type { StoredTrainingDay } from "../workoutGenerator/storedDayWorkout";
 import {
   isAiwlTrainingDay,
   type TrainingDay,
-} from "../workoutGenerator/trainingDayGeneration";
+} from "../workoutGenerator/trainingDayWorkout";
 
 export interface ExerciseSwapState {
   skill: string;

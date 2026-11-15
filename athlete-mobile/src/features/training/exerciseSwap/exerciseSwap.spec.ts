@@ -5,7 +5,8 @@ import type { UserExerciseDataType } from "@/features/training/models/UserExerci
 import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import { DEFAULT_PICKS_POOL_RULES } from "@/features/training/workoutGenerator/blockHandlers/picks/picksWorkoutRules";
 import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
-import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
+import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
+import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
 import { toUserExerciseData } from "@/schemas/generator.schema";
 import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateLowerBodyBranch } from "@test/factories/skillTree";
@@ -381,9 +382,12 @@ describe("exerciseSwap: swap in an AIWL training day, then generate the day", ()
   ];
 
   it("trains the swapped branch in the session and in the generated day", () => {
-    const session = generateTrainingDay(day, generateInput()).map(
-      toUserExerciseData,
-    );
+    const dayWorkout = readTrainingDayWorkout(day);
+    const session = generateSetList(
+      dayWorkout.workout,
+      dayWorkout.lookUpBranch,
+      generateInput(),
+    ).map(toUserExerciseData);
     expect(listSwappableBranches(session, day)).toContainEqual({
       branchId: "510",
       skill: "GKS",
@@ -401,11 +405,16 @@ describe("exerciseSwap: swap in an AIWL training day, then generate the day", ()
       setUpWorkout(generateInput(), DEFAULT_PICKS_POOL_RULES),
     );
     expect(alternatives.length).toBeGreaterThan(0);
-    const generateSwappedDay = (alternative: StoredBranch) =>
-      generateTrainingDay(
+    const generateSwappedDay = (alternative: StoredBranch) => {
+      const swappedDay = readTrainingDayWorkout(
         swapBranchInTrainingDay(day, "GKS", "510", alternative),
+      );
+      return generateSetList(
+        swappedDay.workout,
+        swappedDay.lookUpBranch,
         generateInput(),
       );
+    };
 
     const next = findNextSwap({
       session,

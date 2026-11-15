@@ -6,7 +6,7 @@ import {
   createAiwlPlan,
   createAiwlTraining,
 } from "@/features/training/utils/testFixtures";
-import { isAiwlTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
+import { isAiwlTrainingDay } from "@/features/training/workoutGenerator/trainingDayWorkout";
 import { selectStoredTrainingDay } from "./storedTrainingDaySelection";
 
 /** Selects the day of a legacy plan; fails the test for an AIWL training. */

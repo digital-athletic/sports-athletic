@@ -1,29 +1,24 @@
 import { loadExercises } from "@/data/loadExercises";
 import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
-import {
-  describeSetListEntries,
-  listTrainedSkills,
-} from "@test/factories/setListDescription";
+import { describeSetListEntries } from "@test/factories/setListDescription";
 import { generateStoredDayEntry } from "@test/factories/storedBranch";
 import { generateStoredTrainingDay } from "@test/factories/storedTrainingDay";
 import {
   generateBranchesBlock,
-  generatePicksBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { toExerciseBranch } from "@/features/training/exerciseSwap/exerciseSwap";
 import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
+import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import type { GenerationInput } from "./generationInput/generationInput";
-import {
-  generateTrainingDay,
-  generateTrainingDayFromStoredDay,
-} from "./trainingDayGeneration";
+import { readTrainingDayWorkout } from "./trainingDayWorkout";
+import { generateSetList } from "./workoutGeneration";
 
 const exerciseCatalog = loadExercises();
 
-describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () => {
+describe("trainingDayWorkout: set list of an AIWL training", () => {
   // the place holds weights, so GKS replaces from its own tree
   const generateInput = (): GenerationInput =>
     generateGenerationInput({
@@ -48,8 +43,9 @@ describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () =>
 
   it("generates its blocks with their durations and replaces a removed branch ID from the same skill", () => {
     const input = generateInput();
+    const day = readTrainingDayWorkout(workout);
 
-    const setList = generateTrainingDay(workout, input);
+    const setList = generateSetList(day.workout, day.lookUpBranch, input);
 
     expect([...new Set(setList.map(({ skill }) => skill))]).toEqual([
       "GKS",
@@ -80,15 +76,17 @@ describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () =>
         .map(({ branchId, duration }) => [branchId, duration]),
     ).toEqual([["576", 1500]]);
     // a legacy training of the same branches and minutes times the GKS block alike
+    const legacyDay = readTrainingDayWorkout({
+      skills: {
+        GKS: copyCatalogBranches(input, ["510", replacement ?? ""]),
+        CARDIO_5: copyCatalogBranches(input, ["576"]),
+      },
+      lengths: { GKS: 10, CARDIO_5: 25 },
+    });
     expect(setList).toEqual(
-      generateTrainingDayFromStoredDay(
-        {
-          skills: {
-            GKS: copyCatalogBranches(input, ["510", replacement ?? ""]),
-            CARDIO_5: copyCatalogBranches(input, ["576"]),
-          },
-          lengths: { GKS: 10, CARDIO_5: 25 },
-        },
+      generateSetList(
+        legacyDay.workout,
+        legacyDay.lookUpBranch,
         generateInput(),
       ),
     );
@@ -96,10 +94,15 @@ describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () =>
 
   it("reads its branches from the catalog, not from a stored copy", () => {
     // the catalog trains exercise 39 on branch 576
-    const setList = generateTrainingDay(
+    const day = readTrainingDayWorkout(
       generateTemplate([
         generateBranchesBlock("CARDIO_5", ["576"], { duration: 1500 }),
       ]),
+    );
+
+    const setList = generateSetList(
+      day.workout,
+      day.lookUpBranch,
       generateInput(),
     );
 
@@ -113,88 +116,85 @@ describe("trainingDayGeneration: generateTrainingDay of an AIWL training", () =>
       },
     ]);
   });
+});
 
-  it("runs its blocks in section order whatever order the day stores", () => {
-    // the plan generator writes an AIWL day in skill priority order
-    const setList = generateTrainingDay(
-      generateTemplate([
-        generateBranchesBlock("CARDIO_5", ["576"], { duration: 1500 }),
-        generateBranchesBlock("WU", ["410"], { duration: 300 }),
-      ]),
-      generateInput(),
-    );
+describe("trainingDayWorkout: readTrainingDayWorkout of an AIWL day", () => {
+  // Blocks in the skill priority order the plan generator writes: SWR1, MOB, WU.
+  // generateUnsortedAiwlDay() → { aiwl: 1, id: "day", blocks: [SWR1 block, MOB block, WU block], ... }
+  const generateUnsortedAiwlDay = () =>
+    generateTemplate([
+      generateBranchesBlock("SWR1", ["1"]),
+      generateBranchesBlock("MOB", ["2"]),
+      generateBranchesBlock("WU", ["3"]),
+    ]);
 
-    expect([...new Set(listTrainedSkills(setList))]).toEqual([
+  it("returns the blocks of the day sorted by section order", () => {
+    const { workout } = readTrainingDayWorkout(generateUnsortedAiwlDay());
+
+    expect(workout.blocks.map(({ skill }) => skill)).toEqual([
+      "MOB",
       "WU",
-      "CARDIO_5",
+      "SWR1",
     ]);
   });
 
-  it("throws for a block of another kind than branches", () => {
-    expect(() =>
-      generateTrainingDay(
-        generateTemplate([generatePicksBlock("WU")]),
-        generateInput(),
-      ),
-    ).toThrow("A training day runs branches blocks only");
-  });
+  it("returns the catalog lookup for the branches of the day", () => {
+    const { lookUpBranch } = readTrainingDayWorkout(generateUnsortedAiwlDay());
 
-  it("throws the anamnesis error for an athlete without workout data", () => {
-    const thrown = catchThrownValue(() =>
-      generateTrainingDay(
-        workout,
-        generateGenerationInput({ exerciseCatalog, withoutWorkoutData: true }),
-      ),
-    );
-
-    expect(thrown).toEqual({
-      type: "NO_ANAMNESIS",
-      subtype: "MISSING_WORKOUT_DATA",
-      params: [],
-    });
+    expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
   });
 });
 
-describe("trainingDayGeneration: generateTrainingDay of a legacy training", () => {
-  it("generates the set list of the stored day", () => {
-    const day = generateStoredTrainingDay(
-      { CARDIO_5: ["900001"] },
-      { CARDIO_5: 25 },
-      "721",
-    );
-    const generateInput = () =>
-      generateGenerationInput({ exerciseCatalog, random: () => 0 });
-
-    expect(generateTrainingDay(day, generateInput())).toEqual(
-      generateTrainingDayFromStoredDay(day, generateInput()),
-    );
-  });
-
-  it("runs the stored skills in section order whatever their key order", () => {
-    // a stored day in the key order CD, WU, MAX
-    const day = generateStoredTrainingDay(
+describe("trainingDayWorkout: readTrainingDayWorkout of a legacy day", () => {
+  // A stored day in the key order CD, WU, MAX.
+  // generateUnsortedLegacyDay() → { skills: { CD: [entry 498], WU: [entry 410], MAX: [entry 520] }, lengths: { CD: 5, WU: 5, MAX: 10 } }
+  const generateUnsortedLegacyDay = () =>
+    generateStoredTrainingDay(
       { CD: ["498"], WU: ["410"], MAX: ["520"] },
       { CD: 5, WU: 5, MAX: 10 },
     );
 
-    const setList = generateTrainingDay(
-      day,
-      generateGenerationInput({ exerciseCatalog, random: () => 0 }),
+  it("returns the stored day workout with its blocks sorted by section order", () => {
+    const { workout } = readTrainingDayWorkout(generateUnsortedLegacyDay());
+
+    expect(workout.blocks.map(({ kind, skill }) => [kind, skill])).toEqual([
+      ["branches", "WU"],
+      ["branches", "MAX"],
+      ["branches", "CD"],
+    ]);
+  });
+
+  it("returns a lookup that reads the saved copy of the day", () => {
+    const day = generateUnsortedLegacyDay();
+
+    const { lookUpBranch } = readTrainingDayWorkout(day);
+
+    expect(
+      lookUpBranch("WU", "410", generateGenerationInput({ exerciseCatalog })),
+    ).toEqual(day.skills.WU?.[0]);
+  });
+
+  it("returns a lookup that reads no branch of the catalog the day did not save", () => {
+    const { lookUpBranch } = readTrainingDayWorkout(
+      generateUnsortedLegacyDay(),
     );
 
-    expect([...new Set(listTrainedSkills(setList))]).toEqual([
-      "WU",
-      "MAX",
-      "CD",
-    ]);
+    expect(
+      lookUpBranch("GKS", "510", generateGenerationInput({ exerciseCatalog })),
+    ).toBeUndefined();
   });
 });
 
-describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
+describe("trainingDayWorkout: set list of a legacy training", () => {
   it("generates from the branch snapshot the stored day holds, not from the catalog", () => {
     // the catalog trains exercise 39 on branch 576; the stored day trains 721
-    const setList = generateTrainingDayFromStoredDay(
+    const day = readTrainingDayWorkout(
       generateStoredTrainingDay({ CARDIO_5: ["576"] }, { CARDIO_5: 25 }, "721"),
+    );
+
+    const setList = generateSetList(
+      day.workout,
+      day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
     );
 
@@ -211,12 +211,17 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
 
   it("generates a branch the catalog removed from the stored day entry", () => {
     // no skill tree holds the branch ID 900001
-    const setList = generateTrainingDayFromStoredDay(
+    const day = readTrainingDayWorkout(
       generateStoredTrainingDay(
         { CARDIO_5: ["900001"] },
         { CARDIO_5: 25 },
         "721",
       ),
+    );
+
+    const setList = generateSetList(
+      day.workout,
+      day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
     );
 
@@ -232,12 +237,17 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
   });
 
   it("runs fractional stored minutes as the same number of seconds", () => {
-    const setList = generateTrainingDayFromStoredDay(
+    const day = readTrainingDayWorkout(
       generateStoredTrainingDay(
         { CARDIO_5: ["576"] },
         { CARDIO_5: 12.5 },
         "721",
       ),
+    );
+
+    const setList = generateSetList(
+      day.workout,
+      day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
     );
 
@@ -246,12 +256,17 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
 
   // the old generator runs stored minutes times 60 without rounding
   it("runs 0.01 stored minutes as 0.6 seconds like the old generator", () => {
-    const setList = generateTrainingDayFromStoredDay(
+    const day = readTrainingDayWorkout(
       generateStoredTrainingDay(
         { CARDIO_5: ["576"] },
         { CARDIO_5: 0.01 },
         "721",
       ),
+    );
+
+    const setList = generateSetList(
+      day.workout,
+      day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
     );
 
@@ -259,12 +274,17 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
   });
 
   it("drops a skill without branches when another skill fills the day", () => {
-    const setList = generateTrainingDayFromStoredDay(
+    const day = readTrainingDayWorkout(
       generateStoredTrainingDay(
         { WU: [], CARDIO_5: ["576"] },
         { WU: 5, CARDIO_5: 25 },
         "721",
       ),
+    );
+
+    const setList = generateSetList(
+      day.workout,
+      day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
     );
 
@@ -280,8 +300,13 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
   });
 
   it("swaps a cardio skill that lower body soreness blocks for CARDIO_5 of at most 20 minutes", () => {
-    const setList = generateTrainingDayFromStoredDay(
+    const day = readTrainingDayWorkout(
       generateStoredTrainingDay({ CARDIO_3: ["580"] }, { CARDIO_3: 30 }, "721"),
+    );
+
+    const setList = generateSetList(
+      day.workout,
+      day.lookUpBranch,
       generateGenerationInput({
         exerciseCatalog,
         soreMuscles: ["QUADRICEPS"],
@@ -301,18 +326,28 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
   });
 
   it("returns an empty set list for a day without skills", () => {
+    const day = readTrainingDayWorkout(
+      generateStoredTrainingDay({}, { BR: 5 }),
+    );
+
     expect(
-      generateTrainingDayFromStoredDay(
-        generateStoredTrainingDay({}, { BR: 5 }),
+      generateSetList(
+        day.workout,
+        day.lookUpBranch,
         generateGenerationInput({ exerciseCatalog }),
       ),
     ).toEqual([]);
   });
 
   it("throws the equipment error when the only skill holds no branch", () => {
+    const day = readTrainingDayWorkout(
+      generateStoredTrainingDay({ WU: [] }, { WU: 5 }),
+    );
+
     const thrown = catchThrownValue(() =>
-      generateTrainingDayFromStoredDay(
-        generateStoredTrainingDay({ WU: [] }, { WU: 5 }),
+      generateSetList(
+        day.workout,
+        day.lookUpBranch,
         generateGenerationInput({ exerciseCatalog }),
       ),
     );
@@ -327,37 +362,40 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
   // Pins the bundled exercises and skill catalog: a data change fails this
   // case without a logic regression.
   it("keeps the exercises, sets and rests of a mixed training day", () => {
-    const setList = generateTrainingDayFromStoredDay(
-      {
-        skills: {
-          WU: [
-            generateStoredDayEntry("w1", [], "4"),
-            generateStoredDayEntry("w2", [], "21"),
-          ],
-          BAS: [
-            generateStoredDayEntry("b1", [], "1"),
-            generateStoredDayEntry("b2", [], "23"),
-          ],
-          GKS: [
-            generateStoredDayEntry("g1", [], "25"),
-            generateStoredDayEntry("g2", [], "9"),
-          ],
-          PLYO: [
-            generateStoredDayEntry("p1", [], "44"),
-            generateStoredDayEntry("p2", [], "45"),
-          ],
-          MAX: [
-            generateStoredDayEntry("m1", [], "8"),
-            generateStoredDayEntry("m2", [], "27"),
-          ],
-          CARDIO_2: [
-            generateStoredDayEntry("c1", [], "38"),
-            generateStoredDayEntry("c2", [], "39"),
-          ],
-          CD: [generateStoredDayEntry("d1", [], "58")],
-        },
-        lengths: { CARDIO_2: 20 },
+    const day = readTrainingDayWorkout({
+      skills: {
+        WU: [
+          generateStoredDayEntry("w1", [], "4"),
+          generateStoredDayEntry("w2", [], "21"),
+        ],
+        BAS: [
+          generateStoredDayEntry("b1", [], "1"),
+          generateStoredDayEntry("b2", [], "23"),
+        ],
+        GKS: [
+          generateStoredDayEntry("g1", [], "25"),
+          generateStoredDayEntry("g2", [], "9"),
+        ],
+        PLYO: [
+          generateStoredDayEntry("p1", [], "44"),
+          generateStoredDayEntry("p2", [], "45"),
+        ],
+        MAX: [
+          generateStoredDayEntry("m1", [], "8"),
+          generateStoredDayEntry("m2", [], "27"),
+        ],
+        CARDIO_2: [
+          generateStoredDayEntry("c1", [], "38"),
+          generateStoredDayEntry("c2", [], "39"),
+        ],
+        CD: [generateStoredDayEntry("d1", [], "58")],
       },
+      lengths: { CARDIO_2: 20 },
+    });
+
+    const setList = generateSetList(
+      day.workout,
+      day.lookUpBranch,
       generateGenerationInput({
         exerciseCatalog,
         random: generateSeededRandom(7),
@@ -445,24 +483,5 @@ describe("trainingDayGeneration: generateTrainingDayFromStoredDay", () => {
       "38 1/1",
       "58 1/1",
     ]);
-  });
-
-  it("throws the anamnesis error for an athlete without workout data", () => {
-    const thrown = catchThrownValue(() =>
-      generateTrainingDayFromStoredDay(
-        generateStoredTrainingDay(
-          { CARDIO_5: ["576"] },
-          { CARDIO_5: 25 },
-          "721",
-        ),
-        generateGenerationInput({ exerciseCatalog, withoutWorkoutData: true }),
-      ),
-    );
-
-    expect(thrown).toEqual({
-      type: "NO_ANAMNESIS",
-      subtype: "MISSING_WORKOUT_DATA",
-      params: [],
-    });
   });
 });

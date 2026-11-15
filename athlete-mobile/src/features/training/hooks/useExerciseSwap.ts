@@ -23,7 +23,8 @@ import { createGenerationInput } from "@/features/training/workoutGenerator/gene
 import { DEFAULT_PICKS_POOL_RULES } from "@/features/training/workoutGenerator/blockHandlers/picks/picksWorkoutRules";
 import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
 import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
-import { generateTrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
+import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
+import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
 import { Logger } from "@/services/Logger";
 import { parseIntParam } from "@/utils/router";
 import { useEffect, useEffectEvent, useState } from "react";
@@ -112,11 +113,12 @@ const generateSwappedDay = (
   skill: string,
   original: string,
   alternative: StoredBranch,
-) =>
-  generateTrainingDay(
+) => {
+  const { workout, lookUpBranch } = readTrainingDayWorkout(
     swapBranchInTrainingDay(day, skill, original, alternative),
-    input,
   );
+  return generateSetList(workout, lookUpBranch, input);
+};
 
 /** The original branch whose swap shows the given branch. */
 const findOriginalBranchId = (

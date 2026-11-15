@@ -13,7 +13,7 @@ import { TemplateSchema } from "@/schemas/aiwl.schema";
 import { SkillBranchesSchema } from "@/schemas/generator.schema";
 import type { UserType } from "@/schemas/user.schema";
 import { cloneWithValidation } from "@/utils/cloneWithValidation";
-import type { TrainingDay } from "@/features/training/workoutGenerator/trainingDayGeneration";
+import type { TrainingDay } from "@/features/training/workoutGenerator/trainingDayWorkout";
 
 // Past three weeks without training the plan regenerates, so the sections
 // extend only between one and three weeks.

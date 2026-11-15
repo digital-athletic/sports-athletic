@@ -5,7 +5,6 @@ import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { createBranchesBlockHandler } from "./blockHandlers/branches/branchesHandler";
 import { createCardioDurationHandler } from "./blockHandlers/duration/cardioDurationHandler";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
-import { restrictTemplateBranchesBlock } from "./blockHandlers/branches/templateBranchRestriction";
 import { handlePicksBlock } from "./blockHandlers/picks/picksHandler";
 import { SHORT_WORKOUT_PICKS_POOL_RULES } from "./blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "./generationInput/generationInput";
@@ -29,13 +28,7 @@ const CATALOG_BRANCHES_HANDLER = createBranchesBlockHandler(
 // The registry reads the picks handler per run, so a spy on it takes effect.
 const createShortWorkoutHandlers = (): BlockHandlerRegistry => ({
   picks: handlePicksBlock,
-  branches: (block, input, usedBranches, walk) =>
-    CATALOG_BRANCHES_HANDLER(
-      restrictTemplateBranchesBlock(block, input),
-      input,
-      usedBranches,
-      walk,
-    ),
+  branches: CATALOG_BRANCHES_HANDLER,
   duration: createCardioDurationHandler(CATALOG_BRANCHES_HANDLER),
   exercises: throwUnreachableShortWorkoutBlock,
 });

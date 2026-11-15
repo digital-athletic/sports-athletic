@@ -5,6 +5,18 @@ import { applyBranchesRuleChain } from "./branchesRuleChain";
 
 const exerciseCatalog = loadExercises();
 
+/**
+ * Builds a stored GKS branch with its real levels and the given tags instead
+ * of its own.
+ *
+ * generateGksBranchWithTags("510", ["REGION_CORE", "GENDER_MALE"])
+ * → { branchId: "510", branch: { tags: ["REGION_CORE", "GENDER_MALE"], levels: {...} } }
+ */
+const generateGksBranchWithTags = (branchId: string, tags: string[]) => {
+  const [stored] = generateStoredBranches("GKS", [branchId]);
+  return { ...stored, branch: { ...stored.branch, tags } };
+};
+
 describe("branchesRuleChain: applyBranchesRuleChain", () => {
   it("keeps the branches that pass soreness, equipment and fitness level", () => {
     const input = generateRuleFamilyInput({
@@ -129,21 +141,75 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
     });
   });
 
-  it("applies no pain, age group or gender family to stored branches", () => {
+  it("removes the stored branch that blocks a painful region and requests a replacement", () => {
     const input = generateRuleFamilyInput({
-      birthday: "2016-06-15",
-      gender: "FEMALE",
       pains: ["KNEE_LEFT"],
       equipment: ["DUMBBELL", "BARBELL"],
       exerciseCatalog,
     });
 
     const result = applyBranchesRuleChain(
-      generateStoredBranches("GKS", ["510", "523"]),
+      [
+        generateGksBranchWithTags("510", ["REGION_LOWER_BODY", "BLOCK_KNEE"]),
+        generateGksBranchWithTags("523", ["REGION_LOWER_BODY"]),
+      ],
       input,
       "GKS",
     );
 
-    expect(Object.keys(result.keep)).toEqual(["510", "523"]);
+    expect(Object.keys(result.keep)).toEqual(["523"]);
+    expect(
+      result.removals.map(({ branchId, family }) => [branchId, family]),
+    ).toEqual([["510", "pain"]]);
+    expect(result.replace).toEqual(["LOWER_BODY"]);
+  });
+
+  it("removes the stored branch of the other age group and requests a replacement", () => {
+    const input = generateRuleFamilyInput({
+      birthday: "2016-06-15",
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+    });
+
+    const result = applyBranchesRuleChain(
+      [
+        generateGksBranchWithTags("510", ["REGION_CORE", "AGE_ADULT"]),
+        generateGksBranchWithTags("523", ["REGION_CORE", "AGE_CHILD"]),
+      ],
+      input,
+      "GKS",
+    );
+
+    expect(Object.keys(result.keep)).toEqual(["523"]);
+    expect(
+      result.removals.map(({ branchId, family }) => [branchId, family]),
+    ).toEqual([["510", "ageGroup"]]);
+    expect(result.replace).toEqual(["CORE"]);
+  });
+
+  it("removes the stored branch of the other gender and requests a replacement", () => {
+    const input = generateRuleFamilyInput({
+      gender: "FEMALE",
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+    });
+
+    const result = applyBranchesRuleChain(
+      [
+        generateGksBranchWithTags("510", ["REGION_UPPER_BODY", "GENDER_MALE"]),
+        generateGksBranchWithTags("523", [
+          "REGION_UPPER_BODY",
+          "GENDER_FEMALE",
+        ]),
+      ],
+      input,
+      "GKS",
+    );
+
+    expect(Object.keys(result.keep)).toEqual(["523"]);
+    expect(
+      result.removals.map(({ branchId, family }) => [branchId, family]),
+    ).toEqual([["510", "gender"]]);
+    expect(result.replace).toEqual(["UPPER_BODY"]);
   });
 });

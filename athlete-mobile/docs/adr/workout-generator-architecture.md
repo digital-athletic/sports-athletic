@@ -177,7 +177,7 @@ Each rule family is a pure filter. A family takes candidate branches and returns
 - age group
 - gender
 
-Each handler composes its chain from these families in the order its spec defines.
+Each handler composes its chain from these families in the order its spec defines. The branches chain runs pain, age group and gender first, then muscle soreness, equipment and fitness level. A branch that pain, age group or gender removes asks for a replacement of its own region, or of any region when it has no region tag. Plan creation stores no branch these three families remove, so they change no training day of an athlete whose profile stayed the same since plan creation.
 
 ### Generation input (Context Object)
 
@@ -265,6 +265,10 @@ The builder binds the test set loads per lift, gender and fitness level from `st
 Source checks run before any block. `loadStrengthTestTemplate` parses `TEST.json` with the AIWL `TemplateSchema` and checks the id `TEST`. `checkStrengthTestTemplate` checks the template first and throws a configuration error naming the path: the lifts block holds `testSets`, and `checkTestSetWorkout` runs the checks every workout with test sets passes: the warm-up picks block of skill `WU` comes first, the exercises block of lifts second and last, its `testSets` end on their one `amrap` set, and every lift has test set loads for both genders in `strengthTest.json`. The generic interpreter holds none of these rules. The athlete checks follow: workout data, no athlete under 16 (`NO_EXERCISES/AGE`), no muscle soreness (`TOO_MUCH_SORENESS/TEST_WORKOUT`). The source runs the shared workout setup and the shared picks handler. The pain, equipment, age group and gender rules filter the warm-up pool and throw their pool errors `NO_EXERCISES/PAIN`, `EQUIPMENT`, `AGE` and `GENDER`. `TEST.json` names the region quotas with `REGION_` tags and sets `countBy: "exercises"` on the warm-up, so a one-sided branch fills one quota slot, and `fallbackToWholeTree: true`, so a region quota without a matching branch draws any unused branch. `TEST.json` sets `superset: "none"` on the warm-up, so the warm-up trains each exercise on its own, follows a one-sided exercise with its other side, and orders its exercises like any other block. A lift missing from the catalog fails the whole test with a template error. The athlete picks no place for the test and the app passes the STUDIO equipment, so the source sets the exercises rule `equipment: "ignored"` and missing lift equipment blocks no lift. Setting the rule to `"required"` turns the check on and throws `NO_EXERCISES/EQUIPMENT`. The source sets the finish rule `requiredBlocks: "every"`, so a warm-up that draws no exercise fails the test with `NO_EXERCISES/SKILL_TREE` and the skill `WU`. Lift entries keep the placeholder branch ID, so session storage, resume, completion, statistics and the estimated 1RM update read them as before and write no branch progression.
 
 The router sends every strength test to this source. Compared with the deleted old path, it adds the age check.
+
+### Behaviour changes
+
+1. A short workout whose branches block loses every listed branch to pain, age group or gender trains replacement branches of the same skill. Before, the deleted template branch restriction threw the rule's `NO_EXERCISES` error. A cardio duration block whose tree pain blocks in full swaps to the CARDIO_5 run instead of throwing.
 
 ### Compatibility exceptions
 

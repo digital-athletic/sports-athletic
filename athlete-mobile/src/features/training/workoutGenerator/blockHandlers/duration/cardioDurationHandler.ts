@@ -9,7 +9,6 @@ import {
   listStoredBranches,
   lookUpStoredBranchInCatalog,
 } from "../branches/storedBranchLookup";
-import { restrictTemplateBranchesBlock } from "../branches/templateBranchRestriction";
 
 type BranchesBlockHandler = BlockHandlerRegistry["branches"];
 type DurationBlockHandler = BlockHandlerRegistry["duration"];
@@ -36,25 +35,26 @@ const listTreeBranchIds = (skill: string, input: WorkoutInput): string[] =>
 export const createCardioDurationHandler =
   (branchesHandler: BranchesBlockHandler): DurationBlockHandler =>
   (block, input, usedBranches, walk) => {
-    const [first, ...rest] = listTreeBranchIds(block.skill, input);
-    if (first === undefined) {
+    const treeBranchIds = listTreeBranchIds(block.skill, input);
+    if (treeBranchIds.length === 0) {
       throw {
         type: "NO_EXERCISES",
         subtype: "SKILL_TREE",
         params: [block.skill],
       } satisfies GeneratorError;
     }
-    const treeBlock = restrictTemplateBranchesBlock(
-      { ...block, kind: "branches", branches: [first, ...rest] },
-      input,
-    );
+    const treeBlock: BranchesBlock = {
+      ...block,
+      kind: "branches",
+      branches: treeBranchIds,
+    };
     const { keep } = applyBranchesRuleChain(
       listStoredBranches(treeBlock, input, lookUpStoredBranchInCatalog),
       input,
       block.skill,
     );
     const allowed = Object.keys(keep);
-    const candidates = allowed.length > 0 ? allowed : treeBlock.branches;
+    const candidates = allowed.length > 0 ? allowed : treeBranchIds;
     const drawnBlock: BranchesBlock = {
       ...treeBlock,
       branches: [candidates[Math.floor(input.random() * candidates.length)]],

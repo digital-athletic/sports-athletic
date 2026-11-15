@@ -260,7 +260,7 @@ The router `src/features/training/workoutGeneratorRouter.ts` selects a workout, 
 |---|---|---|---|
 | `PLAN` | `readTrainingDayWorkout` of the selected plan day | branch lookup index for an AIWL training, saved copies for a legacy training | none, every filter on |
 | `TEST_WORKOUT` | `loadStrengthTestTemplate`: the bundled `TEST.json`; the entry point checks it with `checkStrengthTestTemplate` | branch lookup index | `STRENGTH_TEST_FILTERS`: `{ pain: false, equipment: false }` |
-| any other | the template of the type, short or custom | branch lookup index | `SHORT_WORKOUT_FILTERS`: `{ soreness: false }` |
+| any other | the template of the type, short or custom | branch lookup index | `{ soreness: false }` |
 
 `generateTrainingDaySetList(day, input, skillTrees)` in `trainingDayWorkout.ts` reads a plan day and generates it. The router and the exercise swap hook both call it, so a swapped day generates with the same options as the day.
 
@@ -270,7 +270,7 @@ A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A temp
 
 1. The block kind check rejects an exercises block without `testSets`, a duration block of a skill other than a cardio zone and `bodyParts` on a picks or duration block with `OTHER/BLOCK_KIND`. An `order` field passes the check; set list building ignores it with a warning.
 2. A workout with test sets runs the test set checks with the load data, then the athlete checks of the strength test section, before any block runs. Only such a workout loads the bundled load data.
-3. The template interpreter runs the blocks with the picks handler, the branches handler on the given lookup, the cardio duration handler and the exercises handler, all with the resolved filters. A workout with test sets builds its lifts with the strength test builder and requires every block to fill. Every other workout builds the blocks that fill. The test sets decide no filter; the router passes them.
+3. The template interpreter runs the blocks with the picks handler, the branches handler on the given lookup, the cardio duration handler and the exercises handler, all with the resolved filters. A workout with test sets builds its lifts with the strength test builder and requires every block to fill. Every other workout builds the blocks that fill. The router passes the filters; test sets decide none.
 
 The old training generator and its flag `EXPO_PUBLIC_AIWL_GENERATOR_ENABLED` are deleted. The old plan generator in `generators/PlanGenerator.ts` stays behind its own flag `EXPO_PUBLIC_PLAN_GENERATOR_ENABLED`.
 

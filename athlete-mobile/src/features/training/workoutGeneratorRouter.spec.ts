@@ -110,7 +110,7 @@ describe("generateWorkout: routing", () => {
       expect(generateSetList).toHaveBeenCalledTimes(1);
       const [workout, lookUpBranch, , options] =
         jest.mocked(generateSetList).mock.calls[0];
-      expect(options).toEqual({ skillTrees: expect.any(Object) });
+      expect(options).toStrictEqual({ skillTrees: expect.any(Object) });
       expect(workout).toEqual({
         id: "TRAINING_DAY",
         blocks: [
@@ -302,10 +302,13 @@ describe("generateWorkout: short workouts", () => {
     // Muscle soreness counts on the day the factory dates it.
     jest.useFakeTimers({ now: new Date("2026-10-24T12:00:00Z") });
     const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
-      generateTemplate([{ kind: "duration", skill: "CARDIO_2", duration: 1200 }], {
-        id: "run",
-        name: { en: "Run" },
-      }),
+      generateTemplate(
+        [{ kind: "duration", skill: "CARDIO_2", duration: 1200 }],
+        {
+          id: "run",
+          name: { en: "Run" },
+        },
+      ),
       null,
     );
 

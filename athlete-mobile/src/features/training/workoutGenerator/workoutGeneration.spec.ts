@@ -165,7 +165,9 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
     );
 
     expect(
-      setList.filter((entry) => entry.skill === "WU" && entry.branchId !== "-1"),
+      setList.filter(
+        (entry) => entry.skill === "WU" && entry.branchId !== "-1",
+      ),
     ).not.toHaveLength(0);
   });
 });

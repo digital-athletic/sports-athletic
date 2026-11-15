@@ -294,6 +294,34 @@ describe("branchesRuleChain: applyBranchesRuleChain", () => {
     expect(result.replace).toEqual([]);
   });
 
+  it("removes the branch of the other age group when the pain filter is off", () => {
+    const input = generateRuleFamilyInput({
+      birthday: "2016-06-15",
+      pains: ["KNEE_LEFT"],
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+    });
+
+    const result = applyBranchesRuleChain(
+      [
+        generateGksBranchWithTags("510", [
+          "REGION_CORE",
+          "BLOCK_KNEE",
+          "AGE_ADULT",
+        ]),
+        generateGksBranchWithTags("523", ["REGION_CORE", "BLOCK_KNEE"]),
+      ],
+      input,
+      "GKS",
+      resolveWorkoutFilters({ pain: false }),
+    );
+
+    expect(Object.keys(result.keep)).toEqual(["523"]);
+    expect(
+      result.removals.map(({ branchId, family }) => [branchId, family]),
+    ).toEqual([["510", "ageGroup"]]);
+  });
+
   it("removes the branch of the other gender when the pain filter is off", () => {
     const input = generateRuleFamilyInput({
       gender: "FEMALE",

@@ -161,6 +161,29 @@ describe("cardioDurationHandler: createCardioDurationHandler", () => {
     expect(received.map(({ branches }) => branches)).toEqual([["1"]]);
   });
 
+  it("draws a branch that needs missing equipment when the equipment filter is off", () => {
+    const received: BranchesBlock[] = [];
+    const handleBlock = createCardioDurationHandler(
+      generateRecordingBranchesHandler(received),
+    );
+    const input = generateWorkoutInput({
+      equipment: [],
+      exerciseCatalog: generateMixedExerciseCatalog(),
+      skillTrees: {
+        CARDIO_2: {
+          "1": generateTreeBranch(["e1"], ["EQ_TREADMILL"]),
+          "2": generateTreeBranch(["e2"]),
+        },
+      },
+      random: () => 0,
+      filters: { equipment: false },
+    });
+
+    handleBlock(cardioBlock, input, NO_BRANCHES);
+
+    expect(received.map(({ branches }) => branches)).toEqual([["1"]]);
+  });
+
   it("swaps the block for the CARDIO_5 run for lower body soreness", () => {
     const handleBlock = createCardioDurationHandler(
       createBranchesBlockHandler(lookUpStoredBranchInCatalog),

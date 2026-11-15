@@ -170,10 +170,10 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
           lookUpStoredBranchInCatalog,
           input,
           {
-          skillTrees,
-          loadData: loadStrengthTestLoadData(),
-          filters: STRENGTH_TEST_FILTERS,
-        },
+            skillTrees,
+            loadData: loadStrengthTestLoadData(),
+            filters: STRENGTH_TEST_FILTERS,
+          },
         );
 
         expect([

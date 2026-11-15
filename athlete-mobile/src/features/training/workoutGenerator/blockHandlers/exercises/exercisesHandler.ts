@@ -59,10 +59,7 @@ export const handleExercisesBlock: BlockHandler<"exercises"> = (
         );
       }
       if (input.filters.equipment) {
-        const missing = listMissingExerciseEquipment(
-          exercise,
-          input.equipment,
-        );
+        const missing = listMissingExerciseEquipment(exercise, input.equipment);
         if (missing.length > 0) {
           throw {
             type: "NO_EXERCISES",

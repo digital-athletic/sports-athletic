@@ -385,11 +385,7 @@ describe("picksWorkoutRules: resolvePicksWorkout", () => {
     ]);
     const input = generateLeveledInput();
 
-    const first = resolvePicksWorkout(
-      template,
-      input,
-      resolveWorkoutFilters(),
-    );
+    const first = resolvePicksWorkout(template, input, resolveWorkoutFilters());
     const second = resolvePicksWorkout(
       template,
       input,

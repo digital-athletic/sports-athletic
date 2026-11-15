@@ -1,11 +1,14 @@
 import { minutes } from "@/features/training/models/TimeUnits";
-import { requireLegacyTraining } from "@/features/training/utils/testFixtures";
+import { requireAiwlTraining } from "@/features/training/utils/testFixtures";
+import { TemplateSchema } from "@/schemas/aiwl.schema";
 import type { SkillCode } from "@/schemas/generator.schema";
 import type { PlacesData } from "@/store/placesStore";
 import { deepFreeze } from "@test/factories/deepFreeze";
 import { generateFocusedTrainingDay } from "@test/factories/skillBudget";
 import { generateSectionEntry } from "@test/factories/sectionTemplates";
+import { catchThrownValue } from "@test/factories/thrownValue";
 import { generateTrainingPlaces } from "@test/factories/weeklySchedule";
+import * as v from "valibot";
 import type { FocusedTrainingDay } from "./dayGroupingAndFocus";
 import type { SelectedBranch } from "./branchSelection";
 import {
@@ -63,16 +66,51 @@ const generateSelectedBranch = (
 });
 
 /**
- * Builds a section of the given weeks with one Monday studio day without skills.
+ * Builds an assembled training day of one warm-up skill with branch 4.
+ *
+ * generateWarmUpTrainingDay(generateFocusedTrainingDay({ weekday: 3 }))
+ * → { budget: { day, skills: [{ skill: "WU", minutes: 5 }] },
+ *     selections: [{ type: "BRANCHES", skill: "WU", branches: [branch 4] }] }
+ */
+const generateWarmUpTrainingDay = (
+  day: FocusedTrainingDay = generateFocusedTrainingDay(),
+): AssembledTrainingDay =>
+  generateAssembledTrainingDay(day, [
+    { skill: "WU", minutes: 5, branches: [generateSelectedBranch("4", [])] },
+  ]);
+
+/**
+ * Builds a section of the given weeks with one Monday studio warm-up day.
  *
  * generateAssembledSection(2)
  * → { section: { type: "SWR1", numOfWeeks: 2, cardioType: "CARDIO_2" },
- *     days: [{ budget: { day: Monday studio, skills: [] }, selections: [] }] }
+ *     days: [{ budget: { day: Monday studio, skills: [WU 5] }, selections: [...] }] }
  */
 const generateAssembledSection = (numOfWeeks: number): AssembledSection => ({
   section: generateSectionEntry({ numOfWeeks }),
-  days: [generateAssembledTrainingDay(generateFocusedTrainingDay(), [])],
+  days: [generateWarmUpTrainingDay()],
 });
+
+/**
+ * Assembles a plan of one section with one training day and returns that day.
+ *
+ * assembleSingleTrainingDay([{ skill: "WU", minutes: 5, branches: [branch 4] }])
+ * → { weekday: 1, focus: "PHASE", equipment: [...], workout: { aiwl: 1, blocks: [...] } }
+ */
+const assembleSingleTrainingDay = (skills: readonly DaySkill[]) =>
+  requireAiwlTraining(
+    assembleTrainingPlan(
+      [
+        {
+          section: generateSectionEntry(),
+          days: [
+            generateAssembledTrainingDay(generateFocusedTrainingDay(), skills),
+          ],
+        },
+      ],
+      { planStartDate: "2026-11-02", trainingPlaces: generateTrainingPlaces() },
+    ).sections[0].trainings[0],
+  );
 
 describe("planAssembly: plan start", () => {
   it("keeps the plan start date as the start of the plan", () => {
@@ -160,13 +198,11 @@ describe("planAssembly: section", () => {
         {
           section: generateSectionEntry(),
           days: [
-            generateAssembledTrainingDay(
+            generateWarmUpTrainingDay(
               generateFocusedTrainingDay({ weekday: 3 }),
-              [],
             ),
-            generateAssembledTrainingDay(
+            generateWarmUpTrainingDay(
               generateFocusedTrainingDay({ weekday: 0 }),
-              [],
             ),
           ],
         },
@@ -187,9 +223,8 @@ describe("planAssembly: training day", () => {
         {
           section: generateSectionEntry(),
           days: [
-            generateAssembledTrainingDay(
+            generateWarmUpTrainingDay(
               generateFocusedTrainingDay({ weekday: 3, focus: "CARDIO" }),
-              [],
             ),
           ],
         },
@@ -229,97 +264,145 @@ describe("planAssembly: training day", () => {
     expect(plan.sections[0].trainings[0].equipment).toEqual([]);
   });
 
-  it("keeps the minutes of every skill, an empty skill included", () => {
-    const plan = assembleTrainingPlan(
-      [
-        {
-          section: generateSectionEntry(),
-          days: [
-            generateAssembledTrainingDay(generateFocusedTrainingDay(), [
-              {
-                skill: "SWR1",
-                minutes: 25,
-                branches: [generateSelectedBranch("7", ["REGION_CORE"])],
-              },
-              { skill: "MOB", minutes: 5 },
-            ]),
-          ],
-        },
-      ],
-      { planStartDate: "2026-11-02", trainingPlaces: generateTrainingPlaces() },
-    );
+  it("writes a workout that passes the AIWL schema", () => {
+    const training = assembleSingleTrainingDay([
+      {
+        skill: "SWR1",
+        minutes: 25,
+        branches: [generateSelectedBranch("7", ["REGION_CORE"])],
+      },
+    ]);
 
-    expect(
-      requireLegacyTraining(plan.sections[0].trainings[0]).lengths,
-    ).toEqual({
-      SWR1: 25,
-      MOB: 5,
-    });
+    expect(v.safeParse(TemplateSchema, training.workout).success).toBe(true);
   });
 
-  it("stores the picked branches as branch copies with the exercise per level", () => {
-    const plan = assembleTrainingPlan(
-      [
-        {
-          section: generateSectionEntry(),
-          days: [
-            generateAssembledTrainingDay(generateFocusedTrainingDay(), [
-              {
-                skill: "SWR1",
-                minutes: 25,
-                branches: [
-                  generateSelectedBranch("7", ["REGION_CORE"]),
-                  generateSelectedBranch("9", ["REGION_UPPER_BODY"]),
-                ],
-              },
-            ]),
-          ],
-        },
-      ],
-      { planStartDate: "2026-11-02", trainingPlaces: generateTrainingPlaces() },
-    );
+  it("stores weekday, focus, equipment and workout and no field of a legacy training", () => {
+    const training = assembleSingleTrainingDay([
+      { skill: "WU", minutes: 5, branches: [generateSelectedBranch("4", [])] },
+    ]);
 
-    expect(requireLegacyTraining(plan.sections[0].trainings[0]).skills).toEqual(
+    expect(Object.keys(training).sort()).toEqual([
+      "equipment",
+      "focus",
+      "weekday",
+      "workout",
+    ]);
+  });
+
+  it("writes one branches block per skill in section order with its branch IDs", () => {
+    const training = assembleSingleTrainingDay([
+      { skill: "WU", minutes: 5, branches: [generateSelectedBranch("4", [])] },
       {
-        SWR1: [
-          {
-            branchId: "7",
-            tags: ["REGION_CORE"],
-            exercises: { 1: { exerciseId: "e1" }, 2: { exerciseId: "e2" } },
-          },
-          {
-            branchId: "9",
-            tags: ["REGION_UPPER_BODY"],
-            exercises: { 1: { exerciseId: "e1" }, 2: { exerciseId: "e2" } },
-          },
+        skill: "SWR1",
+        minutes: 25,
+        branches: [
+          generateSelectedBranch("7", ["REGION_CORE"]),
+          generateSelectedBranch("9", ["REGION_UPPER_BODY"]),
         ],
       },
-    );
+      { skill: "MOB", minutes: 5, branches: [generateSelectedBranch("2", [])] },
+    ]);
+
+    expect(training.workout.blocks).toEqual([
+      { kind: "branches", skill: "WU", branches: ["4"], duration: 300 },
+      { kind: "branches", skill: "SWR1", branches: ["7", "9"], duration: 1500 },
+      { kind: "branches", skill: "MOB", branches: ["2"], duration: 300 },
+    ]);
   });
 
-  it("leaves an empty skill out of the stored skills", () => {
-    const plan = assembleTrainingPlan(
-      [
-        {
-          section: generateSectionEntry(),
-          days: [
-            generateAssembledTrainingDay(generateFocusedTrainingDay(), [
-              { skill: "MOB", minutes: 5 },
-              {
-                skill: "WU",
-                minutes: 5,
-                branches: [generateSelectedBranch("4", [])],
-              },
-            ]),
-          ],
-        },
-      ],
-      { planStartDate: "2026-11-02", trainingPlaces: generateTrainingPlaces() },
-    );
+  it("writes a cardio skill as a branches block", () => {
+    const training = assembleSingleTrainingDay([
+      {
+        skill: "CARDIO_3",
+        minutes: 20,
+        branches: [generateSelectedBranch("576", [])],
+      },
+    ]);
 
+    expect(training.workout.blocks).toEqual([
+      {
+        kind: "branches",
+        skill: "CARDIO_3",
+        branches: ["576"],
+        duration: 1200,
+      },
+    ]);
+  });
+
+  it.each([
+    [12.5, 750],
+    [7.333, 440],
+    [7.341, 440],
+  ])("rounds %p minutes to %p whole seconds", (skillMinutes, duration) => {
+    const training = assembleSingleTrainingDay([
+      {
+        skill: "SWR1",
+        minutes: skillMinutes,
+        branches: [generateSelectedBranch("7", [])],
+      },
+    ]);
+
+    expect(training.workout.blocks[0]).toMatchObject({ duration });
+  });
+
+  it("writes no duration for a skill whose minutes round to 0 seconds", () => {
+    const training = assembleSingleTrainingDay([
+      {
+        skill: "SWR1",
+        minutes: 0.001,
+        branches: [generateSelectedBranch("7", [])],
+      },
+    ]);
+
+    expect(training.workout.blocks[0]).not.toHaveProperty("duration");
+  });
+
+  it("writes no block for a skill whose selection holds no branch", () => {
+    const training = assembleSingleTrainingDay([
+      { skill: "MOB", minutes: 5, branches: [] },
+      { skill: "WU", minutes: 5, branches: [generateSelectedBranch("4", [])] },
+    ]);
+
+    expect(training.workout.blocks.map((block) => block.skill)).toEqual(["WU"]);
+  });
+
+  it("writes no block for an empty skill", () => {
+    const training = assembleSingleTrainingDay([
+      { skill: "MOB", minutes: 5 },
+      { skill: "WU", minutes: 5, branches: [generateSelectedBranch("4", [])] },
+    ]);
+
+    expect(training.workout.blocks.map((block) => block.skill)).toEqual(["WU"]);
+  });
+
+  it("throws NO_EXERCISES/SKILL_TREE for the first skill of a day whose skills all stay empty", () => {
     expect(
-      Object.keys(requireLegacyTraining(plan.sections[0].trainings[0]).skills),
-    ).toEqual(["WU"]);
+      catchThrownValue(() =>
+        assembleSingleTrainingDay([
+          { skill: "MOB", minutes: 5 },
+          { skill: "WU", minutes: 5 },
+        ]),
+      ),
+    ).toEqual({ type: "NO_EXERCISES", subtype: "SKILL_TREE", params: ["MOB"] });
+  });
+
+  it("throws NO_EXERCISES/SKILL_TREE without params for a day without skills", () => {
+    expect(catchThrownValue(() => assembleSingleTrainingDay([]))).toEqual({
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: [],
+    });
+  });
+});
+
+describe("planAssembly: plan format", () => {
+  it("marks the plan as an AIWL plan", () => {
+    const plan = assembleTrainingPlan([generateAssembledSection(1)], {
+      planStartDate: "2026-11-02",
+      trainingPlaces: generateTrainingPlaces(),
+    });
+
+    expect(plan.format).toBe("aiwl");
   });
 });
 

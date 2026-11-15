@@ -23,7 +23,7 @@ The spec defines the rules, and the new generator follows the spec. This ADR use
 - Each stage can be tested on its own, with a repeatable random source.
 - State that one day passes to the next is an explicit value.
 - The code uses plain TypeScript: modules, plain objects and pure functions. Every module stays within the lint limits without suppressions.
-- The new generator writes today's stored plan shape, so neither the store version nor any stored plan changes.
+- The new generator writes AIWL plans. Old plans stay as they are, so neither the store version nor any stored plan changes.
 - The old generator stays as it is: no change to its code, its specs or any module it reads. It keeps running unchanged while the flag is off, and a lint block enforces the separation.
 
 ## Options
@@ -52,7 +52,7 @@ flowchart TD
     budget --> region[5. Region configuration]
     region --> selection[6. Branch selection]
     selection --> assembly[7. Plan assembly]
-    assembly --> plan[(Training plan, today's stored shape)]
+    assembly --> plan[(AIWL training plan)]
 ```
 
 ### Patterns
@@ -95,7 +95,16 @@ Each stage implements one section of the spec:
 4. **Skill budget** runs per section and per day. It picks the skill priority structure, resolves the placeholders, places the prevention skill, gives each skill its minimum and distributes the leftover minutes by priority up to the maximum minutes. Spec section [4](../specs/planning/training-plan-creation-from-anamnesis.md#4-skill-selection-and-time-budgeting-per-day).
 5. **Region configuration** reads the region configuration of each skill for its minutes and returns the tag entries branch selection fills. Spec section [5](../specs/planning/training-plan-creation-from-anamnesis.md#5-branch-selection-per-skill), rule 1.
 6. **Branch selection** fills each tag entry from the skill tree. It filters candidates through the rule chain, applies the cascading filters with the movement direction priorities and draws the final pick through the random source. Spec section [5](../specs/planning/training-plan-creation-from-anamnesis.md#5-branch-selection-per-skill), rules 2 to 5.
-7. **Plan assembly** writes the sections, training days, branch copies and minutes per skill in today's stored plan shape. It sets the plan start to the plan start date and dates the sections in order: the first section starts on the first Monday on or after the plan start, and each later section starts after the weeks of the sections before it.
+7. **Plan assembly** writes the sections and their training days as an AIWL plan and marks the plan format `aiwl`. It sets the plan start to the plan start date and dates the sections in order: the first section starts on the first Monday on or after the plan start, and each later section starts after the weeks of the sections before it. Each training day keeps weekday, focus and the equipment of its place as fields, and stores its skills as an AIWL workout:
+
+   ```
+   write training(day):
+     for each skill in section order:
+       skip a skill without branches
+       block = branches block: skill, branch IDs, round(minutes × 60) seconds
+   ```
+
+   Cardio skills become branches blocks, as in old plans. A day whose skills all stay empty has no block, and an AIWL workout needs one, so plan assembly throws NO_EXERCISES/SKILL_TREE for the first skill of the day.
 
 ### State across days
 
@@ -180,6 +189,14 @@ The new generator follows the spec. In these places the old code differs, and th
 | A season phase without a type or an end date raises the input error NO_ANAMNESIS/MISSING_WORKOUT_DATA. | Section 1, Season phase | [Season phase fallback](../../src/features/training/generators/PlanGenerator.ts#L1084-L1086) |
 | The rule chain checks the equipment tags of the branch, as workout generation does, so the plan holds only branches the workout generator keeps at session start. The old code checks the equipment tags of the exercise at the athlete's level. The GKS branches 544 and 546 carry EQ_TOWEL and leave the pool of a studio without a towel. | Section 5, rule 2 | [Equipment check](../../src/features/training/generators/PlanGenerator.ts#L2339-L2373) |
 
+An AIWL plan changes the training of a planned day in these places, compared with an old plan of the same branches and minutes:
+
+| AIWL plan | Old plan |
+|---|---|
+| A catalog update reaches the planned branches, since the workout generator reads each branch ID from the skill catalog. A branch ID the catalog lacks gets a replacement from the same skill. | The day trains the branch copies it stored at plan creation. |
+| A duration shifts by less than 1 s, since a block stores whole seconds. | The day stores minutes and the set list builders read them unrounded. |
+| A day whose skills all stay empty raises NO_EXERCISES/SKILL_TREE at plan creation. | The day stores an empty set list. |
+
 ### Verification
 
 1. Each stage has one spec that tests the spec rules of its section.
@@ -198,7 +215,13 @@ The plan generator router is the only module that imports both generators. It re
 
 The plan generator flag is independent of the AIWL generator flag. The old generator knows nothing of the router, the flag or the new generator, and the router calls it with the same inputs as today's callers.
 
-A stored plan stays as it is when the flag flips. The next plan creation or regeneration uses the generator the flag selects. A stored plan carries no marker of the generator that wrote it. Both generators write the same shape, and the workout generator reads both.
+A stored plan stays as it is when the flag flips. The next plan creation or regeneration uses the generator the flag selects:
+
+- The old generator writes old plans, which carry no plan format, so they read as `legacy`. Stored old plans keep generating the same set lists.
+- The new generator writes AIWL plans with the plan format `aiwl`.
+- A regeneration with the other generator writes every day new, so a plan never mixes shapes and no day keeps a field of the old shape.
+
+The workout generator reads both shapes.
 
 The callers stay responsible for:
 
@@ -215,14 +238,18 @@ The new generator deviates from the target architecture in these places, so that
 
 | Exception | Reason | Ends when |
 |---|---|---|
-| Training days store branch copies and minutes per skill instead of branch IDs and duration blocks | The workout generator and stored plans read today's shape | Stored plan migration |
 | The router sends plan creation to the old generator while the plan generator flag is off | The flag lets the team compare both paths | The flag defaults to on and the old generator is deleted |
+
+Old plans on the device are not migrated. They stay old plans until the athlete creates or regenerates a plan with the new generator.
+
+### Release
+
+A build without the AIWL plan support of the workout generator, the plan format and the plan features crashes on an AIWL plan. The team turns the plan generator flag on only in a build whose runtime version blocks an OTA update back to such a build.
 
 ### Remaining work
 
 1. The plan generator flag on by default.
-2. The stored plan migration to branch IDs and duration blocks.
-3. Deletion of the old generator in `generators/`.
+2. Deletion of the old generator in `generators/`.
 
 ### Errors
 
@@ -230,7 +257,7 @@ The new generator raises the typed generator error in three classes:
 
 1. **Input errors** come from profile derivation, such as a missing season phase.
 2. **Configuration errors** come from any stage that reads authored data, such as a missing maximum minutes entry or a missing section template.
-3. **Empty skill** results remove a skill from a day when no branch resolves, as spec section 5, rule 5 defines. The day keeps its other skills.
+3. **Empty skill** results remove a skill from a day when no branch resolves, as spec section 5, rule 5 defines. The day keeps its other skills. A day whose skills all stay empty raises NO_EXERCISES/SKILL_TREE for its first skill, and plan creation shows the existing error. An old plan stores such a day as an empty set list.
 
 ### Conventions
 
@@ -261,8 +288,9 @@ The new generator raises the typed generator error in three classes:
 - Pro: the router lets the team switch generators without touching stored plans.
 - Con: the rules in [Behaviour](#behaviour) change the plans athletes get once the flag turns on.
 - Con: until the old generator is deleted, the app holds two plan generators.
-- Con: stored plans carry no marker, so a bug report on a plan does not say which generator wrote it.
-- Con: the new generator writes branch copies until the stored plan migration.
+- Pro: the plan format tells which generator wrote a plan: `aiwl` for the new generator, none for the old one.
+- Con: until the old generator is deleted, the app reads two plan shapes.
+- Con: a build without AIWL plan support crashes on an AIWL plan, so the flag needs a runtime version that blocks an OTA update back to such a build.
 
 ## Open questions
 

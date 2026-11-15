@@ -1,5 +1,5 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
-import { requireLegacyTraining } from "@/features/training/utils/testFixtures";
+import { requireAiwlTraining } from "@/features/training/utils/testFixtures";
 import {
   generatePlanAthlete,
   generatePlanGenerationInput,
@@ -66,33 +66,30 @@ const CASES: readonly (readonly [string, Partial<PlanGenerationInput>])[] = [
   ],
 ];
 
+const SECONDS_PER_MINUTE = 60;
+
 /**
  * Lists each section of a stored plan with its start, then each training day
- * with the minutes and branch IDs per skill. The level maps of the branch
- * copies repeat the skill trees, so the outline leaves them out.
+ * with the minutes and branch IDs of each branches block of its workout.
  *
  * outlineTrainingPlan(plan)
- * → ["plan 2026-11-02", "2026-11-02 SWR1 4 weeks CARDIO_3", "  day 3 PHASE BARBELL",
+ * → ["plan 2026-11-02 aiwl", "2026-11-02 SWR1 4 weeks CARDIO_3", "  day 3 PHASE BARBELL",
  *    "    SWR1 35 min: 1009,69,63,66,78", ...]
  */
 const outlineTrainingPlan = (plan: TrainingPlanType): string[] => [
-  `plan ${plan.start}`,
+  `plan ${plan.start} ${plan.format}`,
   ...plan.sections.flatMap((section) => [
     `${section.start} ${section.type} ${section.numOfWeeks} weeks ${section.cardioType}`,
-    ...section.trainings.map(requireLegacyTraining).flatMap((training) => {
-      const branchesBySkill = new Map(Object.entries(training.skills));
-      return [
+    ...section.trainings
+      .map(requireAiwlTraining)
+      .flatMap((training) => [
         `  day ${training.weekday} ${training.focus} ${training.equipment?.join(",")}`,
-        ...Object.entries(training.lengths).map(([skill, minutes]) => {
-          const branchIds =
-            branchesBySkill
-              .get(skill)
-              ?.map(({ branchId }) => branchId)
-              .join(",") ?? "empty";
-          return `    ${skill} ${minutes} min: ${branchIds}`;
-        }),
-      ];
-    }),
+        ...training.workout.blocks.map((block) =>
+          block.kind === "branches"
+            ? `    ${block.skill} ${(block.duration ?? 0) / SECONDS_PER_MINUTE} min: ${block.branches.join(",")}`
+            : `    ${block.skill} ${block.kind} block`,
+        ),
+      ]),
   ]),
 ];
 

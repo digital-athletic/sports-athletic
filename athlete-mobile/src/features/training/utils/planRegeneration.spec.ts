@@ -139,6 +139,43 @@ describe("keepUnchangedTrainingDays", () => {
   });
 });
 
+describe("keepUnchangedTrainingDays: regeneration with the other plan generator", () => {
+  const legacyPlan = planWith(
+    training({ branchId: "old", weekday: 1 }),
+    training({ branchId: "old", weekday: 3 }),
+  );
+  const aiwlPlan: TrainingPlanType = {
+    ...planWith(
+      createAiwlTraining({ weekday: 1 }),
+      createAiwlTraining({ weekday: 3 }),
+    ),
+    format: "aiwl",
+  };
+
+  it("writes every day of a legacy plan new as an AIWL workout without legacy fields", () => {
+    const plan = keepUnchangedTrainingDays(legacyPlan, aiwlPlan);
+
+    expect(plan.format).toBe("aiwl");
+    expect(plan.sections[0].trainings).toEqual(aiwlPlan.sections[0].trainings);
+    for (const day of plan.sections[0].trainings) {
+      expect(Object.keys(day)).not.toContain("skills");
+      expect(Object.keys(day)).not.toContain("lengths");
+    }
+  });
+
+  it("writes every day of an AIWL plan new as a legacy day without a workout", () => {
+    const plan = keepUnchangedTrainingDays(aiwlPlan, legacyPlan);
+
+    expect(plan.format).toBeUndefined();
+    expect(plan.sections[0].trainings).toEqual(
+      legacyPlan.sections[0].trainings,
+    );
+    for (const day of plan.sections[0].trainings) {
+      expect(Object.keys(day)).not.toContain("workout");
+    }
+  });
+});
+
 describe("keepUnchangedTrainingDays: AIWL trainings", () => {
   const aiwlTraining = (
     blocks: Block[],

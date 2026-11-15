@@ -28,6 +28,7 @@ import {
   generatePicksBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
+import { generateAthlete } from "@test/factories/athlete";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { generateWorkout } from "./workoutGeneratorRouter";
 
@@ -70,7 +71,7 @@ describe("generateWorkout: routing", () => {
 
   afterEach(jest.restoreAllMocks);
 
-  it("generates a short workout from its template with the catalog lookup and the request's skill trees", () => {
+  it("generates a short workout from its template with the catalog lookup, the request's skill trees and the soreness filter off", () => {
     const setList = generateWorkoutOf("MOB");
 
     expect(setList.length).toBeGreaterThan(0);
@@ -79,29 +80,37 @@ describe("generateWorkout: routing", () => {
       jest.mocked(generateSetList).mock.calls[0];
     expect(workout).toEqual(loadTemplate("MOB"));
     expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
-    expect(options).toEqual({ skillTrees: getAllSkillTrees() });
+    expect(options).toEqual({
+      skillTrees: getAllSkillTrees(),
+      filters: { soreness: false },
+    });
   });
 
   describe("AIWL routes", () => {
-    it("generates the bundled strength test with the catalog lookup", () => {
+    it("generates the bundled strength test with the catalog lookup and the pain and equipment filters off", () => {
       const setList = generateWorkoutOf("TEST_WORKOUT");
 
       expect(setList.length).toBeGreaterThan(0);
       expect(generateSetList).toHaveBeenCalledTimes(1);
-      const [workout, lookUpBranch] =
+      const [workout, lookUpBranch, , options] =
         jest.mocked(generateSetList).mock.calls[0];
       expect(workout).toEqual(loadStrengthTestTemplate());
       expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
+      expect(options).toEqual({
+        skillTrees: getAllSkillTrees(),
+        filters: { pain: false, equipment: false },
+      });
     });
 
-    it("generates the stored day workout of a legacy plan with the lookup of its saved copies", () => {
+    it("generates the stored day workout of a legacy plan with the lookup of its saved copies and every filter on", () => {
       const result = generatePlanWorkoutForWeekday(
         generateWarmUpOnlyPlanUser(),
       );
 
       expect(generateSetList).toHaveBeenCalledTimes(1);
-      const [workout, lookUpBranch] =
+      const [workout, lookUpBranch, , options] =
         jest.mocked(generateSetList).mock.calls[0];
+      expect(options).toEqual({ skillTrees: expect.any(Object) });
       expect(workout).toEqual({
         id: "TRAINING_DAY",
         blocks: [
@@ -220,6 +229,7 @@ describe("generateWorkout: progress per skill", () => {
 describe("generateWorkout: short workouts", () => {
   afterEach(jest.restoreAllMocks);
   afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
+  afterEach(() => jest.useRealTimers());
 
   it("draws the block of the MOB template through the picks block handler", () => {
     const handlePicksBlock = jest.spyOn(picksHandler, "handlePicksBlock");
@@ -286,6 +296,35 @@ describe("generateWorkout: short workouts", () => {
         }),
       ),
     ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: [] });
+  });
+
+  it("keeps the cardio zone of a custom workout for an athlete with sore quadriceps", () => {
+    // Muscle soreness counts on the day the factory dates it.
+    jest.useFakeTimers({ now: new Date("2026-10-24T12:00:00Z") });
+    const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
+      generateTemplate([{ kind: "duration", skill: "CARDIO_2", duration: 1200 }], {
+        id: "run",
+        name: { en: "Run" },
+      }),
+      null,
+    );
+
+    const setList = generateWorkout({
+      type: id,
+      user: generateAthlete({ soreMuscles: ["QUADRICEPS"] }),
+      place: "STUDIO",
+      exercises: loadExercises(),
+      skillTrees: getAllSkillTrees(),
+      weekday: 1,
+      equipment: ["TREADMILL"],
+      givenSection: undefined,
+      daysSinceLastWorkout: 0,
+      userExerciseData: { exerciseData: {}, branchData: {} },
+    });
+
+    expect([...new Set(setList.map((entry) => entry.skill))]).toEqual([
+      "CARDIO_2",
+    ]);
   });
 
   it("throws the pain error with no regions for a custom workout without blocks", () => {

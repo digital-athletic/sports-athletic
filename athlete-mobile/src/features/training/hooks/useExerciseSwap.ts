@@ -20,11 +20,10 @@ import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySe
 import type { SwapControls } from "@/features/training/SwapExerciseButton";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
-import { DEFAULT_PICKS_POOL_RULES } from "@/features/training/workoutGenerator/blockHandlers/picks/picksWorkoutRules";
 import { setUpWorkout } from "@/features/training/workoutGenerator/stages/workoutSetup";
 import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
-import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
-import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
+import { generateTrainingDaySetList } from "@/features/training/workoutGenerator/trainingDayWorkout";
+import { resolveWorkoutFilters } from "@/features/training/workoutGenerator/workoutFilters";
 import { Logger } from "@/services/Logger";
 import { parseIntParam } from "@/utils/router";
 import { useEffect, useEffectEvent, useState } from "react";
@@ -64,7 +63,7 @@ const createSwapBasis = ({ params, ctx, place }: SwapRequest) => {
     parseIntParam(params.sectionIndex),
     calculateDaysSinceLastWorkout(params.type, ctx),
   );
-  return { day, input };
+  return { day, input, skillTrees: ctx.skillTrees };
 };
 
 const listAllAlternatives = (
@@ -72,7 +71,8 @@ const listAllAlternatives = (
   session: readonly UserExerciseDataType[],
 ): Record<string, ExerciseSwapState> => {
   const basis = createSwapBasis(request);
-  const input = setUpWorkout(basis.input, DEFAULT_PICKS_POOL_RULES);
+  // A plan day applies every filter, so its alternatives do too.
+  const input = setUpWorkout(basis.input, resolveWorkoutFilters());
   const swaps: Record<string, ExerciseSwapState> = {};
   for (const { branchId, skill } of listSwappableBranches(session, basis.day)) {
     const others = session.filter((entry) => entry.branchId !== branchId);
@@ -109,16 +109,16 @@ const listAllAlternatives = (
 
 /** Generates the plan day with the alternative in place of the original. */
 const generateSwappedDay = (
-  { day, input }: ReturnType<typeof createSwapBasis>,
+  { day, input, skillTrees }: ReturnType<typeof createSwapBasis>,
   skill: string,
   original: string,
   alternative: StoredBranch,
-) => {
-  const { workout, lookUpBranch } = readTrainingDayWorkout(
+) =>
+  generateTrainingDaySetList(
     swapBranchInTrainingDay(day, skill, original, alternative),
+    input,
+    skillTrees,
   );
-  return generateSetList(workout, lookUpBranch, input);
-};
 
 /** The original branch whose swap shows the given branch. */
 const findOriginalBranchId = (

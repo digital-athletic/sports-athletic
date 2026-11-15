@@ -142,4 +142,61 @@ describe("cardioDurationHandler: createCardioDurationHandler", () => {
       swappedFromSkill: "CARDIO_2",
     });
   });
+
+  it("draws from every branch of the tree when the pain filter is off", () => {
+    const received: BranchesBlock[] = [];
+    const handleBlock = createCardioDurationHandler(
+      generateRecordingBranchesHandler(received),
+    );
+    const input = generateWorkoutInput({
+      pains: ["KNEE_LEFT"],
+      exerciseCatalog: generateMixedExerciseCatalog(),
+      skillTrees: { CARDIO_2: generateKneeBlockedCardioTree() },
+      random: () => 0,
+      filters: { pain: false },
+    });
+
+    handleBlock(cardioBlock, input, NO_BRANCHES);
+
+    expect(received.map(({ branches }) => branches)).toEqual([["1"]]);
+  });
+
+  it("swaps the block for the CARDIO_5 run for lower body soreness", () => {
+    const handleBlock = createCardioDurationHandler(
+      createBranchesBlockHandler(lookUpStoredBranchInCatalog),
+    );
+    const input = generateWorkoutInput({
+      soreMuscles: ["QUADRICEPS"],
+      exerciseCatalog: loadExercises(),
+      skillTrees: getAllSkillTrees(),
+    });
+
+    const result = handleBlock(cardioBlock, input, NO_BRANCHES);
+
+    expect(result).toMatchObject({
+      status: "filled",
+      block: { skill: "CARDIO_5" },
+      swappedFromSkill: "CARDIO_2",
+    });
+  });
+
+  it("keeps the cardio zone for lower body soreness when the soreness filter is off", () => {
+    const handleBlock = createCardioDurationHandler(
+      createBranchesBlockHandler(lookUpStoredBranchInCatalog),
+    );
+    const input = generateWorkoutInput({
+      soreMuscles: ["QUADRICEPS"],
+      exerciseCatalog: loadExercises(),
+      skillTrees: getAllSkillTrees(),
+      filters: { soreness: false },
+    });
+
+    const result = handleBlock(cardioBlock, input, NO_BRANCHES);
+
+    expect(result).toMatchObject({
+      status: "filled",
+      block: { skill: "CARDIO_2", duration: 1200 },
+    });
+    expect(result).not.toHaveProperty("swappedFromSkill");
+  });
 });

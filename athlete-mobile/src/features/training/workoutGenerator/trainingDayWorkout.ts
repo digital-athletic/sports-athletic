@@ -1,14 +1,17 @@
 import { WorkoutConstants } from "@/constants/workoutConstants";
+import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { Block, Template } from "@/schemas/aiwl.schema";
+import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import {
   createStoredDayBranchLookup,
   lookUpStoredBranchInCatalog,
 } from "./blockHandlers/branches/storedBranchLookup";
+import type { GenerationInput } from "./generationInput/generationInput";
 import {
   createStoredDayWorkout,
   type StoredTrainingDay,
 } from "./storedDayWorkout";
-import type { SelectedWorkout } from "./workoutGeneration";
+import { generateSetList, type SelectedWorkout } from "./workoutGeneration";
 
 /**
  * A plan training day as the generator runs it: the stored day of a legacy
@@ -55,4 +58,21 @@ export const readTrainingDayWorkout = (day: TrainingDay): SelectedWorkout => {
     },
     lookUpBranch: createStoredDayBranchLookup(day.skills),
   };
+};
+
+/**
+ * Reads a plan training day and generates its set list with every filter on.
+ * The router and the exercise swap both call it, so a swapped day generates
+ * like the day itself.
+ *
+ * generateTrainingDaySetList(day, input, getAllSkillTrees())
+ * → [{ branchId: "410", skill: "WU", ... }, ...]
+ */
+export const generateTrainingDaySetList = (
+  day: TrainingDay,
+  input: GenerationInput,
+  skillTrees: Readonly<Record<string, SkillTreeType>>,
+): GeneratedSetListEntry[] => {
+  const { workout, lookUpBranch } = readTrainingDayWorkout(day);
+  return generateSetList(workout, lookUpBranch, input, { skillTrees });
 };

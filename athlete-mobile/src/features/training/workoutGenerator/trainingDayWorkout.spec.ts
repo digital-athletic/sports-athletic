@@ -1,4 +1,5 @@
 import { loadExercises } from "@/data/loadExercises";
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { generateGenerationInput } from "@test/factories/generationInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
 import { describeSetListEntries } from "@test/factories/setListDescription";
@@ -13,7 +14,10 @@ import { toExerciseBranch } from "@/features/training/exerciseSwap/exerciseSwap"
 import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import type { GenerationInput } from "./generationInput/generationInput";
-import { readTrainingDayWorkout } from "./trainingDayWorkout";
+import {
+  generateTrainingDaySetList,
+  readTrainingDayWorkout,
+} from "./trainingDayWorkout";
 import { generateSetList } from "./workoutGeneration";
 
 const exerciseCatalog = loadExercises();
@@ -182,6 +186,41 @@ describe("trainingDayWorkout: readTrainingDayWorkout of a legacy day", () => {
     expect(
       lookUpBranch("GKS", "510", generateGenerationInput({ exerciseCatalog })),
     ).toBeUndefined();
+  });
+});
+
+describe("trainingDayWorkout: generateTrainingDaySetList", () => {
+  it("generates the plan day with the soreness filter on", () => {
+    const setList = generateTrainingDaySetList(
+      generateStoredTrainingDay({ CARDIO_3: ["580"] }, { CARDIO_3: 30 }, "721"),
+      generateGenerationInput({
+        exerciseCatalog,
+        soreMuscles: ["QUADRICEPS"],
+        random: () => 0,
+      }),
+      getAllSkillTrees(),
+    );
+
+    expect(setList.map(({ branchId, skill }) => [branchId, skill])).toEqual([
+      ["576", "CARDIO_5"],
+    ]);
+  });
+
+  it("generates the blocks of the day in section order", () => {
+    const setList = generateTrainingDaySetList(
+      generateStoredTrainingDay(
+        { CARDIO_5: ["576"], WU: ["410"] },
+        { CARDIO_5: 25, WU: 5 },
+        "721",
+      ),
+      generateGenerationInput({ exerciseCatalog, random: () => 0 }),
+      getAllSkillTrees(),
+    );
+
+    expect([...new Set(setList.map(({ skill }) => skill))]).toEqual([
+      "WU",
+      "CARDIO_5",
+    ]);
   });
 });
 

@@ -10,13 +10,9 @@ import {
   generateWorkoutInput,
   type WorkoutInputFactoryOptions,
 } from "@test/factories/workoutInput";
-import { createExercisesBlockHandler } from "./exercisesHandler";
+import { handleExercisesBlock } from "./exercisesHandler";
 
 const BLOCK_PATH = "TESTDAY.blocks[1]";
-
-const handleExercisesBlock = createExercisesBlockHandler({
-  equipment: "required",
-});
 
 // Catalog of two lifts: "25" needs a barbell and a power rack, "50" a barbell bench.
 const generateLiftCatalog = () => [
@@ -205,16 +201,15 @@ describe("exercisesHandler: handleExercisesBlock", () => {
     });
   });
 
-  it("prescribes an exercise the place cannot equip under the ignored equipment rule", () => {
+  it("prescribes an exercise the place cannot equip when the equipment filter is off", () => {
     const block = generateExercisesBlock(["25"]);
     const input = generateWorkoutInput({
       equipment: [],
       exerciseCatalog: generateLiftCatalog(),
+      filters: { equipment: false },
     });
 
-    const result = createExercisesBlockHandler({
-      equipment: "ignored",
-    })(block, input, new Set(), {
+    const result = handleExercisesBlock(block, input, new Set(), {
       earlierResults: [],
       blockPath: BLOCK_PATH,
     });

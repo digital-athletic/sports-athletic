@@ -23,6 +23,7 @@ import {
 } from "@test/factories/testSets";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
+import { STRENGTH_TEST_FILTERS } from "@/features/training/workoutGeneratorRouter";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import { loadStrengthTestLoadData } from "./strengthTestLoadData";
 import { generateSetList } from "./workoutGeneration";
@@ -86,6 +87,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         generateSetList(template, lookUpStoredBranchInCatalog, input, {
           skillTrees,
           loadData,
+          filters: STRENGTH_TEST_FILTERS,
         }),
       ).toThrow(
         "TEST.blocks[1].exercises: lift 25 has no test set loads for both genders",
@@ -124,7 +126,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
             loadStrengthTestTemplate(),
             lookUpStoredBranchInCatalog,
             input,
-            { skillTrees },
+            { skillTrees, filters: STRENGTH_TEST_FILTERS },
           ),
         ),
       ).toEqual({ type: "NO_EXERCISES", subtype: "AGE", params: [] });
@@ -143,7 +145,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
             loadStrengthTestTemplate(),
             lookUpStoredBranchInCatalog,
             input,
-            { skillTrees },
+            { skillTrees, filters: STRENGTH_TEST_FILTERS },
           ),
         ),
       ).toContain("25");
@@ -167,7 +169,11 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
           template,
           lookUpStoredBranchInCatalog,
           input,
-          { skillTrees, loadData: loadStrengthTestLoadData() },
+          {
+          skillTrees,
+          loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
+        },
         );
 
         expect([
@@ -191,7 +197,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         input,
-        { skillTrees },
+        { skillTrees, filters: STRENGTH_TEST_FILTERS },
       );
 
       expect([
@@ -213,7 +219,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         input,
-        { skillTrees },
+        { skillTrees, filters: STRENGTH_TEST_FILTERS },
       );
 
       expect([
@@ -246,6 +252,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         generateSetList(template, lookUpStoredBranchInCatalog, input, {
           skillTrees,
           loadData,
+          filters: STRENGTH_TEST_FILTERS,
         }),
       ).toThrow("TEST.blocks[1]: exercise 99999999 is no catalog exercise");
     });
@@ -265,7 +272,11 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         template,
         lookUpStoredBranchInCatalog,
         input,
-        { skillTrees, loadData: loadStrengthTestLoadData() },
+        {
+          skillTrees,
+          loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
+        },
       );
 
       expect(
@@ -288,7 +299,11 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         template,
         lookUpStoredBranchInCatalog,
         input,
-        { skillTrees, loadData: loadStrengthTestLoadData() },
+        {
+          skillTrees,
+          loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
+        },
       );
 
       expect(
@@ -318,7 +333,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         template,
         lookUpStoredBranchInCatalog,
         input,
-        { skillTrees, loadData },
+        { skillTrees, loadData, filters: STRENGTH_TEST_FILTERS },
       );
 
       expect(
@@ -347,7 +362,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
                 ...options,
                 random: generateSeededRandom(seed),
               }),
-              { skillTrees },
+              { skillTrees, filters: STRENGTH_TEST_FILTERS },
             ),
           ),
         );
@@ -370,6 +385,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         {
           skillTrees: { WU: generateRegionWarmUpTree(["BLOCK_KNEE"]) },
           loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
         },
       );
 
@@ -388,6 +404,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         {
           skillTrees: { WU: generateRegionWarmUpTree(["EQ_DUMBBELL"]) },
           loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
         },
       );
 
@@ -404,6 +421,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         {
           skillTrees: { WU: warmUpTree },
           loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
         },
       );
 
@@ -426,6 +444,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         {
           skillTrees: { WU: warmUpTree },
           loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
         },
       );
 
@@ -447,6 +466,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         {
           skillTrees: { WU: warmUpTree },
           loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
         },
       );
 
@@ -467,6 +487,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         {
           skillTrees: { WU: generateRegionWarmUpTree() },
           loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
         },
       );
 
@@ -489,7 +510,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         generateStrengthTestInput({ random: generateSeededRandom(5) }),
-        { skillTrees },
+        { skillTrees, filters: STRENGTH_TEST_FILTERS },
       );
 
       expect(
@@ -531,7 +552,11 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         template,
         lookUpStoredBranchInCatalog,
         generateStrengthTestInput({ random: generateSeededRandom(5) }),
-        { skillTrees, loadData: loadStrengthTestLoadData() },
+        {
+          skillTrees,
+          loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
+        },
       );
 
       expect(
@@ -586,13 +611,13 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         kneeInput,
-        { skillTrees },
+        { skillTrees, filters: STRENGTH_TEST_FILTERS },
       );
       const painFreeSetList = generateSetList(
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         painFreeInput,
-        { skillTrees },
+        { skillTrees, filters: STRENGTH_TEST_FILTERS },
       );
 
       const warmUpIds = listWarmUpBranchIds(setList);
@@ -633,7 +658,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         input,
-        { skillTrees },
+        { skillTrees, filters: STRENGTH_TEST_FILTERS },
       );
 
       expect(describeSetListEntries(setList)).toEqual([
@@ -699,7 +724,11 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         template,
         lookUpStoredBranchInCatalog,
         input,
-        { skillTrees, loadData: loadStrengthTestLoadData() },
+        {
+          skillTrees,
+          loadData: loadStrengthTestLoadData(),
+          filters: STRENGTH_TEST_FILTERS,
+        },
       ).filter(
         (entry) => entry.skill === "TEST" && entry.repetition !== undefined,
       );
@@ -724,7 +753,7 @@ describe("strengthTestWorkout: generateSetList of the strength test", () => {
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         input,
-        { skillTrees },
+        { skillTrees, filters: STRENGTH_TEST_FILTERS },
       );
 
       expect({

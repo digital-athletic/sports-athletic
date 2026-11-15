@@ -5,7 +5,8 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { TrainingType } from "@/features/training/models/Training";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
-import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
+import { generateTrainingDaySetList } from "@/features/training/workoutGenerator/trainingDayWorkout";
+import type { WorkoutFilters } from "@/features/training/workoutGenerator/workoutFilters";
 import {
   generateSetList,
   type SelectedWorkout,
@@ -40,6 +41,17 @@ const createInput = (request: WorkoutGenerationRequest) =>
     random: () => Math.random(),
   });
 
+/** Short and custom workouts ignore muscle soreness, as Pain, Soreness, and Prevention defines. */
+export const SHORT_WORKOUT_FILTERS: Partial<WorkoutFilters> = Object.freeze({
+  soreness: false,
+});
+
+/** The athlete picks no place for the strength test, and its lifts ignore pain. */
+export const STRENGTH_TEST_FILTERS: Partial<WorkoutFilters> = Object.freeze({
+  pain: false,
+  equipment: false,
+});
+
 // A template without blocks counts as an empty pool, so it throws the pain
 // error whatever the athlete's pains.
 const selectShortWorkout = (type: TrainingType): SelectedWorkout => {
@@ -61,36 +73,39 @@ const selectShortWorkout = (type: TrainingType): SelectedWorkout => {
   return { workout: template, lookUpBranch: lookUpStoredBranchInCatalog };
 };
 
-const selectWorkout = (request: WorkoutGenerationRequest): SelectedWorkout => {
-  if (request.type === "TEST_WORKOUT") {
-    return {
-      workout: loadStrengthTestTemplate(),
-      lookUpBranch: lookUpStoredBranchInCatalog,
-    };
-  }
+/**
+ * Selects the workout, the branch lookup and the filters per training type,
+ * then generates its set list through the one entry point: a plan training
+ * day with every filter on, the strength test, or a short workout from its
+ * template.
+ */
+export const generateWorkout = (
+  request: WorkoutGenerationRequest,
+): GeneratedSetListEntry[] => {
+  const input = createInput(request);
   if (request.type === "PLAN") {
-    return readTrainingDayWorkout(
+    return generateTrainingDaySetList(
       selectStoredTrainingDay(
         request.user,
         request.weekday,
         request.givenSection,
         request.daysSinceLastWorkout,
       ),
+      input,
+      request.skillTrees,
     );
   }
-  return selectShortWorkout(request.type);
-};
-
-/**
- * Selects the workout and the branch lookup per training type, then
- * generates its set list through the one entry point: the strength test, a
- * plan training day, or a short workout from its template.
- */
-export const generateWorkout = (
-  request: WorkoutGenerationRequest,
-): GeneratedSetListEntry[] => {
-  const { workout, lookUpBranch } = selectWorkout(request);
-  return generateSetList(workout, lookUpBranch, createInput(request), {
+  if (request.type === "TEST_WORKOUT") {
+    return generateSetList(
+      loadStrengthTestTemplate(),
+      lookUpStoredBranchInCatalog,
+      input,
+      { skillTrees: request.skillTrees, filters: STRENGTH_TEST_FILTERS },
+    );
+  }
+  const { workout, lookUpBranch } = selectShortWorkout(request.type);
+  return generateSetList(workout, lookUpBranch, input, {
     skillTrees: request.skillTrees,
+    filters: SHORT_WORKOUT_FILTERS,
   });
 };

@@ -71,6 +71,26 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
     ).toEqual(["523"]);
   });
 
+  it("keeps the stored branch of a sore region when the soreness filter is off", () => {
+    const input = generateWorkoutInput({
+      soreMuscles: ["CHEST"],
+      equipment: ["DUMBBELL", "BARBELL"],
+      exerciseCatalog,
+      filters: { soreness: false },
+    });
+
+    const result = handleBlock(
+      generateBranchesBlock("GKS", ["523", "510"]),
+      input,
+      NO_BRANCHES,
+    );
+
+    expect(result).toMatchObject({
+      status: "filled",
+      usedBranchIds: ["523", "510"],
+    });
+  });
+
   // without weights GKS replaces from GKSKG; no upper body branch fits, so a less used region refills
   it("refills the requested regions from the skill tree the place selects", () => {
     const input = generateWorkoutInput({
@@ -336,6 +356,25 @@ describe("branchesHandler: cardio swap", () => {
     const block = generateCardioBlock("CARDIO_3", 600);
 
     const result = handleBlock(block, restedInput, NO_BRANCHES);
+
+    expect(result).toMatchObject({
+      status: "filled",
+      block,
+      usedBranchIds: ["580"],
+    });
+    expect(result).not.toHaveProperty("swappedFromSkill");
+  });
+
+  it("keeps the stored cardio branch for sore quadriceps when the soreness filter is off", () => {
+    const block = generateCardioBlock("CARDIO_3", 600);
+    const input = generateWorkoutInput({
+      soreMuscles: ["QUADRICEPS"],
+      equipment: ["TREADMILL"],
+      exerciseCatalog,
+      filters: { soreness: false },
+    });
+
+    const result = handleBlock(block, input, NO_BRANCHES);
 
     expect(result).toMatchObject({
       status: "filled",

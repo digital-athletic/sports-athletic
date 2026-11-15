@@ -34,6 +34,20 @@ export const buildBranchLookupIndex = (
   return index;
 };
 
+/**
+ * Reads a stored branch ID from the catalog. A branch without levels counts
+ * as not found, as plan creation never stores one.
+ */
+export const findCatalogBranch = (
+  branchLookupIndex: BranchLookupIndex,
+  branchId: string,
+): SkillBranchType | undefined => {
+  const indexedBranch = branchLookupIndex.get(branchId);
+  return indexedBranch && Object.keys(indexedBranch.branch.levels).length > 0
+    ? indexedBranch.branch
+    : undefined;
+};
+
 let loadedBranchLookupIndex: BranchLookupIndex | undefined;
 
 export const loadBranchLookupIndex = (): BranchLookupIndex => {

@@ -137,16 +137,90 @@ describe("userWorkoutStore", () => {
   });
 
   describe("replaceBranchInTrainingPlan", () => {
-    it("leaves a training stored as an AIWL workout unchanged", async () => {
+    const planBranch = (branchId: string) => ({
+      branchId,
+      tags: [],
+      exercises: { 1: { exerciseId: `e${branchId}` } },
+    });
+
+    const plannedWarmUpBranchIds = (
+      plan: ReturnType<typeof useUserWorkoutStore.getState>["trainingPlan"],
+    ) => {
+      const training = plan?.sections[0].trainings[0];
+      return training && "workout" in training
+        ? training.workout.blocks.flatMap((block) =>
+            block.kind === "branches" ? block.branches : [],
+          )
+        : undefined;
+    };
+
+    it("replaces the branch ID in the AIWL training that planned it with two branch IDs", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
+
+      await act(() => {
+        result.current.setTrainingPlan(createAiwlPlan());
+        result.current.replaceBranchInTrainingPlan(0, 1, "WU", "410", [
+          planBranch("411"),
+          planBranch("412"),
+        ]);
+      });
+
+      expect(plannedWarmUpBranchIds(result.current.trainingPlan)).toEqual([
+        "411",
+        "412",
+      ]);
+    });
+
+    it("leaves an AIWL training unchanged when it does not plan the branch ID", async () => {
       const { result } = await renderHook(() => useUserWorkoutStore());
       const plan = createAiwlPlan();
 
       await act(() => {
         result.current.setTrainingPlan(plan);
-        result.current.replaceBranchInTrainingPlan(0, 1, "WU", "410", []);
+        result.current.replaceBranchInTrainingPlan(0, 1, "WU", "999", [
+          planBranch("411"),
+        ]);
       });
 
       expect(result.current.trainingPlan).toEqual(plan);
+    });
+
+    it("replaces the copied branch of a legacy training with the new branches", async () => {
+      const { result } = await renderHook(() => useUserWorkoutStore());
+
+      await act(() => {
+        result.current.setTrainingPlan({
+          start: "2026-10-05",
+          sections: [
+            {
+              start: "2026-10-05",
+              numOfWeeks: 4,
+              type: "SK",
+              cardioType: "CARDIO_3",
+              trainings: [
+                {
+                  weekday: 1,
+                  focus: "PHASE",
+                  skills: { WU: [planBranch("410"), planBranch("420")] },
+                  lengths: { WU: 5 },
+                },
+              ],
+            },
+          ],
+        });
+        result.current.replaceBranchInTrainingPlan(0, 1, "WU", "410", [
+          planBranch("411"),
+          planBranch("412"),
+        ]);
+      });
+
+      expect(
+        result.current.trainingPlan?.sections[0].trainings[0],
+      ).toMatchObject({
+        skills: {
+          WU: [planBranch("411"), planBranch("412"), planBranch("420")],
+        },
+      });
     });
   });
 

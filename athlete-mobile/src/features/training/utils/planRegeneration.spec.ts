@@ -1,10 +1,16 @@
 import type { TrainingPlanType } from "@/features/training/models/TrainingPlan";
 import {
+  type AiwlTrainingType,
   type LegacyTrainingType,
   readCopiedBranches,
   type UserTrainingType,
 } from "@/features/training/models/UserTraining";
 import { createAiwlTraining } from "@/features/training/utils/testFixtures";
+import type { Block } from "@/schemas/aiwl.schema";
+import {
+  generateBranchesBlock,
+  generateTemplate,
+} from "@test/factories/templateBlock";
 import { keepUnchangedTrainingDays } from "./planRegeneration";
 
 const branch = (branchId: string) => ({ branchId, tags: [], exercises: {} });
@@ -130,5 +136,69 @@ describe("keepUnchangedTrainingDays", () => {
         planWith(aiwlTraining),
       ),
     ).toBe(aiwlTraining);
+  });
+});
+
+describe("keepUnchangedTrainingDays: AIWL trainings", () => {
+  const aiwlTraining = (
+    blocks: Block[],
+    overrides: Partial<AiwlTrainingType> = {},
+  ) => createAiwlTraining({ workout: generateTemplate(blocks), ...overrides });
+
+  const oldDay = aiwlTraining([
+    generateBranchesBlock("WU", ["410"], { duration: 300 }),
+    generateBranchesBlock("SWR1", ["old1", "old2"], { duration: 1800 }),
+  ]);
+
+  it("keeps the old branch IDs of a day whose focus, blocks, durations and equipment stayed the same", () => {
+    const newDay = aiwlTraining([
+      generateBranchesBlock("WU", ["411"], { duration: 300 }),
+      generateBranchesBlock("SWR1", ["new1", "new2"], { duration: 1800 }),
+    ]);
+
+    expect(keptTraining(planWith(oldDay), planWith(newDay))).toEqual({
+      ...newDay,
+      workout: oldDay.workout,
+    });
+  });
+
+  it("redraws a day whose block duration changed", () => {
+    const newDay = aiwlTraining([
+      generateBranchesBlock("WU", ["411"], { duration: 300 }),
+      generateBranchesBlock("SWR1", ["new1"], { duration: 2100 }),
+    ]);
+
+    expect(keptTraining(planWith(oldDay), planWith(newDay))).toBe(newDay);
+  });
+
+  it("redraws a day whose block skills changed", () => {
+    const newDay = aiwlTraining([
+      generateBranchesBlock("WU", ["411"], { duration: 300 }),
+      generateBranchesBlock("MOB", ["new1"], { duration: 1800 }),
+    ]);
+
+    expect(keptTraining(planWith(oldDay), planWith(newDay))).toBe(newDay);
+  });
+
+  it("redraws a day with another number of blocks", () => {
+    const newDay = aiwlTraining([
+      generateBranchesBlock("WU", ["411"], { duration: 300 }),
+    ]);
+
+    expect(keptTraining(planWith(oldDay), planWith(newDay))).toBe(newDay);
+  });
+
+  it("redraws a day whose place equipment changed", () => {
+    const newDay = aiwlTraining(oldDay.workout.blocks, {
+      equipment: ["KETTLEBELL"],
+    });
+
+    expect(keptTraining(planWith(oldDay), planWith(newDay))).toBe(newDay);
+  });
+
+  it("redraws a day whose focus changed", () => {
+    const newDay = aiwlTraining(oldDay.workout.blocks, { focus: "CARDIO" });
+
+    expect(keptTraining(planWith(oldDay), planWith(newDay))).toBe(newDay);
   });
 });

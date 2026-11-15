@@ -10,6 +10,7 @@ import {
 } from "@/features/customWorkouts/buildGeneratedTemplate";
 import { Chip } from "@/form/Chip";
 import { ChoiceChips } from "@/form/ChoiceChips";
+import { useNavigationLock } from "@/hooks/useNavigationLock";
 import {
   generateCustomWorkoutId,
   useCustomWorkoutsStore,
@@ -68,6 +69,7 @@ const useTrainingForm = (): TrainingForm => {
   const [minutes, setMinutes] = useState<TrainingTime | null>(null);
   const [focus, setFocus] = useState<GeneratedTrainingFocus | null>(null);
   const [regions, setRegions] = useState<GeneratedTrainingRegion[]>([]);
+  const { runLocked } = useNavigationLock();
 
   const offeredRegions = focus ? listRegionsForFocus(focus) : [];
   const isComplete =
@@ -95,12 +97,14 @@ const useTrainingForm = (): TrainingForm => {
     toggleRegion: (region) => setRegions(toggleRegion(regions, region)),
     generate: () => {
       if (minutes === null || focus === null || !isComplete) return;
-      const template = buildGeneratedTemplate(
-        { minutes, focus, regions },
-        generateCustomWorkoutId(),
-      );
-      useCustomWorkoutsStore.getState().saveCustomWorkout(template, null);
-      router.back();
+      runLocked(() => {
+        const template = buildGeneratedTemplate(
+          { minutes, focus, regions },
+          generateCustomWorkoutId(),
+        );
+        useCustomWorkoutsStore.getState().saveCustomWorkout(template, null);
+        router.back();
+      });
     },
   };
 };

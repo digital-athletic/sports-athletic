@@ -11,6 +11,8 @@ jest.mock("expo-router", () => ({
   router: { back: () => mockBack() },
   useRouter: () => ({ back: jest.fn() }),
   Stack: { Screen: () => null },
+  // The screen never regains focus in these tests.
+  useFocusEffect: jest.fn(),
 }));
 
 jest.mock("react-native-safe-area-context", () => ({
@@ -126,14 +128,44 @@ describe("GenerateTrainingScreen: generate", () => {
   });
 
   it("keeps two trainings generated with the same inputs", async () => {
-    const { getByRole } = await render(<GenerateTrainingScreen />);
-    await fireEvent.press(getByRole("radio", { name: "15 min" }));
-    await fireEvent.press(getByRole("radio", { name: "Cardio" }));
+    const first = await render(<GenerateTrainingScreen />);
+    await fireEvent.press(first.getByRole("radio", { name: "15 min" }));
+    await fireEvent.press(first.getByRole("radio", { name: "Cardio" }));
+    await fireEvent.press(first.getByRole("button", { name: GENERATE_LABEL }));
+    await first.unmount();
 
-    await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
-    await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
+    const second = await render(<GenerateTrainingScreen />);
+    await fireEvent.press(second.getByRole("radio", { name: "15 min" }));
+    await fireEvent.press(second.getByRole("radio", { name: "Cardio" }));
+    await fireEvent.press(second.getByRole("button", { name: GENERATE_LABEL }));
 
     expect(listOwnTrainings()).toHaveLength(2);
+  });
+
+  it("saves one training and goes back once for two presses", async () => {
+    const { getByRole } = await render(<GenerateTrainingScreen />);
+    await fireEvent.press(getByRole("radio", { name: "30 min" }));
+    await fireEvent.press(getByRole("radio", { name: "Hypertrophy" }));
+    await fireEvent.press(getByRole("button", { name: "Upper body" }));
+
+    await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
+    await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
+
+    expect(listOwnTrainings()).toHaveLength(1);
+    expect(mockBack).toHaveBeenCalledTimes(1);
+  });
+
+  it("generates once after a press on an incomplete form and then completing it", async () => {
+    const { getByRole } = await render(<GenerateTrainingScreen />);
+    await fireEvent.press(getByRole("radio", { name: "30 min" }));
+    await fireEvent.press(getByRole("radio", { name: "Hypertrophy" }));
+    await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
+
+    await fireEvent.press(getByRole("button", { name: "Upper body" }));
+    await fireEvent.press(getByRole("button", { name: GENERATE_LABEL }));
+
+    expect(listOwnTrainings()).toHaveLength(1);
+    expect(mockBack).toHaveBeenCalledTimes(1);
   });
 
   it("trains the regions chosen with several chips", async () => {

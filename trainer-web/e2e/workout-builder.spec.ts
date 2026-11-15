@@ -22,6 +22,7 @@ const SAVED_BLOCKS = [
     kind: "picks",
     skill: "GKS",
     picks: [{ tags: ["REGION_UPPER_BODY"], count: 5 }],
+    countBy: "entries",
   },
   { kind: "duration", skill: "CARDIO_2", duration: 1200 },
 ];
@@ -185,13 +186,24 @@ test.describe("Workout builder", () => {
     page,
   }) => {
     const blocks = [
-      { kind: "picks", skill: "WU", picks: [{ tags: [], count: 4 }] },
+      {
+        kind: "picks",
+        skill: "WU",
+        picks: [{ tags: [], count: 4 }],
+        countBy: "entries",
+      },
       {
         kind: "picks",
         skill: "PREV",
         picks: [{ tags: ["PREVENTION_KNEE_HIP"], count: 6 }],
+        countBy: "entries",
       },
-      { kind: "picks", skill: "CD", picks: [{ tags: [], count: 3 }] },
+      {
+        kind: "picks",
+        skill: "CD",
+        picks: [{ tags: [], count: 3 }],
+        countBy: "entries",
+      },
     ];
     const draft: MockTeamWorkout = {
       ...SAVED,
@@ -357,7 +369,12 @@ test.describe("Workout builder", () => {
       p_template: {
         id: SAVED.id,
         blocks: [
-          { kind: "picks", skill: "BAS", picks: [{ tags: [], count: 3 }] },
+          {
+            kind: "picks",
+            skill: "BAS",
+            picks: [{ tags: [], count: 3 }],
+            countBy: "entries",
+          },
           { kind: "duration", skill: "CARDIO_2", duration: 1200 },
         ],
       },

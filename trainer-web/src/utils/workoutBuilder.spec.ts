@@ -45,14 +45,19 @@ const keys = (): (() => string) => {
 
 describe("draftToTemplate", () => {
   it.each(pickSkills.map((skill) => [skill.id, skill.tags.slice(0, 1)]))(
-    "writes %s as a picks block with the exercise count",
+    "writes %s as a picks block with the exercise count, counted by entries",
     (skillId, tags) => {
       const template = draftToTemplate(
         draftWith([section(skillId, 7, [...tags])]),
         "id-1",
       );
       expect(template.blocks).toEqual([
-        { kind: "picks", skill: skillId, picks: [{ tags, count: 7 }] },
+        {
+          kind: "picks",
+          skill: skillId,
+          picks: [{ tags, count: 7 }],
+          countBy: "entries",
+        },
       ]);
     },
   );
@@ -67,6 +72,17 @@ describe("draftToTemplate", () => {
       expect(template.blocks).toEqual([
         { kind: "duration", skill: skillId, duration: 1200 },
       ]);
+    },
+  );
+
+  it.each(cardioSkills.map((skill) => [skill.id]))(
+    "writes %s without a countBy",
+    (skillId) => {
+      const template = draftToTemplate(
+        draftWith([section(skillId, 20)]),
+        "id-1",
+      );
+      expect(template.blocks[0]).not.toHaveProperty("countBy");
     },
   );
 
@@ -89,11 +105,13 @@ describe("draftToTemplate", () => {
       kind: "picks",
       skill: "WU",
       picks: [{ tags: [], count: 4 }],
+      countBy: "entries",
     });
     expect(template.blocks[3]).toEqual({
       kind: "picks",
       skill: "CD",
       picks: [{ tags: [], count: 3 }],
+      countBy: "entries",
     });
   });
 
@@ -508,5 +526,61 @@ describe("templateToDraft", () => {
     ],
   ])("reads %s", (_label, blocks, expected) => {
     expect(ticks(blocks)).toEqual(expected);
+  });
+
+  it("reads a template without countBy and the same template with countBy entries into equal drafts", () => {
+    const blocks = [
+      fixedSection("WU", 4),
+      { ...picks("MOB"), picks: [{ tags: ["REGION_CORE"], count: 6 }] },
+      { kind: "duration", skill: "CARDIO_2", duration: 1200 },
+      fixedSection("CD", 3),
+    ];
+    const withCountBy = blocks.map((block) =>
+      block.kind === "picks" ? { ...block, countBy: "entries" } : block,
+    );
+
+    expect(templateToDraft({ ...base, blocks }, keys())).toEqual(
+      templateToDraft({ ...base, blocks: withCountBy }, keys()),
+    );
+  });
+
+  it("reads a picks block counted by pairs and saves it back counted by entries", () => {
+    const stored = {
+      ...base,
+      blocks: [{ ...picks("GKS"), countBy: "pairs" }],
+    };
+    const draft = templateToDraft(stored, keys());
+
+    expect(draft?.sections).toEqual([section("GKS", 5, [], "k0")]);
+    expect(draft && draftToTemplate(draft, "id-1").blocks).toEqual([
+      {
+        kind: "picks",
+        skill: "GKS",
+        picks: [{ tags: [], count: 5 }],
+        countBy: "entries",
+      },
+    ]);
+  });
+
+  it("saves a warm-up and cool-down read from a template without countBy counted by entries", () => {
+    const draft = templateToDraft(
+      { ...base, blocks: [fixedSection("WU", 4), fixedSection("CD", 3)] },
+      keys(),
+    );
+
+    expect(draft && draftToTemplate(draft, "id-1").blocks).toEqual([
+      {
+        kind: "picks",
+        skill: "WU",
+        picks: [{ tags: [], count: 4 }],
+        countBy: "entries",
+      },
+      {
+        kind: "picks",
+        skill: "CD",
+        picks: [{ tags: [], count: 3 }],
+        countBy: "entries",
+      },
+    ]);
   });
 });

@@ -94,6 +94,7 @@ export type AiwlBlock =
       kind: "picks";
       skill: string;
       picks: { tags: string[]; count: number }[];
+      countBy: "entries";
     }
   | { kind: "duration"; skill: string; duration: number };
 

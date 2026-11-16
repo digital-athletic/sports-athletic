@@ -75,6 +75,7 @@ export const TextInputField: FC<TextInputFieldProps> = ({
             variant="body"
             color="darkGrey1"
             marginRight="m"
+            flexShrink={0}
             testID={testID ? `${testID}-suffix` : undefined}
             accessibilityElementsHidden
             importantForAccessibility="no"
@@ -89,9 +90,11 @@ export const TextInputField: FC<TextInputFieldProps> = ({
 
 // The frame shows the focus, so the browser outline on web would double it.
 // A solid outline of width 0 replaces the browser default, which ignores width.
+// minWidth 0 lets the input shrink below its browser default width, so a suffix fits beside it.
 const styles = StyleSheet.create({
   input: {
     alignSelf: "stretch",
+    minWidth: 0,
     fontSize: 17,
     outlineStyle: "solid",
     outlineWidth: 0,

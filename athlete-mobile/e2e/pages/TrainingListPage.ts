@@ -448,7 +448,6 @@ export class TrainingListPage extends BasePage {
     await this.page.getByText("Yes", { exact: true }).click();
   }
 
-  /** Presses finish with open sets and confirms the "Finish training early?" dialog. */
   /** Presses finish with open sets and confirms the dialog that shows the explanation. */
   async finishEarly(explanation: string) {
     await this.finishButton.click({ timeout: 3000 });

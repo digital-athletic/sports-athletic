@@ -165,6 +165,45 @@ export const roundWeightValue = (
     : rounded;
 };
 
+const isDoneSet = (entry: UserExerciseDataType) =>
+  entry.completed === true && entry.skipped !== true;
+
+const isStrengthTestSet = (entry: UserExerciseDataType) =>
+  entry.skill === STRENGTH_TEST_SKILL || entry.repetition === -1;
+
+const movedWeightOfSet = (
+  entry: UserExerciseDataType,
+  exercisesData: ExerciseType[],
+  maxValues: MaxValuesType,
+) => {
+  if (!isDoneSet(entry) || isStrengthTestSet(entry)) return 0;
+  if (isPauseExercise(entry.exerciseId)) return 0;
+  if (!entry.weight || !entry.repetition) return 0;
+  const exercise = exercisesData.find((e) => e.id === entry.exerciseId);
+  if (!exercise) return 0;
+  const load = deriveWeightForExercise(
+    entry.weight,
+    entry.weightType,
+    exercise,
+    maxValues,
+  );
+  return (load ?? 0) * entry.repetition;
+};
+
+/**
+ * Moved weight of a workout in kg: load times repetitions summed over the sets
+ * the athlete did. Skipped, open, rest and strength test sets add 0.
+ */
+export const calculateMovedWeight = (
+  exerciseList: UserExerciseDataType[],
+  exercisesData: ExerciseType[],
+  maxValues: MaxValuesType,
+): number =>
+  exerciseList.reduce(
+    (total, entry) => total + movedWeightOfSet(entry, exercisesData, maxValues),
+    0,
+  );
+
 export const calculateWorkoutTotals = (
   time: TrainingTimeType,
   exerciseList: UserExerciseDataType[],
@@ -181,7 +220,6 @@ export const calculateWorkoutTotals = (
   let pauseDuration = 0;
   let count = 0;
   let xp = 0;
-  let weight = 0;
   let height = 0;
   if (exerciseList) {
     for (let exercise of exerciseList) {
@@ -205,22 +243,6 @@ export const calculateWorkoutTotals = (
               +exercise.repetition * WorkoutConstants.REP_DURATION_IN_S;
           }
 
-          //weight
-          if (exercise.weight && exercise.repetition) {
-            let exerciseData = exercisesData.filter(
-              (e) => e.id === exercise.exerciseId,
-            )[0];
-            const exerciseWeight = deriveEntryWeight(
-              {
-                weight: exercise.weight,
-                weightType: exercise.weightType,
-                skill: exercise.skill,
-              },
-              exerciseData,
-              maxValues,
-            );
-            weight += (exerciseWeight ?? 0) * exercise.repetition;
-          }
           //height
           if (exercise.height && exercise.repetition) {
             height += exercise.height * exercise.repetition;
@@ -259,7 +281,7 @@ export const calculateWorkoutTotals = (
     duration: duration,
     count: count,
     xp: xp,
-    weight: weight,
+    weight: calculateMovedWeight(exerciseList ?? [], exercisesData, maxValues),
     height: height,
   };
 };

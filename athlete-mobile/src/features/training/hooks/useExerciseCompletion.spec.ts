@@ -256,6 +256,21 @@ describe("useExerciseCompletion: feedback on completion", () => {
     expect(progressSnapshot()).toEqual(before);
   });
 
+  it("marks only the skipped set row as skipped", async () => {
+    seedCompletionSession({});
+    useTrainingStore.setState({
+      exerciseList: generateSetRows(3, { repetition: 10 }),
+    });
+    const { result } = await renderHook(() => useExerciseCompletion());
+
+    await act(() => result.current.handleExerciseSkipped(1));
+
+    const skippedFlags = useTrainingStore
+      .getState()
+      .exerciseList?.map((row) => row.skipped === true);
+    expect(skippedFlags).toEqual([false, true, false]);
+  });
+
   it("leaves the progress unchanged when the athlete stops before the last set row", async () => {
     // Sets 1 and 2 of 3 are completed. The athlete aborts before set 3.
     seedCompletionSession({});

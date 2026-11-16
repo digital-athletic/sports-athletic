@@ -227,63 +227,7 @@ describe("useTrainingStore", () => {
     });
   });
 
-  // ============================================================================
-  // Exercise Skipped Tests
-  // ============================================================================
-
-  describe("setExerciseSkipped", () => {
-    beforeEach(() => {
-      useTrainingStore.setState({ exerciseList: mockExercises });
-    });
-
-    it("should mark exercise as skipped", async () => {
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setExerciseSkipped("10", "SWR1");
-      });
-
-      expect(result.current.exerciseList?.[0].skipped).toBe(true);
-    });
-
-    it("should mark specific exercise as skipped without affecting others", async () => {
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setExerciseSkipped("20", "CARDIO_1");
-      });
-
-      expect(result.current.exerciseList?.[0].skipped).toBe(false);
-      expect(result.current.exerciseList?.[1].skipped).toBe(true);
-      expect(result.current.exerciseList?.[2].skipped).toBe(false);
-    });
-
-    it("should mark multiple exercises as skipped", async () => {
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setExerciseSkipped("10", "SWR1");
-        result.current.setExerciseSkipped("30", "WU");
-      });
-
-      expect(result.current.exerciseList?.[0].skipped).toBe(true);
-      expect(result.current.exerciseList?.[1].skipped).toBe(false);
-      expect(result.current.exerciseList?.[2].skipped).toBe(true);
-    });
-
-    it("should handle skipped on null exercise list gracefully", async () => {
-      useTrainingStore.setState({ exerciseList: null });
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setExerciseSkipped("10", "SWR1");
-      });
-
-      expect(result.current.exerciseList).toBeNull();
-    });
-  });
-
-  describe("setExerciseFeedback and setExerciseSkipped: same exercise under two skills", () => {
+  describe("setExerciseFeedback: same exercise under two skills", () => {
     // Exercise 900 appears under SWR2 and SA: [{ 900, SWR2 }, { 900, SA }]
     const buildTwoSkillRows = (): UserExerciseDataType[] => [
       {
@@ -312,18 +256,6 @@ describe("useTrainingStore", () => {
         "TOO_HARD",
       );
       expect(result.current.exerciseList?.[1]?.feedback?.difficulty).toBeNull();
-    });
-
-    it("marks only the row of the given skill as skipped", async () => {
-      useTrainingStore.setState({ exerciseList: buildTwoSkillRows() });
-      const { result } = await renderHook(() => useTrainingStore());
-
-      await act(() => {
-        result.current.setExerciseSkipped("900", "SA");
-      });
-
-      expect(result.current.exerciseList?.[0]?.skipped).toBe(false);
-      expect(result.current.exerciseList?.[1]?.skipped).toBe(true);
     });
   });
 
@@ -1218,7 +1150,6 @@ describe("useTrainingStore", () => {
       await act(() => {
         result.current.setExerciseList(null);
         result.current.setExerciseFeedback("10", "SWR1", "SUCCEEDED");
-        result.current.setExerciseSkipped("10", "SWR1");
       });
 
       expect(result.current.exerciseList).toBeNull();

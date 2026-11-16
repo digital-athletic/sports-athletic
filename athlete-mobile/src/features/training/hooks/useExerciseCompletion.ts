@@ -65,7 +65,7 @@ export function useExerciseCompletion() {
     equipment,
     tempMaxValues,
     setTempMaxValues,
-    setExerciseSkipped,
+    markExerciseSkipped,
     setExerciseFeedback,
   } = useTrainingStore();
   const skillTrees = getAllSkillTrees();
@@ -646,7 +646,8 @@ export function useExerciseCompletion() {
     const exerciseId = currentExercise?.exerciseId ?? "-1";
     if (!currentExercise?.skill) return;
 
-    setExerciseSkipped(exerciseId, currentExercise.skill);
+    // Sets share exerciseId and skill, so only the index marks the skipped set.
+    markExerciseSkipped(index);
     Logger.logEvent("exercise_skipped", {
       exerciseId,
     });

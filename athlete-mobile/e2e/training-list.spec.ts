@@ -16,6 +16,7 @@ import {
   getComparableCompletedWorkout,
   getComparableExerciseProgress,
   getCompletedWorkouts,
+  getCompletedWorkoutsData,
   getTrainingStorageState,
   getUserProfileStorageState,
 } from "./utils/storage";
@@ -118,6 +119,49 @@ test.describe("Training list: checklist session", () => {
       await trainingListPage.completeAll();
 
       await workoutPage.returnToHome();
+    });
+  });
+
+  test.describe("Moved weight with a skipped set", () => {
+    test.use({ profile: createCompletedProfile(), signedIn: true });
+
+    test("athlete skips one weighted set, finishes the workout and sees a moved weight without that set", async ({
+      page,
+    }) => {
+      test.setTimeout(60000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const workoutPage = new WorkoutPage(page);
+      const trainingOverviewPage = new TrainingOverviewPage(page);
+      const trainingListPage = new TrainingListPage(page);
+
+      await page.goto("/");
+      await workoutPage.expectLoggedIn();
+      await workoutPage.startWorkout("Tuesday");
+      await trainingOverviewPage.startAsChecklist();
+      await trainingListPage.expectVisible();
+
+      // Row 2 is the front squat with 3 sets of 8 repetitions: 10 kg, 14 kg,
+      // 14 kg. The athlete skips the 10 kg set, the rest are done. The timed
+      // warm up carries no load.
+      await trainingListPage.skipRow("training-list-row-2");
+      await trainingListPage.completeAll();
+
+      // Two done sets: 2 sets x 14 kg x 8 repetitions = 224 kg
+      const EXPECTED_MOVED_WEIGHT_KG = 224;
+      await expect(
+        page.getByTestId("training-success-summary-weight"),
+      ).toHaveText(`${EXPECTED_MOVED_WEIGHT_KG} kg`);
+
+      await workoutPage.returnToHome();
+      await expect
+        .poll(async () => {
+          const [workout] = await getCompletedWorkoutsData(page);
+          return workout?.movedWeight;
+        })
+        .toBe(EXPECTED_MOVED_WEIGHT_KG);
     });
   });
 

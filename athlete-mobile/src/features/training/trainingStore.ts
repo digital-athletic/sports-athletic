@@ -57,7 +57,6 @@ type Actions = {
     skill: SkillCode,
     feedback: ExerciseDifficultyType,
   ) => void;
-  setExerciseSkipped: (exerciseId: string, skill: SkillCode) => void;
   updateExerciseProgress: (
     exerciseId: string,
     weight?: number,
@@ -125,15 +124,6 @@ export const useTrainingStore = create<TrainingState>()(
             } else {
               exercise.feedback = { difficulty: feedback };
             }
-          }
-        }),
-      setExerciseSkipped: (exerciseId, skill) =>
-        set((state) => {
-          const exercise = state.exerciseList?.find(
-            (item) => item.exerciseId === exerciseId && item.skill === skill,
-          );
-          if (exercise) {
-            exercise.skipped = true;
           }
         }),
       updateExerciseProgress: (

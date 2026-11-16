@@ -184,7 +184,8 @@ function deriveSetValue(
   return undefined;
 }
 
-function deriveSetValueKind(
+/** The kind of a set's main value, which picks the exercise placeholder icon. */
+export function deriveSetValueKind(
   exercise: UserExerciseDataType,
   exerciseData: ExerciseType | undefined,
   maxValues: MaxValuesType,

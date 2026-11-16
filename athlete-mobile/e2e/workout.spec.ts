@@ -8,6 +8,7 @@ import { WorkoutPage } from "./pages";
 
 test.describe("Workout: progression after completing a workout", () => {
   const EXERCISE_NAME = "KH-Frontkniebeuge";
+  const EXERCISE_ID = "118";
   // Hypertrophy starts at 8 of its binding 8 to 12 repetitions
   const EXPECTED_INITIAL_REPS = 8;
   const EXPECTED_INITIAL_WEIGHT = 14;
@@ -30,6 +31,13 @@ test.describe("Workout: progression after completing a workout", () => {
       await page.goto("/");
       await workoutPage.expectLoggedIn();
       await workoutPage.startWorkout("Tuesday");
+
+      // The storage mock serves an empty body, so the picture fails to load
+      await expect(
+        page.getByTestId(
+          `training-overview-exercise-${EXERCISE_ID}-picture-placeholder`,
+        ),
+      ).toBeVisible();
 
       const initialValues = await workoutPage.getExerciseValues(EXERCISE_NAME);
       expect(initialValues.reps).toBe(EXPECTED_INITIAL_REPS);

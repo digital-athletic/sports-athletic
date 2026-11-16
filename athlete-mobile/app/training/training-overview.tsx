@@ -7,6 +7,8 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { useExerciseSwap } from "@/features/training/hooks/useExerciseSwap";
 import type { TrainingGenerationParams } from "@/features/training/hooks/useTrainingGeneration";
+import { ExerciseThumbnail } from "@/features/training/ExerciseThumbnail";
+import { deriveSetValueKind } from "@/features/training/hooks/useTrainingListRows";
 import { SkillTitle } from "@/features/training/SkillTitle";
 import {
   SwapControlsContext,
@@ -18,13 +20,11 @@ import { getEquipmentList } from "@/features/training/trainingUtils";
 import { getExercisePictureSource } from "@/features/training/utils/exercisePicture";
 import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
 import { useNavigationLock } from "@/hooks/useNavigationLock";
-import { MediaSkeleton } from "@/media/MediaSkeleton";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
-import { Image } from "expo-image";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
@@ -446,6 +446,8 @@ const MaxSetContent: FC<MaxSetContentProps> = ({
   );
 };
 
+const PICTURE_SIZE = 120;
+
 type ExerciseItemProps = {
   exercise: UserExerciseDataType;
   exercises: ExerciseType[];
@@ -458,8 +460,8 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
   onPress,
 }) => {
   const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
-
-  const imageUrl = getExercisePictureSource(exerciseData?.picture);
+  const maxValues = useUserWorkoutStore((s) => s.workoutData.maxValues);
+  const pictureUrl = getExercisePictureSource(exerciseData?.picture);
 
   if (!exerciseData) return null;
 
@@ -468,28 +470,14 @@ const ExerciseItem: FC<ExerciseItemProps> = ({
       {/* The swap button is outside the row press so screen readers reach it. */}
       <Pressable onPress={onPress} style={{ flex: 1 }}>
         <Box flexDirection="row">
-          {exerciseData.picture && (
-            <Box
-              borderRadius={"s"}
-              width={120}
-              marginRight={"s"}
-              overflow="hidden"
-            >
-              {imageUrl ? (
-                <Image
-                  source={imageUrl}
-                  style={{
-                    width: 120,
-                    aspectRatio: 1,
-                  }}
-                  cachePolicy="disk"
-                  accessibilityLabel={exerciseData.displayName ?? undefined}
-                />
-              ) : (
-                <MediaSkeleton width={120} aspectRatio={1} showRetry={false} />
-              )}
-            </Box>
-          )}
+          <Box marginRight="s">
+            <ExerciseThumbnail
+              pictureUrl={pictureUrl}
+              valueKind={deriveSetValueKind(exercise, exerciseData, maxValues)}
+              size={PICTURE_SIZE}
+              testID={`training-overview-exercise-${exercise.exerciseId}-picture`}
+            />
+          </Box>
           <Box flex={1} justifyContent="center">
             <Text variant="body">{exerciseData.displayName}</Text>
             <ExerciseValues exercise={exercise} exerciseData={exerciseData} />

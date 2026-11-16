@@ -3,11 +3,10 @@ import { MaxValuesType } from "@/features/training/models/MaxValues";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { logTrainingEvent } from "@/features/training/utils/trainingEventUtils";
 import { Logger } from "@/services/Logger";
-import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
-import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { useRouter } from "expo-router";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useStoreStrengthTestResult } from "./useStoreStrengthTestResult";
 
 /**
  * How a training ends: every set done, finished early with its done sets
@@ -30,8 +29,7 @@ export function useFinishTraining() {
     resetTrainingEndTime,
     setTempMaxValues,
   } = useTrainingStore();
-  const { addTestResult } = useExerciseProgressStore();
-  const { saveMaxValues } = useUserWorkoutStore();
+  const storeStrengthTestResult = useStoreStrengthTestResult();
   const hasFinishedRef = useRef(false);
 
   // strengthTestMaxValues is passed directly for strength tests to avoid React state batching issues.
@@ -77,8 +75,7 @@ export function useFinishTraining() {
 
     if (testMaxValues) {
       Logger.logEvent("saving_max_values", { maxValues: testMaxValues });
-      saveMaxValues(testMaxValues);
-      addTestResult(testMaxValues);
+      storeStrengthTestResult(testMaxValues);
     }
 
     // Clear temporary test results (committed or discarded)

@@ -1,12 +1,12 @@
 import { type SportTest } from "@/features/performanceTests/models/SportTest";
-import { useSportTestsStore } from "@/store/sportTestsStore";
+import {
+  ALL_SPORTS_CACHE_KEY,
+  useSportTestsStore,
+} from "@/store/sportTestsStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { generateSportTest } from "./testFixtures";
-import {
-  ALL_SPORTS_CACHE_KEY,
-  usePerformanceTests,
-} from "./usePerformanceTests";
+import { usePerformanceTests } from "./usePerformanceTests";
 
 const mockFetchSportTests = jest.fn();
 jest.mock("@/services/SportTestService", () => ({

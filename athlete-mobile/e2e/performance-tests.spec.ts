@@ -89,12 +89,14 @@ test.describe("Performance tests: German athlete", () => {
   test("athlete sees the test name in German in the list", async ({ page }) => {
     await mockSupabaseAuth(page);
     await mockSportTests(page, [SPRINT_5M_ROW]);
-    const profilePage = new ProfilePage(page);
+    // The page objects read English labels, so this test opens the screen by URL.
     await page.goto("/");
-    await profilePage.expectLoggedIn();
-    await profilePage.navigateToProfile();
-    await page.getByText("Leistungstests", { exact: true }).click();
+    await expect(page.getByRole("heading", { name: /Hallo .+/ })).toBeVisible();
+    await page.goto("/performance-tests");
 
+    await expect(
+      page.getByRole("heading", { name: "Leistungstests" }),
+    ).toBeVisible();
     await expect(page.getByText("5-m-Sprint")).toBeVisible();
     await expect(page.getByText("5 m sprint")).toBeHidden();
   });

@@ -1,9 +1,10 @@
 import { type Side } from "@/bodyParts/types";
 import { type ThemeColor, useTheme } from "@/theme/theme";
 import { type FC } from "react";
-import { Platform, View } from "react-native";
-import { G, Path, Svg } from "react-native-svg";
+import { View } from "react-native";
+import { Path, Svg } from "react-native-svg";
 import { BODY_FILL, MUSCLE_FILL, SILHOUETTES } from "./silhouetteData";
+import { SilhouetteRegionGroup } from "./SilhouetteRegionGroup";
 import {
   type SilhouetteGender,
   type SilhouetteRegion,
@@ -73,12 +74,7 @@ type RegionLayerProps = {
   regionTestIDPrefix: string;
 };
 
-/**
- * Interactive region layer. `role`/`aria-checked` reach only the web DOM
- * (react-native-svg drops them natively). The role must not be "button":
- * react-native-web swaps those to real `<button>` tags, which are invalid
- * (invisible) inside `<svg>`.
- */
+/** Interactive region layer: one labelled checkbox per muscle region. */
 const InteractiveRegions: FC<RegionLayerProps & Interactive> = ({
   regions,
   highlights,
@@ -93,12 +89,10 @@ const InteractiveRegions: FC<RegionLayerProps & Interactive> = ({
         const color = resolveHighlightColor(highlights, region.id);
         const highlighted = color !== undefined;
         return (
-          <G
+          <SilhouetteRegionGroup
             key={region.id}
-            {...(Platform.OS !== "web" ? { accessible: true } : null)}
-            accessibilityLabel={getRegionLabel(region.id, highlighted)}
-            role="checkbox"
-            aria-checked={highlighted ? "true" : "false"}
+            label={getRegionLabel(region.id, highlighted)}
+            checked={highlighted}
             testID={`${regionTestIDPrefix}${region.id}`}
             onPress={() => onRegionPress(region.id)}
           >
@@ -109,7 +103,7 @@ const InteractiveRegions: FC<RegionLayerProps & Interactive> = ({
                 fill={color ? theme.colors[color] : MUSCLE_FILL}
               />
             ))}
-          </G>
+          </SilhouetteRegionGroup>
         );
       })}
     </>

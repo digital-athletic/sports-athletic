@@ -2,26 +2,38 @@ import { usePowerTestData } from "@/features/statistics/hooks/usePowerTestData";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { Box } from "@/theme/Box";
 import { type FC } from "react";
-import { useWindowDimensions } from "react-native";
-import { LineChart } from "react-native-gifted-charts";
+import { Platform, useWindowDimensions } from "react-native";
+import Svg, { G, Line, Polyline, Text } from "react-native-svg";
 import {
   LINE_CHART_AXIS,
   LINE_CHART_COLORS,
-  LINE_CHART_DATA,
   LINE_CHART_LABELS,
   LINE_CHART_SIZING,
   LINE_CHART_STYLE,
 } from "./lineChartConfig";
+import { calculateYAxisMax } from "./lineChartUtils";
 import {
-  calculateSpacing,
-  calculateYAxisMax,
-  transformToLineData,
-} from "./lineChartUtils";
+  buildPowerTestGeometry,
+  type PowerTestPoint,
+} from "./powerTestGeometry";
 
 interface PowerTestChartProps {
   /** Undefined shows the whole history. */
   scale?: ScaleType;
 }
+
+// The browser renders SVG text in a serif font unless the family is named.
+const AXIS_FONT_FAMILY = Platform.select({
+  web: "system-ui, -apple-system, sans-serif",
+  default: undefined,
+});
+const PLOT_PADDING_TOP = 8;
+const X_LABELS_HEIGHT = 50;
+const Y_LABEL_GAP = 4;
+const X_LABEL_OFFSET = 18;
+
+const toPolylinePoints = (points: PowerTestPoint[]): string =>
+  points.map(({ x, y }) => `${x},${y}`).join(" ");
 
 /**
  * LineChart component for Power Test statistics.
@@ -31,27 +43,27 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
   const { chartData } = usePowerTestData({ scale });
   const { width: screenWidth } = useWindowDimensions();
 
-  // Chart width with right margin
-  const chartWidth = screenWidth - 100;
-
-  // Transform data for LineChart (labels embedded in primary series, max 6 visible)
-  const lineData = transformToLineData(chartData);
-
-  // Calculate Y-axis maximum
-  const yAxisMax = calculateYAxisMax(chartData);
-
-  // Calculate spacing to fill the chart width
-  const spacing = calculateSpacing(
-    chartData.dates.length,
-    chartWidth,
-    LINE_CHART_SIZING.yAxisOffset,
-    LINE_CHART_LABELS.endSpacing,
-  );
-
   // Don't render chart if no data (parent component shows Coaching message)
   if (chartData.dates.length === 0) {
     return null;
   }
+
+  // Chart width with right margin
+  const chartWidth = screenWidth - 100;
+  const plot = {
+    width:
+      chartWidth -
+      LINE_CHART_SIZING.yAxisLabelWidth -
+      LINE_CHART_LABELS.endSpacing,
+    height: LINE_CHART_SIZING.chartHeight,
+  };
+  // The rules and the x axis also run under the room kept for the last date label.
+  const axisWidth = plot.width + LINE_CHART_LABELS.endSpacing;
+  const geometry = buildPowerTestGeometry({
+    chartData,
+    yAxisMax: calculateYAxisMax(chartData),
+    plot,
+  });
 
   return (
     <Box
@@ -61,67 +73,76 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
       marginTop="m"
       marginRight={"m"}
     >
-      <LineChart
-        // Data series
-        data={lineData.squad}
-        data2={lineData.deadlift}
-        data3={lineData.benchPress}
-        data4={lineData.rowing}
-        data5={lineData.shoulderPress}
-        // Sizing
-        height={LINE_CHART_SIZING.chartHeight}
+      <Svg
         width={chartWidth}
-        initialSpacing={LINE_CHART_SIZING.yAxisOffset}
-        spacing={spacing}
-        endSpacing={0}
-        // Line colors
-        color={LINE_CHART_COLORS.squad}
-        color2={LINE_CHART_COLORS.deadlift}
-        color3={LINE_CHART_COLORS.benchPress}
-        color4={LINE_CHART_COLORS.rowing}
-        color5={LINE_CHART_COLORS.shoulderPress}
-        // Line styling
-        thickness={LINE_CHART_STYLE.thickness}
-        thickness2={LINE_CHART_STYLE.thickness}
-        thickness3={LINE_CHART_STYLE.thickness}
-        thickness4={LINE_CHART_STYLE.thickness}
-        thickness5={LINE_CHART_STYLE.thickness}
-        curved={LINE_CHART_STYLE.curved}
-        areaChart={LINE_CHART_STYLE.areaChart}
-        // Data points (hidden to match design)
-        hideDataPoints
-        hideDataPoints2
-        hideDataPoints3
-        hideDataPoints4
-        hideDataPoints5
-        yAxisTextStyle={{
-          color: LINE_CHART_COLORS.axisText,
-          fontSize: LINE_CHART_AXIS.fontSize,
-        }}
-        yAxisLabelSuffix={LINE_CHART_AXIS.yAxisSuffix}
-        yAxisOffset={0}
-        yAxisLabelWidth={LINE_CHART_SIZING.yAxisLabelWidth}
-        // X-axis labels are embedded in data items via label and showXAxisIndex
-        xAxisLabelTextStyle={{
-          color: LINE_CHART_COLORS.axisText,
-          fontSize: LINE_CHART_AXIS.fontSize,
-          marginLeft: 10,
-        }}
-        labelsExtraHeight={30}
-        xAxisColor={LINE_CHART_COLORS.axisLine}
-        yAxisColor={LINE_CHART_COLORS.axisLine}
-        // Grid configuration
-        showVerticalLines={LINE_CHART_AXIS.showVerticalLines}
-        rulesType="solid"
-        rulesColor={LINE_CHART_COLORS.grid}
-        rulesThickness={LINE_CHART_AXIS.rulesThickness}
-        // Y-axis scale configuration
-        maxValue={yAxisMax}
-        noOfSections={yAxisMax / LINE_CHART_DATA.stepValue}
-        // Scroll behavior (disabled for small datasets)
-        scrollToEnd={false}
-        isAnimated={false}
-      />
+        height={PLOT_PADDING_TOP + plot.height + X_LABELS_HEIGHT}
+      >
+        <G
+          transform={`translate(${LINE_CHART_SIZING.yAxisLabelWidth}, ${PLOT_PADDING_TOP})`}
+        >
+          {geometry.yTicks.map((tick) => (
+            <G key={tick.value}>
+              <Line
+                x1={0}
+                x2={axisWidth}
+                y1={tick.y}
+                y2={tick.y}
+                stroke={LINE_CHART_COLORS.grid}
+                strokeWidth={LINE_CHART_AXIS.rulesThickness}
+              />
+              <Text
+                x={-Y_LABEL_GAP}
+                y={tick.y + LINE_CHART_AXIS.fontSize / 3}
+                fontSize={LINE_CHART_AXIS.fontSize}
+                fontFamily={AXIS_FONT_FAMILY}
+                fill={LINE_CHART_COLORS.axisText}
+                textAnchor="end"
+              >
+                {`${tick.value}${LINE_CHART_AXIS.yAxisSuffix}`}
+              </Text>
+            </G>
+          ))}
+          <Line
+            x1={0}
+            x2={axisWidth}
+            y1={plot.height}
+            y2={plot.height}
+            stroke={LINE_CHART_COLORS.axisLine}
+            strokeWidth={1}
+          />
+          <Line
+            x1={0}
+            x2={0}
+            y1={0}
+            y2={plot.height}
+            stroke={LINE_CHART_COLORS.axisLine}
+            strokeWidth={1}
+          />
+          {geometry.xLabels.map((xLabel) => (
+            <Text
+              key={`${xLabel.x}-${xLabel.label}`}
+              x={xLabel.x}
+              y={plot.height + X_LABEL_OFFSET}
+              fontSize={LINE_CHART_AXIS.fontSize}
+              fontFamily={AXIS_FONT_FAMILY}
+              fill={LINE_CHART_COLORS.axisText}
+              textAnchor="middle"
+            >
+              {xLabel.label}
+            </Text>
+          ))}
+          {geometry.series.map((series) => (
+            <Polyline
+              key={series.key}
+              testID={`power-test-line-${series.key}`}
+              points={toPolylinePoints(series.points)}
+              fill="none"
+              stroke={LINE_CHART_COLORS[series.key]}
+              strokeWidth={LINE_CHART_STYLE.thickness}
+            />
+          ))}
+        </G>
+      </Svg>
     </Box>
   );
 };

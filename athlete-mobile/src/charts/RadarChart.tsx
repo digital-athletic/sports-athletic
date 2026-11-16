@@ -5,9 +5,8 @@ import { getHexagonPoints } from "@/utils/geometry";
 import { Image } from "expo-image";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
-import { RadarChart as GiftedRadarChart } from "react-native-gifted-charts";
-import Svg, { Polygon } from "react-native-svg";
+import { Platform, StyleSheet, View } from "react-native";
+import Svg, { Circle, G, Line, Polygon, Text, TSpan } from "react-native-svg";
 import {
   RADAR_CHART_COLORS,
   RADAR_CHART_DATA,
@@ -15,7 +14,15 @@ import {
   RADAR_CHART_LAYOUT,
   RADAR_CHART_SIZING,
 } from "./radarChartConfig";
+import { buildRadarGeometry } from "./radarChartGeometry";
 import { calculatePercentages, SKILL_ORDER } from "./radarChartUtils";
+
+// The browser renders SVG text in a serif font unless the family is named.
+const LABEL_FONT_FAMILY = Platform.select({
+  web: "system-ui, -apple-system, sans-serif",
+  default: undefined,
+});
+const LABEL_LINE_HEIGHT = RADAR_CHART_LABEL_CONFIG.fontSize * 1.2;
 
 type RadarChartProps = {
   userSkills: UserSkills;
@@ -39,22 +46,27 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
     ),
   );
 
-  // Create labels with skill name and percentage on separate lines
-  const labels = SKILL_ORDER.map((skill: FocusArea) => {
-    const skillName = t(`statistics.workouts.radarChart.${skill}`) as string;
-    const percentage = `${Math.round(percentages[skill])}%`;
-    return `${skillName}\n${percentage}`;
+  const geometry = buildRadarGeometry({
+    values: chartData,
+    maxValue: RADAR_CHART_DATA.maxValue,
+    sections: RADAR_CHART_DATA.sections,
+    size: RADAR_CHART_LAYOUT.gridSize,
+    // The offset counts in chart values, like the polygon: 15 of 50 beyond the grid.
+    labelOffset:
+      (RADAR_CHART_LAYOUT.gridSize / 2) *
+      (RADAR_CHART_DATA.labelsPositionOffset / RADAR_CHART_DATA.maxValue),
   });
 
-  // Label config - all centered at their positions with dark text
-  const labelConfigArray = SKILL_ORDER.map(() => ({
-    fontSize: RADAR_CHART_LABEL_CONFIG.fontSize,
-    stroke: RADAR_CHART_COLORS.labelText,
-    textAnchor: RADAR_CHART_LABEL_CONFIG.textAnchor,
+  // Skill name on the first line, rounded percentage on the second
+  const labels = SKILL_ORDER.map((skill: FocusArea) => ({
+    name: t(`statistics.workouts.radarChart.${skill}`) as string,
+    percentage: `${Math.round(percentages[skill])}%`,
   }));
 
   const summary = t("statistics.workouts.radarChart.summary", {
-    values: labels.map((label) => label.replace("\n", " ")).join(", "),
+    values: labels
+      .map((label) => `${label.name} ${label.percentage}`)
+      .join(", "),
   });
 
   return (
@@ -67,44 +79,62 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
       accessibilityLabel={summary}
     >
       <View style={styles.chartWrapper}>
-        <GiftedRadarChart
-          data={chartData}
-          maxValue={RADAR_CHART_DATA.maxValue}
-          chartSize={RADAR_CHART_SIZING.chartSize}
-          noOfSections={RADAR_CHART_DATA.sections}
-          labels={labels}
-          labelConfigArray={labelConfigArray}
-          labelsPositionOffset={RADAR_CHART_DATA.labelsPositionOffset}
-          circular={true}
-          polygonConfig={{
-            stroke: RADAR_CHART_COLORS.primary,
-            strokeWidth: 3,
-            fill: RADAR_CHART_COLORS.polygonFill,
-          }}
-          gridConfig={{
-            stroke: RADAR_CHART_COLORS.grid,
-            strokeWidth: 1,
-            strokeDashArray: [4, 4],
-            fill: "transparent",
-            showGradient: false,
-          }}
-          asterLinesConfig={{
-            stroke: RADAR_CHART_COLORS.grid,
-            strokeWidth: 1,
-            strokeDashArray: [4, 4],
-          }}
-          hideGrid={false}
-          hideLabels={false}
-          hideAsterLines={false}
-          startAngle={90}
-          isClockWise={true}
-          chartContainerProps={{
-            width: RADAR_CHART_SIZING.containerWidth,
-            height: RADAR_CHART_SIZING.containerHeight,
-            shiftX: RADAR_CHART_LAYOUT.shiftX,
-            shiftY: RADAR_CHART_LAYOUT.shiftY,
-          }}
-        />
+        <Svg
+          width={RADAR_CHART_SIZING.containerWidth}
+          height={RADAR_CHART_SIZING.containerHeight}
+        >
+          <G
+            transform={`translate(${RADAR_CHART_LAYOUT.shiftX + RADAR_CHART_LAYOUT.gridInset}, ${RADAR_CHART_LAYOUT.shiftY + RADAR_CHART_LAYOUT.gridInset})`}
+          >
+            {geometry.gridRadii.map((radius) => (
+              <Circle
+                key={radius}
+                cx={geometry.center.x}
+                cy={geometry.center.y}
+                r={radius}
+                stroke={RADAR_CHART_COLORS.grid}
+                strokeWidth={1}
+                strokeDasharray="4 4"
+                fill="transparent"
+              />
+            ))}
+            {geometry.axisEnds.map((end, index) => (
+              <Line
+                key={SKILL_ORDER[index]}
+                x1={geometry.center.x}
+                y1={geometry.center.y}
+                x2={end.x}
+                y2={end.y}
+                stroke={RADAR_CHART_COLORS.grid}
+                strokeWidth={1}
+                strokeDasharray="4 4"
+              />
+            ))}
+            <Polygon
+              testID="radar-chart-polygon"
+              points={geometry.polygon.map(({ x, y }) => `${x},${y}`).join(" ")}
+              stroke={RADAR_CHART_COLORS.primary}
+              strokeWidth={3}
+              fill={RADAR_CHART_COLORS.polygonFill}
+            />
+            {geometry.labelAnchors.map((anchor, index) => (
+              <Text
+                key={SKILL_ORDER[index]}
+                x={anchor.x}
+                y={anchor.y}
+                fontSize={RADAR_CHART_LABEL_CONFIG.fontSize}
+                fontFamily={LABEL_FONT_FAMILY}
+                fill={RADAR_CHART_COLORS.labelText}
+                textAnchor={RADAR_CHART_LABEL_CONFIG.textAnchor}
+              >
+                <TSpan x={anchor.x}>{labels[index].name}</TSpan>
+                <TSpan x={anchor.x} dy={LABEL_LINE_HEIGHT}>
+                  {labels[index].percentage}
+                </TSpan>
+              </Text>
+            ))}
+          </G>
+        </Svg>
         <View style={styles.logoContainer}>
           <Svg
             width={RADAR_CHART_SIZING.logoBorderSize}

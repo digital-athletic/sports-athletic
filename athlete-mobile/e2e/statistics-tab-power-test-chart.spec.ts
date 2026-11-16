@@ -7,6 +7,7 @@ import {
 } from "./mocks/stores/profiles/powerTestChartProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { StatisticsPage } from "./pages";
+import { collectDomPropErrors } from "./utils/domPropErrors";
 
 test.describe("Power test line chart: multiple test results", () => {
   test.use({ profile: createPowerTestChartProfile(), signedIn: true });
@@ -15,6 +16,7 @@ test.describe("Power test line chart: multiple test results", () => {
     page,
   }) => {
     await mockSupabaseAuth(page);
+    const domPropErrors = collectDomPropErrors(page);
     const statsPage = new StatisticsPage(page);
 
     await statsPage.openStatisticsTab();
@@ -24,6 +26,7 @@ test.describe("Power test line chart: multiple test results", () => {
     await statsPage.expectPowerTestLineChartVisible();
     await statsPage.expectPowerTestLegendVisible();
     expect(await statsPage.getTestResultsCount()).toBe(4);
+    expect(domPropErrors).toEqual([]);
     await statsPage.screenshotPowerTestChart(
       "power-test-line-chart-multiple-results.png",
     );

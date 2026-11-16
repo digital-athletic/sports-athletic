@@ -134,6 +134,20 @@ describe("BodySilhouette: accessibility surface", () => {
   });
 });
 
+describe("BodySilhouette: region checked state", () => {
+  it("passes the highlight state of each region to its label", async () => {
+    await renderSilhouette({
+      highlights: [{ regions: ["CHEST"], color: "primary" }],
+      onRegionPress: jest.fn(),
+      getRegionLabel: (region, highlighted) =>
+        `${region} ${highlighted ? "selected" : "not selected"}`,
+    });
+
+    expect(screen.getByLabelText("CHEST selected")).toBeOnTheScreen();
+    expect(screen.getByLabelText("NECK not selected")).toBeOnTheScreen();
+  });
+});
+
 describe("BodySilhouette: region testID prefix", () => {
   it("applies the region testID prefix in interactive mode", async () => {
     await renderSilhouette({

@@ -6,8 +6,6 @@ export const LINE_CHART_SIZING = {
   chartHeight: 200,
   /** Y-axis label width */
   yAxisLabelWidth: 40,
-  /** Y-axis offset from left edge (initial spacing for first data point) */
-  yAxisOffset: 5,
 } as const;
 
 /** Chart data configuration */
@@ -44,12 +42,6 @@ export const LINE_CHART_COLORS = {
 export const LINE_CHART_STYLE = {
   /** Line thickness */
   thickness: 2,
-  /** Data point radius (0 = no visible points, matching design) */
-  dataPointRadius: 0,
-  /** Whether to curve the lines */
-  curved: false,
-  /** Whether to show area fill under lines */
-  areaChart: false,
 } as const;
 
 /** Axis styling configuration */
@@ -58,12 +50,6 @@ export const LINE_CHART_AXIS = {
   fontSize: 11,
   /** Y-axis label suffix (unit displayed after each Y-axis value) */
   yAxisSuffix: " kg",
-  /** Whether to show vertical grid lines */
-  showVerticalLines: false,
-  /** Whether to show horizontal grid lines (rules) */
-  showRules: true,
-  /** Rules line dash array [dashLength, gapLength] */
-  rulesDashArray: [0, 0],
   /** Rules line thickness */
   rulesThickness: 1,
 } as const;
@@ -72,12 +58,6 @@ export const LINE_CHART_AXIS = {
 export const LINE_CHART_LABELS = {
   /** Maximum number of x-axis labels to display (prevents crowding) */
   maxVisibleLabels: 6,
-  /** Vertical shift to position labels below the x-axis line (positive = down) */
-  verticalShift: 10,
-  /** Height of x-axis labels container */
-  labelsHeight: 50,
-  /** Horizontal shift for x-axis labels (negative = left, aligns label start with data point) */
-  labelShiftX: 0,
   /** End spacing to prevent last label from being cut off (accounts for label width) */
   endSpacing: 35,
 } as const;

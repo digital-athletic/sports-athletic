@@ -5,6 +5,7 @@ import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile
 import { createIncompleteAnamnesisProfile } from "./mocks/stores/profiles/incompleteAnamnesisProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { AnamnesisPage, BasePage } from "./pages";
+import { collectDomPropErrors } from "./utils/domPropErrors";
 import { type Locator, type Page } from "@playwright/test";
 
 async function navigateToMuscleSoreness(page: Page) {
@@ -87,6 +88,7 @@ test.describe("Muscle Soreness: selection", () => {
     page,
   }) => {
     await mockSupabaseAuth(page);
+    const domPropErrors = collectDomPropErrors(page);
     await navigateToMuscleSoreness(page);
     await expect(region(page, "neck")).toBeVisible({ timeout: 5000 });
 
@@ -108,6 +110,7 @@ test.describe("Muscle Soreness: selection", () => {
     await expect(
       chips.getByRole("button", { name: "left back thigh", exact: true }),
     ).toBeVisible();
+    expect(domPropErrors).toEqual([]);
 
     // Planned (Tuesday) workouts skip place selection and generate directly.
     await page.getByRole("button", { name: "Go on" }).click();

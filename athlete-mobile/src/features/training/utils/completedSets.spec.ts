@@ -46,6 +46,21 @@ describe("hasCompletedExerciseSet: deciding whether an early finish is saved", (
 
     expect(hasCompletedExerciseSet(exerciseList)).toBe(false);
   });
+
+  it("is false for a strength test with a completed regular set", () => {
+    const exerciseList = [
+      createExercise({ set: [1, 1], repetition: 10, completed: true }),
+      createExercise({ exerciseId: "2", set: [1, 1], repetition: -1 }),
+    ];
+
+    expect(hasCompletedExerciseSet(exerciseList)).toBe(false);
+  });
+
+  it("ignores a completed entry without a set tuple, which the totals do not count", () => {
+    const exerciseList = [createExercise({ duration: 60, completed: true })];
+
+    expect(hasCompletedExerciseSet(exerciseList)).toBe(false);
+  });
 });
 
 describe("keepCompletedSets: the sets an early finish saves", () => {

@@ -9,14 +9,18 @@ const isDoneExerciseSet = (exercise: UserExerciseDataType) =>
   exercise.skipped !== true &&
   !isPauseExercise(exercise.exerciseId);
 
-/** Whether an early finish has a set worth saving: done, not skipped, no rest, no test. */
+/**
+ * Whether an early finish is saved: a done set the workout totals count, in a
+ * list without strength test sets, as the success screen saves no test.
+ */
 export const hasCompletedExerciseSet = (
   exerciseList: UserExerciseDataType[],
 ): boolean =>
+  !exerciseList.some(
+    (exercise) => exercise.repetition === STRENGTH_TEST_REPETITION,
+  ) &&
   exerciseList.some(
-    (exercise) =>
-      isDoneExerciseSet(exercise) &&
-      exercise.repetition !== STRENGTH_TEST_REPETITION,
+    (exercise) => isDoneExerciseSet(exercise) && exercise.set !== undefined,
   );
 
 /**

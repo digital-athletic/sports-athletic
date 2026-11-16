@@ -8,6 +8,7 @@
 import { useDeleteAccount, useLogout } from "@/auth/useAuthActions";
 import { AppIcon } from "@/common/AppIcon";
 import { ListDivider } from "@/common/ListDivider";
+import { featureFlags } from "@/config/featureFlags";
 import { InfoMenuItems } from "@/features/more/InfoMenuItems";
 import { ListItem } from "@/features/more/ListItem";
 import { StrengthTestMenuItems } from "@/features/more/StrengthTestMenuItems";
@@ -98,12 +99,14 @@ export default function MoreScreen() {
             iconBackground="primary"
           />
           <StrengthTestMenuItems />
-          <ListItem
-            title={t("more.performanceTests.menuItem")}
-            navPath="/(tabs)/(more)/performance-tests"
-            icon={IconStopwatch}
-            iconBackground="primary"
-          />
+          {featureFlags.performanceTestsEnabled && (
+            <ListItem
+              title={t("more.performanceTests.menuItem")}
+              navPath="/(tabs)/(more)/performance-tests"
+              icon={IconStopwatch}
+              iconBackground="primary"
+            />
+          )}
           <ListItem
             title={t("more.introductionVideos")}
             navPath="/(tabs)/(more)/tutorials"

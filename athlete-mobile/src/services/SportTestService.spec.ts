@@ -5,10 +5,7 @@ const mockOrder = jest.fn();
 const mockEqRegion = jest.fn((_column: string, _value: string) => ({
   order: mockOrder,
 }));
-const mockEqSport = jest.fn((_column: string, _value: string) => ({
-  eq: mockEqRegion,
-}));
-const mockSelect = jest.fn((_columns: string) => ({ eq: mockEqSport }));
+const mockSelect = jest.fn((_columns: string) => ({ eq: mockEqRegion }));
 const mockFrom = jest.fn((_table: string) => ({ select: mockSelect }));
 
 jest.mock("./supabaseClient", () => ({
@@ -58,7 +55,7 @@ describe("fetchSportTests: no session", () => {
   it("returns an empty list and sends no query", async () => {
     mockGetSession.mockResolvedValue({ data: { session: null } });
 
-    const tests = await fetchSportTests("SPORT_HANDBALL");
+    const tests = await fetchSportTests();
 
     expect(tests).toEqual([]);
     expect(mockFrom).not.toHaveBeenCalled();
@@ -73,7 +70,7 @@ describe("fetchSportTests: mapping", () => {
       error: null,
     });
 
-    const tests = await fetchSportTests("SPORT_HANDBALL");
+    const tests = await fetchSportTests();
 
     expect(tests).toEqual([
       {
@@ -100,7 +97,7 @@ describe("fetchSportTests: mapping", () => {
     signedIn();
     mockOrder.mockResolvedValue({ data: [], error: null });
 
-    await fetchSportTests("SPORT_HANDBALL");
+    await fetchSportTests();
 
     expect(mockSelect).toHaveBeenCalledWith(
       expect.stringContaining("min_age, max_age"),
@@ -111,7 +108,7 @@ describe("fetchSportTests: mapping", () => {
     signedIn();
     mockOrder.mockResolvedValue({ data: [], error: null });
 
-    await fetchSportTests("SPORT_HANDBALL");
+    await fetchSportTests();
 
     expect(mockSelect).toHaveBeenCalledWith(
       expect.stringContaining("translations"),
@@ -125,7 +122,7 @@ describe("fetchSportTests: mapping", () => {
       error: null,
     });
 
-    const tests = await fetchSportTests("SPORT_HANDBALL");
+    const tests = await fetchSportTests();
 
     expect(tests[0].referenceValues[0]).toMatchObject({
       rangeStart: 9.87,
@@ -137,7 +134,7 @@ describe("fetchSportTests: mapping", () => {
     signedIn();
     mockOrder.mockResolvedValue({ data: [], error: null });
 
-    const tests = await fetchSportTests("SPORT_HANDBALL");
+    const tests = await fetchSportTests();
 
     expect(tests).toEqual([]);
   });
@@ -151,7 +148,7 @@ describe("fetchSportTests: translations", () => {
       error: null,
     });
 
-    const tests = await fetchSportTests("SPORT_HANDBALL");
+    const tests = await fetchSportTests();
 
     expect(tests[0].translations).toEqual({});
   });
@@ -168,7 +165,7 @@ describe("fetchSportTests: translations", () => {
       error: null,
     });
 
-    const tests = await fetchSportTests("SPORT_HANDBALL");
+    const tests = await fetchSportTests();
 
     expect(tests[0].translations).toEqual({
       en: { name: "Fake test" },
@@ -188,7 +185,7 @@ describe("fetchSportTests: translations", () => {
       error: null,
     });
 
-    const tests = await fetchSportTests("SPORT_HANDBALL");
+    const tests = await fetchSportTests();
 
     expect(tests[0].translations).toEqual({ en: { name: "Fake test" } });
   });
@@ -200,7 +197,7 @@ describe("fetchSportTests: translations", () => {
       error: null,
     });
 
-    const tests = await fetchSportTests("SPORT_HANDBALL");
+    const tests = await fetchSportTests();
 
     expect(tests[0]).toMatchObject({
       code: "FAKE_TEST",
@@ -217,21 +214,21 @@ describe("fetchSportTests: translations", () => {
       error: null,
     });
 
-    const tests = await fetchSportTests("SPORT_HANDBALL");
+    const tests = await fetchSportTests();
 
     expect(tests[0].translations).toEqual({});
   });
 });
 
 describe("fetchSportTests: filters", () => {
-  it("reads the tests of the given sport for region DE by default", async () => {
+  it("reads the tests of every sport for region DE by default", async () => {
     signedIn();
     mockOrder.mockResolvedValue({ data: [], error: null });
 
-    await fetchSportTests("SPORT_HANDBALL");
+    await fetchSportTests();
 
     expect(mockFrom).toHaveBeenCalledWith("sport_tests");
-    expect(mockEqSport).toHaveBeenCalledWith("sport", "SPORT_HANDBALL");
+    expect(mockEqRegion).toHaveBeenCalledTimes(1);
     expect(mockEqRegion).toHaveBeenCalledWith("region", "DE");
   });
 
@@ -239,7 +236,7 @@ describe("fetchSportTests: filters", () => {
     signedIn();
     mockOrder.mockResolvedValue({ data: [], error: null });
 
-    await fetchSportTests("SPORT_HANDBALL", "FAKE_REGION");
+    await fetchSportTests("FAKE_REGION");
 
     expect(mockEqRegion).toHaveBeenCalledWith("region", "FAKE_REGION");
   });
@@ -250,6 +247,6 @@ describe("fetchSportTests: errors", () => {
     signedIn();
     mockOrder.mockResolvedValue({ data: null, error: { message: "DB error" } });
 
-    await expect(fetchSportTests("SPORT_HANDBALL")).rejects.toThrow("DB error");
+    await expect(fetchSportTests()).rejects.toThrow("DB error");
   });
 });

@@ -1,5 +1,6 @@
 import { expect, test } from "./fixtures";
 import { createWorkoutsProfile } from "./mocks/stores/profiles/workoutsProfile";
+import { mockSportTests } from "./mocks/sportTests";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { StatisticsPage } from "./pages";
 
@@ -28,5 +29,21 @@ test.describe("Statistics tabs: athlete with workouts and a strength test", () =
     await statsPage.clickWorkoutsTab();
     await statsPage.expectHasWorkouts();
     await expect(page.getByTestId("power-test-container")).not.toBeVisible();
+  });
+
+  test("athlete opens the performance tests from the strength test statistics", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+    await mockSportTests(page, []);
+    const statsPage = new StatisticsPage(page);
+    await statsPage.openStatisticsTab();
+    await statsPage.clickTestsTab();
+
+    await page.getByRole("button", { name: "Show performance tests" }).click();
+
+    await expect(
+      page.getByRole("heading", { name: "Performance tests" }),
+    ).toBeVisible();
   });
 });

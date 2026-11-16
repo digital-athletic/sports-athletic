@@ -13,21 +13,21 @@ export type State = {
 const createInitialState = (): State => ({ testsBySport: {} });
 
 type Actions = {
-  setTests: (sport: string, tests: SportTest[]) => void;
+  setTests: (cacheKey: string, tests: SportTest[]) => void;
   reset: () => void;
 };
 
 export type SportTestsStoreState = State & Actions;
 
-/** Last loaded performance tests per sport, so the list shows offline. */
+/** Last loaded performance tests per cache key, so the list shows offline. */
 export const useSportTestsStore = create<SportTestsStoreState>()(
   persist(
     (set) => ({
       ...createInitialState(),
 
-      setTests: (sport, tests) =>
+      setTests: (cacheKey, tests) =>
         set((state) => ({
-          testsBySport: { ...state.testsBySport, [sport]: tests },
+          testsBySport: { ...state.testsBySport, [cacheKey]: tests },
         })),
 
       reset: () => set(createInitialState()),

@@ -3,11 +3,14 @@ import { useSportTestsStore } from "@/store/sportTestsStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { generateSportTest } from "./testFixtures";
-import { usePerformanceTests } from "./usePerformanceTests";
+import {
+  ALL_SPORTS_CACHE_KEY,
+  usePerformanceTests,
+} from "./usePerformanceTests";
 
 const mockFetchSportTests = jest.fn();
 jest.mock("@/services/SportTestService", () => ({
-  fetchSportTests: (sport: string) => mockFetchSportTests(sport),
+  fetchSportTests: () => mockFetchSportTests(),
 }));
 
 // Runs the focus callback on mount like a first focus.
@@ -42,7 +45,7 @@ describe("usePerformanceTests: without cache", () => {
     await waitFor(() =>
       expect(result.current.state).toEqual({ status: "loaded", tests }),
     );
-    expect(mockFetchSportTests).toHaveBeenCalledWith("SPORT_HANDBALL");
+    expect(mockFetchSportTests).toHaveBeenCalledWith();
   });
 
   it("returns error when the load fails", async () => {
@@ -77,7 +80,9 @@ describe("usePerformanceTests: without cache", () => {
 describe("usePerformanceTests: with cache", () => {
   it("shows the cached list at once while the refresh is pending", async () => {
     const cached = [generateSportTest("FAKE_TEST_CACHED")];
-    useSportTestsStore.setState({ testsBySport: { SPORT_HANDBALL: cached } });
+    useSportTestsStore.setState({
+      testsBySport: { [ALL_SPORTS_CACHE_KEY]: cached },
+    });
     mockFetchSportTests.mockReturnValue(new Promise(() => {}));
 
     const { result } = await renderHook(() => usePerformanceTests());
@@ -87,7 +92,9 @@ describe("usePerformanceTests: with cache", () => {
 
   it("still returns the cached list when the refresh fails", async () => {
     const cached = [generateSportTest("FAKE_TEST_CACHED")];
-    useSportTestsStore.setState({ testsBySport: { SPORT_HANDBALL: cached } });
+    useSportTestsStore.setState({
+      testsBySport: { [ALL_SPORTS_CACHE_KEY]: cached },
+    });
     mockFetchSportTests.mockRejectedValue(new Error("offline"));
 
     const { result } = await renderHook(() => usePerformanceTests());
@@ -100,7 +107,9 @@ describe("usePerformanceTests: with cache", () => {
   it("replaces the cache with the refreshed list", async () => {
     const cached = [generateSportTest("FAKE_TEST_CACHED")];
     const refreshed = [generateSportTest("FAKE_TEST_REFRESHED")];
-    useSportTestsStore.setState({ testsBySport: { SPORT_HANDBALL: cached } });
+    useSportTestsStore.setState({
+      testsBySport: { [ALL_SPORTS_CACHE_KEY]: cached },
+    });
     mockFetchSportTests.mockResolvedValue(refreshed);
 
     const { result } = await renderHook(() => usePerformanceTests());
@@ -111,8 +120,40 @@ describe("usePerformanceTests: with cache", () => {
         tests: refreshed,
       }),
     );
-    expect(useSportTestsStore.getState().testsBySport.SPORT_HANDBALL).toEqual(
-      refreshed,
+    expect(
+      useSportTestsStore.getState().testsBySport[ALL_SPORTS_CACHE_KEY],
+    ).toEqual(refreshed);
+  });
+});
+
+describe("usePerformanceTests: sport of the athlete", () => {
+  it("keeps the same list after the athlete switches to another sport", async () => {
+    const tests = [generateSportTest("FAKE_TEST_A")];
+    mockFetchSportTests.mockResolvedValueOnce(tests);
+    // A refresh after the switch stays pending, so only the cache can answer.
+    mockFetchSportTests.mockReturnValue(new Promise(() => {}));
+    const { result, rerender } = await renderHook(() => usePerformanceTests());
+    await waitFor(() =>
+      expect(result.current.state).toEqual({ status: "loaded", tests }),
     );
+
+    await act(async () => {
+      useUserWorkoutStore.getState().setSport("SPORT_FOOTBALL");
+    });
+    await rerender({});
+
+    expect(result.current.state).toEqual({ status: "loaded", tests });
+  });
+
+  it("ignores a list cached for the athlete's sport", async () => {
+    const cachedForSport = [generateSportTest("FAKE_TEST_OLD")];
+    useSportTestsStore.setState({
+      testsBySport: { SPORT_HANDBALL: cachedForSport },
+    });
+    mockFetchSportTests.mockReturnValue(new Promise(() => {}));
+
+    const { result } = await renderHook(() => usePerformanceTests());
+
+    expect(result.current.state).toEqual({ status: "loading" });
   });
 });

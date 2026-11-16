@@ -26,7 +26,15 @@ const SPRINT_5M_ROW: MockSportTestRow = {
   ],
 };
 
-test.describe("Performance tests: listing the tests of the sport", () => {
+// A test stored for football only, e.g. for a handball athlete who sees every sport's tests.
+const FOOTBALL_SPRINT_ROW: MockSportTestRow = {
+  ...SPRINT_5M_ROW,
+  id: "66666666-6666-4666-8666-666666666666",
+  code: "SPRINT_30M",
+  translations: { en: { name: "30 m sprint" }, de: { name: "30-m-Sprint" } },
+};
+
+test.describe("Performance tests: listing the tests", () => {
   test.use({ profile: createHandballWingProfile(14), signedIn: true });
 
   test("athlete sees the reference range for her training stage", async ({
@@ -76,6 +84,34 @@ test.describe("Performance tests: listing the tests of the sport", () => {
     const latest = page.getByTestId("performance-test-latest-SPRINT_5M");
     await expect(latest.getByText("8.1 s")).toBeVisible();
     await expect(latest.getByText("in range")).toBeVisible();
+  });
+});
+
+test.describe("Performance tests: tests of every sport", () => {
+  test.use({ profile: createHandballWingProfile(14), signedIn: true });
+
+  test("handball athlete sees a football test stored for region DE", async ({
+    page,
+  }) => {
+    await mockSupabaseAuth(page);
+    // The server answers like PostgREST: a sport filter keeps the football test out.
+    await page.route("**/rest/v1/sport_tests**", (route) => {
+      const filtersBySport = new URL(route.request().url()).searchParams.has(
+        "sport",
+      );
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(filtersBySport ? [] : [FOOTBALL_SPRINT_ROW]),
+      });
+    });
+    const profilePage = new ProfilePage(page);
+    await page.goto("/");
+    await profilePage.expectLoggedIn();
+    await profilePage.navigateToProfile();
+    await page.getByText("Performance tests", { exact: true }).click();
+
+    await expect(page.getByText("30 m sprint")).toBeVisible();
   });
 });
 

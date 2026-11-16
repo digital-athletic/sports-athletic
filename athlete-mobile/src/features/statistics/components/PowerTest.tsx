@@ -1,3 +1,4 @@
+import { featureFlags } from "@/config/featureFlags";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { MaxValuesType } from "@/features/training/models/MaxValues";
@@ -116,6 +117,22 @@ const PowerTestActions: FC<{ anamnesisCompleted: boolean }> = ({
   );
 };
 
+/** Opens the performance tests, which athletes of every age group can record. */
+const PerformanceTestsLink: FC = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
+
+  return (
+    <Button
+      variant="secondary"
+      onPress={() => router.push("/(tabs)/(more)/performance-tests")}
+      testID="power-test-performance-tests-link"
+    >
+      {t("statistics.powerTest.showPerformanceTests")}
+    </Button>
+  );
+};
+
 /**
  * Power Test Statistics Component
  *
@@ -146,6 +163,9 @@ export const PowerTest: FC<PowerTestProps> = ({
       <PowerTestChartCard hasChartData={hasChartData} scale={scale} />
       {!isSuccessScreen && strengthTestAllowed && (
         <PowerTestActions anamnesisCompleted={anamnesisCompleted} />
+      )}
+      {!isSuccessScreen && featureFlags.performanceTestsEnabled && (
+        <PerformanceTestsLink />
       )}
       <PowerTestResults
         history={sortedHistory}

@@ -1103,6 +1103,7 @@
       "legendShoulderPress": "Schulterdrücken",
       "startNewTest": "Krafttest starten",
       "enterManually": "Krafttestergebnisse eingeben",
+      "showPerformanceTests": "Leistungstests anzeigen",
       "toggleEntry": "Testergebnis für {{date}} umschalten",
       "squad": "Kniebeuge",
       "deadlift": "Kreuzheben",

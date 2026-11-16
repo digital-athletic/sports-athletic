@@ -66,9 +66,12 @@ function toSportTest(row: SportTestRow): SportTest {
   };
 }
 
-/** Rejects when the read fails, so callers never mistake a failure for no tests. */
+/**
+ * Reads the tests of every sport in the region, so athletes of a sport without
+ * own tests still see the tests stored for other sports.
+ * Rejects when the read fails, so callers never mistake a failure for no tests.
+ */
 export async function fetchSportTests(
-  sport: string,
   region: string = SPORT_TEST_REGION,
 ): Promise<SportTest[]> {
   const {
@@ -81,7 +84,6 @@ export async function fetchSportTests(
     .select(
       "id, code, unit, translations, sport_test_reference_values(gender, position, training_stage, min_age, max_age, range_start, range_end)",
     )
-    .eq("sport", sport)
     .eq("region", region)
     .order("code")) as {
     data: SportTestRow[] | null;

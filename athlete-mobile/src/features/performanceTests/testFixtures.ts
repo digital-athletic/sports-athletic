@@ -2,6 +2,7 @@ import { type PerformanceTestValue } from "./models/PerformanceTestValue";
 import {
   type SportTest,
   type SportTestReferenceValue,
+  type SportTestTranslations,
 } from "./models/SportTest";
 
 /**
@@ -24,16 +25,18 @@ export const generateReferenceValue = (
 
 /**
  * A sport test measured in seconds, e.g. generateSportTest("FAKE_TEST_A") returns
- * { id: "id-FAKE_TEST_A", code: "FAKE_TEST_A", unit: "s", referenceValues: [] }
+ * { id: "id-FAKE_TEST_A", code: "FAKE_TEST_A", unit: "s", referenceValues: [], translations: {} }
  */
 export const generateSportTest = (
   code: string,
   referenceValues: SportTestReferenceValue[] = [],
+  translations: SportTestTranslations = {},
 ): SportTest => ({
   id: `id-${code}`,
   code,
   unit: "s",
   referenceValues,
+  translations,
 });
 
 /**

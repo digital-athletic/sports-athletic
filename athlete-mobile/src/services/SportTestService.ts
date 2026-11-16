@@ -1,4 +1,8 @@
-import { type SportTest } from "@/features/performanceTests/models/SportTest";
+import * as v from "valibot";
+import {
+  type SportTest,
+  type SportTestTranslations,
+} from "@/features/performanceTests/models/SportTest";
 import { supabase } from "./supabaseClient";
 
 export const SPORT_TEST_REGION = "DE";
@@ -18,7 +22,30 @@ interface SportTestRow {
   id: string;
   code: string;
   unit: string;
+  translations: unknown;
   sport_test_reference_values: SportTestReferenceValueRow[];
+}
+
+const TranslationSchema = v.object({
+  name: v.string(),
+  unit: v.optional(v.string()),
+});
+
+/**
+ * Keeps the well-formed language entries. NULL, a non-object and a malformed
+ * entry never fail the read, so one bad translation cannot hide a test.
+ */
+function parseTranslations(value: unknown): SportTestTranslations {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return {};
+  }
+
+  const translations: SportTestTranslations = {};
+  for (const [language, entry] of Object.entries(value)) {
+    const parsed = v.safeParse(TranslationSchema, entry);
+    if (parsed.success) translations[language] = parsed.output;
+  }
+  return translations;
 }
 
 function toSportTest(row: SportTestRow): SportTest {
@@ -26,6 +53,7 @@ function toSportTest(row: SportTestRow): SportTest {
     id: row.id,
     code: row.code,
     unit: row.unit,
+    translations: parseTranslations(row.translations),
     referenceValues: row.sport_test_reference_values.map((value) => ({
       gender: value.gender,
       position: value.position,
@@ -51,7 +79,7 @@ export async function fetchSportTests(
   const { data, error } = (await supabase
     .from("sport_tests")
     .select(
-      "id, code, unit, sport_test_reference_values(gender, position, training_stage, min_age, max_age, range_start, range_end)",
+      "id, code, unit, translations, sport_test_reference_values(gender, position, training_stage, min_age, max_age, range_start, range_end)",
     )
     .eq("sport", sport)
     .eq("region", region)

@@ -1,24 +1,23 @@
 import { useTranslation } from "react-i18next";
-import enTranslations from "@/i18n/locales/en.json";
 import {
   type SportTest,
   type SportTestReferenceValue,
 } from "./models/SportTest";
 import { formatRangeNumber } from "./referenceRange";
+import { resolveTestName, resolveTestUnit } from "./testTranslations";
 
-type TranslatedTestCode = keyof typeof enTranslations.performanceTests.tests;
+/** The test name in the athlete's language, the English name, or the code. */
+export function useTestName(test: SportTest): string {
+  const { i18n } = useTranslation();
 
-function isTranslatedTestCode(code: string): code is TranslatedTestCode {
-  return Object.hasOwn(enTranslations.performanceTests.tests, code);
+  return resolveTestName(test, i18n.language);
 }
 
-/** The translated test name, or the code for a test without a translation. */
-export function useTestName(code: string): string {
-  const { t } = useTranslation();
+/** The test unit in the athlete's language, or the stored unit. */
+export function useTestUnit(test: SportTest): string {
+  const { i18n } = useTranslation();
 
-  return isTranslatedTestCode(code)
-    ? t(`performanceTests.tests.${code}`)
-    : code;
+  return resolveTestUnit(test, i18n.language);
 }
 
 /** The reference line of a test, e.g. "Reference 9.87 to 6.54 s", or the no reference text. */
@@ -27,12 +26,13 @@ export function useReferenceLine(
   range: SportTestReferenceValue | null,
 ): string {
   const { t, i18n } = useTranslation();
+  const unit = useTestUnit(test);
 
   if (range === null) return t("more.performanceTests.noReference");
 
   return t("more.performanceTests.reference", {
     start: formatRangeNumber(range.rangeStart, i18n.language),
     end: formatRangeNumber(range.rangeEnd, i18n.language),
-    unit: test.unit,
+    unit,
   });
 }

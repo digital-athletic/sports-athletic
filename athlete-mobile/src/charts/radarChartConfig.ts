@@ -22,6 +22,10 @@ export const RADAR_CHART_LAYOUT = {
   /** Vertical shift to center chart in container */
   shiftY:
     (RADAR_CHART_SIZING.containerHeight - RADAR_CHART_SIZING.chartSize) / 2,
+  /** Diameter of the outer grid circle, which leaves room for the labels */
+  gridSize: RADAR_CHART_SIZING.chartSize * 0.8,
+  /** Inset of the grid inside the chart area */
+  gridInset: RADAR_CHART_SIZING.chartSize * 0.1,
 } as const;
 
 /** Chart data configuration */

@@ -1,9 +1,5 @@
 import { type FC, useState } from "react";
-import {
-  type LayoutChangeEvent,
-  Platform,
-  useWindowDimensions,
-} from "react-native";
+import { type LayoutChangeEvent, useWindowDimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import Svg, { Circle, G, Line, Polyline, Rect, Text } from "react-native-svg";
 import { formatRangeNumber } from "@/features/performanceTests/referenceRange";
@@ -16,6 +12,7 @@ import {
   type RangeLineGeometry,
   type RangeLinePoint,
 } from "./rangeLineChartUtils";
+import { SVG_FONT_FAMILY, toSvgPoints } from "./svgChart";
 
 type RangeLineChartProps = {
   points: RangeLinePoint[];
@@ -35,11 +32,6 @@ const SIZES: Record<"phone" | "tablet", Sizes> = {
   tablet: { height: 320, fontSize: 15, lineWidth: 3.5, dotRadius: 6.5 },
 };
 const BAND_OPACITY = 0.18;
-// The browser renders SVG text in a serif font unless the family is named.
-const AXIS_FONT_FAMILY = Platform.select({
-  web: "system-ui, -apple-system, sans-serif",
-  default: undefined,
-});
 const AXIS_LABEL_GAP = 14;
 const PLOT_PADDING_TOP = 12;
 const PLOT_PADDING_RIGHT = 12;
@@ -89,7 +81,7 @@ const YAxis: FC<PartProps & { unit: string; fontSize: number }> = ({
         x={-AXIS_LABEL_GAP}
         y={tick.y + fontSize / 3}
         fontSize={fontSize}
-        fontFamily={AXIS_FONT_FAMILY}
+        fontFamily={SVG_FONT_FAMILY}
         fill={colors.darkGrey2}
         textAnchor="end"
       >
@@ -120,7 +112,7 @@ const XAxis: FC<
       x={label.x}
       y={plot.height + fontSize * 1.8}
       fontSize={fontSize}
-      fontFamily={AXIS_FONT_FAMILY}
+      fontFamily={SVG_FONT_FAMILY}
       fill={colors.darkGrey2}
       textAnchor={label.anchor}
     >
@@ -140,7 +132,7 @@ const ValueLine: FC<
   return (
     <>
       <Polyline
-        points={geometry.line.map(({ x, y }) => `${x},${y}`).join(" ")}
+        points={toSvgPoints(geometry.line)}
         fill="none"
         stroke={colors.primary}
         strokeWidth={lineWidth}

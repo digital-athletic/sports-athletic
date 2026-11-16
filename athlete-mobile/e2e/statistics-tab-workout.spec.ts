@@ -7,6 +7,7 @@ import {
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { mockWakeLock } from "./mocks/wakeLock";
 import { BasePage, StatisticsPage, WorkoutPage } from "./pages";
+import { collectDomPropErrors } from "./utils/domPropErrors";
 
 test.describe("Statistics: athlete without workouts", () => {
   test.use({ profile: createCompletedProfile(), signedIn: true });
@@ -15,6 +16,7 @@ test.describe("Statistics: athlete without workouts", () => {
     page,
   }) => {
     await mockSupabaseAuth(page);
+    const domPropErrors = collectDomPropErrors(page);
     const statsPage = new StatisticsPage(page);
 
     await statsPage.openStatisticsTab();
@@ -35,6 +37,7 @@ test.describe("Statistics: athlete without workouts", () => {
       "Warm-up": 0,
       Strength: 0,
     });
+    expect(domPropErrors).toEqual([]);
   });
 });
 

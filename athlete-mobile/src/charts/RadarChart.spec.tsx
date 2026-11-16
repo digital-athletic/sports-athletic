@@ -1,141 +1,170 @@
 import type { UserSkills } from "@/features/statistics/models/WorkoutsData";
 import { render } from "@/utils/testUtils";
 import { RadarChart } from "./RadarChart";
-
-// Capture props passed to the chart library
-let capturedProps: Record<string, unknown> | null = null;
-
-jest.mock("react-native-gifted-charts", () => ({
-  RadarChart: (props: Record<string, unknown>) => {
-    capturedProps = props;
-    const { View } = require("react-native");
-    return <View testID="gifted-radar-chart" />;
-  },
-}));
+import { collectPropNames, collectTexts } from "./svgTreeTestUtils";
 
 jest.mock("expo-image", () => ({
   Image: "Image",
 }));
 
-describe("RadarChart", () => {
-  beforeEach(() => {
-    capturedProps = null;
+// Builds skills that sum to 100: { MOBILITY: 30, PREVENTION: 25, CARDIO: 15, STABILITY: 12, WARMUP: 10, SWR: 8 }
+const generateUserSkills = (
+  overrides: Partial<UserSkills> = {},
+): UserSkills => ({
+  MOBILITY: 30,
+  PREVENTION: 25,
+  CARDIO: 15,
+  STABILITY: 12,
+  WARMUP: 10,
+  SWR: 8,
+  ...overrides,
+});
+
+// Parses the native path of an svg polygon into numbers: "M110 88 130 99z" becomes [[110, 88], [130, 99]]
+// (react-native-svg turns the web "points" prop into a path "d" when rendering natively)
+const parsePoints = (path: string): number[][] => {
+  const numbers = (path.match(/-?\d+(?:\.\d+)?(?:e-?\d+)?/g) ?? []).map(Number);
+  return Array.from({ length: numbers.length / 2 }, (_, index) => [
+    numbers[2 * index],
+    numbers[2 * index + 1],
+  ]);
+};
+
+describe("RadarChart: polygon points", () => {
+  it("draws one polygon point per skill", async () => {
+    const { getByTestId } = await render(
+      <RadarChart userSkills={generateUserSkills()} />,
+    );
+
+    const points = parsePoints(getByTestId("radar-chart-polygon").props.d);
+
+    expect(points).toHaveLength(6);
   });
 
-  describe("data transformation", () => {
-    it("adds centerOffset (10) to each percentage value", async () => {
-      const userSkills: UserSkills = {
-        MOBILITY: 20,
-        PREVENTION: 15,
-        CARDIO: 10,
-        STABILITY: 25,
-        WARMUP: 20,
-        SWR: 10,
-      };
+  it("starts the polygon at the top and adds centerOffset to the percentage", async () => {
+    const { getByTestId } = await render(
+      <RadarChart userSkills={generateUserSkills()} />,
+    );
 
-      await render(<RadarChart userSkills={userSkills} />);
+    const points = parsePoints(getByTestId("radar-chart-polygon").props.d);
 
-      expect(capturedProps?.data).toEqual([30, 25, 20, 35, 30, 20]);
+    // MOBILITY 30% + 10 = 40 of 50 on the 88 grid radius straight up from center (88, 88)
+    expect(points[0][0]).toBeCloseTo(88);
+    expect(points[0][1]).toBeCloseTo(88 - 0.8 * 88);
+  });
+
+  it("caps the radius at maxValue (50) when percentage plus offset exceeds it", async () => {
+    const { getByTestId } = await render(
+      <RadarChart
+        userSkills={generateUserSkills({
+          MOBILITY: 80,
+          PREVENTION: 5,
+          CARDIO: 5,
+          STABILITY: 5,
+          WARMUP: 3,
+          SWR: 2,
+        })}
+      />,
+    );
+
+    const points = parsePoints(getByTestId("radar-chart-polygon").props.d);
+
+    expect(points[0][0]).toBeCloseTo(88);
+    expect(points[0][1]).toBeCloseTo(0);
+  });
+
+  it("applies only the centerOffset when all skills are zero", async () => {
+    const { getByTestId } = await render(
+      <RadarChart
+        userSkills={generateUserSkills({
+          MOBILITY: 0,
+          PREVENTION: 0,
+          CARDIO: 0,
+          STABILITY: 0,
+          WARMUP: 0,
+          SWR: 0,
+        })}
+      />,
+    );
+
+    const points = parsePoints(getByTestId("radar-chart-polygon").props.d);
+
+    // value 10 of 50 is a radius of 17.6 around the center (88, 88)
+    points.forEach(([x, y]) => {
+      expect(Math.hypot(x - 88, y - 88)).toBeCloseTo(17.6);
     });
+  });
+});
 
-    it("caps values at maxValue (50) when percentage + offset exceeds it", async () => {
-      const userSkills: UserSkills = {
-        MOBILITY: 80,
-        PREVENTION: 5,
-        CARDIO: 5,
-        STABILITY: 5,
-        WARMUP: 3,
-        SWR: 2,
-      };
+describe("RadarChart: labels", () => {
+  it("renders the skill name and percentage for each of the 6 skills", async () => {
+    const { toJSON } = await render(
+      <RadarChart userSkills={generateUserSkills()} />,
+    );
 
-      await render(<RadarChart userSkills={userSkills} />);
+    const texts = collectTexts(toJSON());
 
-      // MOBILITY: 80% + 10 = 90, capped at 50; others get +10 offset
-      expect(capturedProps?.data).toEqual([50, 15, 15, 15, 13, 12]);
-    });
-
-    it("handles zero values by applying only the centerOffset", async () => {
-      const userSkills: UserSkills = {
-        MOBILITY: 0,
-        PREVENTION: 0,
-        CARDIO: 0,
-        STABILITY: 0,
-        WARMUP: 0,
-        SWR: 0,
-      };
-
-      await render(<RadarChart userSkills={userSkills} />);
-
-      expect(capturedProps?.data).toEqual([10, 10, 10, 10, 10, 10]);
+    [
+      "Mobility",
+      "30%",
+      "Prevention",
+      "25%",
+      "Endurance",
+      "15%",
+      "Stability",
+      "12%",
+      "Warm-up",
+      "10%",
+      "Strength",
+      "8%",
+    ].forEach((expected) => {
+      expect(texts).toContain(expected);
     });
   });
 
-  describe("label generation", () => {
-    it("formats labels as skill name with percentage on new line", async () => {
-      const userSkills: UserSkills = {
-        MOBILITY: 30,
-        PREVENTION: 25,
-        CARDIO: 15,
-        STABILITY: 12,
-        WARMUP: 10,
-        SWR: 8,
-      };
+  it("rounds the percentage to a whole number", async () => {
+    const { toJSON } = await render(
+      <RadarChart
+        userSkills={generateUserSkills({
+          MOBILITY: 1,
+          PREVENTION: 2,
+          CARDIO: 2,
+          STABILITY: 2,
+          WARMUP: 2,
+          SWR: 2,
+        })}
+      />,
+    );
 
-      await render(<RadarChart userSkills={userSkills} />);
+    const texts = collectTexts(toJSON());
 
-      expect(capturedProps?.labels).toEqual([
-        "Mobility\n30%",
-        "Prevention\n25%",
-        "Endurance\n15%",
-        "Stability\n12%",
-        "Warm-up\n10%",
-        "Strength\n8%",
-      ]);
-    });
+    // 1 of 11 is 9.09 percent and 2 of 11 is 18.18 percent
+    expect(texts).toContain("9%");
+    expect(texts).toContain("18%");
   });
+});
 
-  describe("screen reader summary", () => {
-    it("labels the chart with every skill and its percentage", async () => {
-      const userSkills: UserSkills = {
-        MOBILITY: 30,
-        PREVENTION: 25,
-        CARDIO: 15,
-        STABILITY: 12,
-        WARMUP: 10,
-        SWR: 8,
-      };
+describe("RadarChart: screen reader summary", () => {
+  it("labels the chart with every skill and its percentage", async () => {
+    const { getByTestId } = await render(
+      <RadarChart userSkills={generateUserSkills()} />,
+    );
 
-      const { getByTestId } = await render(
-        <RadarChart userSkills={userSkills} />,
+    expect(getByTestId("radar-chart-container").props.accessibilityLabel).toBe(
+      "Skill profile: Mobility 30%, Prevention 25%, Endurance 15%, Stability 12%, Warm-up 10%, Strength 8%",
+    );
+  });
+});
+
+describe("RadarChart: web safe props", () => {
+  it.each(["translateX", "translateY", "collapsable"])(
+    "does not pass %s to any element",
+    async (propName) => {
+      const { toJSON } = await render(
+        <RadarChart userSkills={generateUserSkills()} />,
       );
 
-      expect(
-        getByTestId("radar-chart-container").props.accessibilityLabel,
-      ).toBe(
-        "Skill profile: Mobility 30%, Prevention 25%, Endurance 15%, Stability 12%, Warm-up 10%, Strength 8%",
-      );
-    });
-  });
-
-  describe("chart configuration", () => {
-    it("passes correct layout and styling configuration", async () => {
-      const userSkills: UserSkills = {
-        MOBILITY: 20,
-        PREVENTION: 15,
-        CARDIO: 10,
-        STABILITY: 25,
-        WARMUP: 20,
-        SWR: 10,
-      };
-
-      await render(<RadarChart userSkills={userSkills} />);
-
-      expect(capturedProps).toMatchObject({
-        circular: true,
-        startAngle: 90,
-        isClockWise: true,
-        maxValue: 50,
-      });
-    });
-  });
+      expect(collectPropNames(toJSON())).not.toContain(propName);
+    },
+  );
 });

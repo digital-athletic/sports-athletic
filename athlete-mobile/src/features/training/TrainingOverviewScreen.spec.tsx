@@ -77,9 +77,7 @@ describe("TrainingOverviewScreen: share", () => {
   it("shows the share button in the header", async () => {
     await render(<TrainingOverviewScreen />);
 
-    expect(
-      screen.getByRole("button", { name: SHARE_LABEL }),
-    ).toBeOnTheScreen();
+    expect(screen.getByRole("button", { name: SHARE_LABEL })).toBeOnTheScreen();
   });
 
   it("hides the share button while the workout is loading", async () => {

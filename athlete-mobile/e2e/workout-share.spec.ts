@@ -3,7 +3,7 @@ import { expect, test } from "./fixtures";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { mockWakeLock } from "./mocks/wakeLock";
-import { TrainingListPage, TrainingOverviewPage, WorkoutPage } from "./pages";
+import { TrainingOverviewPage, WorkoutPage } from "./pages";
 
 // Removes the browser share sheet and records clipboard writes, because
 // headless browsers differ in both.
@@ -27,10 +27,10 @@ const recordClipboardOnly = async (page: Page) => {
 const readCopiedText = (page: Page): Promise<string> =>
   page.evaluate(() => String(Reflect.get(window, "copiedText")));
 
-test.describe("Workout share: checklist", () => {
+test.describe("Workout share: overview", () => {
   test.use({ profile: createCompletedProfile(), signedIn: true });
 
-  test("athlete copies the running workout as text from the checklist", async ({
+  test("athlete copies the workout as text from the overview", async ({
     page,
   }) => {
     await mockSupabaseAuth(page);
@@ -38,15 +38,13 @@ test.describe("Workout share: checklist", () => {
     await recordClipboardOnly(page);
     const workoutPage = new WorkoutPage(page);
     const trainingOverviewPage = new TrainingOverviewPage(page);
-    const trainingListPage = new TrainingListPage(page);
 
     await page.goto("/");
     await workoutPage.expectLoggedIn();
     await workoutPage.startWorkout("Tuesday");
-    await trainingOverviewPage.startAsChecklist();
-    await trainingListPage.expectVisible();
+    await trainingOverviewPage.expectVisible();
 
-    await trainingListPage.shareWorkout();
+    await trainingOverviewPage.shareWorkout();
 
     await expect(
       page.getByText(

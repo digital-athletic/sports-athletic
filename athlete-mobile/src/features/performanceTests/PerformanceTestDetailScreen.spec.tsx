@@ -85,6 +85,7 @@ beforeEach(() => {
   useUserProfileStore.getState().setPersonalData({
     gender: "FEMALE",
     birthday: BIRTHDAY_AT_14,
+    weight: undefined,
   });
   useUserWorkoutStore.getState().setSport("SPORT_HANDBALL");
   useUserWorkoutStore
@@ -501,5 +502,221 @@ describe("PerformanceTestDetailScreen: value field", () => {
       }),
     ).toHaveTextContent("s");
     expect(screen.getByLabelText("Value in s")).toBeTruthy();
+  });
+});
+
+/**
+ * A squat strength test, recognised by its code, with the unit rel. 1RM, e.g.
+ * { id: "id-SQUAT", code: "SQUAT", unit: "rel. 1RM", referenceValues: [], translations: { en: { name: "Squat" } } }
+ */
+const generateSquatTest = (): SportTest => ({
+  ...generateSportTest("SQUAT", [], { en: { name: "Squat" } }),
+  unit: "rel. 1RM",
+});
+
+describe("PerformanceTestDetailScreen: strength test with a body weight", () => {
+  beforeEach(() => {
+    mockTestCode = "SQUAT";
+    seedSportTest(generateSquatTest());
+    useUserProfileStore.getState().setWeight(60);
+  });
+
+  afterEach(async () => {
+    await act(() => i18n.changeLanguage("en"));
+  });
+
+  it("shows the body weight from the profile above the weight field", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(
+      await screen.findByTestId("performance-test-body-weight"),
+    ).toHaveTextContent("Body weight: 60 kg");
+  });
+
+  it("asks for the lifted weight in kg", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(
+      await screen.findByTestId("performance-test-value-input-suffix", {
+        includeHiddenElements: true,
+      }),
+    ).toHaveTextContent("kg");
+    expect(screen.getByLabelText("Weight lifted in kg")).toBeTruthy();
+  });
+
+  it("stores the lifted weight divided by the body weight", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.changeText(
+      screen.getByTestId("performance-test-value-input"),
+      "90",
+    );
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+
+    expect(usePerformanceTestValuesStore.getState().values).toEqual([
+      {
+        id: expect.any(String),
+        sport: "SPORT_HANDBALL",
+        testCode: "SQUAT",
+        date: formatDateToISO(FROZEN_NOW),
+        value: 1.5,
+      },
+    ]);
+  });
+
+  it("lists the calculated value with the unit of the test", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.changeText(
+      screen.getByTestId("performance-test-value-input"),
+      "90",
+    );
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+
+    const row = screen.getByTestId("performance-test-value-0");
+    expect(within(row).getByText("1.5 rel. 1RM")).toBeTruthy();
+  });
+
+  it("shows the error and stores nothing for an invalid weight", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.changeText(
+      screen.getByTestId("performance-test-value-input"),
+      "abc",
+    );
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+
+    expect(screen.getByTestId("performance-test-value-error")).toBeTruthy();
+    expect(usePerformanceTestValuesStore.getState().values).toEqual([]);
+  });
+
+  it("leaves the profile weight unchanged", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.changeText(
+      screen.getByTestId("performance-test-value-input"),
+      "90",
+    );
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+
+    expect(useUserProfileStore.getState().personalData.weight).toBe(60);
+  });
+
+  it("shows the body weight in German", async () => {
+    await act(() => i18n.changeLanguage("de"));
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(
+      await screen.findByTestId("performance-test-body-weight"),
+    ).toHaveTextContent("Körpergewicht: 60 kg");
+    expect(screen.getByLabelText("Bewegtes Gewicht in kg")).toBeTruthy();
+  });
+});
+
+describe("PerformanceTestDetailScreen: strength test entry switch", () => {
+  beforeEach(() => {
+    mockTestCode = "SQUAT";
+    seedSportTest(generateSquatTest());
+    useUserProfileStore.getState().setWeight(60);
+  });
+
+  it("offers the weight lifted and the value in the test unit, the weight lifted selected", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(
+      await screen.findByRole("tab", { name: "Weight lifted" }),
+    ).toBeSelected();
+    expect(screen.getByRole("tab", { name: "rel. 1RM" })).not.toBeSelected();
+  });
+
+  it("asks for the value in the test unit without the body weight after switching", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.press(await screen.findByRole("tab", { name: "rel. 1RM" }));
+
+    expect(screen.getByLabelText("Value in rel. 1RM")).toBeTruthy();
+    expect(screen.queryByTestId("performance-test-body-weight")).toBeNull();
+  });
+
+  it("stores the entered value as it is after switching", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.press(await screen.findByRole("tab", { name: "rel. 1RM" }));
+    await fireEvent.changeText(
+      screen.getByTestId("performance-test-value-input"),
+      "1,5",
+    );
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+
+    expect(usePerformanceTestValuesStore.getState().values).toEqual([
+      expect.objectContaining({ testCode: "SQUAT", value: 1.5 }),
+    ]);
+  });
+
+  it("shows the body weight again after switching back", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.press(await screen.findByRole("tab", { name: "rel. 1RM" }));
+    await fireEvent.press(screen.getByRole("tab", { name: "Weight lifted" }));
+
+    expect(screen.getByTestId("performance-test-body-weight")).toBeTruthy();
+    expect(screen.getByLabelText("Weight lifted in kg")).toBeTruthy();
+  });
+
+  it("clears the input when switching", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.changeText(
+      await screen.findByTestId("performance-test-value-input"),
+      "90",
+    );
+    await fireEvent.press(screen.getByRole("tab", { name: "rel. 1RM" }));
+
+    expect(screen.getByTestId("performance-test-value-input")).toHaveProp(
+      "value",
+      "",
+    );
+  });
+});
+
+describe("PerformanceTestDetailScreen: strength test without a body weight", () => {
+  beforeEach(() => {
+    mockTestCode = "SQUAT";
+    seedSportTest(generateSquatTest());
+  });
+
+  it("shows no body weight and asks for the value in the test unit", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(await screen.findByLabelText("Value in rel. 1RM")).toBeTruthy();
+    expect(screen.queryByTestId("performance-test-body-weight")).toBeNull();
+    expect(screen.queryByRole("tab")).toBeNull();
+  });
+
+  it("stores the entered value as it is", async () => {
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    await fireEvent.changeText(
+      screen.getByTestId("performance-test-value-input"),
+      "1,5",
+    );
+    await fireEvent.press(screen.getByTestId("performance-test-save"));
+
+    expect(usePerformanceTestValuesStore.getState().values).toEqual([
+      expect.objectContaining({ testCode: "SQUAT", value: 1.5 }),
+    ]);
+  });
+});
+
+describe("PerformanceTestDetailScreen: other test with a body weight", () => {
+  it("shows no body weight for a sprint test", async () => {
+    useUserProfileStore.getState().setWeight(60);
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(await screen.findByLabelText("Value in s")).toBeTruthy();
+    expect(screen.queryByTestId("performance-test-body-weight")).toBeNull();
+    expect(screen.queryByRole("tab")).toBeNull();
   });
 });

@@ -12,6 +12,7 @@ import { formatDateToISO } from "@/utils/date";
 import { type SportTest } from "./models/SportTest";
 import { TestSectionCard, TestSectionTitle } from "./TestSectionCard";
 import { isAllowedValueDate, parseTestValue } from "./testValues";
+import { useTestUnit } from "./useTestLabels";
 
 type EntryError = "invalidValue" | "invalidDate";
 
@@ -44,6 +45,7 @@ export const TestValueEntryCard: FC<{ test: SportTest; sport: Sport }> = ({
   sport,
 }) => {
   const { t } = useTranslation();
+  const unit = useTestUnit(test);
   const addValue = usePerformanceTestValuesStore((state) => state.addValue);
   const [input, setInput] = useState("");
   const [date, setDate] = useState(() => formatDateToISO(new Date()));
@@ -71,10 +73,10 @@ export const TestValueEntryCard: FC<{ test: SportTest; sport: Sport }> = ({
       <TextInputField
         title={t("more.performanceTests.value")}
         accessibilityLabel={t("more.performanceTests.valueLabel", {
-          unit: test.unit,
+          unit,
         })}
         placeholder=""
-        suffix={test.unit}
+        suffix={unit}
         value={input}
         onChange={setInput}
         keyboardType="decimal-pad"

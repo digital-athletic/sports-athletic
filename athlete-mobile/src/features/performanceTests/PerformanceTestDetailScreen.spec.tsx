@@ -1,12 +1,13 @@
+import i18n from "@/i18n";
 import { usePerformanceTestValuesStore } from "@/store/performanceTestValuesStore";
 import { useSportTestsStore } from "@/store/sportTestsStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { formatDateForDisplay, formatDateToISO } from "@/utils/date";
 import { Platform } from "react-native";
-import { fireEvent, render, within } from "../../utils/testUtils";
+import { act, fireEvent, render, within } from "../../utils/testUtils";
 import { type PerformanceTestValue } from "./models/PerformanceTestValue";
-import { type SportTest } from "./models/SportTest";
+import { type SportTest, type SportTestTranslations } from "./models/SportTest";
 import PerformanceTestDetailScreen from "./PerformanceTestDetailScreen";
 import {
   BIRTHDAY_AT_14,
@@ -31,28 +32,40 @@ jest.mock("expo-router", () => ({
   },
 }));
 
+/** The translations of the 5 m sprint in English and German, the German one with a unit. */
+const SPRINT_TRANSLATIONS: SportTestTranslations = {
+  en: { name: "5 m sprint" },
+  de: { name: "5-m-Sprint", unit: "Sek." },
+};
+
 /**
  * A sprint test with the range 9.87 to 6.54 s for the female wing athlete, e.g.
  * { id: "id-SPRINT_5M", code: "SPRINT_5M", unit: "s", referenceValues: [{ ..., rangeStart: 9.87, rangeEnd: 6.54 }] }
  */
-const generateSprintTestWithRange = (): SportTest =>
-  generateSportTest("SPRINT_5M", [generateReferenceValue()]);
+const generateSprintTestWithRange = (
+  translations: SportTestTranslations = SPRINT_TRANSLATIONS,
+): SportTest =>
+  generateSportTest("SPRINT_5M", [generateReferenceValue()], translations);
 
 /**
  * A sprint test with the range 11.5 to 9.5 s for ages 11 to 12 and 9.87 to 6.54 s for ages 13 to 14
  * for the female wing athlete, e.g. a value of 10.2 s is in range in the first and below range in the second.
  */
 const generateSprintTestWithTwoAgeRanges = (): SportTest =>
-  generateSportTest("SPRINT_5M", [
-    generateReferenceValue({
-      trainingStage: "BASISTRAINING",
-      minAge: 11,
-      maxAge: 12,
-      rangeStart: 11.5,
-      rangeEnd: 9.5,
-    }),
-    generateReferenceValue(),
-  ]);
+  generateSportTest(
+    "SPRINT_5M",
+    [
+      generateReferenceValue({
+        trainingStage: "BASISTRAINING",
+        minAge: 11,
+        maxAge: 12,
+        rangeStart: 11.5,
+        rangeEnd: 9.5,
+      }),
+      generateReferenceValue(),
+    ],
+    SPRINT_TRANSLATIONS,
+  );
 
 const seedSportTest = (test: SportTest) => {
   useSportTestsStore.setState({ testsBySport: { SPORT_HANDBALL: [test] } });
@@ -96,6 +109,97 @@ describe("PerformanceTestDetailScreen: heading", () => {
     const screen = await render(<PerformanceTestDetailScreen />);
 
     expect(screen.getByText("Reference 9.87 to 6.54 s")).toBeTruthy();
+  });
+});
+
+describe("PerformanceTestDetailScreen: translations", () => {
+  afterEach(async () => {
+    await act(() => i18n.changeLanguage("en"));
+  });
+
+  it("shows the name in German as heading for a German athlete", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    mockTestCode = "FAKE_TEST_A";
+    seedSportTest(
+      generateSportTest("FAKE_TEST_A", [generateReferenceValue()], {
+        en: { name: "Fake test" },
+        de: { name: "Fake-Test" },
+      }),
+    );
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(screen.getByRole("header", { name: "Fake-Test" })).toBeTruthy();
+  });
+
+  it("shows the English name as heading when the test has no German translation", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    seedSportTest(generateSprintTestWithRange({ en: { name: "5 m sprint" } }));
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(screen.getByRole("header", { name: "5 m sprint" })).toBeTruthy();
+  });
+
+  it("shows the code as heading for a test without translations", async () => {
+    seedSportTest(generateSprintTestWithRange({}));
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(screen.getByRole("header", { name: "SPRINT_5M" })).toBeTruthy();
+  });
+
+  it("shows the translated unit in the reference line", async () => {
+    await act(() => i18n.changeLanguage("de"));
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(screen.getByText("Referenz 9,87 bis 6,54 Sek.")).toBeTruthy();
+  });
+
+  it("shows the translated unit behind the latest value in the summary", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    seedValues([
+      generatePerformanceTestValue({
+        id: "id-new",
+        date: "2026-11-12",
+        value: 8.1,
+      }),
+    ]);
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    const summary = screen.getByTestId("performance-test-summary");
+    expect(within(summary).getByText("8,1 Sek.")).toBeTruthy();
+  });
+
+  it("shows the translated unit behind the values in the history", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    seedValues([
+      generatePerformanceTestValue({
+        id: "id-new",
+        date: "2026-11-12",
+        value: 8.1,
+      }),
+    ]);
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    const row = screen.getByTestId("performance-test-value-0");
+    expect(within(row).getByText("8,1 Sek.")).toBeTruthy();
+  });
+
+  it("shows the translated unit behind the value field and in its label", async () => {
+    await act(() => i18n.changeLanguage("de"));
+
+    const screen = await render(<PerformanceTestDetailScreen />);
+
+    expect(
+      await screen.findByTestId("performance-test-value-input-suffix", {
+        includeHiddenElements: true,
+      }),
+    ).toHaveTextContent("Sek.");
+    expect(screen.getByLabelText("Wert in Sek.")).toBeTruthy();
   });
 });
 

@@ -1,17 +1,21 @@
 import { expect, test } from "./fixtures";
 import { createHandballWingProfile } from "./mocks/stores/profiles/handballWingProfile";
-import { mockSportTests } from "./mocks/sportTests";
+import { type MockSportTestRow, mockSportTests } from "./mocks/sportTests";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { ProfilePage } from "./pages";
 
 // Numeric columns arrive as strings from PostgREST.
-const SPRINT_5M_ROW = {
+const SPRINT_5M_ROW: MockSportTestRow = {
   id: "55555555-5555-4555-8555-555555555555",
   code: "SPRINT_5M",
   unit: "s",
+  translations: {
+    en: { name: "5 m sprint" },
+    de: { name: "5-m-Sprint" },
+  },
   sport_test_reference_values: [
     {
-      gender: "FEMALE" as const,
+      gender: "FEMALE",
       position: "WING",
       training_stage: "GRUNDLAGENTRAINING",
       min_age: 13,
@@ -72,5 +76,28 @@ test.describe("Performance tests: listing the tests of the sport", () => {
     const latest = page.getByTestId("performance-test-latest-SPRINT_5M");
     await expect(latest.getByText("8.1 s")).toBeVisible();
     await expect(latest.getByText("in range")).toBeVisible();
+  });
+});
+
+test.describe("Performance tests: German athlete", () => {
+  test.use({
+    profile: createHandballWingProfile(14),
+    signedIn: true,
+    locale: "de-DE",
+  });
+
+  test("athlete sees the test name in German in the list", async ({ page }) => {
+    await mockSupabaseAuth(page);
+    await mockSportTests(page, [SPRINT_5M_ROW]);
+    // The page objects read English labels, so this test opens the screen by URL.
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: /Hallo .+/ })).toBeVisible();
+    await page.goto("/performance-tests");
+
+    await expect(
+      page.getByRole("heading", { name: "Leistungstests" }),
+    ).toBeVisible();
+    await expect(page.getByText("5-m-Sprint")).toBeVisible();
+    await expect(page.getByText("5 m sprint")).toBeHidden();
   });
 });

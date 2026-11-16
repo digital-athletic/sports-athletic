@@ -20,15 +20,17 @@ jest.mock("./supabaseClient", () => ({
 
 /**
  * A sport_tests row as Supabase returns it, e.g.
- * { id: "test-1", code: "FAKE_TEST", unit: "s", sport_test_reference_values: [{ gender: "FEMALE", position: "WING", training_stage: "GRUNDLAGENTRAINING", min_age: 13, max_age: 14, range_start: "9.87", range_end: 6.54 }] }
+ * { id: "test-1", code: "FAKE_TEST", unit: "s", translations: null, sport_test_reference_values: [{ gender: "FEMALE", position: "WING", training_stage: "GRUNDLAGENTRAINING", min_age: 13, max_age: 14, range_start: "9.87", range_end: 6.54 }] }
  */
 const generateSportTestRow = (
   rangeStart: string | number,
   rangeEnd: string | number,
+  translations: unknown = null,
 ) => ({
   id: "test-1",
   code: "FAKE_TEST",
   unit: "s",
+  translations,
   sport_test_reference_values: [
     {
       gender: "FEMALE",
@@ -78,6 +80,7 @@ describe("fetchSportTests: mapping", () => {
         id: "test-1",
         code: "FAKE_TEST",
         unit: "s",
+        translations: {},
         referenceValues: [
           {
             gender: "FEMALE",
@@ -104,6 +107,17 @@ describe("fetchSportTests: mapping", () => {
     );
   });
 
+  it("selects the translations column", async () => {
+    signedIn();
+    mockOrder.mockResolvedValue({ data: [], error: null });
+
+    await fetchSportTests("SPORT_HANDBALL");
+
+    expect(mockSelect).toHaveBeenCalledWith(
+      expect.stringContaining("translations"),
+    );
+  });
+
   it("accepts range values that arrive as numbers", async () => {
     signedIn();
     mockOrder.mockResolvedValue({
@@ -126,6 +140,86 @@ describe("fetchSportTests: mapping", () => {
     const tests = await fetchSportTests("SPORT_HANDBALL");
 
     expect(tests).toEqual([]);
+  });
+});
+
+describe("fetchSportTests: translations", () => {
+  it("maps NULL translations to an empty object", async () => {
+    signedIn();
+    mockOrder.mockResolvedValue({
+      data: [generateSportTestRow("9.87", "6.54", null)],
+      error: null,
+    });
+
+    const tests = await fetchSportTests("SPORT_HANDBALL");
+
+    expect(tests[0].translations).toEqual({});
+  });
+
+  it("maps the translations of the row through", async () => {
+    signedIn();
+    mockOrder.mockResolvedValue({
+      data: [
+        generateSportTestRow("9.87", "6.54", {
+          en: { name: "Fake test" },
+          de: { name: "Fake-Test", unit: "rel. 1RM" },
+        }),
+      ],
+      error: null,
+    });
+
+    const tests = await fetchSportTests("SPORT_HANDBALL");
+
+    expect(tests[0].translations).toEqual({
+      en: { name: "Fake test" },
+      de: { name: "Fake-Test", unit: "rel. 1RM" },
+    });
+  });
+
+  it("drops a malformed language entry and keeps the others", async () => {
+    signedIn();
+    mockOrder.mockResolvedValue({
+      data: [
+        generateSportTestRow("9.87", "6.54", {
+          en: { name: "Fake test" },
+          de: { name: 42 },
+        }),
+      ],
+      error: null,
+    });
+
+    const tests = await fetchSportTests("SPORT_HANDBALL");
+
+    expect(tests[0].translations).toEqual({ en: { name: "Fake test" } });
+  });
+
+  it("keeps the rest of the test when every language entry is malformed", async () => {
+    signedIn();
+    mockOrder.mockResolvedValue({
+      data: [generateSportTestRow("9.87", "6.54", { en: "Fake test" })],
+      error: null,
+    });
+
+    const tests = await fetchSportTests("SPORT_HANDBALL");
+
+    expect(tests[0]).toMatchObject({
+      code: "FAKE_TEST",
+      unit: "s",
+      translations: {},
+    });
+    expect(tests[0].referenceValues).toHaveLength(1);
+  });
+
+  it("maps a translations value that is not an object to an empty object", async () => {
+    signedIn();
+    mockOrder.mockResolvedValue({
+      data: [generateSportTestRow("9.87", "6.54", "FAKE_NOT_AN_OBJECT")],
+      error: null,
+    });
+
+    const tests = await fetchSportTests("SPORT_HANDBALL");
+
+    expect(tests[0].translations).toEqual({});
   });
 });
 

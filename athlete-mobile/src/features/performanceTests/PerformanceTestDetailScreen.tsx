@@ -26,7 +26,7 @@ import { TestSectionCard, TestSectionTitle } from "./TestSectionCard";
 import { TestValueEntryCard } from "./TestValueEntryCard";
 import { useAthleteProfile } from "./useAthleteProfile";
 import { usePerformanceTests } from "./usePerformanceTests";
-import { useReferenceLine, useTestName } from "./useTestLabels";
+import { useReferenceLine, useTestName, useTestUnit } from "./useTestLabels";
 import { ValueStatusPill } from "./ValueStatusPill";
 
 const SummaryCard: FC<{
@@ -35,6 +35,7 @@ const SummaryCard: FC<{
 }> = ({ test, values }) => {
   const { t, i18n } = useTranslation();
   const athlete = useAthleteProfile();
+  const unit = useTestUnit(test);
   const latest = latestResult(test, athlete, values);
 
   return (
@@ -58,7 +59,7 @@ const SummaryCard: FC<{
         </Text>
         <Text variant="title" fontSize={{ phone: 24, tablet: 32 }}>
           {latest
-            ? formatValueWithUnit(latest.value.value, test.unit, i18n.language)
+            ? formatValueWithUnit(latest.value.value, unit, i18n.language)
             : t("more.performanceTests.noValue")}
         </Text>
       </Box>
@@ -74,6 +75,7 @@ const ChartCard: FC<{
   const { t } = useTranslation();
   const { colors } = useTheme();
   const athlete = useAthleteProfile();
+  const unit = useTestUnit(test);
 
   if (values.length === 0) {
     return (
@@ -92,7 +94,7 @@ const ChartCard: FC<{
     <TestSectionCard>
       <RangeLineChart
         points={points}
-        unit={test.unit}
+        unit={unit}
         testID="performance-test-chart"
       />
       <Box flexDirection="row" flexWrap="wrap" gap="xs">
@@ -168,7 +170,8 @@ const TestDetail: FC<{ test: SportTest }> = ({ test }) => {
     () => valuesOfTest(allValues, athlete.sport, test.code),
     [allValues, athlete.sport, test.code],
   );
-  const name = useTestName(test.code);
+  const name = useTestName(test);
+  const unit = useTestUnit(test);
   const range = referenceRangeOnDate(
     test,
     athlete,
@@ -182,7 +185,7 @@ const TestDetail: FC<{ test: SportTest }> = ({ test }) => {
         <SummaryCard test={test} values={values} />
         <ChartCard test={test} values={values} />
         <TestValueEntryCard test={test} sport={athlete.sport} />
-        <HistoryCard unit={test.unit} values={values} />
+        <HistoryCard unit={unit} values={values} />
       </Box>
     </HeadlineScreen>
   );

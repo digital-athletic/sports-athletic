@@ -866,8 +866,11 @@
     }
   },
   "performanceTests": {
-    "tests": {
-      "SPRINT_5M": "5-m-Sprint"
+    "trainingStages": {
+      "FOUNDATION_TRAINING": "Grundlagentraining",
+      "BUILD_UP_TRAINING_1": "Aufbautraining 1",
+      "BUILD_UP_TRAINING_2": "Aufbautraining 2",
+      "TRANSITION_TRAINING": "Anschlusstraining"
     }
   },
   "muscles": {

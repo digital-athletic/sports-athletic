@@ -5,6 +5,8 @@ export type MockSportTestRow = {
   id: string;
   code: string;
   unit: string;
+  /** Name and unit per language code, or null for a test without translations. */
+  translations: Record<string, { name: string; unit?: string }> | null;
   sport_test_reference_values: {
     gender: "MALE" | "FEMALE";
     position: string;

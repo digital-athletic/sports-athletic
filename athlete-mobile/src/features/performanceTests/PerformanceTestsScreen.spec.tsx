@@ -1,4 +1,8 @@
-import { type SportTest } from "@/features/performanceTests/models/SportTest";
+import i18n from "@/i18n";
+import {
+  type SportTest,
+  type SportTestTranslations,
+} from "@/features/performanceTests/models/SportTest";
 import { usePerformanceTestValuesStore } from "@/store/performanceTestValuesStore";
 import { useSportTestsStore } from "@/store/sportTestsStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
@@ -31,8 +35,17 @@ jest.mock("expo-router", () => ({
  * A test with a range for a female wing player aged 13 to 14, e.g.
  * { id: "id-SPRINT_5M", code: "SPRINT_5M", unit: "s", referenceValues: [{ ..., rangeStart: 9.87, rangeEnd: 6.54 }] }
  */
-const generateTestWithRange = (code = "SPRINT_5M"): SportTest =>
-  generateSportTest(code, [generateReferenceValue()]);
+const generateTestWithRange = (
+  code = "SPRINT_5M",
+  translations: SportTestTranslations = {},
+): SportTest =>
+  generateSportTest(code, [generateReferenceValue()], translations);
+
+/** The translations of the 5 m sprint in English and German, the German one with a unit. */
+const SPRINT_TRANSLATIONS: SportTestTranslations = {
+  en: { name: "5 m sprint" },
+  de: { name: "5-m-Sprint", unit: "Sek." },
+};
 
 beforeEach(() => {
   jest.useFakeTimers({ now: FROZEN_NOW });
@@ -56,7 +69,9 @@ afterEach(() => {
 
 describe("PerformanceTestsScreen: list", () => {
   it("shows the test name and the reference range of the athlete", async () => {
-    mockFetchSportTests.mockResolvedValue([generateTestWithRange()]);
+    mockFetchSportTests.mockResolvedValue([
+      generateTestWithRange("SPRINT_5M", SPRINT_TRANSLATIONS),
+    ]);
 
     const screen = await render(<PerformanceTestsScreen />);
 
@@ -91,7 +106,7 @@ describe("PerformanceTestsScreen: list", () => {
 
   it("lists one row per test", async () => {
     mockFetchSportTests.mockResolvedValue([
-      generateTestWithRange("SPRINT_5M"),
+      generateTestWithRange("SPRINT_5M", SPRINT_TRANSLATIONS),
       generateTestWithRange("FAKE_UNTRANSLATED"),
     ]);
 
@@ -103,6 +118,85 @@ describe("PerformanceTestsScreen: list", () => {
     expect(
       screen.getByTestId("performance-test-row-FAKE_UNTRANSLATED"),
     ).toBeTruthy();
+  });
+});
+
+describe("PerformanceTestsScreen: translations", () => {
+  afterEach(async () => {
+    await act(() => i18n.changeLanguage("en"));
+  });
+
+  it("shows the name in German for a German athlete", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    mockFetchSportTests.mockResolvedValue([
+      generateTestWithRange("FAKE_TEST_A", {
+        en: { name: "Fake test" },
+        de: { name: "Fake-Test" },
+      }),
+    ]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    expect(await screen.findByText("Fake-Test")).toBeTruthy();
+    expect(screen.queryByText("Fake test")).toBeNull();
+  });
+
+  it("shows the English name when the test has no German translation", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    mockFetchSportTests.mockResolvedValue([
+      generateTestWithRange("SPRINT_5M", { en: { name: "5 m sprint" } }),
+    ]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    expect(await screen.findByText("5 m sprint")).toBeTruthy();
+  });
+
+  it("shows the code for a test without translations even when the code is SPRINT_5M", async () => {
+    mockFetchSportTests.mockResolvedValue([generateTestWithRange("SPRINT_5M")]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    expect(await screen.findByText("SPRINT_5M")).toBeTruthy();
+    expect(screen.queryByText("5 m sprint")).toBeNull();
+  });
+
+  it("shows the translated unit in the reference line", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    mockFetchSportTests.mockResolvedValue([
+      generateTestWithRange("SPRINT_5M", SPRINT_TRANSLATIONS),
+    ]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    expect(await screen.findByText("Referenz 9,87 bis 6,54 Sek.")).toBeTruthy();
+  });
+
+  it("shows the translated unit behind the latest value", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    mockFetchSportTests.mockResolvedValue([
+      generateTestWithRange("SPRINT_5M", SPRINT_TRANSLATIONS),
+    ]);
+    usePerformanceTestValuesStore.setState({
+      values: [generatePerformanceTestValue({ value: 8.1 })],
+    });
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    const latest = await screen.findByTestId(
+      "performance-test-latest-SPRINT_5M",
+    );
+    expect(within(latest).getByText("8,1 Sek.")).toBeTruthy();
+  });
+
+  it("shows the stored unit in the reference line when the language has no unit", async () => {
+    mockFetchSportTests.mockResolvedValue([
+      generateTestWithRange("SPRINT_5M", SPRINT_TRANSLATIONS),
+    ]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    expect(await screen.findByText("Reference 9.87 to 6.54 s")).toBeTruthy();
   });
 });
 
@@ -137,7 +231,9 @@ describe("PerformanceTestsScreen: states", () => {
 
   it("loads again when the athlete taps retry", async () => {
     mockFetchSportTests.mockRejectedValueOnce(new Error("offline"));
-    mockFetchSportTests.mockResolvedValueOnce([generateTestWithRange()]);
+    mockFetchSportTests.mockResolvedValueOnce([
+      generateTestWithRange("SPRINT_5M", SPRINT_TRANSLATIONS),
+    ]);
     const screen = await render(<PerformanceTestsScreen />);
     await screen.findByTestId("performance-tests-retry");
 
@@ -223,7 +319,9 @@ describe("PerformanceTestsScreen: open the detail", () => {
   });
 
   it("announces each card as a button", async () => {
-    mockFetchSportTests.mockResolvedValue([generateTestWithRange()]);
+    mockFetchSportTests.mockResolvedValue([
+      generateTestWithRange("SPRINT_5M", SPRINT_TRANSLATIONS),
+    ]);
 
     const screen = await render(<PerformanceTestsScreen />);
 

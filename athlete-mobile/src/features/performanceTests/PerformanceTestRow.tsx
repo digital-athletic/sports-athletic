@@ -11,7 +11,7 @@ import {
 } from "./models/SportTest";
 import { TestIconCircle } from "./TestIconCircle";
 import { formatValueWithUnit, type LatestResult } from "./testValues";
-import { useReferenceLine, useTestName } from "./useTestLabels";
+import { useReferenceLine, useTestName, useTestUnit } from "./useTestLabels";
 import { ValueStatusPill } from "./ValueStatusPill";
 
 type Props = {
@@ -26,6 +26,7 @@ const LatestValue: FC<{ test: SportTest; latest: LatestResult | null }> = ({
   latest,
 }) => {
   const { t, i18n } = useTranslation();
+  const unit = useTestUnit(test);
 
   if (latest === null) {
     return (
@@ -46,7 +47,7 @@ const LatestValue: FC<{ test: SportTest; latest: LatestResult | null }> = ({
         fontSize={{ phone: 16, tablet: 20 }}
         fontWeight="600"
       >
-        {formatValueWithUnit(latest.value.value, test.unit, i18n.language)}
+        {formatValueWithUnit(latest.value.value, unit, i18n.language)}
       </Text>
       {latest.status && <ValueStatusPill status={latest.status} />}
     </Box>
@@ -54,14 +55,14 @@ const LatestValue: FC<{ test: SportTest; latest: LatestResult | null }> = ({
 };
 
 function describeLatest(
-  test: SportTest,
+  unit: string,
   latest: LatestResult | null,
   t: TFunction,
   language: string,
 ): string {
   if (latest === null) return t("more.performanceTests.noValue");
 
-  const value = formatValueWithUnit(latest.value.value, test.unit, language);
+  const value = formatValueWithUnit(latest.value.value, unit, language);
   if (latest.status === null) return value;
 
   return `${value}, ${t(`more.performanceTests.status.${latest.status}`)}`;
@@ -82,9 +83,10 @@ export const PerformanceTestRow: FC<Props> = ({
 }) => {
   const { t, i18n } = useTranslation();
 
-  const name = useTestName(test.code);
+  const name = useTestName(test);
+  const unit = useTestUnit(test);
   const reference = useReferenceLine(test, range);
-  const latestLabel = describeLatest(test, latest, t, i18n.language);
+  const latestLabel = describeLatest(unit, latest, t, i18n.language);
 
   return (
     <Pressable

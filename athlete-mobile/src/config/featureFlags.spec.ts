@@ -16,6 +16,7 @@ describe("featureFlags", () => {
     delete process.env.EXPO_PUBLIC_CONTACT_ENABLED;
     delete process.env.EXPO_PUBLIC_SUPPORT_EMAIL;
     delete process.env.EXPO_PUBLIC_PLAN_GENERATOR_ENABLED;
+    delete process.env.EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED;
   });
 
   describe("contactEnabled", () => {
@@ -173,6 +174,22 @@ describe("featureFlags", () => {
     it("is false when EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED is 'false'", () => {
       process.env.EXPO_PUBLIC_TRAINING_LIST_VIEW_ENABLED = "false";
       expect(featureFlags.trainingListViewEnabled).toBe(false);
+    });
+  });
+
+  describe("performanceTestsEnabled", () => {
+    it("defaults to true when EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED is unset", () => {
+      expect(featureFlags.performanceTestsEnabled).toBe(true);
+    });
+
+    it("is false when EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED is 'false'", () => {
+      process.env.EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED = "false";
+      expect(featureFlags.performanceTestsEnabled).toBe(false);
+    });
+
+    it("is true when EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED is any other value", () => {
+      process.env.EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED = "true";
+      expect(featureFlags.performanceTestsEnabled).toBe(true);
     });
   });
 

@@ -14,8 +14,9 @@ jest.mock("@/charts/PowerTest", () => ({
   PowerTest: () => null,
 }));
 
+const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+  useRouter: () => ({ push: mockPush, replace: jest.fn() }),
 }));
 
 const DAY = 1000 * 60 * 60 * 24;
@@ -37,6 +38,7 @@ const generateStrengthTestResult = (testAt: number) => ({
 const FIVE_WEIGHTS = ["100 kg", "90 kg", "70 kg", "60 kg", "40 kg"];
 
 beforeEach(() => {
+  mockPush.mockClear();
   mockAgeGroup.mockReturnValue(WorkoutConstants.AGE_GROUPS.ADULT);
 });
 
@@ -154,5 +156,43 @@ describe("PowerTest statistics: test result cards", () => {
     for (const weight of FIVE_WEIGHTS) {
       expect(within(entry).getByText(weight)).toBeTruthy();
     }
+  });
+});
+
+describe("PowerTest statistics: link to the performance tests", () => {
+  afterEach(() => {
+    delete process.env.EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED;
+  });
+
+  it("opens the performance tests from the strength test statistics", async () => {
+    const { getByText } = await render(<PowerTest />);
+
+    await act(() => {
+      fireEvent.press(getByText("Show performance tests"));
+    });
+
+    expect(mockPush).toHaveBeenCalledWith("/(tabs)/(more)/performance-tests");
+  });
+
+  it("offers the link to athletes too young for the strength test", async () => {
+    mockAgeGroup.mockReturnValue(WorkoutConstants.AGE_GROUPS.CHILD);
+
+    const { queryByText } = await render(<PowerTest />);
+
+    expect(queryByText("Show performance tests")).not.toBeNull();
+  });
+
+  it("hides the link when the feature flag is off", async () => {
+    process.env.EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED = "false";
+
+    const { queryByText } = await render(<PowerTest />);
+
+    expect(queryByText("Show performance tests")).toBeNull();
+  });
+
+  it("offers no link on the results screen after a strength test", async () => {
+    const { queryByText } = await render(<PowerTest isSuccessScreen />);
+
+    expect(queryByText("Show performance tests")).toBeNull();
   });
 });

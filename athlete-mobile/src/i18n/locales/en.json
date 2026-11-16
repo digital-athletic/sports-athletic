@@ -1103,6 +1103,7 @@
       "legendShoulderPress": "Shoulder press",
       "startNewTest": "Start Strength Test",
       "enterManually": "Enter Strength Test Results",
+      "showPerformanceTests": "Show performance tests",
       "toggleEntry": "Toggle test entry for {{date}}",
       "squad": "Squat",
       "deadlift": "Deadlift",

@@ -12,7 +12,7 @@ import { latestResult, valuesOfTest } from "./testValues";
 import { useAthleteProfile } from "./useAthleteProfile";
 import { usePerformanceTests } from "./usePerformanceTests";
 
-/** Lists the performance tests of the athlete's sport with the athlete's reference range. */
+/** Lists the performance tests of every sport with the athlete's reference range. */
 export default function PerformanceTestsScreen() {
   const { t } = useTranslation();
   const { state, reload } = usePerformanceTests();

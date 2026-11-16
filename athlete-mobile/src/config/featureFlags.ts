@@ -52,6 +52,14 @@ export const featureFlags = {
   get planGeneratorEnabled(): boolean {
     return process.env.EXPO_PUBLIC_PLAN_GENERATOR_ENABLED === "true";
   },
+  /**
+   * The More menu and the strength test results show the performance tests
+   * unless set to "false".
+   * Env var: EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED
+   */
+  get performanceTestsEnabled(): boolean {
+    return process.env.EXPO_PUBLIC_PERFORMANCE_TESTS_ENABLED !== "false";
+  },
   get reviewEmail(): string | null {
     return process.env.EXPO_PUBLIC_REVIEW_EMAIL ?? null;
   },

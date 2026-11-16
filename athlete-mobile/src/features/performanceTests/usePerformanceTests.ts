@@ -2,7 +2,6 @@ import { useCallback, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { fetchSportTests } from "@/services/SportTestService";
 import { useSportTestsStore } from "@/store/sportTestsStore";
-import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { type SportTest } from "./models/SportTest";
 
 export type PerformanceTestsState =
@@ -10,13 +9,17 @@ export type PerformanceTestsState =
   | { status: "error" }
   | { status: "loaded"; tests: SportTest[] };
 
+/** Cache key of the list, which holds the tests of every sport. */
+export const ALL_SPORTS_CACHE_KEY = "ALL_SPORTS";
+
 /** Shows the cached tests at once and refreshes them on every focus. */
 export function usePerformanceTests(): {
   state: PerformanceTestsState;
   reload: () => void;
 } {
-  const sport = useUserWorkoutStore((state) => state.workoutData.sport);
-  const cached = useSportTestsStore((state) => state.testsBySport[sport]);
+  const cached = useSportTestsStore(
+    (state) => state.testsBySport[ALL_SPORTS_CACHE_KEY],
+  );
   const setTests = useSportTestsStore((state) => state.setTests);
   const [hasFailed, setHasFailed] = useState(false);
   // Each load gets a number, so a slow earlier answer cannot overwrite a newer one.
@@ -26,15 +29,15 @@ export function usePerformanceTests(): {
     const loadId = ++latestLoad.current;
     const isCurrent = () => loadId === latestLoad.current;
     setHasFailed(false);
-    fetchSportTests(sport)
+    fetchSportTests()
       .then((tests) => {
-        if (isCurrent()) setTests(sport, tests);
+        if (isCurrent()) setTests(ALL_SPORTS_CACHE_KEY, tests);
       })
       .catch((error: unknown) => {
         console.error("Loading performance tests failed", error);
         if (isCurrent()) setHasFailed(true);
       });
-  }, [sport, setTests]);
+  }, [setTests]);
 
   useFocusEffect(
     useCallback(() => {

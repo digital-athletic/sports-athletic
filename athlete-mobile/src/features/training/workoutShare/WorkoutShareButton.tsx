@@ -42,7 +42,7 @@ const shareWorkout = async (
       t,
     );
     if ((await shareWorkoutText(text)) === "copied") {
-      Alert.alert(t("training.list.share.copied"));
+      Alert.alert(t("training.share.copied"));
     }
   } catch (error) {
     Logger.logError(
@@ -52,7 +52,7 @@ const shareWorkout = async (
   }
 };
 
-/** Header button that shares the running workout as plain text. */
+/** Header button that shares the workout of the training store as plain text. */
 export const WorkoutShareButton: FC = () => {
   const { t, i18n } = useTranslation();
   const params = useLocalSearchParams<TrainingParams>();
@@ -71,7 +71,7 @@ export const WorkoutShareButton: FC = () => {
       icon={IconShare2}
       onPress={share}
       disabled={isSharing}
-      accessibilityLabel={t("training.list.share.label")}
+      accessibilityLabel={t("training.share.label")}
       testID="workout-share-button"
     />
   );

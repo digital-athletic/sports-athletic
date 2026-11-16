@@ -10,6 +10,12 @@ import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
+ * How a training ends: every set done, finished early with its done sets
+ * saved, or aborted without a result.
+ */
+export type TrainingOutcome = "finished" | "finishedEarly" | "aborted";
+
+/**
  * Finalizes a training session (sequential or list-view) and navigates to
  * the success screen. Shared so both screens commit progress identically.
  * Returns false when the push fails. The session then stays resumable and
@@ -32,7 +38,7 @@ export function useFinishTraining() {
   // For non-test workouts (PREV, FOCUS, PLAN), strengthTestMaxValues is undefined and the
   // TEST_WORKOUT check in testMaxValues ensures no max values are saved.
   const finishTraining = (
-    aborted: boolean = false,
+    outcome: TrainingOutcome,
     strengthTestMaxValues?: MaxValuesType | null,
   ): boolean => {
     // Guards against double-invocation (e.g. a fast double-tap on the
@@ -44,7 +50,7 @@ export function useFinishTraining() {
     // Computed before the try: the React Compiler skips a try block that
     // contains a conditional expression.
     const testMaxValues =
-      activeTraining?.type === "TEST_WORKOUT" && !aborted
+      activeTraining?.type === "TEST_WORKOUT" && outcome === "finished"
         ? strengthTestMaxValues
         : null;
 
@@ -54,7 +60,7 @@ export function useFinishTraining() {
       setTrainingEndTime(Date.now());
       router.push({
         pathname: "/training/training-success",
-        params: { aborted: aborted.toString() },
+        params: { outcome },
       });
     } catch (error) {
       Logger.logError(error as Error);
@@ -66,7 +72,7 @@ export function useFinishTraining() {
 
     logTrainingEvent(
       activeTraining,
-      aborted ? "training_aborted" : "training_finished",
+      outcome === "aborted" ? "training_aborted" : "training_finished",
     );
 
     if (testMaxValues) {

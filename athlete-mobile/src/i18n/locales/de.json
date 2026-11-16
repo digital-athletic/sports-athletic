@@ -507,7 +507,8 @@
       },
       "finishEarly": {
         "question": "Training vorzeitig beenden?",
-        "explanation": "Noch nicht alle Sätze sind erledigt. Das Training endet unvollständig."
+        "savedExplanation": "Noch nicht alle Sätze sind erledigt. Das Training wird mit deinen erledigten Sätzen gespeichert.",
+        "discardedExplanation": "Noch nicht alle Sätze sind erledigt. Das Training endet ohne Ergebnis und wird nicht gespeichert."
       },
       "share": {
         "label": "Training als Text teilen",

@@ -4,7 +4,9 @@ import { PowerTest } from "@/features/statistics/components/PowerTest";
 import { RadarChartCard } from "@/features/statistics/components/RadarChartCard";
 import { TrainingSummary } from "@/features/statistics/components/TrainingSummary";
 import { seconds } from "@/features/training/models/TimeUnits";
+import { type TrainingOutcome } from "@/features/training/hooks/useFinishTraining";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { keepCompletedSets } from "@/features/training/utils/completedSets";
 import { calculateSkillsFromTime } from "@/features/training/utils/trainingSuccessUtils";
 import { calculateWorkoutTotals } from "@/features/training/utils/workoutUtils";
 import { useFocusedHardwareBackHandler } from "@/hooks/useFocusedHardwareBackHandler";
@@ -15,7 +17,6 @@ import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { getTimeString, getWeightString } from "@/utils/formatters";
-import { parseBooleanParam } from "@/utils/router";
 import { supportMessage } from "@/utils/supportMessage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -33,15 +34,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 /**
  * Training Success Screen
  *
- * Displays training completion summary. Aborted sessions skip XP and history.
+ * Displays training completion summary. Aborted sessions skip XP and history,
+ * early finished sessions count and save only their done sets.
  * Back gestures disabled to ensure controlled flow. Android back acts as Continue.
  * Legacy: views/training/TrainingSuccess
  */
 const TrainingSuccessScreen: FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ aborted?: string }>();
-  const aborted = parseBooleanParam(params.aborted);
+  const { outcome } = useLocalSearchParams<{ outcome?: TrainingOutcome }>();
+  const aborted = outcome === "aborted";
   // The finished session as it was on arrival: Continue clears the store while
   // this screen is still leaving, and the summary must stay as it is.
   const [{ exerciseList, time, activeTraining, trainingViewMode }] = useState(
@@ -62,15 +64,22 @@ const TrainingSuccessScreen: FC = () => {
     activeTraining?.type === "TEST_WORKOUT" ||
     exerciseList?.some((e) => e.repetition === -1) === true;
 
+  const savedExercises = useMemo(
+    () =>
+      outcome === "finishedEarly"
+        ? keepCompletedSets(exerciseList ?? [])
+        : (exerciseList ?? []),
+    [outcome, exerciseList],
+  );
+
   const skills = useMemo(
     () => calculateSkillsFromTime(time.skill),
     [time.skill],
   );
 
   const totals = useMemo(
-    () =>
-      calculateWorkoutTotals(time, exerciseList ?? [], exercises, maxValues),
-    [time, exerciseList, exercises, maxValues],
+    () => calculateWorkoutTotals(time, savedExercises, exercises, maxValues),
+    [time, savedExercises, exercises, maxValues],
   );
 
   // Award XP when workout is completed (only once, skip aborted sessions)
@@ -87,13 +96,12 @@ const TrainingSuccessScreen: FC = () => {
       !aborted &&
       !workoutSaved.current &&
       totals.count > 0 &&
-      !isTestWorkout &&
-      exerciseList
+      !isTestWorkout
     ) {
       addCompletedWorkout({
         id: activeTraining?.id ?? `workout-${Date.now()}`,
         timestamp: Date.now(),
-        exercises: exerciseList,
+        exercises: savedExercises,
         duration: seconds(totals.duration),
         xpEarned: totals.xp,
         movedWeight: totals.weight,
@@ -107,7 +115,7 @@ const TrainingSuccessScreen: FC = () => {
     aborted,
     totals,
     skills,
-    exerciseList,
+    savedExercises,
     isTestWorkout,
     addCompletedWorkout,
     activeTraining?.id,

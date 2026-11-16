@@ -1,0 +1,13 @@
+{
+  "aiwl": 1,
+  "id": "CHECKLIST_THREE_EXERCISES",
+  "name": { "en": "Three exercises check", "de": "Drei Übungen Check" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "GKS",
+      "picks": [{ "tags": [], "count": 3 }],
+      "superset": "none"
+    }
+  ]
+}

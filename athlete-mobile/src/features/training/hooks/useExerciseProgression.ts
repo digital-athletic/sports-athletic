@@ -106,7 +106,7 @@ export function useExerciseProgression() {
       }
     } else {
       // Training complete
-      finishTraining(false, strengthTestMaxValues);
+      finishTraining("finished", strengthTestMaxValues);
     }
   };
 
@@ -124,7 +124,7 @@ export function useExerciseProgression() {
           text: t("common.yes"),
           onPress: () => {
             setIsAborted(true);
-            finishTraining(true);
+            finishTraining("aborted");
           },
         },
         {

@@ -253,14 +253,17 @@ describe("useExerciseProgression: advanceToNextExercise training completion", ()
     jest.restoreAllMocks();
   });
 
-  it("calls finishTraining(false, maxValues) when advancing past the last exercise", async () => {
+  it("finishes the training with the max values when advancing past the last exercise", async () => {
     const { result } = await renderHook(() => useExerciseProgression());
 
     await act(() => {
       result.current.advanceToNextExercise(BASELINE_MAX_VALUES);
     });
 
-    expect(mockFinishTraining).toHaveBeenCalledWith(false, BASELINE_MAX_VALUES);
+    expect(mockFinishTraining).toHaveBeenCalledWith(
+      "finished",
+      BASELINE_MAX_VALUES,
+    );
   });
 });
 
@@ -442,7 +445,7 @@ describe("useExerciseProgression: handleAbortTraining", () => {
     jest.restoreAllMocks();
   });
 
-  it("shows a confirmation alert and calls finishTraining(true) when the user confirms", async () => {
+  it("shows a confirmation alert and aborts the training when the user confirms", async () => {
     const { result } = await renderHook(() => useExerciseProgression());
 
     await act(() => {
@@ -464,7 +467,7 @@ describe("useExerciseProgression: handleAbortTraining", () => {
       confirmButton.onPress();
     });
 
-    expect(mockFinishTraining).toHaveBeenCalledWith(true);
+    expect(mockFinishTraining).toHaveBeenCalledWith("aborted");
     expect(result.current.isAborted).toBe(true);
   });
 
@@ -632,6 +635,6 @@ describe("useExerciseProgression: advanceToNextExercise finish decision when the
       result.current.advanceToNextExercise();
     });
 
-    expect(mockFinishTraining).toHaveBeenCalledWith(false, undefined);
+    expect(mockFinishTraining).toHaveBeenCalledWith("finished", undefined);
   });
 });

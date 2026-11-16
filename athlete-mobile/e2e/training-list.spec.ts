@@ -7,6 +7,7 @@ import { mockSupabaseAuth } from "./mocks/supabase";
 import { mockWakeLock } from "./mocks/wakeLock";
 import {
   BasePage,
+  StatisticsPage,
   TrainingListPage,
   TrainingOverviewPage,
   WorkoutPage,
@@ -26,10 +27,19 @@ const SUPERSET_WORKOUT_FILE = path.join(
   "checklist-superset-workout.json",
 );
 
-// Imports the superset workout file and opens it as a checklist. The file
-// plans a timed warm up (list index 0), then a superset of two timed
-// exercises with two sets each: indices 2 and 6, 4 and 8.
-const openSupersetChecklist = async (page: Page) => {
+const THREE_EXERCISES_WORKOUT_FILE = path.join(
+  __dirname,
+  "mocks",
+  "files",
+  "checklist-three-exercises-workout.json",
+);
+
+// Imports a workout file and opens the training it names as a checklist.
+const openImportedChecklist = async (
+  page: Page,
+  workoutFile: string,
+  workoutName: string,
+) => {
   const basePage = new BasePage(page);
   const trainingOverviewPage = new TrainingOverviewPage(page);
   const trainingListPage = new TrainingListPage(page);
@@ -40,10 +50,8 @@ const openSupersetChecklist = async (page: Page) => {
   await page.getByRole("button", { name: "Your trainings" }).click();
   const chooserPromise = page.waitForEvent("filechooser");
   await page.getByRole("button", { name: "Import training" }).click();
-  await (await chooserPromise).setFiles(SUPERSET_WORKOUT_FILE);
-  await page
-    .getByRole("button", { name: "Superset check", exact: true })
-    .click();
+  await (await chooserPromise).setFiles(workoutFile);
+  await page.getByRole("button", { name: workoutName, exact: true }).click();
   await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
   await expect(
     page.getByRole("heading", { name: "Training Overview" }),
@@ -52,6 +60,11 @@ const openSupersetChecklist = async (page: Page) => {
   await trainingListPage.expectVisible();
   return trainingListPage;
 };
+
+// The superset workout file plans a timed warm up (list index 0), then a
+// superset of two timed exercises with two sets each: indices 2 and 6, 4 and 8.
+const openSupersetChecklist = (page: Page) =>
+  openImportedChecklist(page, SUPERSET_WORKOUT_FILE, "Superset check");
 
 test.describe("Training list: checklist session", () => {
   test.describe("Standard progression", () => {
@@ -618,7 +631,7 @@ test.describe("Training list: checklist session", () => {
       );
     });
 
-    test("athlete finishes early with open sets and sees the result of an aborted training", async ({
+    test("athlete finishes early without a completed set and the training is not saved", async ({
       page,
     }) => {
       test.setTimeout(60000);
@@ -637,13 +650,51 @@ test.describe("Training list: checklist session", () => {
       await trainingOverviewPage.startAsChecklist();
       await trainingListPage.expectVisible();
 
-      await trainingListPage.finishEarly();
+      await trainingListPage.finishEarly(
+        "Not all sets are done. The training ends without a result and is not saved.",
+      );
 
       await expect(page.getByText("Training evaluation")).toBeVisible();
       // An aborted training is not added to the history.
       await workoutPage.returnToHome();
       await workoutPage.expectLoggedIn();
       expect(await getCompletedWorkouts(page)).toBe(workoutsBefore);
+    });
+
+    test("athlete finishes early after two exercises and finds the training with two exercises in Statistics", async ({
+      page,
+    }) => {
+      test.setTimeout(90000);
+      await mockSupabaseAuth(page);
+      await mockWakeLock(page);
+      await page.clock.install();
+
+      const workoutPage = new WorkoutPage(page);
+      const statsPage = new StatisticsPage(page);
+
+      const trainingListPage = await openImportedChecklist(
+        page,
+        THREE_EXERCISES_WORKOUT_FILE,
+        "Three exercises check",
+      );
+      const workoutsBefore = await getCompletedWorkouts(page);
+
+      await trainingListPage.completeExercises(2);
+      await trainingListPage.finishEarly(
+        "Not all sets are done. The training is saved with your completed sets.",
+      );
+
+      await expect(page.getByText("Training evaluation")).toBeVisible();
+      await expect(
+        page.getByTestId("training-success-summary-count"),
+      ).toHaveText("2");
+      await workoutPage.returnToHome();
+      await workoutPage.expectLoggedIn();
+      expect(await getCompletedWorkouts(page)).toBe(workoutsBefore + 1);
+
+      await statsPage.openStatisticsTab();
+      await statsPage.expectHasWorkouts();
+      expect(await statsPage.getWorkoutRowExerciseCount(0)).toBe(2);
     });
   });
 });

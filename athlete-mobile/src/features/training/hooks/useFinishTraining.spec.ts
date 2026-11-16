@@ -43,13 +43,13 @@ describe("useFinishTraining: navigating to the success screen", () => {
 
     let returned: unknown;
     await act(() => {
-      returned = result.current.finishTraining(false);
+      returned = result.current.finishTraining("finished");
     });
 
     expect(returned).toBe(true);
     expect(mockPush).toHaveBeenCalledWith({
       pathname: "/training/training-success",
-      params: { aborted: "false" },
+      params: { outcome: "finished" },
     });
     expect(useTrainingStore.getState().time.end).toBeDefined();
   });
@@ -69,7 +69,7 @@ describe("useFinishTraining: the push to the success screen throws", () => {
 
     let returned: unknown;
     await act(() => {
-      returned = result.current.finishTraining(false);
+      returned = result.current.finishTraining("finished");
     });
 
     expect(returned).toBe(false);
@@ -79,7 +79,7 @@ describe("useFinishTraining: the push to the success screen throws", () => {
     const { result } = await renderHook(() => useFinishTraining());
 
     await act(() => {
-      result.current.finishTraining(false);
+      result.current.finishTraining("finished");
     });
 
     expect(useTrainingStore.getState().time.end).toBeUndefined();
@@ -88,12 +88,12 @@ describe("useFinishTraining: the push to the success screen throws", () => {
   it("can be called again and then reaches the success screen", async () => {
     const { result } = await renderHook(() => useFinishTraining());
     await act(() => {
-      result.current.finishTraining(false);
+      result.current.finishTraining("finished");
     });
 
     let returned: unknown;
     await act(() => {
-      returned = result.current.finishTraining(false);
+      returned = result.current.finishTraining("finished");
     });
 
     expect(returned).toBe(true);
@@ -110,14 +110,52 @@ describe("useFinishTraining: the push to the success screen throws", () => {
     const maxValues = useUserWorkoutStore.getState().workoutData.maxValues;
 
     await act(() => {
-      result.current.finishTraining(false, maxValues);
+      result.current.finishTraining("finished", maxValues);
     });
     await act(() => {
-      result.current.finishTraining(false, maxValues);
+      result.current.finishTraining("finished", maxValues);
     });
 
     expect(useExerciseProgressStore.getState().testHistory).toHaveLength(
       resultsBefore + 1,
+    );
+  });
+});
+
+describe("useFinishTraining: finishing a training early", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    startTraining();
+  });
+
+  it("tells the success screen that the training was finished early", async () => {
+    const { result } = await renderHook(() => useFinishTraining());
+
+    await act(() => {
+      result.current.finishTraining("finishedEarly");
+    });
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: "/training/training-success",
+      params: { outcome: "finishedEarly" },
+    });
+  });
+
+  it("stores no test result for a strength test finished early", async () => {
+    useTrainingStore.setState({
+      activeTraining: { id: "workout-1", type: "TEST_WORKOUT" },
+    });
+    const resultsBefore =
+      useExerciseProgressStore.getState().testHistory.length;
+    const maxValues = useUserWorkoutStore.getState().workoutData.maxValues;
+    const { result } = await renderHook(() => useFinishTraining());
+
+    await act(() => {
+      result.current.finishTraining("finishedEarly", maxValues);
+    });
+
+    expect(useExerciseProgressStore.getState().testHistory).toHaveLength(
+      resultsBefore,
     );
   });
 });

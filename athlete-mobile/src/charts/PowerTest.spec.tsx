@@ -1,6 +1,7 @@
 import type { PowerTestChartData } from "@/features/statistics/models/ChartData";
 import { render } from "@/utils/testUtils";
 import { PowerTest } from "./PowerTest";
+import { collectPropNames, collectTexts } from "./svgTreeTestUtils";
 
 // Chart data with three dates, e.g. squat [0, 80, 85] on 2024-06-30, 2024-07-06, 2024-09-04
 const generatePowerTestChartData = (): PowerTestChartData => ({
@@ -27,37 +28,6 @@ const mockUsePowerTestData = jest.fn();
 jest.mock("@/features/statistics/hooks/usePowerTestData", () => ({
   usePowerTestData: () => mockUsePowerTestData(),
 }));
-
-interface RenderedNode {
-  props: Record<string, unknown>;
-  children: (RenderedNode | string)[] | null;
-}
-
-const collectPropNames = (
-  node: RenderedNode | RenderedNode[] | null,
-): string[] => {
-  if (node === null) return [];
-  if (Array.isArray(node)) return node.flatMap(collectPropNames);
-  const children = (node.children ?? []).filter(
-    (child): child is RenderedNode => typeof child !== "string",
-  );
-  return [...Object.keys(node.props), ...children.flatMap(collectPropNames)];
-};
-
-// Collects every text string of the rendered tree: ["0 kg", "30.06."]
-const collectTexts = (node: RenderedNode | RenderedNode[] | null): string[] => {
-  if (node === null) return [];
-  if (Array.isArray(node)) return node.flatMap(collectTexts);
-  // react-native-svg renders text natively as a "content" prop, not as a string child
-  const ownText =
-    typeof node.props.content === "string" ? [node.props.content] : [];
-  return [
-    ...ownText,
-    ...(node.children ?? []).flatMap((child) =>
-      typeof child === "string" ? [child] : collectTexts(child),
-    ),
-  ];
-};
 
 describe("PowerTest: line chart", () => {
   beforeEach(() => {

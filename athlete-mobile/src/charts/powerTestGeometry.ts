@@ -2,6 +2,7 @@ import type { PowerTestChartData } from "@/features/statistics/models/ChartData"
 import { formatDateTick } from "@/features/statistics/models/ChartData";
 import { LINE_CHART_DATA } from "./lineChartConfig";
 import { calculateLabelStep, shouldShowLabel } from "./lineChartUtils";
+import { type ChartPoint } from "./svgChart";
 
 export type PowerTestSeriesKey =
   | "squad"
@@ -10,14 +11,9 @@ export type PowerTestSeriesKey =
   | "rowing"
   | "shoulderPress";
 
-export interface PowerTestPoint {
-  x: number;
-  y: number;
-}
-
 export interface PowerTestSeries {
   key: PowerTestSeriesKey;
-  points: PowerTestPoint[];
+  points: ChartPoint[];
 }
 
 export interface PowerTestYTick {
@@ -42,7 +38,7 @@ export interface BuildPowerTestGeometryInput {
   plot: { width: number; height: number };
 }
 
-/** x of point `index`: evenly spread from 0 to the plot width, a single point sits at the plot width. */
+/** Spreads the points evenly from 0 to the plot width; a single point is at the plot width. */
 const xOfIndex = (index: number, count: number, plotWidth: number): number => {
   if (count <= 1) {
     return plotWidth;
@@ -73,38 +69,34 @@ export const buildPowerTestGeometry = ({
   plot,
 }: BuildPowerTestGeometryInput): PowerTestGeometry => {
   const { dates } = chartData;
-  const valuesByKey: Record<PowerTestSeriesKey, number[]> = {
-    squad: chartData.kneeDominant,
-    deadlift: chartData.deadlift,
-    benchPress: chartData.benchPress,
-    rowing: chartData.rowing,
-    shoulderPress: chartData.shoulderPress,
-  };
-  const keys: PowerTestSeriesKey[] = [
-    "squad",
-    "deadlift",
-    "benchPress",
-    "rowing",
-    "shoulderPress",
+  // The squat line shows the knee dominant test results.
+  const valuesInDrawingOrder: [PowerTestSeriesKey, number[]][] = [
+    ["squad", chartData.kneeDominant],
+    ["deadlift", chartData.deadlift],
+    ["benchPress", chartData.benchPress],
+    ["rowing", chartData.rowing],
+    ["shoulderPress", chartData.shoulderPress],
   ];
 
-  const series = keys.map((key) => ({
+  const series = valuesInDrawingOrder.map(([key, values]) => ({
     key,
-    points: valuesByKey[key].map((value, index) => ({
-      x: xOfIndex(index, valuesByKey[key].length, plot.width),
+    points: values.map((value, index) => ({
+      x: xOfIndex(index, values.length, plot.width),
       y: yOfValue(value, yAxisMax, plot.height),
     })),
   }));
 
   const labelStep = calculateLabelStep(dates.length);
-  const xLabels = dates
-    .map((date, index) => ({
-      label: formatDateTick(date),
-      x: xOfIndex(index, dates.length, plot.width),
-      visible: shouldShowLabel(index, dates.length, labelStep),
-    }))
-    .filter((entry) => entry.visible)
-    .map(({ label, x }) => ({ label, x }));
+  const xLabels = dates.flatMap((date, index) =>
+    shouldShowLabel(index, dates.length, labelStep)
+      ? [
+          {
+            label: formatDateTick(date),
+            x: xOfIndex(index, dates.length, plot.width),
+          },
+        ]
+      : [],
+  );
 
   return { series, yTicks: buildYTicks(yAxisMax, plot.height), xLabels };
 };

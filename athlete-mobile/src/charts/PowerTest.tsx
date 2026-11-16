@@ -2,7 +2,7 @@ import { usePowerTestData } from "@/features/statistics/hooks/usePowerTestData";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { Box } from "@/theme/Box";
 import { type FC } from "react";
-import { Platform, useWindowDimensions } from "react-native";
+import { useWindowDimensions } from "react-native";
 import Svg, { G, Line, Polyline, Text } from "react-native-svg";
 import {
   LINE_CHART_AXIS,
@@ -12,43 +12,32 @@ import {
   LINE_CHART_STYLE,
 } from "./lineChartConfig";
 import { calculateYAxisMax } from "./lineChartUtils";
-import {
-  buildPowerTestGeometry,
-  type PowerTestPoint,
-} from "./powerTestGeometry";
+import { buildPowerTestGeometry } from "./powerTestGeometry";
+import { SVG_FONT_FAMILY, toSvgPoints } from "./svgChart";
 
 interface PowerTestChartProps {
   /** Undefined shows the whole history. */
   scale?: ScaleType;
 }
 
-// The browser renders SVG text in a serif font unless the family is named.
-const AXIS_FONT_FAMILY = Platform.select({
-  web: "system-ui, -apple-system, sans-serif",
-  default: undefined,
-});
 const PLOT_PADDING_TOP = 8;
 const X_LABELS_HEIGHT = 50;
 const Y_LABEL_GAP = 4;
 const X_LABEL_OFFSET = 18;
 
-const toPolylinePoints = (points: PowerTestPoint[]): string =>
-  points.map(({ x, y }) => `${x},${y}`).join(" ");
-
 /**
- * LineChart component for Power Test statistics.
- * Displays 5 exercise metrics (Squat, Deadlift, Bench Press, Rowing, Shoulder Press) over time.
+ * Power test results over time, one line each for squat, deadlift, bench press,
+ * rowing and shoulder press.
  */
 export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
   const { chartData } = usePowerTestData({ scale });
   const { width: screenWidth } = useWindowDimensions();
 
-  // Don't render chart if no data (parent component shows Coaching message)
+  // Without results, the parent shows a coaching message instead.
   if (chartData.dates.length === 0) {
     return null;
   }
 
-  // Chart width with right margin
   const chartWidth = screenWidth - 100;
   const plot = {
     width:
@@ -57,7 +46,7 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
       LINE_CHART_LABELS.endSpacing,
     height: LINE_CHART_SIZING.chartHeight,
   };
-  // The rules and the x axis also run under the room kept for the last date label.
+  // The rules and the x axis extend under the space reserved for the last date label.
   const axisWidth = plot.width + LINE_CHART_LABELS.endSpacing;
   const geometry = buildPowerTestGeometry({
     chartData,
@@ -94,7 +83,7 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
                 x={-Y_LABEL_GAP}
                 y={tick.y + LINE_CHART_AXIS.fontSize / 3}
                 fontSize={LINE_CHART_AXIS.fontSize}
-                fontFamily={AXIS_FONT_FAMILY}
+                fontFamily={SVG_FONT_FAMILY}
                 fill={LINE_CHART_COLORS.axisText}
                 textAnchor="end"
               >
@@ -124,7 +113,7 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
               x={xLabel.x}
               y={plot.height + X_LABEL_OFFSET}
               fontSize={LINE_CHART_AXIS.fontSize}
-              fontFamily={AXIS_FONT_FAMILY}
+              fontFamily={SVG_FONT_FAMILY}
               fill={LINE_CHART_COLORS.axisText}
               textAnchor="middle"
             >
@@ -135,7 +124,7 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
             <Polyline
               key={series.key}
               testID={`power-test-line-${series.key}`}
-              points={toPolylinePoints(series.points)}
+              points={toSvgPoints(series.points)}
               fill="none"
               stroke={LINE_CHART_COLORS[series.key]}
               strokeWidth={LINE_CHART_STYLE.thickness}

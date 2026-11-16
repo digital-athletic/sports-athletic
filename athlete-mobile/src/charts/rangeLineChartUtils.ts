@@ -1,3 +1,4 @@
+import { type ChartPoint } from "./svgChart";
 import { daysBetweenISODates, type ISODateString } from "@/utils/date";
 
 export type RangeLinePoint = {
@@ -9,7 +10,7 @@ export type RangeLinePoint = {
 export type ChartSize = { width: number; height: number };
 
 export type RangeLineGeometry = {
-  line: { x: number; y: number }[];
+  line: ChartPoint[];
   bands: { x: number; width: number; y: number; height: number }[];
   yTicks: { y: number; value: number }[];
 };

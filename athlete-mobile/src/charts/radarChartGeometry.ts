@@ -1,4 +1,4 @@
-export type RadarPoint = { x: number; y: number };
+import { type ChartPoint } from "./svgChart";
 
 export type RadarGeometryInput = {
   values: number[];
@@ -9,11 +9,11 @@ export type RadarGeometryInput = {
 };
 
 export type RadarGeometry = {
-  center: RadarPoint;
-  polygon: RadarPoint[];
+  center: ChartPoint;
+  polygon: ChartPoint[];
   gridRadii: number[];
-  axisEnds: RadarPoint[];
-  labelAnchors: RadarPoint[];
+  axisEnds: ChartPoint[];
+  labelAnchors: ChartPoint[];
 };
 
 const clamp = (value: number, min: number, max: number): number =>
@@ -21,11 +21,11 @@ const clamp = (value: number, min: number, max: number): number =>
 
 /** Point at `radius` on axis `index`: axis 0 points up, axes run clockwise. */
 const pointOnAxis = (
-  center: RadarPoint,
+  center: ChartPoint,
   axisCount: number,
   index: number,
   radius: number,
-): RadarPoint => {
+): ChartPoint => {
   const angle = (2 * Math.PI * index) / axisCount;
   return {
     x: center.x + radius * Math.sin(angle),

@@ -1,12 +1,7 @@
 import type { UserSkills } from "@/features/statistics/models/WorkoutsData";
 import { render } from "@/utils/testUtils";
 import { RadarChart } from "./RadarChart";
-
-// Shape of the rendered tree returned by toJSON
-type RenderedNode = {
-  props: Record<string, unknown>;
-  children: (RenderedNode | string)[] | null;
-};
+import { collectPropNames, collectTexts } from "./svgTreeTestUtils";
 
 jest.mock("expo-image", () => ({
   Image: "Image",
@@ -24,33 +19,6 @@ const generateUserSkills = (
   SWR: 8,
   ...overrides,
 });
-
-// Collects every prop name of the rendered tree: ["testID", "points", "translateX"]
-const collectPropNames = (
-  node: RenderedNode | RenderedNode[] | null,
-): string[] => {
-  if (node === null) return [];
-  if (Array.isArray(node)) return node.flatMap(collectPropNames);
-  const children = (node.children ?? []).filter(
-    (child): child is RenderedNode => typeof child !== "string",
-  );
-  return [...Object.keys(node.props), ...children.flatMap(collectPropNames)];
-};
-
-// Collects every text string of the rendered tree: ["Mobility", "30%"]
-const collectTexts = (node: RenderedNode | RenderedNode[] | null): string[] => {
-  if (node === null) return [];
-  if (Array.isArray(node)) return node.flatMap(collectTexts);
-  // react-native-svg renders text natively as a "content" prop, not as a string child
-  const ownText =
-    typeof node.props.content === "string" ? [node.props.content] : [];
-  return [
-    ...ownText,
-    ...(node.children ?? []).flatMap((child) =>
-      typeof child === "string" ? [child] : collectTexts(child),
-    ),
-  ];
-};
 
 // Parses the native path of an svg polygon into numbers: "M110 88 130 99z" becomes [[110, 88], [130, 99]]
 // (react-native-svg turns the web "points" prop into a path "d" when rendering natively)

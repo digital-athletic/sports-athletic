@@ -5,7 +5,7 @@ import { getHexagonPoints } from "@/utils/geometry";
 import { Image } from "expo-image";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Svg, { Circle, G, Line, Polygon, Text, TSpan } from "react-native-svg";
 import {
   RADAR_CHART_COLORS,
@@ -16,12 +16,8 @@ import {
 } from "./radarChartConfig";
 import { buildRadarGeometry } from "./radarChartGeometry";
 import { calculatePercentages, SKILL_ORDER } from "./radarChartUtils";
+import { SVG_FONT_FAMILY, toSvgPoints } from "./svgChart";
 
-// The browser renders SVG text in a serif font unless the family is named.
-const LABEL_FONT_FAMILY = Platform.select({
-  web: "system-ui, -apple-system, sans-serif",
-  default: undefined,
-});
 const LABEL_LINE_HEIGHT = RADAR_CHART_LABEL_CONFIG.fontSize * 1.2;
 
 type RadarChartProps = {
@@ -29,16 +25,15 @@ type RadarChartProps = {
 };
 
 /**
- * RadarChart component displays user skill distribution in a circular radar chart.
- * Shows 6 skill axes: Mobility, Prevention, Cardio, Stability, Warmup, and SWR (Strength).
+ * The athlete's skill distribution on 6 axes: Mobility, Prevention, Cardio,
+ * Stability, Warmup and SWR (strength).
  */
 export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
   const { t } = useTranslation();
 
   const percentages = calculatePercentages(userSkills);
 
-  // Transform percentages to data array in SKILL_ORDER
-  // Add centerOffset so polygon doesn't collapse to center, cap at maxValue
+  // The center offset moves a zero skill away from the center point.
   const chartData = SKILL_ORDER.map((skill) =>
     Math.min(
       percentages[skill] + RADAR_CHART_DATA.centerOffset,
@@ -51,13 +46,12 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
     maxValue: RADAR_CHART_DATA.maxValue,
     sections: RADAR_CHART_DATA.sections,
     size: RADAR_CHART_LAYOUT.gridSize,
-    // The offset counts in chart values, like the polygon: 15 of 50 beyond the grid.
+    // labelsPositionOffset is in chart values: the labels are 15 of 50 beyond the grid.
     labelOffset:
       (RADAR_CHART_LAYOUT.gridSize / 2) *
       (RADAR_CHART_DATA.labelsPositionOffset / RADAR_CHART_DATA.maxValue),
   });
 
-  // Skill name on the first line, rounded percentage on the second
   const labels = SKILL_ORDER.map((skill: FocusArea) => ({
     name: t(`statistics.workouts.radarChart.${skill}`) as string,
     percentage: `${Math.round(percentages[skill])}%`,
@@ -112,7 +106,7 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
             ))}
             <Polygon
               testID="radar-chart-polygon"
-              points={geometry.polygon.map(({ x, y }) => `${x},${y}`).join(" ")}
+              points={toSvgPoints(geometry.polygon)}
               stroke={RADAR_CHART_COLORS.primary}
               strokeWidth={3}
               fill={RADAR_CHART_COLORS.polygonFill}
@@ -123,7 +117,7 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
                 x={anchor.x}
                 y={anchor.y}
                 fontSize={RADAR_CHART_LABEL_CONFIG.fontSize}
-                fontFamily={LABEL_FONT_FAMILY}
+                fontFamily={SVG_FONT_FAMILY}
                 fill={RADAR_CHART_COLORS.labelText}
                 textAnchor={RADAR_CHART_LABEL_CONFIG.textAnchor}
               >
@@ -161,9 +155,7 @@ export const RadarChart: FC<RadarChartProps> = ({ userSkills }) => {
   );
 };
 
-// Calculate logo center position based on chart center
-// Chart center = shiftX + chartSize/2, shiftY + chartSize/2
-// Logo position = chartCenter - logoBorderSize/2
+// Top left corner of the logo, so the logo is centered on the chart.
 const LOGO_CENTER_X =
   RADAR_CHART_LAYOUT.shiftX +
   RADAR_CHART_SIZING.chartSize / 2 -

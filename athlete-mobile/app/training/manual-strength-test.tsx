@@ -7,8 +7,9 @@ import {
   calculateAdjustedMaxValues,
   maxWeightByEpley,
 } from "@/features/training/utils/workoutUtils";
+import { useStoreStrengthTestResult } from "@/features/training/hooks/useStoreStrengthTestResult";
+import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import { Logger } from "@/services/Logger";
-import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
@@ -36,6 +37,13 @@ interface ExerciseConfig {
   directions: string[];
 }
 
+interface FilledExercise {
+  key: string;
+  weight: number;
+  reps: number;
+  config: ExerciseConfig;
+}
+
 const createEmptyInput = (): ExerciseInput => ({
   weight: "",
   reps: "",
@@ -47,14 +55,30 @@ const stampTestTime = (maxValues: MaxValuesType): MaxValuesType => ({
   testAt: Date.now(),
 });
 
+/** Applies the 1RM of each filled exercise, estimated by Epley, to its movement directions. */
+const applyFilledExercises = (
+  maxValues: MaxValuesType,
+  filledExercises: FilledExercise[],
+): MaxValuesType =>
+  filledExercises.reduce(
+    (values, exercise) =>
+      applyMaxValueToDirections(
+        values,
+        exercise.config.directions,
+        calculateAdjustedMaxValues(
+          maxWeightByEpley(exercise.weight, exercise.reps),
+        ),
+      ),
+    maxValues,
+  );
+
 const ManualStrengthTestScreen: FC = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const { saveMaxValues } = useUserWorkoutStore();
-  const { addTestResult } = useExerciseProgressStore();
+  const storeStrengthTestResult = useStoreStrengthTestResult();
   const workoutMaxValues = useUserWorkoutStore(
     (state) => state.workoutData.maxValues,
   );
@@ -108,12 +132,7 @@ const ManualStrengthTestScreen: FC = () => {
   };
 
   const handleSave = () => {
-    const filledExercises: {
-      key: string;
-      weight: number;
-      reps: number;
-      config: ExerciseConfig;
-    }[] = [];
+    const filledExercises: FilledExercise[] = [];
     let hasIncomplete = false;
 
     for (const [key, input] of Object.entries(inputs)) {
@@ -155,21 +174,18 @@ const ManualStrengthTestScreen: FC = () => {
       return;
     }
 
-    let updatedMaxValues = stampTestTime(workoutMaxValues);
-
-    for (const exercise of filledExercises) {
-      const oneRepMax = maxWeightByEpley(exercise.weight, exercise.reps);
-      const result = calculateAdjustedMaxValues(oneRepMax);
-      updatedMaxValues = applyMaxValueToDirections(
-        updatedMaxValues,
-        exercise.config.directions,
-        result,
-      );
-    }
+    const updatedMaxValues = applyFilledExercises(
+      stampTestTime(workoutMaxValues),
+      filledExercises,
+    );
+    // Only the entered exercises, so the performance tests get no value from an older maximum.
+    const enteredMaxValues = applyFilledExercises(
+      stampTestTime(DEFAULT_MAX_VALUES),
+      filledExercises,
+    );
 
     try {
-      saveMaxValues(updatedMaxValues);
-      addTestResult(updatedMaxValues);
+      storeStrengthTestResult(updatedMaxValues, enteredMaxValues);
       setShowSuccess(true);
     } catch (error) {
       Logger.logError(error as Error);

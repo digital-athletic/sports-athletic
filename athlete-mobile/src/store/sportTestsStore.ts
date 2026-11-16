@@ -6,6 +6,9 @@ import { createMigrate } from "./migrations/createMigrate";
 import { sportTestsStoreMigrations } from "./migrations/sportTestsStoreMigrations";
 import { STORE_VERSIONS } from "./storeVersions";
 
+/** Cache key of the list, which holds the tests of every sport. */
+export const ALL_SPORTS_CACHE_KEY = "ALL_SPORTS";
+
 export type State = {
   testsBySport: Partial<Record<string, SportTest[]>>;
 };

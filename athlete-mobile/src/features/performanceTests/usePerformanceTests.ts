@@ -1,16 +1,16 @@
 import { useCallback, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { fetchSportTests } from "@/services/SportTestService";
-import { useSportTestsStore } from "@/store/sportTestsStore";
+import {
+  ALL_SPORTS_CACHE_KEY,
+  useSportTestsStore,
+} from "@/store/sportTestsStore";
 import { type SportTest } from "./models/SportTest";
 
 export type PerformanceTestsState =
   | { status: "loading" }
   | { status: "error" }
   | { status: "loaded"; tests: SportTest[] };
-
-/** Cache key of the list, which holds the tests of every sport. */
-export const ALL_SPORTS_CACHE_KEY = "ALL_SPORTS";
 
 /** Shows the cached tests at once and refreshes them on every focus. */
 export function usePerformanceTests(): {

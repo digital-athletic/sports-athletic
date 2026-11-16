@@ -5,6 +5,14 @@ import { act, renderHook } from "@testing-library/react-native";
 import { Alert } from "@/common/Alert";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { generateSportTest } from "@/features/performanceTests/testFixtures";
+import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
+import { usePerformanceTestValuesStore } from "@/store/performanceTestValuesStore";
+import {
+  ALL_SPORTS_CACHE_KEY,
+  useSportTestsStore,
+} from "@/store/sportTestsStore";
+import { useUserProfileStore } from "@/store/userProfileStore";
 import { useFinishTraining } from "./useFinishTraining";
 
 const mockPush = jest.fn();
@@ -157,5 +165,93 @@ describe("useFinishTraining: finishing a training early", () => {
     expect(useExerciseProgressStore.getState().testHistory).toHaveLength(
       resultsBefore,
     );
+  });
+});
+
+/** A strength test result of 2026-11-10 with a squat of 84 kg, e.g. kneeDominant: { barbell: 84 }. */
+const generateSquatResult = () => ({
+  ...DEFAULT_MAX_VALUES,
+  testAt: new Date(2026, 10, 10, 12).getTime(),
+  kneeDominant: { barbell: 84 },
+});
+
+describe("useFinishTraining: performance test values of a strength test", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    startTraining();
+    useTrainingStore.setState({
+      activeTraining: { id: "workout-1", type: "TEST_WORKOUT" },
+    });
+    usePerformanceTestValuesStore.setState({ values: [] });
+    useSportTestsStore.setState({
+      testsBySport: { [ALL_SPORTS_CACHE_KEY]: [generateSportTest("SQUAT")] },
+    });
+    useUserProfileStore.getState().setWeight(70);
+    useUserWorkoutStore.getState().setSport("SPORT_HANDBALL");
+  });
+
+  it("adds the squat value after storing the finished strength test", async () => {
+    const { result } = await renderHook(() => useFinishTraining());
+
+    await act(() => {
+      result.current.finishTraining("finished", generateSquatResult());
+    });
+
+    expect(usePerformanceTestValuesStore.getState().values).toEqual([
+      expect.objectContaining({
+        testCode: "SQUAT",
+        date: "2026-11-10",
+        value: 1.2,
+      }),
+    ]);
+  });
+
+  it("still stores the strength test and returns true when adding the values fails", async () => {
+    const originalAddValue = usePerformanceTestValuesStore.getState().addValue;
+    usePerformanceTestValuesStore.setState({
+      addValue: () => {
+        throw new Error("storage full");
+      },
+    });
+    const resultsBefore =
+      useExerciseProgressStore.getState().testHistory.length;
+    const { result } = await renderHook(() => useFinishTraining());
+
+    let returned: unknown;
+    await act(() => {
+      returned = result.current.finishTraining(
+        "finished",
+        generateSquatResult(),
+      );
+    });
+
+    expect(returned).toBe(true);
+    expect(useExerciseProgressStore.getState().testHistory).toHaveLength(
+      resultsBefore + 1,
+    );
+    usePerformanceTestValuesStore.setState({ addValue: originalAddValue });
+  });
+
+  it("adds no value for a strength test finished early", async () => {
+    const { result } = await renderHook(() => useFinishTraining());
+
+    await act(() => {
+      result.current.finishTraining("finishedEarly", generateSquatResult());
+    });
+
+    expect(usePerformanceTestValuesStore.getState().values).toEqual([]);
+  });
+
+  it("adds no value for another training", async () => {
+    useTrainingStore.setState({
+      activeTraining: { id: "workout-1", type: "PLAN" },
+    });
+    const { result } = await renderHook(() => useFinishTraining());
+
+    await act(() => {
+      result.current.finishTraining("finished", generateSquatResult());
+    });
+
+    expect(usePerformanceTestValuesStore.getState().values).toEqual([]);
   });
 });

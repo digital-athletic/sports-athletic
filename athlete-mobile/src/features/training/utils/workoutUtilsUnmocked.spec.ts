@@ -179,8 +179,8 @@ describe("deriveEntryWeight: empty bar minimum by skill", () => {
   });
 });
 
-describe("calculateWorkoutTotals: strength test loads", () => {
-  it("counts a strength test load below the empty bar", () => {
+describe("calculateWorkoutTotals: moved weight", () => {
+  it("adds 0 kg for a completed strength test set", () => {
     const totals = calculateWorkoutTotals(
       {
         start: 0,
@@ -203,13 +203,53 @@ describe("calculateWorkoutTotals: strength test loads", () => {
           repetition: 2,
           weightType: "weightAbsolute",
           skill: "TEST",
+          completed: true,
         },
       ],
       [barbellExercise],
       DEFAULT_MAX_VALUES,
     );
 
-    expect(totals.weight).toBe(25);
+    expect(totals.weight).toBe(0);
+  });
+
+  it("counts only the done sets in the weight total", () => {
+    const plainExercise = exerciseWithTags("p", []);
+    const loads = [14, 20, 20, 20];
+    const flags = [
+      { completed: true },
+      { completed: true },
+      { completed: true, skipped: true },
+      { completed: true },
+    ];
+    const totals = calculateWorkoutTotals(
+      {
+        start: 0,
+        end: 60000,
+        pause: 0,
+        skill: {
+          PREVENTION: 0,
+          MOBILITY: 0,
+          SWR: 0,
+          WARMUP: 0,
+          STABILITY: 0,
+          CARDIO: 0,
+        },
+      },
+      loads.map((weight, index) => ({
+        exerciseId: plainExercise.id,
+        set: [index + 1, 4],
+        weight,
+        repetition: 10,
+        weightType: "weightAbsolute",
+        skill: "SKSTR",
+        ...flags[index],
+      })),
+      [plainExercise],
+      DEFAULT_MAX_VALUES,
+    );
+
+    expect(totals.weight).toBe(540);
   });
 });
 

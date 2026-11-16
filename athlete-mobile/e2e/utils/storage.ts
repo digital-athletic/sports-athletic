@@ -208,6 +208,7 @@ export interface CompletedWorkoutData {
   timestamp: number;
   duration: number;
   xpEarned?: number;
+  movedWeight?: number;
   exercises: {
     exerciseId: string;
     skill?: string;

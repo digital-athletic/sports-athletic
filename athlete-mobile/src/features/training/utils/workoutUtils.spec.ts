@@ -274,6 +274,7 @@ describe("workoutUtils", () => {
           weight: 50,
           weightType: "weightAbsolute",
           skill: "PREV",
+          completed: true,
           feedback: { difficulty: "SUCCEEDED" },
         },
       ];

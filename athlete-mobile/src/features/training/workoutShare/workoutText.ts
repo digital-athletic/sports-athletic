@@ -75,7 +75,7 @@ const entryLines = (
     name,
     ...sets.map(
       (set, position) =>
-        `${INDENT}${t("training.list.share.setNumber", { number: position + 1 })}: ${set}`,
+        `${INDENT}${t("training.share.setNumber", { number: position + 1 })}: ${set}`,
     ),
   ];
 };
@@ -105,7 +105,7 @@ export const buildWorkoutText = (
   t: TFunction,
 ): string => {
   const { exerciseList, exercises, place, date } = source;
-  const sections: string[][] = [[`${t("training.list.share.title")} ${date}`]];
+  const sections: string[][] = [[`${t("training.share.title")} ${date}`]];
 
   const equipment = translateEquipment(
     getEquipmentList(exerciseList, exercises, place),

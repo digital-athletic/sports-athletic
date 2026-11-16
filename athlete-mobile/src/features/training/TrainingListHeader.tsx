@@ -1,5 +1,4 @@
 import { BackHeader } from "@/common/BackHeader";
-import { WorkoutShareButton } from "@/features/training/workoutShare/WorkoutShareButton";
 import { Stack } from "expo-router";
 import { type FC } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +7,7 @@ export type TrainingListHeaderProps = {
   onBack: () => void;
 };
 
-/** Header for the list-view training screen: title, a discarding back control and the share button. */
+/** Header for the list-view training screen: title and a discarding back control. */
 export const TrainingListHeader: FC<TrainingListHeaderProps> = ({ onBack }) => {
   const { t } = useTranslation();
 
@@ -20,7 +19,6 @@ export const TrainingListHeader: FC<TrainingListHeaderProps> = ({ onBack }) => {
         headerLeft: () => (
           <BackHeader onBack={onBack} testID="training-list-back-button" />
         ),
-        headerRight: () => <WorkoutShareButton />,
       }}
     />
   );

@@ -13,6 +13,7 @@ import {
   SwapExerciseButton,
 } from "@/features/training/SwapExerciseButton";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { WorkoutShareButton } from "@/features/training/workoutShare/WorkoutShareButton";
 import { getEquipmentList } from "@/features/training/trainingUtils";
 import { getExercisePictureSource } from "@/features/training/utils/exercisePicture";
 import { deriveEntryWeight } from "@/features/training/utils/workoutUtils";
@@ -186,6 +187,7 @@ export default function TrainingOverviewScreen() {
           options={{
             title: t("training.overview.title"),
             headerLeft: () => <BackHeader onBack={handleBack} />,
+            headerRight: undefined,
           }}
         />
         <CenteredLoading />
@@ -199,6 +201,7 @@ export default function TrainingOverviewScreen() {
         options={{
           title: t("training.overview.title"),
           headerLeft: () => <BackHeader onBack={handleBack} />,
+          headerRight: () => <WorkoutShareButton />,
         }}
       />
       <Box

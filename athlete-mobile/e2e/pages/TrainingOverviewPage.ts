@@ -32,6 +32,12 @@ export class TrainingOverviewPage extends BasePage {
     await this.startAsChecklistButton.click({ timeout: 15000 });
   }
 
+  async shareWorkout() {
+    await this.page
+      .getByRole("button", { name: "Share the workout as text" })
+      .click({ timeout: 15000 });
+  }
+
   async openExerciseInfo(index = 0) {
     const item = this.exerciseItems.nth(index);
     await expect(item).toBeVisible({ timeout: 10000 });

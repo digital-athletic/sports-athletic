@@ -215,6 +215,8 @@ export interface CompletedWorkoutData {
     weight?: number;
     repetition?: number;
     set?: [number, number];
+    completed?: boolean;
+    skipped?: boolean;
   }[];
 }
 
@@ -279,22 +281,19 @@ export function calculateWorkoutStatistics(workouts: CompletedWorkoutData[]): {
     totalDuration += workout.duration;
     totalPoints += workout.xpEarned ?? 0;
 
-    // Count exercises (excluding pause and test exercises)
     for (const exercise of workout.exercises) {
-      // Skip pause exercise (ID 999999)
+      // Skip pause (ID 999999) and strength test entries
       if (exercise.exerciseId === "999999") continue;
-      // Skip test exercises
-      if (exercise.repetition === -1) continue;
-      // Only count last set
+      if (exercise.repetition === -1 || exercise.skill === "TEST") continue;
+
+      // Each set counts its own load and repetitions once it was done
+      if (exercise.completed && !exercise.skipped) {
+        totalWeight += (exercise.weight ?? 0) * (exercise.repetition ?? 0);
+      }
+
+      // The exercise counts once, at its last set
       if (exercise.set && exercise.set[0] !== exercise.set[1]) continue;
-
       totalExerciseCount += 1;
-
-      // Calculate weight
-      const weight = exercise.weight ?? 0;
-      const reps = exercise.repetition ?? 0;
-      const sets = exercise.set ? exercise.set[1] : 1;
-      totalWeight += weight * reps * sets;
     }
   }
 

@@ -10,7 +10,7 @@ import { act, fireEvent, render } from "../../utils/testUtils";
 import { BackHandler, Platform } from "react-native";
 
 const mockReplace = jest.fn();
-let mockSearchParams: { aborted?: string } = {};
+let mockSearchParams: { outcome?: string } = {};
 
 jest.mock("expo-router", () => {
   const { useEffect } = jest.requireActual("react");
@@ -40,7 +40,7 @@ jest.mock("@/features/statistics/components/PowerTest", () => ({
 describe("TrainingSuccessScreen: aborted training", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockSearchParams = { aborted: "true" };
+    mockSearchParams = { outcome: "aborted" };
     useTrainingStore.setState(BASELINE_TRAINING_STATE);
     useTrainingStore.setState({
       exerciseList: [
@@ -66,6 +66,83 @@ describe("TrainingSuccessScreen: aborted training", () => {
     expect(useExerciseProgressStore.getState().xp).toBe(0);
     expect(useCompletedWorkoutsStore.getState().workoutsList).toEqual([]);
     expect(mockReplace).toHaveBeenCalledWith("/(tabs)/(home)");
+  });
+});
+
+describe("TrainingSuccessScreen: training finished early", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSearchParams = { outcome: "finishedEarly" };
+    useTrainingStore.setState(BASELINE_TRAINING_STATE);
+    useTrainingStore.setState({
+      activeTraining: { id: "workout-1", type: "PLAN" },
+      trainingViewMode: "LIST",
+      exerciseList: [
+        createExercise({
+          exerciseId: "1",
+          completed: true,
+          set: [1, 2],
+          repetition: 10,
+        }),
+        createExercise({
+          exerciseId: "1",
+          completed: true,
+          set: [2, 2],
+          repetition: 10,
+        }),
+        createExercise({ exerciseId: "2", set: [1, 1], repetition: 10 }),
+        createExercise({ exerciseId: "3", set: [1, 1], repetition: 10 }),
+      ],
+      time: {
+        ...BASELINE_TRAINING_STATE.time,
+        start: 1_000,
+        end: 601_000,
+      },
+    });
+    useCompletedWorkoutsStore.getState().clearWorkoutHistory();
+    useExerciseProgressStore.setState({ xp: 0 });
+  });
+
+  it("stores the workout with only its completed sets", async () => {
+    await render(<TrainingSuccessScreen />);
+
+    const workouts = Object.values(
+      useCompletedWorkoutsStore.getState().workouts,
+    );
+    expect(workouts).toHaveLength(1);
+    expect(workouts[0].exercises).toEqual([
+      createExercise({
+        exerciseId: "1",
+        completed: true,
+        set: [1, 2],
+        repetition: 10,
+      }),
+      createExercise({
+        exerciseId: "1",
+        completed: true,
+        set: [2, 2],
+        repetition: 10,
+      }),
+    ]);
+    expect(workouts[0].exerciseCount).toBe(1);
+  });
+
+  it("counts only the completed exercises in the evaluation", async () => {
+    const { getByTestId } = await render(<TrainingSuccessScreen />);
+
+    expect(getByTestId("training-success-summary-count")).toHaveTextContent(
+      "1",
+    );
+  });
+
+  it("credits the points the evaluation shows", async () => {
+    const { getByTestId } = await render(<TrainingSuccessScreen />);
+
+    const creditedXp = useExerciseProgressStore.getState().xp;
+    expect(creditedXp).toBeGreaterThan(0);
+    expect(getByTestId("training-success-summary-xp")).toHaveTextContent(
+      String(creditedXp),
+    );
   });
 });
 

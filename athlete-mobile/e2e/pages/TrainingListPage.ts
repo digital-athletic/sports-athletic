@@ -448,11 +448,31 @@ export class TrainingListPage extends BasePage {
     await this.page.getByText("Yes", { exact: true }).click();
   }
 
-  /** Presses finish with open sets and confirms the "Finish training early?" dialog. */
-  async finishEarly() {
+  /** Presses finish with open sets and confirms the dialog that shows the explanation. */
+  async finishEarly(explanation: string) {
     await this.finishButton.click({ timeout: 3000 });
     await expect(this.page.getByText("Finish training early?")).toBeVisible();
+    await expect(this.page.getByText(explanation)).toBeVisible();
     await this.page.getByText("Yes", { exact: true }).click();
+  }
+
+  /**
+   * Completes the first open exercises set by set until the given number of
+   * entries is done, then closes the sheet, as Next leads on to the next exercise.
+   */
+  async completeExercises(count: number) {
+    const openBefore = await this.startButtons.count();
+    for (let i = 0; i < 60; i++) {
+      if (openBefore - (await this.startButtons.count()) >= count) break;
+      if (!(await this.sheet.isVisible().catch(() => false))) {
+        await this.firstStartButton.click({ timeout: 3000 });
+      }
+      await this.completeSheetSet();
+    }
+    if (await this.sheet.isVisible().catch(() => false)) {
+      await this.dismissSheet();
+    }
+    await expect(this.startButtons).toHaveCount(openBefore - count);
   }
 
   async expectAllRowsCompleted() {

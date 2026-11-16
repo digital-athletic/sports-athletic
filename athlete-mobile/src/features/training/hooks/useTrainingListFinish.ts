@@ -1,6 +1,7 @@
 import { Alert } from "@/common/Alert";
 import { useFinishTraining } from "@/features/training/hooks/useFinishTraining";
 import { useTrainingStore } from "@/features/training/trainingStore";
+import { hasCompletedExerciseSet } from "@/features/training/utils/completedSets";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -10,9 +11,18 @@ type UseTrainingListFinishParams = {
   completeRestRows: () => void;
 };
 
+/** An early finish keeps its done sets, except a strength test: its result needs every set. */
+const savesEarlyFinish = () => {
+  const { activeTraining, exerciseList } = useTrainingStore.getState();
+  return (
+    activeTraining?.type !== "TEST_WORKOUT" &&
+    hasCompletedExerciseSet(exerciseList ?? [])
+  );
+};
+
 /**
- * The list view's finish button: finishes when every set is done, otherwise
- * asks and then ends the training as aborted.
+ * The list view's finish button: finishes when every set is done. With open
+ * sets it asks first, then saves the done sets or, without any, aborts.
  */
 export function useTrainingListFinish({
   allCompleted,
@@ -25,13 +35,21 @@ export function useTrainingListFinish({
 
   const handleFinish = () => {
     if (!allCompleted) {
+      const saves = savesEarlyFinish();
       Alert.alert(
         t("training.list.finishEarly.question"),
-        t("training.list.finishEarly.explanation"),
+        saves
+          ? t("training.list.finishEarly.savedExplanation")
+          : t("training.list.finishEarly.discardedExplanation"),
         [
           {
             text: t("common.yes"),
-            onPress: () => setIsFinishing(finishTraining(true)),
+            onPress: () => {
+              if (saves) endPause();
+              setIsFinishing(
+                finishTraining(saves ? "finishedEarly" : "aborted"),
+              );
+            },
           },
           { text: t("common.no") },
         ],
@@ -44,7 +62,7 @@ export function useTrainingListFinish({
     // Visible feedback only: useFinishTraining guards against duplicate
     // invocations itself, this disables the button after the first tap.
     setIsFinishing(
-      finishTraining(false, useTrainingStore.getState().tempMaxValues),
+      finishTraining("finished", useTrainingStore.getState().tempMaxValues),
     );
   };
 

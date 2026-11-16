@@ -69,14 +69,14 @@ describe("useTrainingListScreen: finishing", () => {
     });
 
     expect(alertSpy).not.toHaveBeenCalled();
-    expect(mockFinishTraining).toHaveBeenCalledWith(false, null);
+    expect(mockFinishTraining).toHaveBeenCalledWith("finished", null);
   });
 
-  it("ends the training as aborted after the athlete confirms finishing with open sets", async () => {
+  it("saves the training after the athlete confirms finishing with a completed and an open set", async () => {
     useTrainingStore.setState({
       exerciseList: [
-        createExercise({ exerciseId: "1", completed: true }),
-        createExercise({ exerciseId: "2" }),
+        createExercise({ exerciseId: "1", set: [1, 1], completed: true }),
+        createExercise({ exerciseId: "2", set: [1, 1] }),
       ],
     });
     mockFinishTraining.mockReturnValue(true);
@@ -93,11 +93,63 @@ describe("useTrainingListScreen: finishing", () => {
 
     expect(alertSpy).toHaveBeenCalledWith(
       "training.list.finishEarly.question",
-      "training.list.finishEarly.explanation",
+      "training.list.finishEarly.savedExplanation",
       expect.any(Array),
     );
-    expect(mockFinishTraining).toHaveBeenCalledWith(true);
+    expect(mockFinishTraining).toHaveBeenCalledWith("finishedEarly");
     expect(result.current.isFinishing).toBe(true);
+  });
+
+  it("discards the training after the athlete confirms finishing without a completed set", async () => {
+    useTrainingStore.setState({
+      exerciseList: [
+        createExercise({ exerciseId: "1", set: [1, 1] }),
+        createExercise({ exerciseId: "2", set: [1, 1] }),
+      ],
+    });
+    mockFinishTraining.mockReturnValue(true);
+    const { result } = await renderHook(() => useTrainingListScreen());
+
+    await act(() => {
+      result.current.handleFinish();
+    });
+    const buttons = alertSpy.mock.calls[0]?.[2];
+    await act(() => {
+      buttons?.find((b) => b.text === "common.yes")?.onPress?.();
+    });
+
+    expect(alertSpy).toHaveBeenCalledWith(
+      "training.list.finishEarly.question",
+      "training.list.finishEarly.discardedExplanation",
+      expect.any(Array),
+    );
+    expect(mockFinishTraining).toHaveBeenCalledWith("aborted");
+  });
+
+  it("discards a strength test finished early even with a completed set", async () => {
+    useTrainingStore.setState({
+      activeTraining: { id: "test-1", type: "TEST_WORKOUT" },
+      exerciseList: [
+        createExercise({ exerciseId: "1", set: [1, 1], completed: true }),
+        createExercise({ exerciseId: "2", set: [1, 1] }),
+      ],
+    });
+    const { result } = await renderHook(() => useTrainingListScreen());
+
+    await act(() => {
+      result.current.handleFinish();
+    });
+    const buttons = alertSpy.mock.calls[0]?.[2];
+    await act(() => {
+      buttons?.find((b) => b.text === "common.yes")?.onPress?.();
+    });
+
+    expect(alertSpy).toHaveBeenCalledWith(
+      "training.list.finishEarly.question",
+      "training.list.finishEarly.discardedExplanation",
+      expect.any(Array),
+    );
+    expect(mockFinishTraining).toHaveBeenCalledWith("aborted");
   });
 });
 

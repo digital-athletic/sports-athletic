@@ -111,3 +111,10 @@ Terms of the training model, with the meanings the coach uses. The glossary defi
 | Sprint intervals | Sprintintervalle | CARDIO_1_SHORT | Zone 1 variant with short sprints. |
 | Maximum heart rate | Maximalpuls | | Estimated from age, formula in [Cardio Training System](./session/cardio-training-system.md). |
 | Heart-rate band | Pulsbereich | | Target heart-rate range per cardio zone, as a share of the maximum heart rate. |
+
+## Performance tests
+
+| Term | German | Code | Meaning |
+|---|---|---|---|
+| Performance test | Leistungstest | | Fitness test of one sport and region, such as a 5 m sprint. The app compares the athlete's result with the reference range for gender, position, training stage and age. |
+| Performance test category | Leistungstest-Kategorie | SPEED, EXPLOSIVE_POWER, MAXIMUM_STRENGTH, ENDURANCE, ... | The ability a performance test measures. Every test has exactly one; more categories may follow. The athlete filters the test list by it. |

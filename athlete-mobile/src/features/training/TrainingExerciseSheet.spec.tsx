@@ -1049,9 +1049,7 @@ describe("TrainingExerciseSheet: pause", () => {
     await fireEvent.press(getByLabelText("Hold"));
 
     expect(onTimerStop).toHaveBeenLastCalledWith(0, 1200);
-    expect(getByTestId("training-list-sheet-timer")).toHaveTextContent(
-      "00:29",
-    );
+    expect(getByTestId("training-list-sheet-timer")).toHaveTextContent("00:29");
   });
 
   it("freezes the stopwatch of a set of repetitions and continues it on resume", async () => {

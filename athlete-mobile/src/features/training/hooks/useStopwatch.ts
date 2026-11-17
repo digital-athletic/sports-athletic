@@ -75,6 +75,21 @@ const recordStop = ({
   return runningMs;
 };
 
+// A native sheet can unmount its content in the same render that closes it,
+// so the stop branch of the timer effect never runs.
+const useRecordStopOnUnmount = ({
+  startedAtRef,
+  pausedAtRef,
+  onStopRef,
+}: StopRefs) => {
+  useEffect(() => {
+    const stopRefs = { startedAtRef, pausedAtRef, onStopRef };
+    return () => {
+      recordStop(stopRefs);
+    };
+  }, [startedAtRef, pausedAtRef, onStopRef]);
+};
+
 // A layout effect, so the timer's layout effect below reads the current value.
 const useLatestRef = <T>(value: T) => {
   const ref = useRef(value);
@@ -149,12 +164,7 @@ export const useStopwatch = ({
     return () => clearInterval(interval);
   }, [exerciseId, isActive, timeoutMs, onStopRef]);
 
-  // A native sheet can unmount its content in the same render that closes it,
-  // so the stop branch above never runs.
-  useEffect(() => {
-    const stopRefs = { startedAtRef, pausedAtRef, onStopRef };
-    return () => recordStop(stopRefs);
-  }, [onStopRef]);
+  useRecordStopOnUnmount({ startedAtRef, pausedAtRef, onStopRef });
 
   return elapsed;
 };

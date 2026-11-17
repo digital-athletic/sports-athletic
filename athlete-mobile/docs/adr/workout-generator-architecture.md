@@ -238,7 +238,7 @@ A plan training may already store the target shape, an AIWL training. `readTrain
 | legacy | stored day workout | saved branch copies | trains the saved copy |
 | AIWL | the stored AIWL workout | branch lookup index | replaced from the same skill |
 
-1. The training day selection returns the workout of an AIWL training, validated against the AIWL schema. The exercise swap hook generates through `generateTrainingDaySetList`, like the router.
+1. The training day selection returns the workout of an AIWL training, validated against the AIWL schema. The [exercise swap](#exercise-swap) reads the same day.
 2. `readTrainingDayWorkout` sorts the blocks of both shapes once by section order, stable, with a skill outside the section order first. The plan generator writes an AIWL day in the skill priority order of its budget, so the AIWL shape needs the sort too. `createStoredDayWorkout` keeps the stored order.
 3. Every workout has one missing branch rule: each distinct branch ID the lookup lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. The saved copies of a legacy training hold every branch ID its stored day workout lists, so a legacy training never misses one.
 
@@ -247,7 +247,7 @@ The plan features outside the generator read both shapes. `readPlannedBranches` 
 | Feature | Legacy training | AIWL training |
 |---|---|---|
 | Strength test prompt | exercises of every level of each copied branch | exercises of every level of each resolved branch |
-| Exercise swap | swaps a branch copy in the generated day | swaps a branch ID in the generated day |
+| Exercise swap | builds the skill's block from the stored day, with the minutes and saved copies | builds the skill's block from the AIWL day, with the catalog branches |
 | Branch level progression | replaces one copied entry with one or two entries | replaces one branch ID with one or two branch IDs |
 | Plan regeneration | keeps the old day when skills and minutes match | keeps the old branch IDs when blocks and durations match |
 | Broken plan check | adult-only branches for a child, max strength lifts without equipment | the same two rules on the resolved branches |
@@ -262,7 +262,7 @@ The router `src/features/training/workoutGeneratorRouter.ts` selects a workout, 
 | `TEST_WORKOUT` | `loadStrengthTestTemplate`: the bundled `TEST.json`; the entry point checks it with `checkStrengthTestTemplate` | branch lookup index | `STRENGTH_TEST_FILTERS`: `{ pain: false, equipment: false }` |
 | any other | the template of the type, short or custom | branch lookup index | `{ soreness: false }` |
 
-`generateTrainingDaySetList(day, input, skillTrees)` in `trainingDayWorkout.ts` reads a plan day and generates it. The router and the exercise swap hook both call it, so a swapped day generates with the same options as the day.
+`generateTrainingDaySetList(day, input, skillTrees)` in `trainingDayWorkout.ts` reads a plan day and generates it. The router calls it. The [exercise swap](#exercise-swap) generates one block through `generateSetList`, with the branch lookup and the filters this table names for the training type.
 
 A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A template without blocks throws `NO_EXERCISES/PAIN` without regions, whatever the athlete's pains.
 
@@ -275,6 +275,138 @@ A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A temp
 The old training generator and its flag `EXPO_PUBLIC_AIWL_GENERATOR_ENABLED` are deleted. The old plan generator in `generators/PlanGenerator.ts` stays behind its own flag `EXPO_PUBLIC_PLAN_GENERATOR_ENABLED`.
 
 The router selects the stored training day of the plan with its own copy of the old section and weekday selection, so the AIWL path imports nothing from `generators/`.
+
+### Exercise swap
+
+The [exercise swap](../specs/glossary.md) replaces one branch of the current session with another branch, in plan workouts and short workouts, not in the strength test. The swap changes the session only. The plan and the template keep the original branch, and the next workout from the same day or template trains the original again.
+
+The swap module in `src/features/training/exerciseSwap/` offers two public functions. Both take a **swap workout**:
+
+| Field | Holds | The swap reads from it |
+|---|---|---|
+| session | the set list entries the athlete sees | the target's skill and set positions, the taken branches and exercises |
+| source | the plan day, or the template of the short workout | the block timing, the cardio minutes, the branch data |
+| generation input | athlete, place, equipment, exercise data | the athlete's branch level, the rule chain |
+| skill trees | the trees of every skill | the picks pool of a short workout |
+
+The session alone cannot build a branch's entries. It holds the results of a generation (repetitions, weight, duration, set position), but not the block settings that produced them.
+
+#### `getBranchReplacement(swapWorkout, target)`
+
+Returns up to three branches that may replace the target, closest first:
+
+1. A plan workout and a branches block of a short workout offer branches of the target's skill tree that pass the replacement filters. A picks block offers branches of its own pool that match a pick the target matches, or the whole block pool when the target matches no pick.
+2. Every offered branch has the target's side setting, and adds no branch and no exercise the session already holds.
+3. The ranking puts a branch of the target's body region first, then a branch of the target's movement direction.
+
+Input, with the session below:
+
+```json
+{ "target": "10" }
+```
+
+Output:
+
+```json
+[
+  { "branchId": "14", "tags": ["REGION_CORE", "DIRECTION_PUSH"], "levels": { "2": { "exerciseId": "e14" } } },
+  { "branchId": "16", "tags": ["REGION_CORE", "DIRECTION_PULL"], "levels": { "2": { "exerciseId": "e16" } } }
+]
+```
+
+Branches 12 and 20 stay out, because the session holds them.
+
+#### `swapBranchFromWorkout(swapWorkout, target, replacement)`
+
+Returns the session with the replacement's entries in place of the target's entries:
+
+1. The function builds one branches block for the target's skill: the timing and minutes come from the source, the branch IDs from the session, and the replacement takes the target's place.
+2. It runs that one block through `generateSetList`, with the branch lookup and the filters of the [router](#routing) for the training type.
+3. It keeps the replacement's entries and writes them at the target's set positions. Every other entry of the session stays as it is.
+4. It returns no session when the replacement has a different number of entries than the target, or when an exercise of the replacement already appears under another branch.
+
+Input:
+
+```json
+{
+  "session": [
+    { "skill": "BAS", "branchId": "12", "exerciseId": "e12", "set": [1, 2], "repetition": 10 },
+    { "skill": "BAS", "branchId": "10", "exerciseId": "e10", "set": [1, 2], "repetition": 12 },
+    { "skill": "BAS", "branchId": "12", "exerciseId": "e12", "set": [2, 2], "repetition": 10 },
+    { "skill": "BAS", "branchId": "10", "exerciseId": "e10", "set": [2, 2], "repetition": 12 },
+    { "skill": "GKS", "branchId": "20", "exerciseId": "e20", "set": [1, 1], "duration": 60 }
+  ],
+  "source": { "blocks": [
+    { "kind": "picks", "skill": "BAS", "sets": 2, "picks": [{ "tags": ["REGION_CORE"], "count": 2 }] },
+    { "kind": "picks", "skill": "GKS", "sets": 1 }
+  ]},
+  "target": "10",
+  "replacement": "14"
+}
+```
+
+The block the generator runs:
+
+```json
+{ "kind": "branches", "skill": "BAS", "sets": 2, "branches": ["12", "14"] }
+```
+
+Output:
+
+```json
+[
+  { "skill": "BAS", "branchId": "12", "exerciseId": "e12", "set": [1, 2], "repetition": 10 },
+  { "skill": "BAS", "branchId": "14", "exerciseId": "e14", "set": [1, 2], "duration": 30 },
+  { "skill": "BAS", "branchId": "12", "exerciseId": "e12", "set": [2, 2], "repetition": 10 },
+  { "skill": "BAS", "branchId": "14", "exerciseId": "e14", "set": [2, 2], "duration": 30 },
+  { "skill": "GKS", "branchId": "20", "exerciseId": "e20", "set": [1, 1], "duration": 60 }
+]
+```
+
+Swapping back passes the original as the replacement: target 14, replacement 10.
+
+#### Why one block
+
+A branch's entries depend on its own block and on the athlete's data for the branch:
+
+1. **Timing.** Sets, superset, rest, set duration and values set the number of sets and the repetitions or seconds. The set tuple of the session cannot replace the block's sets, because it counts a warm-up set too.
+2. **Minutes.** A cardio block reads them for its intervals.
+3. **The other branches of the block.** The superset partner decides on the warm-up set of an SWR or SK exercise, and the duplicate check runs per block.
+4. **Branch data and exercise data.** The level picks the exercise, and the progress sets the start values.
+
+No other block changes these entries. The branches handler reads no used branches, and the session keeps its set positions.
+
+#### Block source per training type
+
+| Training type | Timing and minutes | Branch IDs | Branch data |
+|---|---|---|---|
+| Plan workout, AIWL training | the branches block of the skill in the day | the block | branch lookup index |
+| Plan workout, legacy training | skill catalog defaults, minutes of the stored day | the stored day | saved branch copies |
+| Short workout, picks block | the timing workout setup resolved for the block | the session | branch lookup index |
+| Short workout, branches block | the block | the session | branch lookup index |
+
+A short workout whose skill appears in more than one block offers no swap for that skill, because the session cannot tell which block drew a branch.
+
+#### Progress
+
+The swap writes no progress. The training writes progress per finished exercise under the branch ID and exercise ID of the session entry, so a swapped exercise records its progress on the replacement branch. The target branch keeps its progress.
+
+#### Swap cycle
+
+The training overview keeps, per exercise, the replacements and the one it shows. Each tap shows the next replacement, and the tap after the last one shows the original again. Neither function stores this position.
+
+#### Rejected option
+
+The first version regenerated the whole workout with the replacement in place of the target and kept the replacement's entries. A short workout first had to be frozen: its picks blocks became branches blocks of the branches the session drew, so the regeneration drew the same workout again. We reject that option:
+
+1. The other blocks change none of the replacement's entries, and the swap discards them.
+2. A block that fails anywhere in the workout, for example on muscle soreness, blocks every swap of the workout.
+3. The frozen template is a second form of the workout that only the swap reads.
+
+#### Behaviour changes
+
+1. A failing block blocks only the swaps of its own skill.
+2. An AIWL training day that lists the target in two branches blocks of one skill swaps the target in the first block only. The first version swapped it in both.
 
 ### Strength test source
 
@@ -315,6 +447,7 @@ The generator deviates from the target architecture in these places, so that sto
 1. The duration handler of a skill other than a cardio zone, with the minutes table chooser. Until then, the block kind check rejects such a block.
 2. The `order` field, which the generator ignores with a warning, and the `bodyParts` filter, which the block kind check rejects until then.
 3. The stored plan migration.
+4. The two functions of the [exercise swap](#exercise-swap). The code still regenerates the whole workout and freezes short workouts. A spec that compares the entries of both versions for every replacement comes first. It covers an AIWL day, a legacy day with minutes, a short workout with a picks block, a superset with a weighted partner and a cardio block.
 
 ### Errors
 

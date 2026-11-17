@@ -22,6 +22,7 @@ interface SportTestRow {
   id: string;
   code: string;
   unit: string;
+  category: string | null;
   translations: unknown;
   sport_test_reference_values: SportTestReferenceValueRow[];
 }
@@ -53,6 +54,7 @@ function toSportTest(row: SportTestRow): SportTest {
     id: row.id,
     code: row.code,
     unit: row.unit,
+    ...(row.category === null ? {} : { category: row.category }),
     translations: parseTranslations(row.translations),
     referenceValues: row.sport_test_reference_values.map((value) => ({
       gender: value.gender,
@@ -82,7 +84,7 @@ export async function fetchSportTests(
   const { data, error } = (await supabase
     .from("sport_tests")
     .select(
-      "id, code, unit, translations, sport_test_reference_values(gender, position, training_stage, min_age, max_age, range_start, range_end)",
+      "id, code, unit, category, translations, sport_test_reference_values(gender, position, training_stage, min_age, max_age, range_start, range_end)",
     )
     .eq("region", region)
     .order("code")) as {

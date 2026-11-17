@@ -17,16 +17,18 @@ jest.mock("./supabaseClient", () => ({
 
 /**
  * A sport_tests row as Supabase returns it, e.g.
- * { id: "test-1", code: "FAKE_TEST", unit: "s", translations: null, sport_test_reference_values: [{ gender: "FEMALE", position: "WING", training_stage: "GRUNDLAGENTRAINING", min_age: 13, max_age: 14, range_start: "9.87", range_end: 6.54 }] }
+ * { id: "test-1", code: "FAKE_TEST", unit: "s", category: "SPEED", translations: null, sport_test_reference_values: [{ gender: "FEMALE", position: "WING", training_stage: "GRUNDLAGENTRAINING", min_age: 13, max_age: 14, range_start: "9.87", range_end: 6.54 }] }
  */
 const generateSportTestRow = (
   rangeStart: string | number,
   rangeEnd: string | number,
   translations: unknown = null,
+  category: string | null = "SPEED",
 ) => ({
   id: "test-1",
   code: "FAKE_TEST",
   unit: "s",
+  category,
   translations,
   sport_test_reference_values: [
     {
@@ -77,6 +79,7 @@ describe("fetchSportTests: mapping", () => {
         id: "test-1",
         code: "FAKE_TEST",
         unit: "s",
+        category: "SPEED",
         translations: {},
         referenceValues: [
           {
@@ -113,6 +116,29 @@ describe("fetchSportTests: mapping", () => {
     expect(mockSelect).toHaveBeenCalledWith(
       expect.stringContaining("translations"),
     );
+  });
+
+  it("selects the category column", async () => {
+    signedIn();
+    mockOrder.mockResolvedValue({ data: [], error: null });
+
+    await fetchSportTests();
+
+    expect(mockSelect).toHaveBeenCalledWith(
+      expect.stringContaining("category"),
+    );
+  });
+
+  it("leaves out the category of a test whose category is NULL", async () => {
+    signedIn();
+    mockOrder.mockResolvedValue({
+      data: [generateSportTestRow("9.87", "6.54", null, null)],
+      error: null,
+    });
+
+    const [test] = await fetchSportTests();
+
+    expect(test).not.toHaveProperty("category");
   });
 
   it("accepts range values that arrive as numbers", async () => {

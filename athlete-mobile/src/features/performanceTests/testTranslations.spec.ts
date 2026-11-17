@@ -1,5 +1,5 @@
 import { type SportTest } from "./models/SportTest";
-import { generateSportTest } from "./testFixtures";
+import { generateSportTest } from "@test/factories/sportTest";
 import { resolveTestName, resolveTestUnit } from "./testTranslations";
 
 /**

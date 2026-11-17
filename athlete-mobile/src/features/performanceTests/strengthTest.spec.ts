@@ -6,7 +6,7 @@ import {
   STRENGTH_TEST_EXERCISE_IDS,
   strengthTestExerciseId,
 } from "./strengthTest";
-import { generateSportTest } from "./testFixtures";
+import { generateSportTest } from "@test/factories/sportTest";
 
 /** A test measured in seconds with the code, e.g. generateTestWithCode("SQUAT").code is "SQUAT". */
 const generateTestWithCode = (code: string): SportTest =>

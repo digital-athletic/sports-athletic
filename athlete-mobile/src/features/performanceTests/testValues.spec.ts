@@ -1,11 +1,11 @@
 import { type PerformanceTestValue } from "./models/PerformanceTestValue";
 import { type AthleteProfile } from "./referenceRange";
+import { BIRTHDAY_AT_14 } from "@test/factories/performanceTestClock";
+import { generatePerformanceTestValue } from "@test/factories/performanceTestValue";
 import {
-  BIRTHDAY_AT_14,
-  generatePerformanceTestValue,
   generateReferenceValue,
   generateSportTest,
-} from "./testFixtures";
+} from "@test/factories/sportTest";
 import {
   formatValueWithUnit,
   isAllowedValueDate,

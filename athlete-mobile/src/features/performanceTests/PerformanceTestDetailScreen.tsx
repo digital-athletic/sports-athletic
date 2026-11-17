@@ -48,7 +48,7 @@ const SummaryCard: FC<{
       padding={{ phone: "m", tablet: "l" }}
       testID="performance-test-summary"
     >
-      <TestIconCircle />
+      <TestIconCircle category={test.category} />
       <Box flex={1} gap="xs">
         <Text
           variant="small"

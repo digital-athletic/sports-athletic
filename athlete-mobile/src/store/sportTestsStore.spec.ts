@@ -1,4 +1,4 @@
-import { generateSportTest } from "@/features/performanceTests/testFixtures";
+import { generateSportTest } from "@test/factories/sportTest";
 import { useSportTestsStore } from "./sportTestsStore";
 
 describe("sportTestsStore: cache per sport", () => {

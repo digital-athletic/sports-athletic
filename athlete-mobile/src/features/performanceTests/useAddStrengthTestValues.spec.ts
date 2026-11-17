@@ -9,7 +9,7 @@ import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Logger } from "@/services/Logger";
 import { act, renderHook } from "@testing-library/react-native";
-import { generateSportTest } from "./testFixtures";
+import { generateSportTest } from "@test/factories/sportTest";
 import { useAddStrengthTestValues } from "./useAddStrengthTestValues";
 
 /** A strength test result of 2026-11-10 with a squat of 84 kg, e.g. kneeDominant: { barbell: 84 }. */

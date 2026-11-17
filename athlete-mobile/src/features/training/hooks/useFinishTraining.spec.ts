@@ -5,7 +5,7 @@ import { act, renderHook } from "@testing-library/react-native";
 import { Alert } from "@/common/Alert";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { generateSportTest } from "@/features/performanceTests/testFixtures";
+import { generateSportTest } from "@test/factories/sportTest";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import { usePerformanceTestValuesStore } from "@/store/performanceTestValuesStore";
 import {

@@ -9,6 +9,7 @@ const SPRINT_5M_ROW: MockSportTestRow = {
   id: "55555555-5555-4555-8555-555555555555",
   code: "SPRINT_5M",
   unit: "s",
+  category: "SPEED",
   translations: {
     en: { name: "5 m sprint" },
     de: { name: "5-m-Sprint" },
@@ -84,6 +85,57 @@ test.describe("Performance tests: listing the tests", () => {
     const latest = page.getByTestId("performance-test-latest-SPRINT_5M");
     await expect(latest.getByText("8.1 s")).toBeVisible();
     await expect(latest.getByText("in range")).toBeVisible();
+  });
+});
+
+const ENDURANCE_ROW: MockSportTestRow = {
+  ...SPRINT_5M_ROW,
+  id: "77777777-7777-4777-8777-777777777777",
+  code: "COOPER_RUN",
+  category: "ENDURANCE",
+  translations: { en: { name: "Cooper run" }, de: { name: "Cooper-Lauf" } },
+};
+
+const UNKNOWN_CATEGORY_ROW: MockSportTestRow = {
+  ...SPRINT_5M_ROW,
+  id: "88888888-8888-4888-8888-888888888888",
+  code: "FAKE_TEST",
+  category: "FAKE_CATEGORY",
+  translations: { en: { name: "Fake test" } },
+};
+
+test.describe("Performance tests: category filter", () => {
+  test.use({ profile: createHandballWingProfile(14), signedIn: true });
+
+  test("athlete filters the tests by category", async ({ page }) => {
+    await mockSupabaseAuth(page);
+    await mockSportTests(page, [
+      SPRINT_5M_ROW,
+      ENDURANCE_ROW,
+      UNKNOWN_CATEGORY_ROW,
+    ]);
+    const profilePage = new ProfilePage(page);
+    await page.goto("/");
+    await profilePage.expectLoggedIn();
+    await profilePage.navigateToProfile();
+    await page.getByText("Performance tests", { exact: true }).click();
+    const filter = page.getByLabel("Filter by category");
+
+    // An unknown category shows its code and the stopwatch icon.
+    const unknownRow = page.getByTestId("performance-test-row-FAKE_TEST");
+    await expect(unknownRow.getByText("FAKE_CATEGORY")).toBeVisible();
+    await expect(
+      unknownRow.getByTestId("performance-test-icon-stopwatch"),
+    ).toBeVisible();
+
+    await filter.selectOption({ label: "Endurance" });
+    await expect(page.getByText("Cooper run")).toBeVisible();
+    await expect(page.getByText("5 m sprint")).toBeHidden();
+    await expect(page.getByText("Fake test")).toBeHidden();
+
+    await filter.selectOption({ label: "All categories" });
+    await expect(page.getByText("5 m sprint")).toBeVisible();
+    await expect(page.getByText("Fake test")).toBeVisible();
   });
 });
 

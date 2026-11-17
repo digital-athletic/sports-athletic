@@ -12,10 +12,12 @@ import PerformanceTestDetailScreen from "./PerformanceTestDetailScreen";
 import {
   BIRTHDAY_AT_14,
   FROZEN_NOW,
-  generatePerformanceTestValue,
+} from "@test/factories/performanceTestClock";
+import { generatePerformanceTestValue } from "@test/factories/performanceTestValue";
+import {
   generateReferenceValue,
   generateSportTest,
-} from "./testFixtures";
+} from "@test/factories/sportTest";
 
 const mockFetchSportTests = jest.fn();
 jest.mock("@/services/SportTestService", () => ({

@@ -5,6 +5,8 @@ export type MockSportTestRow = {
   id: string;
   code: string;
   unit: string;
+  /** Category code such as SPEED, stored in upper case, or null for a test without a category. */
+  category: string | null;
   /** Name and unit per language code, or null for a test without translations. */
   translations: Record<string, { name: string; unit?: string }> | null;
   sport_test_reference_values: {

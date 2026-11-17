@@ -30,5 +30,6 @@ module.exports = {
     // The native views of @expo/ui do not render in Jest.
     "^@expo/ui/community/segmented-control$":
       "<rootDir>/test/expoSegmentedControlMock",
+    "^@expo/ui/community/menu$": "<rootDir>/test/expoMenuMock",
   },
 };

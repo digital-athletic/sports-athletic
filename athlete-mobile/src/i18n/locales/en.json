@@ -863,6 +863,14 @@
       "legendRange": "Reference range",
       "chartSummary_one": "Line chart with {{count}} value over time",
       "chartSummary_other": "Line chart with {{count}} values over time",
+      "allCategories": "All categories",
+      "categoryFilter": "Filter by category",
+      "categories": {
+        "SPEED": "Speed",
+        "EXPLOSIVE_POWER": "Explosive power",
+        "MAXIMUM_STRENGTH": "Maximum strength",
+        "ENDURANCE": "Endurance"
+      },
       "status": {
         "IN_RANGE": "in range",
         "BELOW_RANGE": "below range",

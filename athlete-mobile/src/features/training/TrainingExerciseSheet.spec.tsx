@@ -1031,6 +1031,29 @@ describe("TrainingExerciseSheet: pause", () => {
     expect(onResume).toHaveBeenCalledTimes(1);
   });
 
+  // Moving the clock without running timers puts Hold between two ticks.
+  it("freezes on the saved running time when Hold lands between two ticks", async () => {
+    const onTimerStop = jest.fn();
+    const { getByTestId, getByLabelText } = await render(
+      <TrainingExerciseSheet
+        {...generateSheetProps({ duration: 30, onTimerStop })}
+      />,
+    );
+    await act(() => {
+      jest.advanceTimersByTime(400);
+    });
+    await act(() => {
+      jest.setSystemTime(Date.now() + 800);
+    });
+
+    await fireEvent.press(getByLabelText("Hold"));
+
+    expect(onTimerStop).toHaveBeenLastCalledWith(0, 1200);
+    expect(getByTestId("training-list-sheet-timer")).toHaveTextContent(
+      "00:29",
+    );
+  });
+
   it("freezes the stopwatch of a set of repetitions and continues it on resume", async () => {
     const { getByTestId, getByLabelText } = await render(
       <TrainingExerciseSheet {...generateSheetProps()} />,

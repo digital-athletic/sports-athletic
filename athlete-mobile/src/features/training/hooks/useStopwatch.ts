@@ -1,4 +1,10 @@
-import { type MutableRefObject, useEffect, useRef, useState } from "react";
+import {
+  type MutableRefObject,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 type StopwatchArgs = {
   exerciseId: string;
@@ -54,17 +60,25 @@ type StopRefs = {
   onStopRef: MutableRefObject<((elapsedMs: number) => void) | undefined>;
 };
 
-// Marks the stop time and reports the running time, once per stop.
-const recordStop = ({ startedAtRef, pausedAtRef, onStopRef }: StopRefs) => {
-  if (startedAtRef.current === undefined) return;
-  if (pausedAtRef.current !== undefined) return;
+// Marks the stop time and reports the running time, once per stop. Returns
+// the reported running time, or undefined when nothing was recorded.
+const recordStop = ({
+  startedAtRef,
+  pausedAtRef,
+  onStopRef,
+}: StopRefs): number | undefined => {
+  if (startedAtRef.current === undefined) return undefined;
+  if (pausedAtRef.current !== undefined) return undefined;
   pausedAtRef.current = Date.now();
-  onStopRef.current?.(pausedAtRef.current - startedAtRef.current);
+  const runningMs = pausedAtRef.current - startedAtRef.current;
+  onStopRef.current?.(runningMs);
+  return runningMs;
 };
 
+// A layout effect, so the timer's layout effect below reads the current value.
 const useLatestRef = <T>(value: T) => {
   const ref = useRef(value);
-  useEffect(() => {
+  useLayoutEffect(() => {
     ref.current = value;
   }, [value]);
   return ref;
@@ -101,16 +115,22 @@ export const useStopwatch = ({
     setElapsed(0);
   }
 
-  // Declared before the timer effect below, so a new exercise clears the old
-  // start time before it is read.
-  useEffect(() => {
+  // A layout effect declared before the timer effect below, so a new exercise
+  // clears the old start time before it is read.
+  useLayoutEffect(() => {
     startedAtRef.current = undefined;
     pausedAtRef.current = undefined;
   }, [exerciseId]);
 
-  useEffect(() => {
+  // A layout effect, so the frozen value renders with the commit that stops
+  // the stopwatch. A passive effect would render it one task later.
+  useLayoutEffect(() => {
     if (!isActive) {
-      recordStop({ startedAtRef, pausedAtRef, onStopRef });
+      const stoppedMs = recordStop({ startedAtRef, pausedAtRef, onStopRef });
+      // Show the saved running time, not the last tick, which can lag behind.
+      if (stoppedMs !== undefined) {
+        setElapsed(Math.floor(stoppedMs / timeoutMs));
+      }
       return;
     }
 

@@ -62,8 +62,6 @@ export const readTrainingDayWorkout = (day: TrainingDay): SelectedWorkout => {
 
 /**
  * Reads a plan training day and generates its set list with every filter on.
- * The router and the exercise swap both call it, so a swapped day generates
- * like the day itself.
  *
  * generateTrainingDaySetList(day, input, getAllSkillTrees())
  * → [{ branchId: "410", skill: "WU", ... }, ...]

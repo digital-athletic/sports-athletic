@@ -10,8 +10,8 @@ import {
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import { toExerciseBranch } from "@/features/training/exerciseSwap/exerciseSwap";
 import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
+import { toExerciseBranch } from "@/features/training/utils/plannedBranches";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import type { GenerationInput } from "./generationInput/generationInput";
 import {

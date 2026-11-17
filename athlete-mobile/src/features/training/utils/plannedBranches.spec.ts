@@ -3,6 +3,7 @@ import { createAiwlTraining } from "@/features/training/utils/testFixtures";
 import { buildBranchLookupIndex } from "@/features/training/workoutGenerator/generationInput/branchLookupIndex";
 import type { Block } from "@/schemas/aiwl.schema";
 import {
+  generateLowerBodyBranch,
   generateSkillBranch,
   generateTreeBranch,
 } from "@test/factories/skillTree";
@@ -11,7 +12,11 @@ import {
   generatePicksBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
-import { listPlannedExerciseIds, readPlannedBranches } from "./plannedBranches";
+import {
+  listPlannedExerciseIds,
+  readPlannedBranches,
+  toExerciseBranch,
+} from "./plannedBranches";
 
 // GKS holds branches 10 and 11, WU branch 20 and branch 21 without levels.
 const catalog = buildBranchLookupIndex({
@@ -37,6 +42,18 @@ const legacyTraining: LegacyTrainingType = {
 const aiwlTraining = (
   blocks: Block[] = [generateBranchesBlock("GKS", ["10"])],
 ) => createAiwlTraining({ workout: generateTemplate(blocks) });
+
+describe("plannedBranches: toExerciseBranch", () => {
+  it("names the catalog levels as plan exercises", () => {
+    const branch = generateLowerBodyBranch({ 1: { exerciseId: "e1" } });
+
+    expect(toExerciseBranch({ branchId: "7", branch })).toEqual({
+      branchId: "7",
+      tags: branch.tags,
+      exercises: { 1: { exerciseId: "e1" } },
+    });
+  });
+});
 
 describe("plannedBranches: readPlannedBranches", () => {
   it("returns the copied branches of a legacy training", () => {

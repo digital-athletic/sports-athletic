@@ -1,4 +1,4 @@
-import { generatePerformanceTestValue } from "@/features/performanceTests/testFixtures";
+import { generatePerformanceTestValue } from "@test/factories/performanceTestValue";
 import { usePerformanceTestValuesStore } from "./performanceTestValuesStore";
 
 describe("performanceTestValuesStore: entered values", () => {

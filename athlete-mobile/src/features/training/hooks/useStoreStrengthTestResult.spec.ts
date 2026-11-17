@@ -1,4 +1,4 @@
-import { generateSportTest } from "@/features/performanceTests/testFixtures";
+import { generateSportTest } from "@test/factories/sportTest";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
 import { type MaxValuesType } from "@/schemas/user.schema";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";

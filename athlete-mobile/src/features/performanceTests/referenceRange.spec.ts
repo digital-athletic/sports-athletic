@@ -4,7 +4,10 @@ import {
   referenceRangeFor,
   referenceRangeOnDate,
 } from "./referenceRange";
-import { generateReferenceValue, generateSportTest } from "./testFixtures";
+import {
+  generateReferenceValue,
+  generateSportTest,
+} from "@test/factories/sportTest";
 
 const femaleWingAged13To14 = generateReferenceValue();
 const maleWingAged13To14 = generateReferenceValue({ gender: "MALE" });

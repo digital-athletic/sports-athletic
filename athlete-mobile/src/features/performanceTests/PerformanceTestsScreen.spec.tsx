@@ -4,7 +4,10 @@ import {
   type SportTestTranslations,
 } from "@/features/performanceTests/models/SportTest";
 import { usePerformanceTestValuesStore } from "@/store/performanceTestValuesStore";
-import { useSportTestsStore } from "@/store/sportTestsStore";
+import {
+  ALL_SPORTS_CACHE_KEY,
+  useSportTestsStore,
+} from "@/store/sportTestsStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, fireEvent, render, within } from "../../utils/testUtils";
@@ -12,10 +15,13 @@ import PerformanceTestsScreen from "./PerformanceTestsScreen";
 import {
   BIRTHDAY_AT_14,
   FROZEN_NOW,
-  generatePerformanceTestValue,
+} from "@test/factories/performanceTestClock";
+import { generatePerformanceTestValue } from "@test/factories/performanceTestValue";
+import {
+  generateCategorizedTest,
   generateReferenceValue,
   generateSportTest,
-} from "./testFixtures";
+} from "@test/factories/sportTest";
 
 const mockFetchSportTests = jest.fn();
 const mockNavigate = jest.fn();
@@ -328,5 +334,195 @@ describe("PerformanceTestsScreen: open the detail", () => {
     expect(
       await screen.findByRole("button", { name: /5 m sprint/ }),
     ).toBeTruthy();
+  });
+});
+
+describe("PerformanceTestsScreen: category on the row", () => {
+  afterEach(async () => {
+    await act(() => i18n.changeLanguage("en"));
+  });
+
+  it("shows the English category under the name", async () => {
+    mockFetchSportTests.mockResolvedValue([
+      generateCategorizedTest("FAKE_TEST_A", "EXPLOSIVE_POWER"),
+    ]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    const row = await screen.findByTestId("performance-test-row-FAKE_TEST_A");
+    expect(within(row).getByText("Explosive power")).toBeTruthy();
+  });
+
+  it("shows the German category for a German athlete", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    mockFetchSportTests.mockResolvedValue([
+      generateCategorizedTest("FAKE_TEST_A", "MAXIMUM_STRENGTH"),
+    ]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    const row = await screen.findByTestId("performance-test-row-FAKE_TEST_A");
+    expect(within(row).getByText("Maximalkraft")).toBeTruthy();
+    expect(within(row).queryByText("Maximum strength")).toBeNull();
+  });
+
+  it("includes the category in the accessibility label of the row", async () => {
+    mockFetchSportTests.mockResolvedValue([
+      generateCategorizedTest("FAKE_TEST_A", "ENDURANCE"),
+    ]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    expect(
+      await screen.findByRole("button", { name: /FAKE_TEST_A.*Endurance/ }),
+    ).toBeTruthy();
+  });
+
+  it("shows the icon of the category", async () => {
+    mockFetchSportTests.mockResolvedValue([
+      generateCategorizedTest("FAKE_TEST_A", "ENDURANCE"),
+    ]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    const row = await screen.findByTestId("performance-test-row-FAKE_TEST_A");
+    expect(
+      within(row).getByTestId("performance-test-icon-heartbeat"),
+    ).toBeTruthy();
+  });
+
+  it("shows the stopwatch and no category line for a test without a category", async () => {
+    mockFetchSportTests.mockResolvedValue([
+      generateTestWithRange("FAKE_TEST_A"),
+    ]);
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    const row = await screen.findByTestId("performance-test-row-FAKE_TEST_A");
+    expect(
+      within(row).getByTestId("performance-test-icon-stopwatch"),
+    ).toBeTruthy();
+    expect(row).toHaveAccessibleName(
+      "FAKE_TEST_A, Reference 9.87 to 6.54 s, No value",
+    );
+  });
+});
+
+describe("PerformanceTestsScreen: category filter", () => {
+  afterEach(async () => {
+    await act(() => i18n.changeLanguage("en"));
+  });
+
+  /** FAKE_TEST_A and FAKE_TEST_C are SPEED tests, FAKE_TEST_B is an ENDURANCE test. */
+  const mockTestsOfTwoCategories = () =>
+    mockFetchSportTests.mockResolvedValue([
+      generateCategorizedTest("FAKE_TEST_A", "SPEED"),
+      generateCategorizedTest("FAKE_TEST_B", "ENDURANCE"),
+      generateCategorizedTest("FAKE_TEST_C", "SPEED"),
+    ]);
+
+  it("offers all categories, selected, and one option per category of the loaded tests", async () => {
+    mockTestsOfTwoCategories();
+
+    const screen = await render(<PerformanceTestsScreen />);
+
+    await screen.findByLabelText("Filter by category");
+    const options = screen.getAllByRole("radio");
+    expect(options).toHaveLength(3);
+    expect(options[0]).toHaveAccessibleName("All categories");
+    expect(options[1]).toHaveAccessibleName("Speed");
+    expect(options[2]).toHaveAccessibleName("Endurance");
+    expect(options[0]).toBeChecked();
+  });
+
+  it("shows only the tests of the category when it is chosen", async () => {
+    mockTestsOfTwoCategories();
+    const screen = await render(<PerformanceTestsScreen />);
+
+    await fireEvent.press(await screen.findByRole("radio", { name: "Speed" }));
+
+    expect(screen.getByRole("radio", { name: "Speed" })).toBeChecked();
+    expect(
+      screen.getByRole("radio", { name: "All categories" }),
+    ).not.toBeChecked();
+    expect(screen.getByTestId("performance-test-row-FAKE_TEST_A")).toBeTruthy();
+    expect(screen.getByTestId("performance-test-row-FAKE_TEST_C")).toBeTruthy();
+    expect(screen.queryByTestId("performance-test-row-FAKE_TEST_B")).toBeNull();
+  });
+
+  it("shows every test again when all categories are chosen", async () => {
+    mockTestsOfTwoCategories();
+    const screen = await render(<PerformanceTestsScreen />);
+    await fireEvent.press(await screen.findByRole("radio", { name: "Speed" }));
+
+    await fireEvent.press(
+      screen.getByRole("radio", { name: "All categories" }),
+    );
+
+    expect(screen.getByRole("radio", { name: "All categories" })).toBeChecked();
+    expect(screen.getByTestId("performance-test-row-FAKE_TEST_A")).toBeTruthy();
+    expect(screen.getByTestId("performance-test-row-FAKE_TEST_B")).toBeTruthy();
+    expect(screen.getByTestId("performance-test-row-FAKE_TEST_C")).toBeTruthy();
+  });
+
+  it("offers an option with the code for an unknown category and filters by it", async () => {
+    mockFetchSportTests.mockResolvedValue([
+      generateCategorizedTest("FAKE_TEST_A", "SPEED"),
+      generateCategorizedTest("FAKE_TEST_B", "FAKE_CATEGORY"),
+    ]);
+    const screen = await render(<PerformanceTestsScreen />);
+
+    await fireEvent.press(
+      await screen.findByRole("radio", { name: "FAKE_CATEGORY" }),
+    );
+
+    expect(screen.getByTestId("performance-test-row-FAKE_TEST_B")).toBeTruthy();
+    expect(screen.queryByTestId("performance-test-row-FAKE_TEST_A")).toBeNull();
+  });
+
+  it("shows a test without a category only when all categories are chosen", async () => {
+    mockFetchSportTests.mockResolvedValue([
+      generateCategorizedTest("FAKE_TEST_A", "SPEED"),
+      generateTestWithRange("FAKE_TEST_B"),
+    ]);
+    const screen = await render(<PerformanceTestsScreen />);
+    expect(
+      await screen.findByTestId("performance-test-row-FAKE_TEST_B"),
+    ).toBeTruthy();
+    expect(screen.getAllByRole("radio")).toHaveLength(2);
+
+    await fireEvent.press(screen.getByRole("radio", { name: "Speed" }));
+
+    expect(screen.getByTestId("performance-test-row-FAKE_TEST_A")).toBeTruthy();
+    expect(screen.queryByTestId("performance-test-row-FAKE_TEST_B")).toBeNull();
+  });
+
+  it("does not reselect a removed category when it comes back", async () => {
+    mockTestsOfTwoCategories();
+    const screen = await render(<PerformanceTestsScreen />);
+    await fireEvent.press(
+      await screen.findByRole("radio", { name: "Endurance" }),
+    );
+    await act(async () => {
+      useSportTestsStore
+        .getState()
+        .setTests(ALL_SPORTS_CACHE_KEY, [
+          generateCategorizedTest("FAKE_TEST_A", "SPEED"),
+        ]);
+    });
+
+    await act(async () => {
+      useSportTestsStore
+        .getState()
+        .setTests(ALL_SPORTS_CACHE_KEY, [
+          generateCategorizedTest("FAKE_TEST_A", "SPEED"),
+          generateCategorizedTest("FAKE_TEST_B", "ENDURANCE"),
+        ]);
+    });
+
+    expect(screen.getByRole("radio", { name: "All categories" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Endurance" })).not.toBeChecked();
+    expect(screen.getByTestId("performance-test-row-FAKE_TEST_A")).toBeTruthy();
+    expect(screen.getByTestId("performance-test-row-FAKE_TEST_B")).toBeTruthy();
   });
 });

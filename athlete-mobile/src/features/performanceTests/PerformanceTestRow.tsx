@@ -10,6 +10,7 @@ import {
   type SportTestReferenceValue,
 } from "./models/SportTest";
 import { TestIconCircle } from "./TestIconCircle";
+import { useCategoryLabel } from "./testCategories";
 import { formatValueWithUnit, type LatestResult } from "./testValues";
 import { useReferenceLine, useTestName, useTestUnit } from "./useTestLabels";
 import { ValueStatusPill } from "./ValueStatusPill";
@@ -84,6 +85,7 @@ export const PerformanceTestRow: FC<Props> = ({
   const { t, i18n } = useTranslation();
 
   const name = useTestName(test);
+  const categoryLabel = useCategoryLabel(test.category);
   const unit = useTestUnit(test);
   const reference = useReferenceLine(test, range);
   const latestLabel = describeLatest(unit, latest, t, i18n.language);
@@ -93,7 +95,9 @@ export const PerformanceTestRow: FC<Props> = ({
       onPress={onPress}
       style={({ pressed }) => pressed && styles.pressed}
       accessibilityRole="button"
-      accessibilityLabel={`${name}, ${reference}, ${latestLabel}`}
+      accessibilityLabel={[name, categoryLabel, reference, latestLabel]
+        .filter((part) => part !== undefined)
+        .join(", ")}
       testID={`performance-test-row-${test.code}`}
     >
       <Card
@@ -104,7 +108,7 @@ export const PerformanceTestRow: FC<Props> = ({
         gap={{ phone: "s", tablet: "m" }}
         padding={{ phone: "s", tablet: "m" }}
       >
-        <TestIconCircle />
+        <TestIconCircle category={test.category} />
         <Box flex={1}>
           <Text
             variant="body"
@@ -114,6 +118,16 @@ export const PerformanceTestRow: FC<Props> = ({
           >
             {name}
           </Text>
+          {categoryLabel !== undefined && (
+            <Text
+              variant="small"
+              fontSize={{ phone: 14, tablet: 17 }}
+              color="darkGrey1"
+              numberOfLines={1}
+            >
+              {categoryLabel}
+            </Text>
+          )}
           <Text
             variant="small"
             fontSize={{ phone: 14, tablet: 17 }}

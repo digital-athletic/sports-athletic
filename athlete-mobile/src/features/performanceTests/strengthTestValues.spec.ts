@@ -4,7 +4,7 @@ import {
   strengthTestDirection,
   strengthTestPerformanceValues,
 } from "./strengthTestValues";
-import { generateSportTest } from "./testFixtures";
+import { generateSportTest } from "@test/factories/sportTest";
 
 /**
  * A strength test result of 2026-11-10 with distinct weights, e.g.

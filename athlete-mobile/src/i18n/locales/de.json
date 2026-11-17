@@ -863,6 +863,14 @@
       "legendRange": "Referenzbereich",
       "chartSummary_one": "Liniendiagramm mit {{count}} Wert im Zeitverlauf",
       "chartSummary_other": "Liniendiagramm mit {{count}} Werten im Zeitverlauf",
+      "allCategories": "Alle Kategorien",
+      "categoryFilter": "Nach Kategorie filtern",
+      "categories": {
+        "SPEED": "Schnelligkeit",
+        "EXPLOSIVE_POWER": "Schnellkraft",
+        "MAXIMUM_STRENGTH": "Maximalkraft",
+        "ENDURANCE": "Ausdauer"
+      },
       "status": {
         "IN_RANGE": "im Bereich",
         "BELOW_RANGE": "unter dem Bereich",

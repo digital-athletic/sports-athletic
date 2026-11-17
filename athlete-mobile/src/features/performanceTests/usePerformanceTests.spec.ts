@@ -5,7 +5,7 @@ import {
 } from "@/store/sportTestsStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { generateSportTest } from "./testFixtures";
+import { generateSportTest } from "@test/factories/sportTest";
 import { usePerformanceTests } from "./usePerformanceTests";
 
 const mockFetchSportTests = jest.fn();

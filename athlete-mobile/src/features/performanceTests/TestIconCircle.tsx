@@ -1,12 +1,16 @@
 import { type FC } from "react";
 import { useResponsiveProp } from "@shopify/restyle";
-import IconStopwatch from "@tabler/icons-react-native/IconStopwatch";
 import { AppIcon } from "@/common/AppIcon";
 import { Box } from "@/theme/Box";
 import { useTheme } from "@/theme/theme";
+import { categoryIcon, categoryIconName } from "./testCategories";
 
-/** The stopwatch icon of a performance test in a tinted circle that grows on tablets. */
-export const TestIconCircle: FC = () => {
+type Props = {
+  category?: string;
+};
+
+/** The category icon of a performance test, in a tinted circle that grows on tablets. */
+export const TestIconCircle: FC<Props> = ({ category }) => {
   const { colors } = useTheme();
   const circleSize = useResponsiveProp({ phone: 36, tablet: 52 });
   const iconSize = useResponsiveProp({ phone: 20, tablet: 28 });
@@ -19,9 +23,10 @@ export const TestIconCircle: FC = () => {
       backgroundColor="primaryTint"
       alignItems="center"
       justifyContent="center"
+      testID={`performance-test-icon-${categoryIconName(category)}`}
     >
       <AppIcon
-        icon={IconStopwatch}
+        icon={categoryIcon(category)}
         size={iconSize}
         color={colors.primary}
         decorative

@@ -47,7 +47,6 @@ For more control of individual tool versions or if you prefer developing without
 Install and start supabase, using the CLI: https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=platform&platform=linux
 
 Then run `supabase start` from the root folder.
-If you want to start the custom functions: `supabase functions serve`
 
 ## Building a Native Development Client
 

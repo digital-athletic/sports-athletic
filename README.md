@@ -6,7 +6,7 @@ A fitness training platform consisting of three applications that work together:
 
 | Project        | Path              | Description                                  |
 | -------------- | ----------------- | -------------------------------------------- |
-| Supabase       | `supabase/`       | Backend: PostgreSQL database, Edge Functions |
+| Supabase       | `supabase/`       | Backend: PostgreSQL database and functions   |
 | Athlete Mobile | `athlete-mobile/` | React Native/Expo mobile app for athletes    |
 | Trainer Web    | `trainer-web/`    | React/Vite web app for trainers              |
 
@@ -35,12 +35,6 @@ supabase start
 
 # If the vector container fails to start, exclude it
 supabase start -x vector
-```
-
-To start Edge Functions (optional, for team features):
-
-```bash
-supabase functions serve
 ```
 
 **Stop the backend:**
@@ -139,7 +133,7 @@ You can register a new user directly through the web interface at http://localho
 
 Each project has its own README with detailed documentation:
 
-- [Supabase README](supabase/README.md) - Database setup, migrations, Edge Functions
+- [Supabase README](supabase/README.md) - Database setup and migrations
 - [Athlete Mobile README](athlete-mobile/README.md) - Mobile app development, native builds
 - [Trainer Web README](trainer-web/README.md) - Web app development
 

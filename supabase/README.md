@@ -1,6 +1,6 @@
 # Supabase Backend
 
-This directory contains the Supabase backend configuration for the Sports Athletic platform, including the PostgreSQL database schema, migrations, and Edge Functions.
+This directory contains the Supabase backend configuration for the Sports Athletic platform, including the PostgreSQL database schema and migrations.
 
 > **Note:** This is part of the Sports Athletic monorepo. For overall project setup and information about other packages (athlete-mobile, trainer-web), see the [README in the parent directory](../README.md).
 
@@ -40,14 +40,6 @@ cd ..
 supabase start
 ```
 
-### Start Edge Functions
-
-To serve Edge Functions locally (from the monorepo root):
-
-```bash
-supabase functions serve
-```
-
 ### Stop Supabase
 
 ```bash
@@ -58,5 +50,4 @@ supabase stop
 
 - [Supabase Documentation](https://supabase.com/docs)
 - [Supabase CLI Guide](https://supabase.com/docs/guides/local-development/cli/getting-started)
-- [Edge Functions Guide](https://supabase.com/docs/guides/functions)
 - [Database Migrations](https://supabase.com/docs/guides/local-development/cli/managing-database-migrations)

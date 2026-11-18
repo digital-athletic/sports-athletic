@@ -40,7 +40,7 @@ description:
       Trainer. Sie verwalten dort Teams, laden Athleten per Einladungscode ein
       und sehen Auswertungen zum Trainingsstand.
 
-      Das Backend nutzt Supabase mit PostgreSQL und Edge Functions. Die
+      Das Backend nutzt Supabase mit PostgreSQL-Funktionen. Die
       Anmeldung erfolgt per Einmal-Code per E-Mail. Die Plattform lässt sich
       vollständig selbst betreiben.
 
@@ -73,7 +73,7 @@ description:
       invite athletes with an invite code and see evaluations of their
       training status.
 
-      The backend uses Supabase with PostgreSQL and Edge Functions. Sign-in
+      The backend uses Supabase with PostgreSQL functions. Sign-in
       uses a one-time code sent by email. The platform can be fully
       self-hosted.
 

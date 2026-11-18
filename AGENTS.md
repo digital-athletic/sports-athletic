@@ -10,7 +10,7 @@ Fitness training platform monorepo with mobile app, web dashboard, and Supabase 
 /workspace
 ├── athlete-mobile/     # React Native (Expo) - Athlete mobile app
 ├── trainer-web/        # React (Vite) - Trainer web dashboard
-├── supabase/           # Backend: Edge functions + DB migrations
+├── supabase/           # Backend: DB migrations (Postgres functions)
 └── docker-compose.yml  # Local dev orchestration
 ```
 
@@ -18,7 +18,7 @@ Fitness training platform monorepo with mobile app, web dashboard, and Supabase 
 
 - **Mobile**: React Native, Expo, Zustand, Zod
 - **Web**: React, Vite, TypeScript
-- **Backend**: Supabase (Postgres, Edge Functions)
+- **Backend**: Supabase (Postgres)
 - **Package Manager**: pnpm, one independent project per app folder (own `pnpm-lock.yaml` and `pnpm-workspace.yaml`)
 
 ## Important Constraints
@@ -35,7 +35,6 @@ Fitness training platform monorepo with mobile app, web dashboard, and Supabase 
 | `athlete-mobile/src/store/` | Zustand state stores |
 | `athlete-mobile/src/services/` | API/Supabase clients |
 | `trainer-web/src/components/` | Web UI components |
-| `supabase/functions/` | Edge functions |
 | `supabase/migrations/` | Database migrations |
 
 ## Development Commands
@@ -46,9 +45,6 @@ cd athlete-mobile && pnpm start
 
 # Web
 cd trainer-web && pnpm dev
-
-# Supabase functions
-cd supabase && supabase functions serve
 ```
 
 ## TypeScript & Lint Strictness

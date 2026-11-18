@@ -11,9 +11,11 @@ describe("SwapExerciseButton: swap an exercise", () => {
     expect(queryByRole("button")).toBeNull();
   });
 
-  it("shows no button for a branch without alternatives", async () => {
+  it("shows no button for a workout without the exercise swap", async () => {
     const { queryByRole } = await render(
-      <SwapControlsContext value={{ canSwap: () => false, onSwap: jest.fn() }}>
+      <SwapControlsContext
+        value={{ supported: false, canSwap: () => true, onSwap: jest.fn() }}
+      >
         <SwapExerciseButton branchId="10" exerciseName="Squat" />
       </SwapControlsContext>,
     );
@@ -21,10 +23,29 @@ describe("SwapExerciseButton: swap an exercise", () => {
     expect(queryByRole("button")).toBeNull();
   });
 
+  it("shows a disabled button for a branch without alternatives", async () => {
+    const onSwap = jest.fn();
+    const { getByRole } = await render(
+      <SwapControlsContext
+        value={{ supported: true, canSwap: () => false, onSwap }}
+      >
+        <SwapExerciseButton branchId="10" exerciseName="Squat" />
+      </SwapControlsContext>,
+    );
+
+    const button = getByRole("button", { name: "No alternative for Squat" });
+    fireEvent.press(button);
+
+    expect(button).toBeDisabled();
+    expect(onSwap).not.toHaveBeenCalled();
+  });
+
   it("swaps the branch of the named exercise on a tap", async () => {
     const onSwap = jest.fn();
     const { getByRole } = await render(
-      <SwapControlsContext value={{ canSwap: () => true, onSwap }}>
+      <SwapControlsContext
+        value={{ supported: true, canSwap: () => true, onSwap }}
+      >
         <SwapExerciseButton branchId="10" exerciseName="Squat" />
       </SwapControlsContext>,
     );

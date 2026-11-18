@@ -140,13 +140,14 @@ An athlete with the fitness level "Advanced" has a default entry level of 2.
 
 ### Manual exercise swap
 
-The training overview of a plan training shows a swap button next to each exercise that has an alternative. Each tap replaces the exercise with the next alternative. After the last alternative, the next tap brings back the original.
+The training overview of a plan or short workout shows a swap button next to each exercise. The button stays disabled for an exercise without an alternative. The overview shows no swap button until it has listed the alternatives. Each tap replaces the exercise with the next alternative. After the last alternative, the next tap brings back the original.
 
-- **One workout only**: the swap changes the current workout and nothing else. The training plan still references the original branch, so the next workout on that weekday shows the original exercise again.
-- **Alternatives**: up to three branches from the same skill tree. They pass the same filters as workout generation (muscle soreness, equipment, fitness level, age, gender, pain), have the same side setting as the original (one-sided or both-sided), and are not already in the workout. Branches from the same body region come first, then branches with the same movement direction.
+- **One workout only**: the swap changes the current workout and nothing else. The training plan or template still references the original branch, so the next workout on that weekday or from that template shows the original exercise again.
+- **Alternatives**: up to three branches from the same skill tree, or from the block's own pool for a picks block. They pass the same filters as workout generation (muscle soreness, equipment, fitness level, age, gender, pain), have the same side setting as the original (one-sided or both-sided), and are not already in the workout. Branches from the same body region come first, then branches with the same movement direction.
 - **Level**: the alternative gets the level workout generation would give it: the stored level for that branch, or the entry level when none is stored.
 - **Values**: repetitions, duration and weight are calculated for the alternative. A one-sided exercise swaps both sides together.
-- **Scope**: plan trainings on the AIWL workout generator. Out of scope: picking from a list, swapping during a running training, and syncing the swap to the backend.
+- **One block per skill**: a skill with two blocks in one workout offers no swap, because the workout cannot tell which block drew an exercise.
+- **Scope**: plan and short workouts on the AIWL workout generator, including imported templates, with picks, branches and cardio duration blocks. A cardio duration alternative keeps the block's minutes. Out of scope: the strength test, picking from a list, swapping during a running training, and syncing the swap to the backend.
 
 ### Example: bodyweight squat lane
 

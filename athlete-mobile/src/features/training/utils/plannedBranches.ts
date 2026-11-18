@@ -1,5 +1,4 @@
 import { isSkillTypes } from "@/constants/workoutConstants";
-import { toExerciseBranch } from "@/features/training/exerciseSwap/exerciseSwap";
 import type { ExerciseBranchType } from "@/features/training/models/ExerciseBranch";
 import {
   type AiwlTrainingType,
@@ -7,11 +6,27 @@ import {
   isLegacyTraining,
   type UserTrainingType,
 } from "@/features/training/models/UserTraining";
+import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import {
   type BranchLookupIndex,
   findCatalogBranch,
   loadBranchLookupIndex,
 } from "@/features/training/workoutGenerator/generationInput/branchLookupIndex";
+
+/** Writes a catalog branch in the form the training plan stores. */
+export const toExerciseBranch = ({
+  branchId,
+  branch,
+}: StoredBranch): ExerciseBranchType => ({
+  branchId,
+  tags: branch.tags ?? [],
+  exercises: Object.fromEntries(
+    Object.entries(branch.levels ?? branch.exercises ?? {}).flatMap(
+      ([level, { exerciseId }]) =>
+        exerciseId ? [[Number(level), { exerciseId }]] : [],
+    ),
+  ),
+});
 
 // Writes the catalog branches of each branches block under the block's skill.
 const resolveWorkoutBranches = (

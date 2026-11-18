@@ -238,7 +238,7 @@ A plan training may already store the target shape, an AIWL training. `readTrain
 | legacy | stored day workout | saved branch copies | trains the saved copy |
 | AIWL | the stored AIWL workout | branch lookup index | replaced from the same skill |
 
-1. The training day selection returns the workout of an AIWL training, validated against the AIWL schema. The exercise swap hook generates through `generateTrainingDaySetList`, like the router.
+1. The training day selection returns the workout of an AIWL training, validated against the AIWL schema. The [exercise swap](#exercise-swap) reads the same day.
 2. `readTrainingDayWorkout` sorts the blocks of both shapes once by section order, stable, with a skill outside the section order first. The plan generator writes an AIWL day in the skill priority order of its budget, so the AIWL shape needs the sort too. `createStoredDayWorkout` keeps the stored order.
 3. Every workout has one missing branch rule: each distinct branch ID the lookup lacks requests one replacement like a branch that a rule blocks. The request names no region, so the replacement draws from the least used region of the skill. The saved copies of a legacy training hold every branch ID its stored day workout lists, so a legacy training never misses one.
 
@@ -247,7 +247,7 @@ The plan features outside the generator read both shapes. `readPlannedBranches` 
 | Feature | Legacy training | AIWL training |
 |---|---|---|
 | Strength test prompt | exercises of every level of each copied branch | exercises of every level of each resolved branch |
-| Exercise swap | swaps a branch copy in the generated day | swaps a branch ID in the generated day |
+| Exercise swap | reads the skill's timing and minutes from the stored day; alternatives come from the catalog | reads the skill's timing from the AIWL day; alternatives come from the catalog |
 | Branch level progression | replaces one copied entry with one or two entries | replaces one branch ID with one or two branch IDs |
 | Plan regeneration | keeps the old day when skills and minutes match | keeps the old branch IDs when blocks and durations match |
 | Broken plan check | adult-only branches for a child, max strength lifts without equipment | the same two rules on the resolved branches |
@@ -262,7 +262,7 @@ The router `src/features/training/workoutGeneratorRouter.ts` selects a workout, 
 | `TEST_WORKOUT` | `loadStrengthTestTemplate`: the bundled `TEST.json`; the entry point checks it with `checkStrengthTestTemplate` | branch lookup index | `STRENGTH_TEST_FILTERS`: `{ pain: false, equipment: false }` |
 | any other | the template of the type, short or custom | branch lookup index | `{ soreness: false }` |
 
-`generateTrainingDaySetList(day, input, skillTrees)` in `trainingDayWorkout.ts` reads a plan day and generates it. The router and the exercise swap hook both call it, so a swapped day generates with the same options as the day.
+`selectWorkout(request)` in the router returns the workout, the branch lookup and the filters of the table, and `generateWorkout` passes them to `generateSetList`. The [exercise swap](#exercise-swap) calls `selectWorkout` too, sets the workout up once, builds one branch through `buildBranchSetList` and runs no `generateSetList`.
 
 A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A template without blocks throws `NO_EXERCISES/PAIN` without regions, whatever the athlete's pains.
 
@@ -275,6 +275,52 @@ A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A temp
 The old training generator and its flag `EXPO_PUBLIC_AIWL_GENERATOR_ENABLED` are deleted. The old plan generator in `generators/PlanGenerator.ts` stays behind its own flag `EXPO_PUBLIC_PLAN_GENERATOR_ENABLED`.
 
 The router selects the stored training day of the plan with its own copy of the old section and weekday selection, so the AIWL path imports nothing from `generators/`.
+
+### Exercise swap
+
+The [exercise swap](../specs/glossary.md) replaces one branch of the current session with another branch, in plan workouts and short workouts, not in the strength test. The swap changes the session only. The plan and the template still list the original branch, so the next workout from the same day or template trains the original again.
+
+#### Decision
+
+A swap builds the set list of the alternative's branch with the generator's set list builders and writes the entries into the session at the set positions of the replaced branch. The session alone cannot build them: it stores results (repetitions, weight, duration, set position) without the block timing that produced them, and its set tuple counts a warm-up set that the block's sets do not.
+
+One branch is enough, because a branch's entries depend on four inputs:
+
+1. The block timing: sets, rest, set duration and values.
+2. The block minutes, which a cardio block reads for its intervals.
+3. The exercise at the athlete's level and the start values from the athlete's progress.
+4. The second exercise of the pair: the other side of a one-sided exercise, else the superset partner.
+
+The other pairs of the block decide only the closing rest, a pause entry without a branch. Max strength support exercises, the cardio warm-up and the filler carry the placeholder branch, so the swap leaves them unchanged.
+
+#### Reused generator parts
+
+- `selectWorkout` in `workoutGeneratorRouter.ts` selects the workout and its filters, the call `generateWorkout` makes.
+- `setUpSwapWorkout` in `swapWorkout.ts` calls `setUpWorkout` once per overview, with a fixed random draw. The result and the session form the **swap workout** `{ session, workout, input }`.
+- `readBlockTiming` and `createSetListBlock` in `setListBlockResolution.ts` read the block timing and minutes, as set list building does.
+- `buildBranchSetList` in `branchSetList.ts` builds the entries of one branch with the skill's set list builder.
+- `intersectBlockPool` in `picksDraw.ts` intersects the pool of a picks block with the workout pool, for `drawPicksBlock` and for the swap.
+
+#### Block finder rule
+
+The swap offers a branch only when the workout holds exactly one block of the branch's skill and that block is of kind `branches`, `picks` or `duration`. The session cannot tell which of two blocks of one skill drew a branch, so a skill with two blocks offers no swap. A cardio duration block keeps its minutes: `createSetListBlock` takes them from the block duration, so a cardio alternative keeps the block's minute budget.
+
+#### Swap cycle
+
+- `listBranchAlternatives` ranks every candidate that passes the replacement filters, has the target's side setting and repeats no branch or exercise of the session. A branch of the target's body region ranks first, then a branch of its movement direction. A picks block draws its candidates from the block's own pool.
+- `listBranchSwaps` keeps the first three ranked alternatives for which `swapBranchFromWorkout` builds a session. A branch without such an alternative has no cycle.
+- `replaceSessionBranch` validates every write, swap and restore alike: the entry count equals the replaced branch's count, and no exercise of the entries trains under another branch.
+- The tap after the last alternative restores the stored entries of the original branch instead of regenerating them. The session was drawn with the real random source and the swap uses a fixed one, so a regenerated original could pair its superset differently and gain or lose a warm-up set.
+- The swap writes only the alternative's entries and never changes the partner. An alternative that adds or removes the warm-up set of an SWR or SK pair changes the entry count, and `replaceSessionBranch` rejects it. The tap then shows the next alternative.
+- `listBranchAlternatives` applies the filters once, when the overview loads. Soreness or pain entered later still allows a swap to an alternative listed before.
+
+#### Limits
+
+- A skill with two blocks in one workout offers no swap.
+- An exercise without an alternative that builds shows a disabled button.
+- The overview shows no swap button before the swap setup exists. `useExerciseSwap` runs the setup once, in a timeout after the overview renders. A failed setup logs the error and leaves no swap button.
+
+A branch-to-block map that the generator records would lift the one-block limit. No change builds it.
 
 ### Strength test source
 

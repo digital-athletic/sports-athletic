@@ -2,7 +2,7 @@ import { TagGroups } from "@/constants/tagGroups";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { getExerciseById } from "@/data/exerciseRegistry";
 import type { ExerciseType } from "@/schemas/exercise.schema";
-import type { CsvField } from "@/features/statistics/models/csv";
+import type { CsvField } from "@/utils/csv";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import {

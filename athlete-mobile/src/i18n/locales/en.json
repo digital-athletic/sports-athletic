@@ -57,7 +57,8 @@
       "level": "Level {{level}}",
       "close": "Close"
     },
-    "stepOf": "Step {{current}} of {{total}}"
+    "stepOf": "Step {{current}} of {{total}}",
+    "csv": "CSV"
   },
   "screens": {
     "start": {
@@ -875,6 +876,17 @@
         "IN_RANGE": "in range",
         "BELOW_RANGE": "below range",
         "ABOVE_RANGE": "above range"
+      },
+      "export": {
+        "label": "Download performance test results as CSV",
+        "noResults": "You have not recorded a performance test result yet.",
+        "headers": {
+          "date": "Date",
+          "sport": "Sport",
+          "test": "Test",
+          "value": "Value",
+          "unit": "Unit"
+        }
       }
     }
   },
@@ -1069,7 +1081,6 @@
     },
     "export": {
       "label": "Download statistics as CSV",
-      "button": "CSV",
       "headers": {
         "workoutId": "Workout ID",
         "date": "Date",

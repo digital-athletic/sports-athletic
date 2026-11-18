@@ -3,13 +3,8 @@ import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile
 import { createWorkoutsProfile } from "./mocks/stores/profiles/workoutsProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { StatisticsPage } from "./pages";
-
-const localDate = (): string => {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${now.getFullYear()}-${month}-${day}`;
-};
+import { localDate } from "./utils/date";
+import { readDownload } from "./utils/download";
 
 test.describe("Statistics export: athlete with workouts", () => {
   test.use({ profile: createWorkoutsProfile(2), signedIn: true });
@@ -29,7 +24,7 @@ test.describe("Statistics export: athlete with workouts", () => {
       `workouts_total_${localDate()}.csv`,
     );
 
-    const content = await statsPage.readDownload(download);
+    const content = await readDownload(download);
     expect(content.charCodeAt(0)).toBe(0xfeff);
     const lines = content.slice(1).split("\r\n");
     // Header, one row per performed set of both workouts, trailing line end

@@ -40,7 +40,7 @@ describe("StatisticsExportButton: states", () => {
     );
 
     const button = getByTestId("statistics-export-button");
-    expect(getByText(i18n.t("statistics.export.button"))).toBeTruthy();
+    expect(getByText(i18n.t("common.csv"))).toBeTruthy();
     expect(button.props.accessibilityRole).toBe("button");
     expect(button.props.accessibilityLabel).toBe(
       i18n.t("statistics.export.label"),

@@ -1,5 +1,5 @@
 import { createTheme, useTheme as useRestyleTheme } from "@shopify/restyle";
-import { colors } from "./colors";
+import { colors, darkColors } from "./colors";
 import { textVariants } from "./textVariants";
 
 export const theme = createTheme({
@@ -153,5 +153,8 @@ export const theme = createTheme({
 
 export type Theme = typeof theme;
 export type ThemeColor = keyof Theme["colors"];
+
+// Not used by the app yet, prepared for app-wide dark mode
+export const darkTheme: Theme = { ...theme, colors: darkColors };
 
 export const useTheme = useRestyleTheme<Theme>;

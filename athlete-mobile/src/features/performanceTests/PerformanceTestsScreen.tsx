@@ -8,6 +8,7 @@ import { Box } from "@/theme/Box";
 import { formatDateToISO } from "@/utils/date";
 import { type SportTest } from "./models/SportTest";
 import { PerformanceTestRow } from "./PerformanceTestRow";
+import { PerformanceTestsExportButton } from "./PerformanceTestsExportButton";
 import { PerformanceTestsNotice } from "./PerformanceTestsNotice";
 import { referenceRangeOnDate } from "./referenceRange";
 import {
@@ -32,6 +33,11 @@ export default function PerformanceTestsScreen() {
       title={t("more.performanceTests.title")}
       heading={t("more.performanceTests.title")}
       description={t("more.performanceTests.description")}
+      headerRight={
+        <PerformanceTestsExportButton
+          tests={state.status === "loaded" ? state.tests : []}
+        />
+      }
     >
       <Box gap="s">
         {state.status !== "loaded" && (

@@ -1,7 +1,6 @@
 import { getExerciseById } from "@/data/exerciseRegistry";
 import type { UserExerciseDataType } from "@/schemas/sync.schema";
 import { DEFAULT_MAX_VALUES } from "@/features/training/models/MaxValues";
-import { Logger } from "@/services/Logger";
 import { useAuthStore } from "@/store/authStore";
 import { useCompletedWorkoutsStore } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
@@ -9,14 +8,9 @@ import { act, renderHook } from "@testing-library/react-native";
 import { useStatisticsExport } from "./useStatisticsExport";
 
 const mockShareCsv = jest.fn();
-const mockAlert = jest.fn();
 
-jest.mock("@/features/statistics/services/shareCsv", () => ({
+jest.mock("@/services/shareCsv", () => ({
   shareCsv: (...args: unknown[]) => mockShareCsv(...args),
-}));
-
-jest.mock("@/common/Alert", () => ({
-  Alert: { alert: (...args: unknown[]) => mockAlert(...args) },
 }));
 
 jest.mock("react-i18next", () => ({
@@ -69,7 +63,6 @@ const WORKOUT_HEADER_KEYS = [
 describe("useStatisticsExport: workouts", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
-    jest.spyOn(Logger, "logError").mockResolvedValue(undefined);
     await act(() => {
       useAuthStore.setState({ auth: { userId: "u1" } });
       useCompletedWorkoutsStore.getState().clearWorkoutHistory();
@@ -177,46 +170,6 @@ describe("useStatisticsExport: workouts", () => {
     });
 
     expect(mockShareCsv).not.toHaveBeenCalled();
-  });
-
-  it("shares once when the export runs twice before the first ends", async () => {
-    addWorkout("w1", Date.now() - DAY);
-    let finish: () => void = () => {};
-    mockShareCsv.mockReturnValueOnce(
-      new Promise<void>((resolve) => {
-        finish = resolve;
-      }),
-    );
-    const { result } = await renderHook(() =>
-      useStatisticsExport({ kind: "workouts", scale: "total" }),
-    );
-
-    let first: Promise<void> = Promise.resolve();
-    await act(async () => {
-      first = result.current.exportCsv();
-      await result.current.exportCsv();
-    });
-    await act(async () => {
-      finish();
-      await first;
-    });
-
-    expect(mockShareCsv).toHaveBeenCalledTimes(1);
-  });
-
-  it("alerts with the common error when sharing fails", async () => {
-    addWorkout("w1", Date.now() - DAY);
-    mockShareCsv.mockRejectedValueOnce(new Error("boom"));
-    const { result } = await renderHook(() =>
-      useStatisticsExport({ kind: "workouts", scale: "total" }),
-    );
-
-    await act(async () => {
-      await result.current.exportCsv();
-    });
-
-    expect(mockAlert).toHaveBeenCalledWith("common.error");
-    expect(result.current.isExporting).toBe(false);
   });
 });
 

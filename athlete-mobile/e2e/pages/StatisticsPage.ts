@@ -226,19 +226,6 @@ export class StatisticsPage extends BasePage {
   }
 
   /**
-   * Reads a download as UTF-8 text, keeping the byte order mark.
-   * Uses the stream because path() is unavailable with a remote browser.
-   */
-  async readDownload(download: Download): Promise<string> {
-    const stream = await download.createReadStream();
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) {
-      chunks.push(Buffer.from(chunk));
-    }
-    return Buffer.concat(chunks).toString("utf8");
-  }
-
-  /**
    * Verifies the Training tab of the statistics is active. The bottom tab bar
    * has a tab with the same name, so the test ID picks the statistics tab.
    */

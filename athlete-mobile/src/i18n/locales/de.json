@@ -57,7 +57,8 @@
       "level": "Level {{level}}",
       "close": "Schließen"
     },
-    "stepOf": "Schritt {{current}} von {{total}}"
+    "stepOf": "Schritt {{current}} von {{total}}",
+    "csv": "CSV"
   },
   "screens": {
     "start": {
@@ -875,6 +876,17 @@
         "IN_RANGE": "im Bereich",
         "BELOW_RANGE": "unter dem Bereich",
         "ABOVE_RANGE": "über dem Bereich"
+      },
+      "export": {
+        "label": "Leistungstest-Ergebnisse als CSV herunterladen",
+        "noResults": "Du hast noch kein Leistungstest-Ergebnis eingetragen.",
+        "headers": {
+          "date": "Datum",
+          "sport": "Sportart",
+          "test": "Test",
+          "value": "Wert",
+          "unit": "Einheit"
+        }
       }
     }
   },
@@ -1069,7 +1081,6 @@
     },
     "export": {
       "label": "Auswertung als CSV herunterladen",
-      "button": "CSV",
       "headers": {
         "workoutId": "Workout-ID",
         "date": "Datum",

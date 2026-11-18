@@ -1,5 +1,4 @@
-import { Alert } from "@/common/Alert";
-import { buildCsv, type CsvField } from "@/features/statistics/models/csv";
+import { buildCsv, type CsvField } from "@/utils/csv";
 import {
   filterStrengthTestsByRange,
   filterWorkoutsByRange,
@@ -11,14 +10,12 @@ import {
   type ExportKind,
 } from "@/features/statistics/models/statisticsCsv";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
-import { shareCsv } from "@/features/statistics/services/shareCsv";
 import type { MaxValuesType } from "@/features/training/models/MaxValues";
-import { Logger } from "@/services/Logger";
+import { useCsvShare } from "@/hooks/useCsvShare";
 import { useAuthStore } from "@/store/authStore";
 import type { CompleteWorkoutType } from "@/store/completedWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import type { TFunction } from "i18next";
-import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStatisticsWorkouts } from "./useStatisticsWorkouts";
 
@@ -79,26 +76,6 @@ const buildExportTable = (
   };
 };
 
-/** Alerts the user instead of throwing when sharing fails. */
-const shareExportTable = async (
-  { header, rows }: ExportTable,
-  kind: ExportKind,
-  scale: ScaleType,
-  t: TFunction,
-): Promise<void> => {
-  try {
-    await shareCsv(
-      buildExportFileName(kind, scale, new Date()),
-      buildCsv(header, rows),
-    );
-  } catch (error) {
-    Logger.logError(
-      error instanceof Error ? error : new Error("CSV export failed"),
-    );
-    Alert.alert(t("common.error"));
-  }
-};
-
 /**
  * Exports the current user's workouts or strength tests of the selected
  * range as CSV. Refuses without a logged-in user.
@@ -111,27 +88,23 @@ export const useStatisticsExport = ({
   const userId = useAuthStore((state) => state.auth?.userId ?? null);
   const workouts = useStatisticsWorkouts();
   const testHistory = useExerciseProgressStore((state) => state.testHistory);
-  const [isExporting, setIsExporting] = useState(false);
-  const inFlight = useRef(false);
+  const { share, isSharing } = useCsvShare();
 
   const table = buildExportTable(
     { kind, scale, workouts, testHistory: testHistory ?? [] },
     t,
   );
 
-  const canExport = userId !== null && table.rows.length > 0 && !isExporting;
+  const hasData = userId !== null && table.rows.length > 0;
 
   const exportCsv = async () => {
-    if (inFlight.current || userId === null || table.rows.length === 0) {
-      return;
-    }
-    inFlight.current = true;
-    setIsExporting(true);
-    await shareExportTable(table, kind, scale, t).finally(() => {
-      inFlight.current = false;
-      setIsExporting(false);
-    });
+    if (!hasData) return;
+
+    await share(
+      buildExportFileName(kind, scale, new Date()),
+      buildCsv(table.header, table.rows),
+    );
   };
 
-  return { canExport, exportCsv, isExporting };
+  return { canExport: hasData && !isSharing, exportCsv };
 };

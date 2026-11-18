@@ -122,6 +122,32 @@ export const generateLowerBodyBranch = (
   generateSkillBranch(["SKILL_BAS", "REGION_LOWER_BODY", ...extraTags], levels);
 
 /**
+ * Builds a branch that trains one catalog exercise on the levels 1 to 3. The
+ * branch is two sided unless the tags say otherwise.
+ *
+ * generateOneExerciseBranch("114")
+ * → { tags: ["SIDE_BOTH"], levels: { 1: { exerciseId: "114" }, 2: ..., 3: ... } }
+ */
+export const generateOneExerciseBranch = (
+  exerciseId: string,
+  tags: string[] = ["SIDE_BOTH"],
+): SkillBranchType =>
+  generateTreeBranch([exerciseId, exerciseId, exerciseId], tags);
+
+/**
+ * Builds a branch of one exercise on one level. The branch is two sided and
+ * carries the given pick, region or direction tags.
+ *
+ * generateTwoSidedBranch("e1", ["PICK_A"])
+ * → { tags: ["PICK_A", "SIDE_BOTH"], levels: { 1: { exerciseId: "e1" } } }
+ */
+export const generateTwoSidedBranch = (
+  exerciseId: string,
+  tags: string[] = [],
+): SkillBranchType =>
+  generateSkillBranch([...tags, "SIDE_BOTH"], { 1: { exerciseId } });
+
+/**
  * Builds a two sided upper body branch on exercise 431 with the given extra
  * tags.
  *

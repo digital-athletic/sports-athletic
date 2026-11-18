@@ -53,11 +53,6 @@ test.describe("Profile Setup: anamnesis", () => {
     // Verify the birthday was saved
     const storedProfile = await getUserProfileStorageState(page);
     expect(storedProfile?.personalData?.birthday).toBe("1990-05-17");
-
-    await page.screenshot({
-      path: "playwright/screenshots/profile-setup-complete.png",
-      fullPage: true,
-    });
   });
 });
 

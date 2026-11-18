@@ -26,10 +26,6 @@ test.describe("Focus trainings: photo grid", () => {
         name: "Cool Down, Recovery and stretching",
       }),
     ).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/focus-training-grid.png",
-      fullPage: true,
-    });
 
     await page
       .getByRole("button", { name: "Mobility, Improve your range of motion" })

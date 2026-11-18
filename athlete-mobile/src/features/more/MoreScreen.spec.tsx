@@ -30,3 +30,17 @@ describe("MoreScreen: menu", () => {
     expect(queryByText("Performance tests")).toBeNull();
   });
 });
+
+describe("MoreScreen: account", () => {
+  it("lists the account entry", async () => {
+    const { getByText } = await render(<MoreScreen />);
+
+    expect(getByText("Account")).toBeTruthy();
+  });
+
+  it("no longer offers delete account", async () => {
+    const { queryByText } = await render(<MoreScreen />);
+
+    expect(queryByText("Delete account")).toBeNull();
+  });
+});

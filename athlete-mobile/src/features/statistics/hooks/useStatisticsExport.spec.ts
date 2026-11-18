@@ -9,7 +9,7 @@ import { useStatisticsExport } from "./useStatisticsExport";
 
 const mockShareCsv = jest.fn();
 
-jest.mock("@/services/shareCsv", () => ({
+jest.mock("@/services/shareFile", () => ({
   shareCsv: (...args: unknown[]) => mockShareCsv(...args),
 }));
 

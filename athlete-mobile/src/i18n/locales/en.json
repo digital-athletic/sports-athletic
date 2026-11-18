@@ -889,6 +889,15 @@
           "unit": "Unit"
         }
       }
+    },
+    "account": {
+      "menuItem": "Account",
+      "title": "Account",
+      "dataExport": {
+        "title": "Data export",
+        "intro": "Download a copy of all data the server stores about you as one JSON file.",
+        "download": "Download my data"
+      }
     }
   },
   "performanceTests": {

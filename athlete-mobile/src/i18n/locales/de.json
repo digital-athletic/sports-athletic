@@ -889,6 +889,15 @@
           "unit": "Einheit"
         }
       }
+    },
+    "account": {
+      "menuItem": "Konto",
+      "title": "Konto",
+      "dataExport": {
+        "title": "Datenexport",
+        "intro": "Lade eine Kopie aller Daten, die der Server über dich speichert, als JSON-Datei herunter.",
+        "download": "Meine Daten herunterladen"
+      }
     }
   },
   "performanceTests": {

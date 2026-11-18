@@ -18,6 +18,10 @@ export class ProfilePage extends BasePage {
     });
   }
 
+  private get accountHeading() {
+    return this.page.getByRole("heading", { name: "Account" });
+  }
+
   private get myTrainingDataButton() {
     return this.page.getByText("My Training Data");
   }
@@ -87,41 +91,17 @@ export class ProfilePage extends BasePage {
     await expect(this.profileHeading).toBeVisible({ timeout: 10000 });
   }
 
+  async openAccount() {
+    const accountItem = this.page.getByText("Account", { exact: true });
+    await accountItem.scrollIntoViewIfNeeded();
+    await accountItem.click();
+    await expect(this.accountHeading).toBeVisible({ timeout: 10000 });
+  }
+
   async deleteAccount() {
-    // Ensure we're on the Profile tab by clicking it
-    const profileTab = this.page.getByRole("tab", { name: /Profile/i });
-    await profileTab.click();
-    await expect(this.profileHeading).toBeVisible({ timeout: 5000 });
-
-    // Find the Delete account button by its icon (more specific selector)
-    // and click it directly using evaluate to bypass visibility issues from stacked screens
-    const clicked = await this.page.evaluate(() => {
-      // Find all elements containing "Delete account" text
-      const elements = Array.from(document.querySelectorAll("*")).filter(
-        (el) =>
-          el.textContent?.trim() === "Delete account" &&
-          el.children.length === 0,
-      );
-
-      for (const el of elements) {
-        // Find the clickable parent (usually the row container)
-        let clickable =
-          el.closest('[cursor="pointer"]') || el.parentElement?.parentElement;
-        if (clickable) {
-          // Scroll element into view
-          clickable.scrollIntoView({ behavior: "instant", block: "center" });
-          // Click it
-          (clickable as HTMLElement).click();
-          return true;
-        }
-      }
-      return false;
-    });
-
-    if (!clicked) {
-      // Fallback: try the standard approach with force click
-      await this.deleteUserButton.click({ force: true });
-    }
+    await this.navigateToProfile();
+    await this.openAccount();
+    await this.deleteUserButton.click();
 
     await expect(this.page.getByText("Delete account?")).toBeVisible({
       timeout: 10000,

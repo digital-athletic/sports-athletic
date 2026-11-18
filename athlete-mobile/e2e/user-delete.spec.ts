@@ -13,8 +13,9 @@ test.describe("User Deletion", () => {
   });
 
   test("delete user and return to the login page", async ({ page }) => {
-    await new BasePage(page).navigateToTab("Profile");
-    await expect(page.getByRole("heading", { name: "Profile" })).toBeVisible();
+    const profilePage = new ProfilePage(page);
+    await profilePage.navigateToProfile();
+    await profilePage.openAccount();
 
     const deleteUserButton = page.getByRole("button", {
       name: "Delete account",

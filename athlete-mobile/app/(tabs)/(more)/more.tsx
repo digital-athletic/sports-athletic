@@ -5,9 +5,7 @@
  * Legacy: views/more/More
  */
 
-import { useDeleteAccount, useLogout } from "@/auth/useAuthActions";
-import { AppIcon } from "@/common/AppIcon";
-import { ListDivider } from "@/common/ListDivider";
+import { useLogout } from "@/auth/useAuthActions";
 import { featureFlags } from "@/config/featureFlags";
 import { InfoMenuItems } from "@/features/more/InfoMenuItems";
 import { ListItem } from "@/features/more/ListItem";
@@ -16,10 +14,8 @@ import { Box } from "@/theme/Box";
 import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
-import { useResponsiveProp } from "@shopify/restyle";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity } from "react-native";
 import IconChalkboardTeacher from "@tabler/icons-react-native/IconChalkboardTeacher";
 import IconChartBar from "@tabler/icons-react-native/IconChartBar";
 import IconUsersGroup from "@tabler/icons-react-native/IconUsersGroup";
@@ -29,20 +25,14 @@ import IconHeartbeat from "@tabler/icons-react-native/IconHeartbeat";
 import IconHelpCircle from "@tabler/icons-react-native/IconHelpCircle";
 import IconLogout from "@tabler/icons-react-native/IconLogout";
 import IconStopwatch from "@tabler/icons-react-native/IconStopwatch";
-import IconTrash from "@tabler/icons-react-native/IconTrash";
 import IconUser from "@tabler/icons-react-native/IconUser";
+import IconUserCog from "@tabler/icons-react-native/IconUserCog";
 
 export default function MoreScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const iconContainerSize = useResponsiveProp({ phone: 30, tablet: 38 });
-  const iconSize = useResponsiveProp({ phone: 16, tablet: 28 });
-  const listItemHeight = useResponsiveProp({ phone: 40, tablet: 65 });
-  const listItemMarginBottom = useResponsiveProp({ phone: 6, tablet: 16 });
-
   const { logout, isLoading: isLoggingOut } = useLogout();
-  const { deleteAccount, isLoading: isDeleting } = useDeleteAccount();
 
   // Check if user has test access
   const hasTestAccess = false;
@@ -124,6 +114,12 @@ export default function MoreScreen() {
             navPath="/(tabs)/(more)/join-team"
             icon={IconUsersGroup}
             iconBackground="primary"
+          />
+          <ListItem
+            title={t("more.account.menuItem")}
+            navPath="/(tabs)/(more)/account"
+            icon={IconUserCog}
+            iconBackground="primary"
             isLast
           />
         </Box>
@@ -134,81 +130,16 @@ export default function MoreScreen() {
         <Box backgroundColor="white" paddingVertical="s">
           <InfoMenuItems />
 
-          <Box>
-            <TouchableOpacity
-              onPress={deleteAccount}
-              accessibilityRole="button"
-            >
-              <Box
-                justifyContent="center"
-                alignSelf="stretch"
-                paddingHorizontal="l"
-                flexDirection="row"
-                alignItems="center"
-                style={{
-                  minHeight: listItemHeight,
-                  marginBottom: listItemMarginBottom,
-                }}
-              >
-                <Box flex={1}>
-                  <Box
-                    width={iconContainerSize}
-                    height={iconContainerSize}
-                    borderRadius="round"
-                    justifyContent="center"
-                    alignItems="center"
-                    backgroundColor="darkGrey1"
-                  >
-                    <AppIcon
-                      icon={IconTrash}
-                      size={iconSize}
-                      color={colors.white}
-                      decorative
-                    />
-                  </Box>
-                </Box>
-                <Text flex={5} variant="body">
-                  {t("more.deleteUser")}
-                </Text>
-              </Box>
-            </TouchableOpacity>
-            <ListDivider />
-          </Box>
-
-          <TouchableOpacity onPress={logout} accessibilityRole="button">
-            <Box
-              justifyContent="center"
-              alignSelf="stretch"
-              paddingHorizontal="l"
-              flexDirection="row"
-              alignItems="center"
-              style={{ minHeight: listItemHeight, marginBottom: 15 }}
-            >
-              <Box flex={1}>
-                <Box
-                  width={iconContainerSize}
-                  height={iconContainerSize}
-                  borderRadius="round"
-                  justifyContent="center"
-                  alignItems="center"
-                  backgroundColor="darkGrey1"
-                >
-                  <AppIcon
-                    icon={IconLogout}
-                    size={iconSize}
-                    color={colors.white}
-                    decorative
-                  />
-                </Box>
-              </Box>
-              <Text flex={5} variant="body">
-                {t("more.logout")}
-              </Text>
-            </Box>
-          </TouchableOpacity>
+          <ListItem
+            title={t("more.logout")}
+            icon={IconLogout}
+            iconBackground="darkGrey1"
+            onPress={logout}
+            isLast
+          />
         </Box>
 
-        {(isLoggingOut || isDeleting) && (
+        {isLoggingOut && (
           <Box
             position="absolute"
             top={0}
@@ -221,7 +152,7 @@ export default function MoreScreen() {
             alignItems="center"
           >
             <Text variant="title" color="white">
-              {isDeleting ? t("more.deletingAccount") : t("more.loggingOut")}
+              {t("more.loggingOut")}
             </Text>
           </Box>
         )}

@@ -1,9 +1,9 @@
 import { Platform } from "react-native";
-import { shareCsv } from "./shareCsv";
+import { shareCsv, shareJson } from "./shareFile";
 
 const mockFile = {
   exists: false,
-  uri: "file:///cache/export.csv",
+  uri: "file:///cache/export-file",
   delete: jest.fn(),
   create: jest.fn(),
   write: jest.fn(),
@@ -41,7 +41,7 @@ describe("shareCsv: native", () => {
     );
     expect(mockFile.create).toHaveBeenCalled();
     expect(mockFile.write).toHaveBeenCalledWith("csv content");
-    expect(mockShareAsync).toHaveBeenCalledWith("file:///cache/export.csv", {
+    expect(mockShareAsync).toHaveBeenCalledWith("file:///cache/export-file", {
       mimeType: "text/csv",
       UTI: "public.comma-separated-values-text",
     });
@@ -63,6 +63,28 @@ describe("shareCsv: native", () => {
       "Sharing is not available",
     );
     expect(mockShareAsync).not.toHaveBeenCalled();
+  });
+});
+
+describe("shareJson: native", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFile.exists = false;
+    mockIsAvailableAsync.mockResolvedValue(true);
+  });
+
+  it("writes the cache file and shares it as JSON", async () => {
+    await shareJson("personal-data_2026-01-01.json", '{"a":1}');
+
+    expect(mockFileConstructor).toHaveBeenCalledWith(
+      "cache-dir",
+      "personal-data_2026-01-01.json",
+    );
+    expect(mockFile.write).toHaveBeenCalledWith('{"a":1}');
+    expect(mockShareAsync).toHaveBeenCalledWith("file:///cache/export-file", {
+      mimeType: "application/json",
+      UTI: "public.json",
+    });
   });
 });
 
@@ -114,5 +136,37 @@ describe("shareCsv: web", () => {
     expect(revokeObjectURL).toHaveBeenCalledWith("blob:export");
     expect(mockShareAsync).not.toHaveBeenCalled();
     expect(mockFile.write).not.toHaveBeenCalled();
+  });
+});
+
+describe("shareJson: web", () => {
+  const anchor = { href: "", download: "", click: jest.fn() };
+  const createObjectURL = jest.fn((_blob: Blob) => "blob:export");
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.replaceProperty(Platform, "OS", "web");
+    Object.defineProperty(globalThis, "document", {
+      configurable: true,
+      value: {
+        createElement: jest.fn(() => anchor),
+        body: { appendChild: jest.fn(), removeChild: jest.fn() },
+      },
+    });
+    Object.assign(URL, { createObjectURL, revokeObjectURL: jest.fn() });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    Reflect.deleteProperty(globalThis, "document");
+  });
+
+  it("downloads a JSON blob through an anchor", async () => {
+    await shareJson("personal-data_2026-01-01.json", "{}");
+
+    const blob = createObjectURL.mock.calls[0][0];
+    expect(blob.type).toBe("application/json;charset=utf-8");
+    expect(anchor.download).toBe("personal-data_2026-01-01.json");
+    expect(anchor.click).toHaveBeenCalledTimes(1);
   });
 });

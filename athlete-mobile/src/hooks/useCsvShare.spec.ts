@@ -5,7 +5,7 @@ import { useCsvShare } from "./useCsvShare";
 const mockShareCsv = jest.fn();
 const mockAlert = jest.fn();
 
-jest.mock("@/services/shareCsv", () => ({
+jest.mock("@/services/shareFile", () => ({
   shareCsv: (...args: unknown[]) => mockShareCsv(...args),
 }));
 

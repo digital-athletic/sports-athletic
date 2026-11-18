@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "@/common/Alert";
 import { Logger } from "@/services/Logger";
-import { shareCsv } from "@/services/shareCsv";
+import { shareCsv } from "@/services/shareFile";
 
 const toError = (value: unknown): Error =>
   value instanceof Error ? value : new Error("CSV export failed");

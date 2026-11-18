@@ -18,6 +18,9 @@ export type ListItemProps = {
   backPath?: string;
   isLast?: boolean;
   navParams?: Record<string, string>;
+  /** Runs an action instead of opening a screen or a link. */
+  onPress?: () => void;
+  disabled?: boolean;
 };
 
 const ListItemIcon: FC<{ icon: AppIconSource; background: ThemeColor }> = ({
@@ -45,8 +48,8 @@ const ListItemIcon: FC<{ icon: AppIconSource; background: ThemeColor }> = ({
 };
 
 /**
- * List item component for navigation menus.
- * Renders an icon with text and handles navigation.
+ * Menu row with an icon. On press, it opens a screen or an external link,
+ * or runs an action.
  */
 export const ListItem: FC<ListItemProps> = ({
   title,
@@ -56,6 +59,8 @@ export const ListItem: FC<ListItemProps> = ({
   iconBackground,
   isLast = false,
   navParams,
+  onPress,
+  disabled = false,
 }) => {
   const router = useRouter();
   const openExternalUrl = useOpenExternalUrl();
@@ -64,6 +69,11 @@ export const ListItem: FC<ListItemProps> = ({
   const listItemMarginBottom = useResponsiveProp({ phone: 6, tablet: 16 });
 
   const handlePress = () => {
+    if (onPress) {
+      onPress();
+      return;
+    }
+
     if (externalUrl) {
       openExternalUrl(externalUrl);
       return;
@@ -83,7 +93,9 @@ export const ListItem: FC<ListItemProps> = ({
     <Box>
       <TouchableOpacity
         onPress={handlePress}
+        disabled={disabled}
         accessibilityRole={externalUrl ? "link" : "button"}
+        accessibilityState={{ disabled }}
       >
         <Box
           justifyContent="center"

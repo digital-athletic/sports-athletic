@@ -1,5 +1,7 @@
+import type { BranchExerciseReference } from "@/features/training/models/ExerciseBranch";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
+import type { StoredBranch } from "../branches/storedBranchLookup";
 
 // A level may name its exercise under `id`; resolution reads it after `exerciseId`.
 type StoredBranchLevel = { exerciseId?: string; id?: string };
@@ -89,4 +91,34 @@ export const resolveBranchExercise = (
     return null;
   }
   return exerciseCatalog.find(({ id }) => id === exerciseId) ?? null;
+};
+
+/**
+ * Resolves a stored branch to its exercise reference. The reference carries
+ * the exercise's tags, else the branch's. Exercise ID "-1" marks a branch
+ * without an exercise, which the set list builder drops.
+ *
+ * resolveStoredBranchExercise({ branchId: "510", branch }, "ADVANCED", exerciseCatalog, null)
+ * → { branchId: "510", exerciseId: "20", branchTags: ["EQ_TYPE_WEIGHTS", ...] }
+ */
+export const resolveStoredBranchExercise = (
+  { branchId, branch }: StoredBranch,
+  fitnessLevel: string,
+  exerciseCatalog: readonly ExerciseType[],
+  athleteBranchLevel: UserExerciseBranchDataType | null,
+): BranchExerciseReference => {
+  const tags = branch.tags ?? [];
+  // A stored day entry names its exercises under `exercises`, a catalog
+  // branch under `levels`; the catalog lookup needs the second.
+  const exercise = resolveBranchExercise(
+    { levels: branch.exercises ?? branch.levels ?? {}, tags },
+    fitnessLevel,
+    exerciseCatalog,
+    athleteBranchLevel,
+  );
+  return {
+    branchId,
+    branchTags: exercise ? exercise.tags : tags,
+    exerciseId: exercise?.id ?? "-1",
+  };
 };

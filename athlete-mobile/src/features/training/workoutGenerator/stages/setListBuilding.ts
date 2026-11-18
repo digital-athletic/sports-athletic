@@ -7,59 +7,28 @@ import {
   type SkillSetListKind,
   type Superset,
 } from "@/schemas/aiwl.schema";
-import { readResolvedPicksBlockTiming } from "../blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
-import {
-  type ResolvedBlockTiming,
-  resolveBlockTiming,
-} from "../setListBuilders/blockTiming";
-import {
-  buildCardioSetList,
-  drawCardioExercisePair,
-} from "../setListBuilders/cardioSetListBuilder";
+import type { ResolvedBlockTiming } from "../setListBuilders/blockTiming";
+import { drawCardioExercisePair } from "../setListBuilders/cardioSetListBuilder";
 import { pairBranchExercises } from "../setListBuilders/exercisePairing";
-import { buildMaxStrengthSetList } from "../setListBuilders/maxStrengthSetListBuilder";
-import { readTrainingDayTimingDefaults } from "../setListBuilders/trainingDayTiming";
+import {
+  type BlockTimingInput,
+  createSetListBlock,
+  readBlockTiming,
+} from "../setListBuilders/setListBlockResolution";
 import {
   PRESCRIBED_BLOCK_KEYS,
   type PrescribedSetListBuilder,
   type PrescribedSetListBuilders,
   removeTrailingPause,
-  type SetListBlock,
-  type SkillSetListBuilder,
 } from "../setListBuilders/setListBuilder";
-import { buildStandardSetList } from "../setListBuilders/standardSetListBuilder";
+import { SKILL_SET_LIST_BUILDERS } from "../setListBuilders/skillSetListBuilders";
 import { orderExerciseUnits, readEndingExerciseId } from "./exerciseOrder";
 import {
   listIgnoredBlockSettings,
   warnIgnoredBlockSettings,
 } from "./ignoredBlockSettings";
 import type { FilledBlockResult, SetListBuilder } from "./workoutFinish";
-import type { WorkoutInput } from "./workoutSetup";
-
-const SECONDS_PER_MINUTE = 60;
-
-const SKILL_SET_LIST_BUILDERS: Record<SkillSetListKind, SkillSetListBuilder> = {
-  cardio: buildCardioSetList,
-  maxStrength: buildMaxStrengthSetList,
-  standard: buildStandardSetList,
-};
-
-type SetListBuildingInput = GenerationInput &
-  Pick<WorkoutInput, "picksWorkout">;
-
-// Workout setup resolves picks blocks only, so every other block resolves
-// against the training day defaults.
-const readBlockTiming = (
-  block: BranchSelectingBlock,
-  input: SetListBuildingInput,
-): ResolvedBlockTiming =>
-  block.kind === "picks"
-    ? readResolvedPicksBlockTiming(input.picksWorkout, block)
-    : resolveBlockTiming(
-        block,
-        readTrainingDayTimingDefaults(block.skill, input.skillCatalog),
-      );
 
 /**
  * Names the superset a block pairs by. A max strength block trains each
@@ -106,15 +75,6 @@ const pairAndOrderBlockExercises = (
   );
 };
 
-/**
- * Reads the minute budget of a block: the stored duration of a training day
- * branches block, else 0.
- *
- * readBlockMinutes({ kind: "branches", duration: 1200, ... }) → 20
- */
-const readBlockMinutes = (block: BranchSelectingBlock): number =>
-  block.kind === "branches" ? (block.duration ?? 0) / SECONDS_PER_MINUTE : 0;
-
 const buildBlockSetList = (
   kind: SkillSetListKind,
   pairs: ExercisePair[],
@@ -123,15 +83,12 @@ const buildBlockSetList = (
     timing,
   }: { block: BranchSelectingBlock; timing: ResolvedBlockTiming },
   input: GenerationInput,
-): GeneratedSetListEntry[] => {
-  const { superset, ...setListTiming } = timing;
-  const setListBlock: SetListBlock = {
-    skill: block.skill,
-    minutes: readBlockMinutes(block),
-    ...setListTiming,
-  };
-  return SKILL_SET_LIST_BUILDERS[kind](pairs, setListBlock, input);
-};
+): GeneratedSetListEntry[] =>
+  SKILL_SET_LIST_BUILDERS[kind](
+    pairs,
+    createSetListBlock(block, timing),
+    input,
+  );
 
 /**
  * Names the builder of a branch selecting block: the one its skill code
@@ -199,7 +156,7 @@ const resolvePrescribedSetListBuilder = (
  */
 export const createSetListBuilder =
   (
-    input: SetListBuildingInput,
+    input: BlockTimingInput,
     prescribedBuilders: PrescribedSetListBuilders = {},
   ): SetListBuilder<GeneratedSetListEntry> =>
   (blocks) => {

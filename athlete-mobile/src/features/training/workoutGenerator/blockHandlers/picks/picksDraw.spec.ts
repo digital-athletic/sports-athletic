@@ -6,7 +6,11 @@ import {
   generateTreeBranch,
 } from "@test/factories/skillTree";
 import { type BranchDraw, createBranchDraw } from "./branchDraw";
-import { drawPicksBlock, type PicksBlockDraw } from "./picksDraw";
+import {
+  drawPicksBlock,
+  intersectBlockPool,
+  type PicksBlockDraw,
+} from "./picksDraw";
 
 // Draws the first unused branches, so the key order of the branches decides.
 const FIRST_UNUSED_BRANCH_DRAW: BranchDraw = {
@@ -307,5 +311,17 @@ describe("picksDraw: block pool", () => {
     expect(
       drawBlockWithFirstUnusedBranch(change, pool, { blockPool }).drawn,
     ).toEqual(drawn);
+  });
+});
+
+describe("intersectBlockPool: branches of the block in the workout pool", () => {
+  it("keeps the workout pool branches the block pool holds, in workout pool order", () => {
+    const workoutPool = generateSelfNamedBranches({ a: [], b: [], c: [] });
+    const blockPool = generateSelfNamedBranches({ c: [], a: [], z: [] });
+
+    const pool = intersectBlockPool(workoutPool, blockPool);
+
+    expect(Object.keys(pool)).toEqual(["a", "c"]);
+    expect(pool.a).toBe(workoutPool.a);
   });
 });

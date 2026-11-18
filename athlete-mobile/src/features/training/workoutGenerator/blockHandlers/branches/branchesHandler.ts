@@ -10,7 +10,7 @@ import {
   isPreventionOrSpecialWarmUpSkill,
   replaceBlockedBranches,
 } from "../library/branchReplacement";
-import { resolveBranchExercise } from "../library/branchResolution";
+import { resolveStoredBranchExercise } from "../library/branchResolution";
 import {
   ANY_REGION_REQUEST,
   applyBranchesRuleChain,
@@ -36,22 +36,14 @@ const resolveBranchExercises = (
   branches: StoredBranch[],
   input: WorkoutInput,
 ): BranchExerciseReference[] =>
-  branches.map(({ branchId, branch }) => {
-    const tags = branch.tags ?? [];
-    // A stored day entry names its exercises under `exercises`, a catalog
-    // branch under `levels`; the catalog lookup needs the second.
-    const exercise = resolveBranchExercise(
-      { levels: branch.exercises ?? branch.levels ?? {}, tags },
+  branches.map((storedBranch) =>
+    resolveStoredBranchExercise(
+      storedBranch,
       input.athleteLevel,
       input.exerciseCatalog,
-      input.exerciseData.branchData[branchId] ?? null,
-    );
-    return {
-      branchId,
-      branchTags: exercise ? exercise.tags : tags,
-      exerciseId: exercise?.id ?? "-1",
-    };
-  });
+      input.exerciseData.branchData[storedBranch.branchId] ?? null,
+    ),
+  );
 
 /** Whether the branch trains a pain region of the prevention skill. */
 const isInOwnPreventionRegion = (

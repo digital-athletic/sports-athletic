@@ -104,10 +104,5 @@ test.describe("Strength Test: workout and results", () => {
     ).toBeVisible();
     // Shoulder press: 25kg × 1.333 = 33.33 → 33.5 kg
     await expect(page.getByText("33.5 kg")).toBeVisible();
-
-    await page.screenshot({
-      path: "playwright/screenshots/strength-test-results.png",
-      fullPage: true,
-    });
   });
 });

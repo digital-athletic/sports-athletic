@@ -67,10 +67,6 @@ test.describe("Custom workouts: import of own trainings", () => {
     await expect(
       page.getByText("Currently no workouts available"),
     ).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/custom-workouts-empty.png",
-      fullPage: true,
-    });
 
     await importFileThrough(page, "Import training", INVALID_FILE);
     await expect(
@@ -93,10 +89,6 @@ test.describe("Custom workouts: import of own trainings", () => {
     await expect(
       page.getByRole("button", { name: "Import training" }),
     ).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/custom-workouts-list.png",
-      fullPage: true,
-    });
 
     await importFileThrough(page, "Import training", RENAMED_FILE);
     await expect(

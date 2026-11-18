@@ -546,14 +546,4 @@ export class StatisticsPage extends BasePage {
     await expect(container.getByText("Rowing")).toBeVisible();
     await expect(container.getByText("Shoulder press")).toBeVisible();
   }
-
-  /**
-   * Takes a screenshot of the power test section for visual verification.
-   */
-  async screenshotPowerTestChart(filename: string): Promise<void> {
-    const container = this.page.getByTestId("power-test-container");
-    await container.screenshot({
-      path: `playwright/screenshots/${filename}`,
-    });
-  }
 }

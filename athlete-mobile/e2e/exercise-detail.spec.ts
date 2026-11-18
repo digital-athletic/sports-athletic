@@ -47,10 +47,5 @@ test.describe("Exercise Information: strength test overview", () => {
 
     // Exercise 25 (LH-Kniebeuge / barbell squat) has EQ_BARBELL and EQ_POWER_RACK
     await exerciseInfoPage.expectEquipmentItems(["Barbell", "Power Rack"]);
-
-    await page.screenshot({
-      path: "playwright/screenshots/exercise-detail-complete.png",
-      fullPage: true,
-    });
   });
 });

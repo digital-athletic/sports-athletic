@@ -47,10 +47,6 @@ test.describe("Home: training lists", () => {
     });
     await expect(focusButton).toBeVisible();
     await focusButton.scrollIntoViewIfNeeded();
-    await page.screenshot({
-      path: "playwright/screenshots/home-training-shortcuts.png",
-      fullPage: true,
-    });
 
     await page.getByRole("button", { name: "Additional trainings" }).click();
     await expect(
@@ -65,10 +61,6 @@ test.describe("Home: training lists", () => {
     await expect(
       page.getByRole("button", { name: "First Team" }),
     ).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/additional-training-list.png",
-      fullPage: true,
-    });
 
     await page.getByRole("button", { name: "U17 Juniors" }).click();
     await expect(
@@ -77,10 +69,6 @@ test.describe("Home: training lists", () => {
     await expect(
       page.getByRole("button", { name: "Import training" }),
     ).toHaveCount(0);
-    await page.screenshot({
-      path: "playwright/screenshots/additional-training-workouts-empty.png",
-      fullPage: true,
-    });
   });
 });
 
@@ -109,17 +97,9 @@ test.describe("Home: focus and prevention choice", () => {
     await expect(
       page.getByRole("button", { name: /^Focus-Trainings/ }),
     ).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/focus-prevention-choice.png",
-      fullPage: true,
-    });
 
     await page.getByRole("button", { name: /^Imminent Pains/ }).click();
     await expect(page.getByText("Shoulder").first()).toBeVisible();
-    await page.screenshot({
-      path: "playwright/screenshots/prevention-training-tiles.png",
-      fullPage: true,
-    });
   });
 });
 
@@ -191,9 +171,6 @@ for (const screen of LANDSCAPE_PHONE_SCREENS) {
       await expect(
         page.getByRole("button", { name: "Start Training" }),
       ).toBeInViewport({ ratio: 0.99 });
-      await page.screenshot({
-        path: `playwright/screenshots/home-${screen.name.replaceAll(" ", "-")}-landscape.png`,
-      });
 
       const additionalButton = page.getByRole("button", {
         name: "Additional trainings",
@@ -239,9 +216,6 @@ for (const screen of PHONE_SCREENS) {
           "Targeted trainings for stability, mobility and prevention",
         ),
       ).toBeInViewport();
-      await page.screenshot({
-        path: `playwright/screenshots/home-${screen.name.replaceAll(" ", "-")}.png`,
-      });
     });
   });
 }

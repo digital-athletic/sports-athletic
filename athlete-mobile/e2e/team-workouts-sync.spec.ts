@@ -79,10 +79,6 @@ test.describe("Team workouts: sync on a team tile", () => {
     await expect(
       page.getByRole("button", { name: "Import training" }),
     ).toHaveCount(0);
-    await page.screenshot({
-      path: "playwright/screenshots/team-workouts-list.png",
-      fullPage: true,
-    });
 
     await page.getByRole("button", { name: "Team sprint" }).click();
     await expect(

@@ -25,12 +25,19 @@ import {
   generateStoredExerciseData,
 } from "@test/factories/storedExerciseData";
 import {
+  generateBranchesBlock,
   generatePicksBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { generateAthlete } from "@test/factories/athlete";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import { generateWorkout } from "./workoutGeneratorRouter";
+import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
+import {
+  generateWorkout,
+  selectWorkout,
+  SHORT_WORKOUT_FILTERS,
+  STRENGTH_TEST_FILTERS,
+} from "./workoutGeneratorRouter";
 
 // The spy keeps the real entry point, so each route still generates its set list.
 jest.mock("@/features/training/workoutGenerator/workoutGeneration", () => {
@@ -110,7 +117,10 @@ describe("generateWorkout: routing", () => {
       expect(generateSetList).toHaveBeenCalledTimes(1);
       const [workout, lookUpBranch, , options] =
         jest.mocked(generateSetList).mock.calls[0];
-      expect(options).toStrictEqual({ skillTrees: expect.any(Object) });
+      expect(options).toStrictEqual({
+        skillTrees: expect.any(Object),
+        filters: {},
+      });
       expect(workout).toEqual({
         id: "TRAINING_DAY",
         blocks: [
@@ -343,5 +353,114 @@ describe("generateWorkout: short workouts", () => {
       subtype: "PAIN",
       params: [],
     });
+  });
+});
+
+describe("selectWorkout: workout per training type", () => {
+  afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
+
+  it("returns the blocks of the scheduled plan day sorted by section order with no filters", () => {
+    const training = createAiwlTraining({
+      workout: {
+        aiwl: 1,
+        id: "TRAINING_DAY_1",
+        name: { en: "Monday" },
+        blocks: [
+          generateBranchesBlock("GKS", ["510"]),
+          generateBranchesBlock("WU", ["410"], { duration: 300 }),
+        ],
+      },
+    });
+    const user = {
+      ...generateWarmUpOnlyPlanUser(),
+      trainingPlan: createAiwlPlan([training]),
+    };
+
+    const selection = selectWorkout({
+      type: "PLAN",
+      user,
+      weekday: 1,
+      givenSection: undefined,
+      daysSinceLastWorkout: 0,
+    });
+
+    expect(selection.workout.blocks.map((block) => block.skill)).toEqual([
+      "WU",
+      "GKS",
+    ]);
+    expect(selection.filters).toStrictEqual({});
+  });
+
+  it("returns the template object of a custom workout with the short workout filters", () => {
+    const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
+      generateTemplate([generatePicksBlock("WU")], {
+        id: "own",
+        name: { en: "Own" },
+      }),
+      null,
+    );
+
+    const selection = selectWorkout({
+      type: id,
+      user: generateWarmUpOnlyPlanUser(),
+      weekday: 1,
+      givenSection: undefined,
+      daysSinceLastWorkout: 0,
+    });
+
+    expect(selection.workout).toBe(lookupTemplate(id));
+    expect(selection.filters).toBe(SHORT_WORKOUT_FILTERS);
+  });
+
+  it("returns the strength test template with the strength test filters", () => {
+    const selection = selectWorkout({
+      type: "TEST_WORKOUT",
+      user: generateWarmUpOnlyPlanUser(),
+      weekday: 1,
+      givenSection: undefined,
+      daysSinceLastWorkout: 0,
+    });
+
+    expect(selection.workout.id).toBe("TEST");
+    expect(selection.filters).toBe(STRENGTH_TEST_FILTERS);
+  });
+
+  it("throws NO_EXERCISES for an unknown type with the type as param", () => {
+    expect(
+      catchThrownValue(() =>
+        selectWorkout({
+          type: "NO_SUCH_TYPE",
+          user: generateWarmUpOnlyPlanUser(),
+          weekday: 1,
+          givenSection: undefined,
+          daysSinceLastWorkout: 0,
+        }),
+      ),
+    ).toStrictEqual({
+      type: "NO_EXERCISES",
+      subtype: "SKILL_TREE",
+      params: ["NO_SUCH_TYPE"],
+    });
+  });
+
+  it("throws the pain error for a custom workout without blocks", () => {
+    const { id } = useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(
+        generateTemplate([], { id: "empty", name: { en: "Empty" } }),
+        null,
+      );
+
+    expect(
+      catchThrownValue(() =>
+        selectWorkout({
+          type: id,
+          user: generateWarmUpOnlyPlanUser(),
+          weekday: 1,
+          givenSection: undefined,
+          daysSinceLastWorkout: 0,
+        }),
+      ),
+    ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: [] });
   });
 });

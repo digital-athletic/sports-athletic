@@ -72,7 +72,7 @@ export const listOpposingMuscles = (muscles: string[]): string[] =>
     return [];
   });
 
-const findCatalogExercise = (
+export const findCatalogExercise = (
   exercises: ExerciseType[],
   exerciseId: string,
 ): ExerciseType | undefined =>
@@ -85,6 +85,26 @@ const readOtherSideExerciseId = (
   getTagValues(entry.branchTags, TagGroups.SIDE).includes("ONE")
     ? exercise?.otherSideExerciseId
     : undefined;
+
+/**
+ * Pairs a one sided exercise with its other side under the same branch ID.
+ * Any other exercise returns undefined.
+ *
+ * pairOtherSideExercise({ branchId: "512", exerciseId: "30", ... }, exercise)
+ * → { first: { branchId: "512", exerciseId: "30", ... }, second: { branchId: "512", exerciseId: "31", ... } }
+ */
+export const pairOtherSideExercise = (
+  lead: BranchExerciseReference,
+  exercise: ExerciseType | undefined,
+): ExercisePair | undefined => {
+  const otherSide = readOtherSideExerciseId(lead, exercise);
+  if (!otherSide) return undefined;
+  const { branchId, branchTags } = lead;
+  return {
+    first: lead,
+    second: { branchId, branchTags, exerciseId: otherSide },
+  };
+};
 
 /**
  * Pairs branches in the order they were drawn: a one sided exercise with its
@@ -167,14 +187,8 @@ const pairLeadExercise = (
   }
   const exercise = findCatalogExercise(pairing.exercises, lead.exerciseId);
   if (!exercise && requireCatalogEntry) return undefined;
-  const otherSide = readOtherSideExerciseId(lead, exercise);
-  if (otherSide) {
-    const { branchId, branchTags } = lead;
-    return {
-      first: lead,
-      second: { branchId, branchTags, exerciseId: otherSide },
-    };
-  }
+  const otherSidePair = pairOtherSideExercise(lead, exercise);
+  if (otherSidePair) return otherSidePair;
   const partner = pairing.isSuperset
     ? takeSupersetPartner(lead, pairing)
     : undefined;

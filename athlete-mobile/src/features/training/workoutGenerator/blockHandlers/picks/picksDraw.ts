@@ -85,6 +85,20 @@ const drawSingles = (
 };
 
 /**
+ * Keeps the branches of the workout pool that the block pool holds, in the key
+ * order of the workout pool.
+ *
+ * intersectBlockPool({ a, b, c }, { b, c, d }) → { b, c }
+ */
+export const intersectBlockPool = (
+  workoutPool: SkillTreeType,
+  blockPool: SkillTreeType,
+): SkillTreeType =>
+  Object.fromEntries(
+    Object.entries(workoutPool).filter(([id]) => Object.hasOwn(blockPool, id)),
+  );
+
+/**
  * Draws the branches of one picks block, pick after pick, from the block's
  * pool in the key order of the workout pool. A pick draws from the branches
  * matching its tags, then from the whole block pool with fallback. Counting
@@ -99,11 +113,7 @@ export const drawPicksBlock = (
   block: PicksBlockDraw,
   context: DrawContext,
 ): DrawnPicksBlock => {
-  const pool = Object.fromEntries(
-    Object.entries(context.pool).filter(([id]) =>
-      Object.hasOwn(block.pool, id),
-    ),
-  );
+  const pool = intersectBlockPool(context.pool, block.pool);
   const usedBranchIds = [...context.usedBranchIds];
   const drawn: BranchExerciseReference[] = [];
   const weighted: BranchExerciseReference[] = [];

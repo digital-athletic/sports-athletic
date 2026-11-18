@@ -5,7 +5,7 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { TrainingType } from "@/features/training/models/Training";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import { createGenerationInput } from "@/features/training/workoutGenerator/generationInput/generationInput";
-import { generateTrainingDaySetList } from "@/features/training/workoutGenerator/trainingDayWorkout";
+import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
 import type { WorkoutFilters } from "@/features/training/workoutGenerator/workoutFilters";
 import {
   generateSetList,
@@ -42,7 +42,7 @@ const createInput = (request: WorkoutGenerationRequest) =>
   });
 
 /** Short and custom workouts ignore muscle soreness, as Pain, Soreness, and Prevention defines. */
-const SHORT_WORKOUT_FILTERS: Partial<WorkoutFilters> = Object.freeze({
+export const SHORT_WORKOUT_FILTERS: Partial<WorkoutFilters> = Object.freeze({
   soreness: false,
 });
 
@@ -73,39 +73,57 @@ const selectShortWorkout = (type: TrainingType): SelectedWorkout => {
   return { workout: template, lookUpBranch: lookUpStoredBranchInCatalog };
 };
 
+/** The request fields that select a workout. */
+type WorkoutSelectionRequest = Pick<
+  WorkoutGenerationRequest,
+  "type" | "user" | "weekday" | "givenSection" | "daysSinceLastWorkout"
+>;
+
+/** The selected workout, its branch lookup and the filters its type sets. */
+export interface WorkoutSelection extends SelectedWorkout {
+  filters: Partial<WorkoutFilters>;
+}
+
 /**
- * Selects the workout, the branch lookup and the filters per training type,
- * then generates its set list through the one entry point: a plan training
- * day with every filter on, the strength test, or a short workout from its
- * template.
+ * Selects the workout, the branch lookup and the filters per training type: a
+ * plan training day with every filter on, the strength test, or a short
+ * workout from its template.
+ *
+ * selectWorkout({ type: "TEST_WORKOUT", ... })
+ * → { workout: <strength test template>, lookUpBranch, filters: STRENGTH_TEST_FILTERS }
  */
+export const selectWorkout = (
+  request: WorkoutSelectionRequest,
+): WorkoutSelection => {
+  if (request.type === "PLAN") {
+    const day = selectStoredTrainingDay(
+      request.user,
+      request.weekday,
+      request.givenSection,
+      request.daysSinceLastWorkout,
+    );
+    return { ...readTrainingDayWorkout(day), filters: {} };
+  }
+  if (request.type === "TEST_WORKOUT") {
+    return {
+      workout: loadStrengthTestTemplate(),
+      lookUpBranch: lookUpStoredBranchInCatalog,
+      filters: STRENGTH_TEST_FILTERS,
+    };
+  }
+  return {
+    ...selectShortWorkout(request.type),
+    filters: SHORT_WORKOUT_FILTERS,
+  };
+};
+
+/** Generates the set list of the selected workout through the one entry point. */
 export const generateWorkout = (
   request: WorkoutGenerationRequest,
 ): GeneratedSetListEntry[] => {
-  const input = createInput(request);
-  if (request.type === "PLAN") {
-    return generateTrainingDaySetList(
-      selectStoredTrainingDay(
-        request.user,
-        request.weekday,
-        request.givenSection,
-        request.daysSinceLastWorkout,
-      ),
-      input,
-      request.skillTrees,
-    );
-  }
-  if (request.type === "TEST_WORKOUT") {
-    return generateSetList(
-      loadStrengthTestTemplate(),
-      lookUpStoredBranchInCatalog,
-      input,
-      { skillTrees: request.skillTrees, filters: STRENGTH_TEST_FILTERS },
-    );
-  }
-  const { workout, lookUpBranch } = selectShortWorkout(request.type);
-  return generateSetList(workout, lookUpBranch, input, {
+  const { workout, lookUpBranch, filters } = selectWorkout(request);
+  return generateSetList(workout, lookUpBranch, createInput(request), {
     skillTrees: request.skillTrees,
-    filters: SHORT_WORKOUT_FILTERS,
+    filters,
   });
 };

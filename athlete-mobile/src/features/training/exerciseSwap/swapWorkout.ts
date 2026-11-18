@@ -2,6 +2,10 @@ import { isGeneratorError } from "@/features/training/models/GeneratorError";
 import { isPlaceholderBranch } from "@/features/training/models/IdTypes";
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import type { StoredBranch } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
+import {
+  createSetListBlock,
+  readBlockTiming,
+} from "@/features/training/workoutGenerator/setListBuilders/setListBlockResolution";
 import type { InterpretedWorkout } from "@/features/training/workoutGenerator/stages/blockWalk";
 import {
   setUpWorkout,
@@ -17,7 +21,11 @@ import {
   listPickSwapAlternatives,
   listSwapAlternatives,
 } from "./swapAlternatives";
-import { listUsedEntries } from "./swapEntries";
+import {
+  buildAlternativeEntries,
+  listUsedEntries,
+  replaceSessionBranch,
+} from "./swapEntries";
 
 /** The session the athlete sees, the workout that drew it and the set-up input of that workout. */
 export interface SwapWorkout {
@@ -75,6 +83,27 @@ const findBranchBlock = (
   return block.kind === "exercises" ? null : block;
 };
 
+/** The entries of the alternative, or null when the build throws. */
+const buildSwapEntries = (
+  { session, input }: SwapWorkout,
+  block: BranchSelectingBlock,
+  target: string,
+  alternative: StoredBranch,
+): UserExerciseDataType[] | null => {
+  try {
+    return buildAlternativeEntries({
+      session,
+      input,
+      block: createSetListBlock(block, readBlockTiming(block, input)),
+      target,
+      alternative,
+    });
+  } catch (e) {
+    logSwapError(e);
+    return null;
+  }
+};
+
 /** Lists every ranked alternative for the target, closest first. */
 export const listBranchAlternatives = (
   workout: SwapWorkout,
@@ -96,4 +125,21 @@ export const listBranchAlternatives = (
     logSwapError(e);
     return [];
   }
+};
+
+/** The session with the alternative's entries at the target's set positions, or null. */
+export const swapBranchFromWorkout = (
+  workout: SwapWorkout,
+  target: string,
+  alternative: StoredBranch,
+): UserExerciseDataType[] | null => {
+  const { session } = workout;
+  const block = findBranchBlock(workout, target);
+  if (block === null) return null;
+  if (session.some((entry) => entry.branchId === alternative.branchId)) {
+    return null;
+  }
+  const entries = buildSwapEntries(workout, block, target, alternative);
+  if (entries === null) return null;
+  return replaceSessionBranch(session, target, entries);
 };

@@ -211,3 +211,14 @@ export const generateAuthoredValues = (start: string, target: string) => ({
   startValue: { default: { default: start }, m: { default: start } },
   targetValue: { default: { default: target }, m: { default: target } },
 });
+
+/**
+ * Builds the two sided exercises ePlainA, ePlainB and ePlainC without weights.
+ *
+ * generatePlainExercises()
+ * → [{ id: "ePlainA", tags: ["SIDE_BOTH"], ... }, { id: "ePlainB", ... }, { id: "ePlainC", ... }]
+ */
+export const generatePlainExercises = (): ExerciseType[] =>
+  ["ePlainA", "ePlainB", "ePlainC"].map((id) =>
+    generateTaggedExercise(id, ["SIDE_BOTH"]),
+  );

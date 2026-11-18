@@ -3,7 +3,7 @@ import { expect, test } from "./fixtures";
 import { createCompletedProfile } from "./mocks/stores/profiles/completedProfile";
 import { mockSupabaseAuth } from "./mocks/supabase";
 import { mockWakeLock } from "./mocks/wakeLock";
-import { WorkoutPage } from "./pages";
+import { BasePage, WorkoutPage } from "./pages";
 
 const SWAP_PREFIX = "Swap exercise ";
 
@@ -96,5 +96,42 @@ test.describe("Training overview: swap an exercise", () => {
     await workoutPage.returnToHome();
     await workoutPage.startWorkout("Tuesday");
     expect((await readSwappableNames(page))[0]).toBe(original);
+  });
+});
+
+test.describe("Focus training overview: swap an exercise", () => {
+  test.use({ profile: createCompletedProfile(), signedIn: true });
+
+  test("athlete swaps the first exercise of the mobility training and starts the workout", async ({
+    page,
+  }) => {
+    test.setTimeout(120000);
+    await mockSupabaseAuth(page);
+    await mockWakeLock(page);
+
+    const basePage = new BasePage(page);
+    await page.goto("/");
+    await basePage.expectLoggedIn();
+    await page.getByRole("button", { name: "Focus & Prevention" }).click();
+    await page.getByRole("button", { name: /^Focus-Trainings/ }).click();
+    await page
+      .getByRole("button", { name: "Mobility, Improve your range of motion" })
+      .click();
+    // Mobility asks no soreness, so the place is the next step.
+    await page.getByRole("button", { name: /^At home, \d+ pieces$/ }).click();
+    await expect(
+      page.getByRole("heading", { name: "Training Overview" }),
+    ).toBeVisible({ timeout: 15000 });
+
+    const [original] = await readSwappableNames(page);
+    expect(original).toBeTruthy();
+    const swapped = await swap(page, original);
+    expect(swapped).not.toBe(original);
+
+    await new WorkoutPage(page).beginWorkout();
+    await expect(page).toHaveURL(/training-active/);
+    await expect(
+      page.getByText(swapped).filter({ visible: true }).first(),
+    ).toBeVisible();
   });
 });

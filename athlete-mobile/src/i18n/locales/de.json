@@ -461,6 +461,7 @@
       "startTraining": "Training starten",
       "startAsChecklist": "Ohne Anleitung starten",
       "swapExercise": "Übung {{name}} tauschen",
+      "swapExerciseUnavailable": "Keine Alternative für {{name}}",
       "oneSet": "1 Satz",
       "setCount": "{{count}} Sätze",
       "supportExercises": "Unterstützungsübungen",

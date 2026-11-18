@@ -6,12 +6,15 @@ import { useTranslation } from "react-i18next";
 import IconSwitchHorizontal from "@tabler/icons-react-native/IconSwitchHorizontal";
 
 export interface SwapControls {
+  /** Whether the workout offers the exercise swap and its swap setup exists. */
+  supported: boolean;
   canSwap: (branchId: string | undefined) => boolean;
   onSwap: (branchId: string | undefined) => void;
 }
 
 /** Swap controls of the training overview; without a provider nothing swaps. */
 export const SwapControlsContext = createContext<SwapControls>({
+  supported: false,
   canSwap: () => false,
   onSwap: () => undefined,
 });
@@ -21,15 +24,19 @@ interface SwapExerciseButtonProps {
   exerciseName: string;
 }
 
-/** Replaces an exercise with its next alternative when its branch has one. */
+/**
+ * Replaces an exercise with its next alternative. An exercise without an
+ * alternative shows the button greyed out and disabled.
+ */
 export const SwapExerciseButton: FC<SwapExerciseButtonProps> = ({
   branchId,
   exerciseName,
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const { canSwap, onSwap } = use(SwapControlsContext);
-  if (!canSwap(branchId)) return null;
+  const { supported, canSwap, onSwap } = use(SwapControlsContext);
+  if (!supported) return null;
+  const swappable = canSwap(branchId);
 
   return (
     <TouchableBox
@@ -39,12 +46,21 @@ export const SwapExerciseButton: FC<SwapExerciseButtonProps> = ({
       justifyContent="center"
       alignItems="center"
       accessibilityRole="button"
-      accessibilityLabel={t("training.overview.swapExercise", {
-        name: exerciseName,
-      })}
+      disabled={!swappable}
+      accessibilityState={{ disabled: !swappable }}
+      accessibilityLabel={t(
+        swappable
+          ? "training.overview.swapExercise"
+          : "training.overview.swapExerciseUnavailable",
+        { name: exerciseName },
+      )}
       testID="swap-exercise-button"
     >
-      <AppIcon icon={IconSwitchHorizontal} size={24} color={colors.darkGrey2} />
+      <AppIcon
+        icon={IconSwitchHorizontal}
+        size={24}
+        color={swappable ? colors.darkGrey2 : colors.lightGrey3}
+      />
     </TouchableBox>
   );
 };

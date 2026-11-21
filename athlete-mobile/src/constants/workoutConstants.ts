@@ -1,9 +1,7 @@
-import { type AppIconSource } from "@/common/AppIcon";
 import { type SilhouetteRegionId } from "@/bodyParts/silhouette/types";
 import { type Side } from "@/bodyParts/types";
 import { I18nKey } from "@/i18n";
 import { type LevelTagSchemaType } from "@/schemas/common.schema";
-import IconRocket from "@tabler/icons-react-native/IconRocket";
 import { RoutePath } from "expo-router";
 import { ImageSourcePropType } from "react-native";
 import { SharedConstants } from "./sharedConstants";
@@ -336,7 +334,6 @@ export type TileSilhouette = {
 
 export type TileData = {
   picture?: ImageSourcePropType;
-  icon?: AppIconSource;
   silhouette?: TileSilhouette;
   title: I18nKey;
   description?: {
@@ -393,11 +390,17 @@ export const QUICKSTART_TILES: TileData[] = [
     navigate: { key: "/training/muscle-soreness", params: { type: "WU" } },
   },
   {
-    icon: IconRocket,
-    title: "training.quickstart.QUICKSTART_ATHLETIC_WARM_UP",
-    description: {
-      text: "training.quickstart.QUICKSTART_ATHLETIC_WARM_UP_SHORT_DESC",
-    },
+    picture: require("../../assets/img/shortTrainings/cool_down.jpg"),
+    title: "training.quickstart.QUICKSTART_COOL_DOWN",
+    description: { text: "training.quickstart.QUICKSTART_COOL_DOWN_DESC" },
+    navigate: { key: "/training/muscle-soreness", params: { type: "CD" } },
+  },
+];
+
+export const ATHLETIC_WARMUP_TILES: TileData[] = [
+  {
+    title: "training.athleticWarmup.SHORT_TITLE",
+    description: { text: "training.athleticWarmup.SHORT_DESC" },
     testID: "athletic-warmup-short-tile",
     navigate: {
       key: "/training/muscle-soreness",
@@ -405,22 +408,13 @@ export const QUICKSTART_TILES: TileData[] = [
     },
   },
   {
-    icon: IconRocket,
-    title: "training.quickstart.QUICKSTART_ATHLETIC_WARM_UP",
-    description: {
-      text: "training.quickstart.QUICKSTART_ATHLETIC_WARM_UP_LONG_DESC",
-    },
+    title: "training.athleticWarmup.LONG_TITLE",
+    description: { text: "training.athleticWarmup.LONG_DESC" },
     testID: "athletic-warmup-long-tile",
     navigate: {
       key: "/training/muscle-soreness",
       params: { type: "ATHLETIK_WARMUP_20_25" },
     },
-  },
-  {
-    picture: require("../../assets/img/shortTrainings/cool_down.jpg"),
-    title: "training.quickstart.QUICKSTART_COOL_DOWN",
-    description: { text: "training.quickstart.QUICKSTART_COOL_DOWN_DESC" },
-    navigate: { key: "/training/muscle-soreness", params: { type: "CD" } },
   },
 ];
 
@@ -1155,6 +1149,7 @@ const SPORTS = {
 export const WorkoutConstants = {
   AGE_GROUPS,
   AGE_GROUPS_MAX_AGE,
+  ATHLETIC_WARMUP_TILES,
   BIG_MUSCLES,
   DAILY_TRAINING_FOCUS_IMAGES,
   DEACTIVATED_EQUIPMENT,

@@ -96,7 +96,7 @@ describe("FocusTrainingListScreen: tiles", () => {
 
     expect(
       getByRole("button", {
-        name: "Athletik Warm-up, 10 bis 25 Min. Warm-up vor deinem Sport",
+        name: "Athletik Warm-up, 10 bis 25 Min. Warm-up vor deinem Training",
       }),
     ).toBeTruthy();
   });

@@ -75,7 +75,7 @@
       },
       "athleticWarmup": {
         "title": "Athletik Warm-up",
-        "subtitle": "10 bis 25 Min. Warm-up vor deinem Sport"
+        "subtitle": "10 bis 25 Min. Warm-up vor deinem Training"
       },
       "preventionTraining": {
         "title": "Präventions-Trainings",
@@ -325,7 +325,7 @@
       "gridEyebrow": "Athletik Warm-up · 10 bis 25 Min.",
       "gridHeading": "Wie viel Zeit hast du?",
       "SHORT_TITLE": "10 bis 15 Min.",
-      "SHORT_DESC": "Kompaktes Warm-up vor deinem Sport",
+      "SHORT_DESC": "Kompaktes Warm-up vor deinem Training",
       "LONG_TITLE": "20 bis 25 Min.",
       "LONG_DESC": "Erweitertes Warm-up mit mehr Stabilität und Sprüngen"
     },

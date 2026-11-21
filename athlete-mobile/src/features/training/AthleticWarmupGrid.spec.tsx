@@ -54,7 +54,7 @@ describe("AthleticWarmupGrid: content", () => {
         .getAllByRole("button")
         .map((tile) => tile.props.accessibilityLabel),
     ).toEqual([
-      "10 bis 15 Min., Kompaktes Warm-up vor deinem Sport",
+      "10 bis 15 Min., Kompaktes Warm-up vor deinem Training",
       "20 bis 25 Min., Erweitertes Warm-up mit mehr Stabilität und Sprüngen",
     ]);
   });

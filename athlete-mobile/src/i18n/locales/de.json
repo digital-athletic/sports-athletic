@@ -73,10 +73,6 @@
         "title": "Fokus-Trainings",
         "subtitle": "10-20 minütige Trainings für ausgewählte Schwerpunkte"
       },
-      "athleticWarmup": {
-        "title": "Athletik Warm-up",
-        "subtitle": "10 bis 25 Min. Warm-up vor deinem Sport"
-      },
       "preventionTraining": {
         "title": "Präventions-Trainings",
         "subtitle": "Beschwerden vorbeugen & verbessern"
@@ -316,18 +312,13 @@
       "QUICKSTART_FOAM_ROLLER_DESC": "Muskelaktivierung & aktive Regeneration",
       "QUICKSTART_WARM_UP": "Warm-up",
       "QUICKSTART_WARM_UP_DESC": "Bereite deinen Körper auf das Training vor",
+      "QUICKSTART_ATHLETIC_WARM_UP": "Athletik Warm-up",
+      "QUICKSTART_ATHLETIC_WARM_UP_SHORT_DESC": "ca. 10 bis 15 Min.",
+      "QUICKSTART_ATHLETIC_WARM_UP_LONG_DESC": "ca. 20 bis 25 Min.",
       "QUICKSTART_COOL_DOWN": "Cool-down",
       "QUICKSTART_COOL_DOWN_DESC": "Erholung und Dehnung",
       "gridEyebrow": "Fokus-Training · 10-20 Min",
       "gridHeading": "Was möchtest du trainieren?"
-    },
-    "athleticWarmup": {
-      "gridEyebrow": "Athletik Warm-up · 10 bis 25 Min.",
-      "gridHeading": "Wie viel Zeit hast du?",
-      "SHORT_TITLE": "10 bis 15 Min.",
-      "SHORT_DESC": "Kompaktes Warm-up vor deinem Sport",
-      "LONG_TITLE": "20 bis 25 Min.",
-      "LONG_DESC": "Erweitertes Warm-up mit mehr Stabilität und Sprüngen"
     },
     "prevention": {
       "PREVENTION_TILE_ANKLE": "Knöchel",
@@ -534,7 +525,6 @@
     "active": {
       "title": {
         "focus": "Fokus-Training",
-        "athleticWarmup": "Athletik Warm-up",
         "plan": "Training",
         "prevention": "Präventionstraining",
         "strengthTest": "Krafttest"

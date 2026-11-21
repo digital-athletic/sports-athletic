@@ -10,12 +10,7 @@ export type TrainingDataType = {
   activeTraining?: ActiveTrainingType;
 };
 
-const TRAINING_CATEGORIES = [
-  "plan",
-  "focus",
-  "athleticWarmup",
-  "prevention",
-] as const;
+const TRAINING_CATEGORIES = ["plan", "focus", "prevention"] as const;
 
 /** The `category` route param of the selection screen at /training/new. */
 export type TrainingCategory = (typeof TRAINING_CATEGORIES)[number];

@@ -29,13 +29,15 @@ export const FocusTrainingGrid: FC<FocusTrainingGridProps> = ({
       <TileGrid>
         {WorkoutConstants.QUICKSTART_TILES.map((tile) => (
           <TrainingTile
-            key={tile.title}
+            key={tile.testID ?? tile.title}
             title={t(tile.title)}
             description={
               tile.description &&
               t(tile.description.text, tile.description.params)
             }
             image={tile.picture}
+            icon={tile.icon}
+            testID={tile.testID}
             onPress={() => router.navigate(tileHref(tile))}
           />
         ))}

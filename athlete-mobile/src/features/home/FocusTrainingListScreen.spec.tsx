@@ -109,12 +109,15 @@ describe("FocusTrainingListScreen: tiles", () => {
     ).toBeTruthy();
   });
 
-  it("places both tiles in the tile grid", async () => {
+  it("places all three tiles in the tile grid", async () => {
     const { getByTestId } = await render(<FocusTrainingListScreen />);
 
     const grid = getByTestId("focus-prevention-grid");
     expect(
       within(grid).getByRole("button", { name: FOCUS_LABEL }),
+    ).toBeTruthy();
+    expect(
+      within(grid).getByRole("button", { name: ATHLETIC_WARMUP_LABEL }),
     ).toBeTruthy();
     expect(
       within(grid).getByRole("button", { name: PREVENTION_LABEL }),

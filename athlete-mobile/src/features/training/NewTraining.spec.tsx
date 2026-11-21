@@ -48,9 +48,16 @@ jest.mock("@/features/training/AthleticWarmupGrid", () => {
   const { createElement } = jest.requireActual("react");
   const { Pressable } = jest.requireActual("react-native");
   return {
-    AthleticWarmupGrid: ({ onBack }: { onBack: () => void }) =>
+    AthleticWarmupGrid: ({
+      title,
+      onBack,
+    }: {
+      title: string;
+      onBack: () => void;
+    }) =>
       createElement(Pressable, {
         testID: "athletic-warmup-grid",
+        accessibilityLabel: title,
         onPress: onBack,
       }),
   };
@@ -119,7 +126,9 @@ describe("NewTraining: athletic warm-up category", () => {
 
     const { getByTestId, queryByTestId } = await render(<NewTraining />);
 
-    expect(getByTestId("athletic-warmup-grid")).toBeTruthy();
+    expect(getByTestId("athletic-warmup-grid").props.accessibilityLabel).toBe(
+      "Athletic Warm-up",
+    );
     expect(queryByTestId("plan-day-screen")).toBeNull();
     expect(queryByTestId("focus-training-grid")).toBeNull();
     expect(queryByTestId("prevention-body-part-screen")).toBeNull();

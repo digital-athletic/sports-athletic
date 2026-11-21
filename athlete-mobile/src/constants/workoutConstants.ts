@@ -344,6 +344,7 @@ export type TileData = {
       focus?: string;
     };
   };
+  testID?: string;
   navigate: {
     key: RoutePath;
     params?: {
@@ -400,6 +401,7 @@ export const ATHLETIC_WARMUP_TILES: TileData[] = [
   {
     title: "training.athleticWarmup.SHORT_TITLE",
     description: { text: "training.athleticWarmup.SHORT_DESC" },
+    testID: "athletic-warmup-short-tile",
     navigate: {
       key: "/training/muscle-soreness",
       params: { type: "ATHLETIK_WARMUP_10_15" },
@@ -408,6 +410,7 @@ export const ATHLETIC_WARMUP_TILES: TileData[] = [
   {
     title: "training.athleticWarmup.LONG_TITLE",
     description: { text: "training.athleticWarmup.LONG_DESC" },
+    testID: "athletic-warmup-long-tile",
     navigate: {
       key: "/training/muscle-soreness",
       params: { type: "ATHLETIK_WARMUP_20_25" },

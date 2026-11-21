@@ -13,11 +13,6 @@ type AthleticWarmupGridProps = {
   onBack?: () => void;
 };
 
-const TILE_TEST_IDS = [
-  "athletic-warmup-short-tile",
-  "athletic-warmup-long-tile",
-];
-
 /** The athletic warm-ups as rocket tiles, one per duration. */
 export const AthleticWarmupGrid: FC<AthleticWarmupGridProps> = ({
   title,
@@ -33,14 +28,14 @@ export const AthleticWarmupGrid: FC<AthleticWarmupGridProps> = ({
       onBack={onBack}
     >
       <TileGrid>
-        {WorkoutConstants.ATHLETIC_WARMUP_TILES.map((tile, index) => (
+        {WorkoutConstants.ATHLETIC_WARMUP_TILES.map((tile) => (
           <TrainingTile
             key={tile.title}
             title={t(tile.title)}
             description={tile.description && t(tile.description.text)}
             icon={IconRocket}
             onPress={() => router.navigate(tileHref(tile))}
-            testID={TILE_TEST_IDS[index]}
+            testID={tile.testID}
           />
         ))}
       </TileGrid>

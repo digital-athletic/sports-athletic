@@ -5,7 +5,12 @@ import {
   generateCardioBlock,
 } from "@test/factories/templateBlock";
 import { catchThrownValue } from "@test/factories/thrownValue";
-import { generateWorkoutInput } from "@test/factories/workoutInput";
+import { generateTreeBranch } from "@test/factories/skillTree";
+import { generateLowerBodyExercises } from "@test/factories/valueExercise";
+import {
+  generateReplacementInput,
+  generateWorkoutInput,
+} from "@test/factories/workoutInput";
 import type { BlockResult } from "../../stages/blockWalk";
 import { createBranchesBlockHandler } from "./branchesHandler";
 import {
@@ -195,6 +200,70 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
   );
 });
 
+describe("branchesHandler: blockedSlots refill", () => {
+  const handleBlock = createBranchesBlockHandler(lookUpStoredBranchInCatalog);
+  const kneeTags = ["PREVENTION_KNEE_HIP", "REGION_LOWER_BODY", "SIDE_BOTH"];
+  // each branch trains the exercise "e<id>"; knee pain blocks the blocked ones
+  const generateKneeInput = (fitting: string[], blocked: string[]) =>
+    generateReplacementInput({
+      pains: ["KNEE_LEFT"],
+      skillTrees: {
+        PREVKG: Object.fromEntries([
+          ...fitting.map((id) => [
+            id,
+            generateTreeBranch([`e${id}`], kneeTags),
+          ]),
+          ...blocked.map((id) => [
+            id,
+            generateTreeBranch([`e${id}`], [...kneeTags, "BLOCK_KNEE"]),
+          ]),
+        ]),
+      },
+      exerciseCatalog: generateLowerBodyExercises(
+        [...fitting, ...blocked].map((id) => `e${id}`),
+      ),
+      random: () => 0.99,
+    });
+  // Lists the branch IDs of a filled block in ascending order, or none.
+  // listBranchIds(filledResultOfBranches1And3) → ["1", "3"]
+  const listBranchIds = (result: BlockResult) =>
+    result.status === "filled"
+      ? result.exercises.map(({ branchId }) => branchId).sort()
+      : [];
+  const savedBlock = generateBranchesBlock("PREVKNEE", ["1", "2", "3"]);
+
+  it("replaces only the blocked branch of a prevention block and leaves the others unchanged", () => {
+    const input = {
+      ...generateKneeInput(["1", "3", "4", "6", "7"], ["2"]),
+      branchRefill: "blockedSlots" as const,
+    };
+
+    const result = handleBlock(savedBlock, input, NO_BRANCHES);
+
+    expect(listBranchIds(result)).toEqual(["1", "3", "7"]);
+  });
+
+  it("drops a slot with no fitting branch and leaves the other slots unchanged", () => {
+    // 4 is the only branch left for the two blocked slots
+    const input = {
+      ...generateKneeInput(["1", "4"], ["2", "3"]),
+      branchRefill: "blockedSlots" as const,
+    };
+
+    const result = handleBlock(savedBlock, input, NO_BRANCHES);
+
+    expect(listBranchIds(result)).toEqual(["1", "4"]);
+  });
+
+  it("refills every slot of a prevention block when the option is absent", () => {
+    const input = generateKneeInput(["1", "3", "4", "6", "7"], ["2"]);
+
+    const result = handleBlock(savedBlock, input, NO_BRANCHES);
+
+    expect(listBranchIds(result)).not.toContain("1");
+  });
+});
+
 describe("branchesHandler: a branch ID the catalog lacks", () => {
   const handleBlock = createBranchesBlockHandler(lookUpStoredBranchInCatalog);
   const input = generateWorkoutInput({
@@ -203,6 +272,8 @@ describe("branchesHandler: a branch ID the catalog lacks", () => {
     random: () => 0,
   });
 
+  // Lists the branch IDs of a filled block in block order, or none.
+  // listBranchIds(filledResultOfBranches510And523) → ["510", "523"]
   const listBranchIds = (result: BlockResult) =>
     result.status === "filled"
       ? result.exercises.map(({ branchId }) => branchId)
@@ -326,11 +397,9 @@ describe("branchesHandler: cardio swap", () => {
   });
 
   it("swaps a blocked cardio skill for the CARDIO_5 run", () => {
-    const result = handleBlock(
-      generateCardioBlock("CARDIO_3", 1500),
-      soreInput,
-      NO_BRANCHES,
-    );
+    const storedBlock = generateCardioBlock("CARDIO_3", 1500);
+
+    const result = handleBlock(storedBlock, soreInput, NO_BRANCHES);
 
     expect(result).toMatchObject({
       status: "filled",
@@ -341,7 +410,7 @@ describe("branchesHandler: cardio swap", () => {
         duration: 1200,
       },
       usedBranchIds: ["576"],
-      swappedFromSkill: "CARDIO_3",
+      swappedFrom: storedBlock,
     });
     expect(
       result.status === "filled" &&
@@ -362,7 +431,7 @@ describe("branchesHandler: cardio swap", () => {
       block,
       usedBranchIds: ["580"],
     });
-    expect(result).not.toHaveProperty("swappedFromSkill");
+    expect(result).not.toHaveProperty("swappedFrom");
   });
 
   it("keeps the stored cardio branch for sore quadriceps when the soreness filter is off", () => {
@@ -381,7 +450,7 @@ describe("branchesHandler: cardio swap", () => {
       block,
       usedBranchIds: ["580"],
     });
-    expect(result).not.toHaveProperty("swappedFromSkill");
+    expect(result).not.toHaveProperty("swappedFrom");
   });
 
   it("throws the raw error when the skill trees hold no CARDIO_5 branch", () => {
@@ -435,7 +504,7 @@ describe("branchesHandler: cardio swap", () => {
       ).toMatchObject({
         status: "filled",
         block: { skill: "CARDIO_5", branches: ["576"], duration: 1200 },
-        swappedFromSkill: "CARDIO_5",
+        swappedFrom: storedCardioFive,
       });
     });
 

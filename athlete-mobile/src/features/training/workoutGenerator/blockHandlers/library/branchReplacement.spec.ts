@@ -1,6 +1,7 @@
 import { loadExercises } from "@/data/loadExercises";
 import {
   generateLowerBodyBranch,
+  generateTreeBranch,
   generateUpperBodyBranch,
 } from "@test/factories/skillTree";
 import {
@@ -352,6 +353,107 @@ describe("branchReplacement: replaceBlockedBranches", () => {
         input,
       ),
     ).toEqual([]);
+  });
+});
+
+describe("branchReplacement: replacementPool", () => {
+  // Builds a BAS tree with one lower body branch per ID, each training "e<id>".
+  // generateBasTree(["1", "2"])
+  // → { "1": { tags: [...], levels: { 1: { exerciseId: "e1" } } }, "2": { ..."e2" } }
+  const generateBasTree = (ids: string[]) =>
+    Object.fromEntries(
+      ids.map((id) => [
+        id,
+        generateLowerBodyBranch({ 1: { exerciseId: `e${id}` } }),
+      ]),
+    );
+  const exerciseCatalog = generateLowerBodyExercises(["e1", "e2", "e3", "e4"]);
+  // Lists the branch IDs of a replacement.
+  // listBranchIds([{ branchId: "2", branch: {} }]) → ["2"]
+  const listBranchIds = (replacement: { branchId: string }[]) =>
+    replacement.map(({ branchId }) => branchId);
+
+  it("never chooses a candidate outside the pool", () => {
+    const skillTrees = { BAS: generateBasTree(["1", "2", "3"]) };
+    const input = {
+      ...generateReplacementInput({ skillTrees, exerciseCatalog }),
+      replacementPool: { "2": skillTrees.BAS["2"] },
+    };
+
+    const replacement = replaceBlockedBranches(
+      { skill: "BAS", replace: ["LOWER_BODY"], usedBranchIds: [] },
+      input,
+    );
+
+    expect(listBranchIds(replacement)).toEqual(["2"]);
+  });
+
+  it("drops the slot an exhausted pool cannot fill and fills the earlier slot", () => {
+    const skillTrees = { BAS: generateBasTree(["1", "2", "3"]) };
+    const input = {
+      ...generateReplacementInput({ skillTrees, exerciseCatalog }),
+      replacementPool: { "2": skillTrees.BAS["2"] },
+    };
+
+    const replacement = replaceBlockedBranches(
+      {
+        skill: "BAS",
+        replace: ["LOWER_BODY", "LOWER_BODY"],
+        usedBranchIds: [],
+      },
+      input,
+    );
+
+    expect(listBranchIds(replacement)).toEqual(["2"]);
+  });
+
+  describe("of a prevention block", () => {
+    const kneeTags = ["PREVENTION_KNEE_HIP", "REGION_LOWER_BODY", "SIDE_BOTH"];
+    const skillTrees = {
+      PREVKG: {
+        "1": generateTreeBranch(["e1"], kneeTags),
+        "2": generateTreeBranch(["e2"], kneeTags),
+        "3": generateTreeBranch(
+          ["e3"],
+          ["PREVENTION_ANKLE", "REGION_LOWER_BODY"],
+        ),
+      },
+    };
+    // the draw takes the last candidate, so a missing pool would pick "2"
+    const kneeInput = {
+      ...generateReplacementInput({
+        pains: ["KNEE_LEFT"],
+        skillTrees,
+        exerciseCatalog,
+        random: () => 0.99,
+      }),
+      replacementPool: {
+        "1": skillTrees.PREVKG["1"],
+        "3": skillTrees.PREVKG["3"],
+      },
+    };
+
+    it("applies the own region rule: a pool branch of another region is never chosen", () => {
+      const replacement = replaceBlockedBranches(
+        { skill: "PREVKNEE", replace: ["LOWER_BODY"], usedBranchIds: [] },
+        kneeInput,
+      );
+
+      expect(listBranchIds(replacement)).toEqual(["1"]);
+    });
+
+    it("applies the all or none rule: a pool that fills only some slots gives none", () => {
+      const replacement = replaceBlockedBranches(
+        {
+          skill: "PREVKNEE",
+          replace: ["LOWER_BODY", "LOWER_BODY"],
+          usedBranchIds: [],
+        },
+        kneeInput,
+      );
+
+      expect(replacement).toEqual([]);
+    });
   });
 });
 

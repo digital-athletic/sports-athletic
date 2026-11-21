@@ -162,6 +162,20 @@ Resolution runs inside selection, because the specs drop a candidate whose exerc
 
 The block walk hands every block the branches all earlier blocks used, whatever the kind of either block. The branches handler reads no used branches. One registry maps each block kind to its handler function for every workout, so one workout can mix block kinds: a short workout runs picks and branches blocks in template order.
 
+The branches handler sets `swappedFrom` on a result whose skill it swapped. Its value is the stored block, and it replaces the former `swappedFromSkill`. The handler sets it on both swap paths: a cardio block that runs CARDIO_5, and a later block of the same skill that reads an earlier swap.
+
+Two replay options are set only by `generateCustomWorkout`. A fresh run sets neither:
+
+- `branchRefill: "blockedSlots"`: a blocked branch refills only its own slot. Without it, a prevention or special warm-up skill refills every slot.
+- `replacementPools`: maps each saved block to the pool of the picks block it was drawn from. The pool is rebuilt with `resolvePicksBlocks`, and the handler gives it to the block as `replacementPool`. A replacement draws only from that pool.
+
+Edge cases of a replay:
+
+- A slot or block with no replacement drops silently, because a short workout's finish has `requiredBlocks: "none"`.
+- The PREV and WUSPEZIAL region narrowing runs before the pool applies. A slot drops when the narrowed tree and the pool share no branch.
+- The duplicate check runs per block only. A level change can resolve two blocks to the same exercise.
+- The "last block per skill" rule (AIWL rule 7) applies to training days only. A template run trains every block of a repeated skill, so a replay trains both.
+
 A later picks block skips the exercises of an earlier exercises block, and an exercises block keeps an exercise an earlier block trained.
 
 A training day stores its cardio skill as a branches block. The branches handler applies the cardio rules from [Soreness and blocking](../specs/session/cardio-training-system.md#soreness-and-blocking). This ADR amends AIWL rule 1, so the rule applies to duration blocks only.
@@ -265,6 +279,8 @@ The router `src/features/training/workoutGeneratorRouter.ts` selects a workout, 
 `selectWorkout(request)` in the router returns the workout, the branch lookup and the filters of the table, and `generateWorkout` passes them to `generateSetList`. The [exercise swap](#exercise-swap) calls `selectWorkout` too, sets the workout up once, builds one branch through `buildBranchSetList` and runs no `generateSetList`.
 
 A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A template without blocks throws `NO_EXERCISES/PAIN` without regions, whatever the athlete's pains.
+
+`generateCustomWorkout(request, template, saved?)` in the router generates a custom workout and returns the finished workout. Without `saved`, it runs the template exactly like `generateWorkout`, with `SHORT_WORKOUT_FILTERS`. With `saved`, it replays the saved blocks as `branches` blocks through the same generator, with the replay options of [block handlers](#block-handlers-strategy). `readReplacementPools` rebuilds the pools from the template. It throws `NO_EXERCISES/PAIN` for a template without blocks. `generateFinishedWorkout` in `workoutGeneration.ts` returns the finished workout, and `generateSetList` returns its set list.
 
 `generateSetList` runs every workout with one handler registry and one finish rule:
 

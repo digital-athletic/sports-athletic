@@ -26,6 +26,7 @@ import type {
   InterpretedWorkout,
 } from "./stages/blockWalk";
 import { createSetListBuilder } from "./stages/setListBuilding";
+import type { FinishedWorkout } from "./stages/workoutFinish";
 import { requireSupportedTemplateBlocks } from "./stages/templateBlockCheck";
 import type { WorkoutInput } from "./stages/workoutSetup";
 import { loadStrengthTestLoadData } from "./strengthTestLoadData";
@@ -48,6 +49,10 @@ export interface WorkoutGenerationOptions {
   loadData?: StrengthTestLoadData;
   /** The athlete filters the workout switches off; every filter applies by default. */
   filters?: Partial<WorkoutFilters>;
+  /** Replay only: see WorkoutInput.branchRefill. */
+  branchRefill?: WorkoutInput["branchRefill"];
+  /** Replay only: see WorkoutInput.replacementPools. */
+  replacementPools?: WorkoutInput["replacementPools"];
 }
 
 // The spec bars athletes under 16 from the test; the menu hides it from them
@@ -98,23 +103,23 @@ const createHandlerRegistry = (
 };
 
 /**
- * Generates the set list of any workout with one handler registry and one set
- * of finish rules. Every workout passes the block kind check first. A workout
+ * Generates the finished workout of any workout with one handler registry and
+ * one set of finish rules. Every workout passes the block kind check first. A workout
  * with test sets then passes the test set checks with the load data, rejects
  * an athlete without workout data, under 16 or with muscle soreness before any
  * block runs, and throws when a block stays empty. Its lifts build with the
  * strength test builder. `options.filters` switches off soreness, pain or
  * equipment for every block; each one applies by default.
  *
- * generateSetList(mobilityTemplate, lookUpStoredBranchInCatalog, input, { skillTrees })
- * → [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...]
+ * generateFinishedWorkout(mobilityTemplate, lookUpStoredBranchInCatalog, input)
+ * → { setList: [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...], blocks: [...] }
  */
-export const generateSetList = (
+export const generateFinishedWorkout = (
   workout: InterpretedWorkout,
   lookUpBranch: StoredBranchLookup,
   input: GenerationInput,
   options: WorkoutGenerationOptions = {},
-): GeneratedSetListEntry[] => {
+): FinishedWorkout<GeneratedSetListEntry> => {
   requireSupportedTemplateBlocks(workout);
   const withTestSets = holdsTestSets(workout);
   const prescribedBuilders = withTestSets
@@ -127,5 +132,16 @@ export const generateSetList = (
       createSetListBuilder(workoutInput, prescribedBuilders),
     skillTrees: options.skillTrees,
     filters: resolveWorkoutFilters(options.filters),
-  }).setList;
+    branchRefill: options.branchRefill,
+    replacementPools: options.replacementPools,
+  });
 };
+
+/** Generates the set list of any workout; see generateFinishedWorkout. */
+export const generateSetList = (
+  workout: InterpretedWorkout,
+  lookUpBranch: StoredBranchLookup,
+  input: GenerationInput,
+  options: WorkoutGenerationOptions = {},
+): GeneratedSetListEntry[] =>
+  generateFinishedWorkout(workout, lookUpBranch, input, options).setList;

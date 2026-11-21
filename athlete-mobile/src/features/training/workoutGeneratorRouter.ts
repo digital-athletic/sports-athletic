@@ -8,9 +8,16 @@ import { createGenerationInput } from "@/features/training/workoutGenerator/gene
 import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
 import type { WorkoutFilters } from "@/features/training/workoutGenerator/workoutFilters";
 import {
+  generateFinishedWorkout,
   generateSetList,
   type SelectedWorkout,
 } from "@/features/training/workoutGenerator/workoutGeneration";
+import {
+  readReplacementPools,
+  type SavedBlock,
+} from "@/features/training/workoutGenerator/replacementPools";
+import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
+import type { Template } from "@/schemas/aiwl.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseDataMapType } from "@/schemas/generator.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
@@ -54,6 +61,16 @@ export const STRENGTH_TEST_FILTERS: Partial<WorkoutFilters> = Object.freeze({
 
 // A template without blocks counts as an empty pool, so it throws the pain
 // error whatever the athlete's pains.
+const requireTemplateBlocks = (template: Template): void => {
+  if (template.blocks.length === 0) {
+    throw {
+      type: "NO_EXERCISES",
+      subtype: "PAIN",
+      params: [],
+    } satisfies GeneratorError;
+  }
+};
+
 const selectShortWorkout = (type: TrainingType): SelectedWorkout => {
   const template = lookupTemplate(type);
   if (!template) {
@@ -63,13 +80,7 @@ const selectShortWorkout = (type: TrainingType): SelectedWorkout => {
       params: [type],
     } satisfies GeneratorError;
   }
-  if (template.blocks.length === 0) {
-    throw {
-      type: "NO_EXERCISES",
-      subtype: "PAIN",
-      params: [],
-    } satisfies GeneratorError;
-  }
+  requireTemplateBlocks(template);
   return { workout: template, lookUpBranch: lookUpStoredBranchInCatalog };
 };
 
@@ -125,5 +136,48 @@ export const generateWorkout = (
   return generateSetList(workout, lookUpBranch, createInput(request), {
     skillTrees: request.skillTrees,
     filters,
+  });
+};
+
+/**
+ * Generates a custom workout. Without saved blocks it runs the template
+ * exactly like generateWorkout. With saved blocks it replays them as branches
+ * blocks: a blocked branch is refilled in its own slot, from the pool of the
+ * template block it was drawn from. Throws NO_EXERCISES/PAIN for a template
+ * without blocks.
+ *
+ * generateCustomWorkout(request, template, [{ block: wuBlock, templateIndex: 0 }])
+ * → { setList: [{ branchId: "410", skill: "WU", ... }], blocks: [...] }
+ */
+export const generateCustomWorkout = (
+  request: WorkoutGenerationRequest,
+  template: Template,
+  saved?: readonly SavedBlock[],
+): FinishedWorkout<GeneratedSetListEntry> => {
+  requireTemplateBlocks(template);
+  const input = createInput(request);
+  const options = {
+    skillTrees: request.skillTrees,
+    filters: SHORT_WORKOUT_FILTERS,
+  };
+  if (saved === undefined) {
+    return generateFinishedWorkout(
+      template,
+      lookUpStoredBranchInCatalog,
+      input,
+      options,
+    );
+  }
+  const replay = { id: request.type, blocks: saved.map(({ block }) => block) };
+  const replacementPools = readReplacementPools(
+    template,
+    saved,
+    input,
+    request.skillTrees,
+  );
+  return generateFinishedWorkout(replay, lookUpStoredBranchInCatalog, input, {
+    ...options,
+    branchRefill: "blockedSlots",
+    replacementPools,
   });
 };

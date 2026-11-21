@@ -30,13 +30,16 @@ import {
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { generateAthlete } from "@test/factories/athlete";
+import { generateSeededRandom } from "@test/factories/seededRandom";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
 import {
+  generateCustomWorkout,
   generateWorkout,
   selectWorkout,
   SHORT_WORKOUT_FILTERS,
   STRENGTH_TEST_FILTERS,
+  type WorkoutGenerationRequest,
 } from "./workoutGeneratorRouter";
 
 // The spy keeps the real entry point, so each route still generates its set list.
@@ -460,6 +463,113 @@ describe("selectWorkout: workout per training type", () => {
           givenSection: undefined,
           daysSinceLastWorkout: 0,
         }),
+      ),
+    ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: [] });
+  });
+});
+
+describe("generateCustomWorkout: fresh and replay", () => {
+  afterEach(jest.restoreAllMocks);
+  afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
+
+  // Builds the request of the warm up only plan user at home with no equipment
+  // and all catalog trees.
+  // generateRequest("own") → { type: "own", place: "HOME", equipment: [], weekday: 1, ... }
+  const generateRequest = (type: string): WorkoutGenerationRequest => ({
+    type,
+    user: generateWarmUpOnlyPlanUser(),
+    place: "HOME",
+    exercises: loadExercises(),
+    skillTrees: getAllSkillTrees(),
+    weekday: 1,
+    equipment: [],
+    givenSection: undefined,
+    daysSinceLastWorkout: 0,
+    userExerciseData: { exerciseData: {}, branchData: {} },
+  });
+  const customTemplate = generateTemplate(
+    [
+      generatePicksBlock("WU", { picks: [{ tags: [], count: 2 }] }),
+      generatePicksBlock("MOB", { picks: [{ tags: [], count: 2 }] }),
+    ],
+    { id: "own", name: { en: "Own" } },
+  );
+
+  it("generates the set list of generateWorkout for the same custom template and random input", () => {
+    const { id } = useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(customTemplate, null);
+    jest.spyOn(Math, "random").mockImplementation(generateSeededRandom(7));
+    const expected = generateWorkout(generateRequest(id));
+    jest.spyOn(Math, "random").mockImplementation(generateSeededRandom(7));
+
+    const { setList } = generateCustomWorkout(
+      generateRequest(id),
+      customTemplate,
+    );
+
+    expect(setList).toEqual(expected);
+  });
+
+  it("runs the saved blocks of a replay and returns their branches", () => {
+    const saved = [
+      { block: generateBranchesBlock("WU", ["410"]), templateIndex: 0 },
+    ];
+
+    const { setList } = generateCustomWorkout(
+      generateRequest("own"),
+      customTemplate,
+      saved,
+    );
+
+    expect(setList.length).toBeGreaterThan(0);
+    expect(setList.every((entry) => entry.branchId === "410")).toBe(true);
+  });
+
+  it("replaces a pain blocked saved branch from the pool of its original pick only", () => {
+    // Branch 523 trains the knee direction and knee pain blocks it. The knee
+    // pick pool contains 518, 767 and 866 after the pain check; the hip pick
+    // pool contains other branches.
+    const template = generateTemplate(
+      [
+        generatePicksBlock("GKS", {
+          picks: [{ tags: ["EXERCISE_DIRECTION_KNEE"], count: 1 }],
+          fallbackToWholeTree: false,
+        }),
+        generatePicksBlock("GKS", {
+          picks: [{ tags: ["EXERCISE_DIRECTION_HIP"], count: 1 }],
+          fallbackToWholeTree: false,
+        }),
+      ],
+      { id: "gks" },
+    );
+    const saved = [
+      { block: generateBranchesBlock("GKS", ["523"]), templateIndex: 0 },
+    ];
+    jest.spyOn(Math, "random").mockReturnValue(0.99);
+
+    const { setList } = generateCustomWorkout(
+      {
+        ...generateRequest("gks"),
+        user: {
+          ...generateWarmUpOnlyPlanUser(),
+          workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] } },
+        },
+        equipment: ["DUMBBELL", "BARBELL"],
+      },
+      template,
+      saved,
+    );
+
+    expect(["518", "767", "866"]).toContain(setList[0].branchId);
+  });
+
+  it("throws the pain error for a template without blocks", () => {
+    const emptyTemplate = generateTemplate([], { id: "empty" });
+
+    expect(
+      catchThrownValue(() =>
+        generateCustomWorkout(generateRequest("empty"), emptyTemplate),
       ),
     ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: [] });
   });

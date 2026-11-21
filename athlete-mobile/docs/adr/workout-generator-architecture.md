@@ -338,6 +338,15 @@ The swap offers a branch only when the workout holds exactly one block of the br
 
 A branch-to-block map that the generator records would lift the one-block limit. No change builds it.
 
+### Saved versions of custom workouts
+
+An own or team training saves its first generation per training place as a **version**, so later starts at that place train the same branches. `savedVersion.ts` in `features/customWorkouts` reads and replays versions. Apart from the replay options, the generator is unchanged.
+
+- **Format.** A version is `{ templateBlocks, blocks }`, where `templateBlocks` is `JSON.stringify(template.blocks)`. Each saved block is `{ block, templateIndex? }`. `block` is a `branches` block with the skill of `swappedFrom ?? block` and the distinct branch IDs of the block result in draw order; a swapped cardio block saves the `swappedFrom` branches. `block` copies the timing fields `sets`, `setDuration`, `values`, `rest`, `superset` and `duration`. `templateIndex` names the picks block of the template that the block was drawn from. A block without branches is not saved.
+- **Replay.** While `templateBlocks` matches the template, `generateCustomWorkout(request, template, saved.blocks)` runs the saved blocks. Levels, values and loads come from the current progress. After a template change, the start generates fresh and overwrites the version.
+- **Transparency rule.** A blocked saved branch changes only its own slot, and only for that start. `branchRefill: "blockedSlots"` refills the blocked slots alone, from the pool of the original picks block, which `replacementPools` rebuilds from the template block at `templateIndex`. A slot without a replacement is dropped alone. No replacement is persisted, so the original branch returns once the block is gone.
+- **Store.** `setListVersionsStore` persists `versionsByWorkout[workoutId][place]` as `set-list-versions-storage` (`SET_LIST_VERSIONS`). `useTrainingGeneration` reads and saves versions only after the store has hydrated. Logout, the Supabase `SIGNED_OUT` event and account deletion clear versions. Exercise swaps stay session only.
+
 ### Strength test source
 
 `strengthTestLoadData.ts` loads the bundled test set loads and 1RM shares. The router loads the bundled template `templates/TEST.json` and the entry point runs and checks it. `loadStrengthTestTemplate` loads it apart from the short workout templates, so no short workout resolves it. The template holds:

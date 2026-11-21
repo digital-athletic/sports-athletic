@@ -1,7 +1,20 @@
 import { Alert } from "@/common/Alert";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
+import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
+import {
+  generateCustomWorkout,
+  generateWorkout,
+} from "@/features/training/workoutGeneratorRouter";
+import type { Template } from "@/schemas/aiwl.schema";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
+import { useSetListVersionsStore } from "@/store/setListVersionsStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { generateFilledBlockResult } from "@test/factories/blockResult";
+import {
+  generatePicksBlock,
+  generateTemplate,
+} from "@test/factories/templateBlock";
 import { act, renderHook } from "@testing-library/react-native";
 import { useTrainingGeneration } from "./useTrainingGeneration";
 
@@ -20,9 +33,11 @@ jest.mock("react-i18next", () => ({
 
 jest.mock("@/features/training/workoutGeneratorRouter", () => ({
   generateWorkout: jest.fn(),
+  generateCustomWorkout: jest.fn(),
 }));
 
 const mockGenerateWorkout = jest.mocked(generateWorkout);
+const mockGenerateCustomWorkout = jest.mocked(generateCustomWorkout);
 const alertSpy = jest.spyOn(Alert, "alert");
 
 /** Plan training params, e.g. { type: "PLAN" }. */
@@ -30,6 +45,29 @@ const generatePlanParams = () => ({ type: "PLAN" as const });
 
 /** Strength test params, which show the pain alert for declared pains. */
 const generateTestWorkoutParams = () => ({ type: "TEST_WORKOUT" as const });
+
+/**
+ * Builds what the generator returns for the template when its block drew the
+ * branch.
+ *
+ * generateFinishedWorkout(template, "510")
+ * → { blocks: [{ status: "filled", block: template.blocks[0], exercises: [{ branchId: "510", ... }], ... }],
+ *     setList: [{ branchId: "510", exerciseId: "exercise510", set: [1, 1], skill: "GKS" }] }
+ */
+const generateFinishedWorkout = (
+  template: Template,
+  branchId: string,
+): FinishedWorkout<GeneratedSetListEntry> => ({
+  blocks: [generateFilledBlockResult(template.blocks[0], [branchId])],
+  setList: [
+    {
+      branchId,
+      exerciseId: `exercise${branchId}`,
+      set: [1, 1],
+      skill: "GKS",
+    },
+  ],
+});
 
 const pressAlertOk = async (callIndex: number) => {
   const [, , buttons] = alertSpy.mock.calls[callIndex];
@@ -43,6 +81,11 @@ beforeEach(() => {
   alertSpy.mockImplementation(() => {});
   mockGenerateWorkout.mockReturnValue([]);
   useUserProfileStore.setState({ warnings: { painAlertSeen: false } });
+  useCustomWorkoutsStore.setState({ workoutsById: {} });
+  useSetListVersionsStore.setState({
+    versionsByWorkout: {},
+    _hasHydrated: true,
+  });
 });
 
 describe("useTrainingGeneration: double taps", () => {
@@ -150,5 +193,30 @@ describe("useTrainingGeneration: pain alert", () => {
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(result.current.generating).toBe(false);
+  });
+});
+
+describe("useTrainingGeneration: saved versions of custom workouts", () => {
+  it("saves the first set list of an own training at the place", async () => {
+    const template = generateTemplate([generatePicksBlock("GKS")]);
+    useCustomWorkoutsStore.setState({
+      workoutsById: {
+        "custom-a": { id: "custom-a", teamId: null, template, importedAt: 0 },
+      },
+    });
+    mockGenerateCustomWorkout.mockReturnValue(
+      generateFinishedWorkout(template, "510"),
+    );
+    const { result } = await renderHook(() =>
+      useTrainingGeneration({ type: "custom-a" }),
+    );
+
+    await act(() => {
+      result.current.generateTraining("STUDIO");
+    });
+
+    const saved =
+      useSetListVersionsStore.getState().versionsByWorkout["custom-a"]?.STUDIO;
+    expect(saved?.blocks.map(({ block }) => block.branches)).toEqual([["510"]]);
   });
 });

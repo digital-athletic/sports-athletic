@@ -16,6 +16,7 @@ import { toUserExerciseData } from "@/schemas/generator.schema";
 import { Logger } from "@/services/Logger";
 import { useAuthStore } from "@/store/authStore";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
+import { useSetListVersionsStore } from "@/store/setListVersionsStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { generateGenerationInput } from "@test/factories/generationInput";
@@ -296,6 +297,80 @@ describe("useExerciseSwap: swap in a short training", () => {
   afterEach(() => {
     jest.restoreAllMocks();
     useCustomWorkoutsStore.setState({ workoutsById: {} });
+    useSetListVersionsStore.setState({ versionsByWorkout: {} });
+  });
+
+  it("leaves the saved versions unchanged after a swap", async () => {
+    const drawn = seedShortWorkout();
+    const drawnBranchId = drawn[0].branchId ?? "";
+    const template =
+      useCustomWorkoutsStore.getState().workoutsById.SHORT_SWAP.template;
+    useSetListVersionsStore.setState({
+      versionsByWorkout: {
+        SHORT_SWAP: {
+          HOME: {
+            templateBlocks: JSON.stringify(template.blocks),
+            blocks: [
+              {
+                block: generateBranchesBlock("GKS", [drawnBranchId], {
+                  duration: undefined,
+                }),
+                templateIndex: 0,
+              },
+            ],
+          },
+        },
+      },
+      _hasHydrated: true,
+    });
+    const before = structuredClone(
+      useSetListVersionsStore.getState().versionsByWorkout,
+    );
+    const { result } = await renderHook(() => useExerciseSwap(params, "HOME"));
+    await waitFor(() =>
+      expect(result.current.swapControls.canSwap(drawnBranchId)).toBe(true),
+    );
+
+    await act(() => {
+      result.current.swapControls.onSwap(drawnBranchId);
+    });
+
+    expect(useTrainingStore.getState().exerciseList?.[0].branchId).not.toBe(
+      drawnBranchId,
+    );
+    expect(useSetListVersionsStore.getState().versionsByWorkout).toEqual(
+      before,
+    );
+  });
+
+  it("lists the alternatives of the original template for a session replayed from a saved version", async () => {
+    seedShortWorkout();
+    const replayed = workoutGeneration
+      .generateSetList(
+        {
+          id: "SHORT_SWAP",
+          blocks: [
+            generateBranchesBlock("GKS", ["510"], { duration: undefined }),
+          ],
+        },
+        lookUpStoredBranchInCatalog,
+        generateHomeInput(),
+        { skillTrees: getAllSkillTrees(), filters: SHORT_WORKOUT_FILTERS },
+      )
+      .map(toUserExerciseData);
+    useTrainingStore.setState({ exerciseList: replayed });
+    const { result } = await renderHook(() => useExerciseSwap(params, "HOME"));
+    await waitFor(() =>
+      expect(result.current.swapControls.canSwap("510")).toBe(true),
+    );
+
+    await act(() => {
+      result.current.swapControls.onSwap("510");
+    });
+
+    const shown = useTrainingStore.getState().exerciseList?.[0].branchId;
+    expect(shown).not.toBe("510");
+    expect(Object.keys(getAllSkillTrees().GKS)).toContain(shown);
   });
 
   it("restores the drawn entries on the last tap of the cycle", async () => {

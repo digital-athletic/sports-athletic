@@ -12,6 +12,7 @@ import {
 import { useUserDataBackupStore } from "@/store/userDataBackupStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useRegistrationConsentStore } from "@/store/registrationConsentStore";
+import { useSetListVersionsStore } from "@/store/setListVersionsStore";
 import { featureFlags } from "@/config/featureFlags";
 
 /**
@@ -36,6 +37,9 @@ export function useAuthStateListener() {
   const setUsername = useUserProfileStore((state) => state.setUsername);
   const restoreSnapshot = useUserDataBackupStore(
     (state) => state.restoreSnapshot,
+  );
+  const clearSetListVersions = useSetListVersionsStore(
+    (state) => state.clearSetListVersions,
   );
 
   const wasOfflineRef = useRef(false);
@@ -159,6 +163,7 @@ export function useAuthStateListener() {
         }
       } else if (event === "SIGNED_OUT") {
         clearAuth();
+        clearSetListVersions();
         setConsentStatus("loading");
         lastVerifiedUserIdRef.current = null;
       }
@@ -215,5 +220,6 @@ export function useAuthStateListener() {
     setConsentStatus,
     setUsername,
     restoreSnapshot,
+    clearSetListVersions,
   ]);
 }

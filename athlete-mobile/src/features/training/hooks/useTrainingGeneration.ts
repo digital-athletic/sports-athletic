@@ -14,7 +14,11 @@ import { isGeneratorError } from "@/features/training/models/GeneratorError";
 import { TrainingType } from "@/features/training/models/Training";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import {
+  generateTrainingSetList,
+  type SetListVersionsContext,
+  useSetListVersionsContext,
+} from "@/features/training/hooks/trainingSetList";
 import { maintainBranchLevels } from "@/features/training/utils/branchMaintenance";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { daysSinceLastTraining } from "@/features/training/utils/trainingGapUtils";
@@ -78,7 +82,7 @@ export type GenerationContext = {
   setActiveTraining: ReturnType<
     typeof useTrainingStore.getState
   >["setActiveTraining"];
-};
+} & SetListVersionsContext;
 
 export function resolveSelectedPlace(
   trainingType: TrainingType,
@@ -213,7 +217,7 @@ function generateExerciseList(
   const sectionIndex = parseIntParam(params.sectionIndex);
   const branchData = maintainStoredBranchLevels(user, ctx);
 
-  const generatedList = generateWorkout({
+  const generatedList = generateTrainingSetList(ctx, {
     type: trainingType,
     user,
     place: selectedPlace,
@@ -262,6 +266,7 @@ export function useGenerationContext(): GenerationContext {
   const { auth } = useAuthStore();
   const { personalData } = useUserProfileStore();
   const { workoutData, temporalData, trainingPlan } = useUserWorkoutStore();
+  const setListVersions = useSetListVersionsContext();
 
   return {
     trainingDays,
@@ -281,6 +286,7 @@ export function useGenerationContext(): GenerationContext {
     setExerciseList,
     setEquipment,
     setActiveTraining,
+    ...setListVersions,
   };
 }
 

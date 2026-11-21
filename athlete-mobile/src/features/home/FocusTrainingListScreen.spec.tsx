@@ -20,6 +20,8 @@ jest.mock("react-native-safe-area-context", () => ({
 }));
 
 const FOCUS_LABEL = "Focus-Trainings, 10-20 minutes topic specific training";
+const ATHLETIC_WARMUP_LABEL =
+  "Athletic Warm-up, 10 to 25 min warm-up before your sport";
 const PREVENTION_LABEL = "Imminent Pains, Specifically improve imminent pains";
 
 beforeEach(() => {
@@ -80,10 +82,31 @@ describe("FocusTrainingListScreen: tiles", () => {
     expect(getByRole("button", { name: PREVENTION_LABEL })).toBeTruthy();
   });
 
-  it("shows only the two tiles as buttons", async () => {
+  it("shows the athletic warm-up tile right after the focus tile", async () => {
     const { getAllByRole } = await render(<FocusTrainingListScreen />);
 
-    expect(getAllByRole("button")).toHaveLength(2);
+    expect(
+      getAllByRole("button").map((tile) => tile.props.accessibilityLabel),
+    ).toEqual([FOCUS_LABEL, ATHLETIC_WARMUP_LABEL, PREVENTION_LABEL]);
+  });
+
+  it("shows the athletic warm-up tile in German", async () => {
+    await act(() => i18n.changeLanguage("de"));
+    const { getByRole } = await render(<FocusTrainingListScreen />);
+
+    expect(
+      getByRole("button", {
+        name: "Athletik Warm-up, 10 bis 25 Min. Warm-up vor deinem Sport",
+      }),
+    ).toBeTruthy();
+  });
+
+  it("shows the rocket icon on the athletic warm-up tile", async () => {
+    const { getByTestId } = await render(<FocusTrainingListScreen />);
+
+    expect(
+      getByTestId("athletic-warmup-tile-icon", { includeHiddenElements: true }),
+    ).toBeTruthy();
   });
 
   it("places both tiles in the tile grid", async () => {
@@ -108,6 +131,17 @@ describe("FocusTrainingListScreen: starting a training", () => {
     expect(mockPush).toHaveBeenCalledWith({
       pathname: "/training/new",
       params: { category: "focus" },
+    });
+  });
+
+  it("opens the athletic warm-up selection through the route category", async () => {
+    const { getByRole } = await render(<FocusTrainingListScreen />);
+
+    await fireEvent.press(getByRole("button", { name: ATHLETIC_WARMUP_LABEL }));
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: "/training/new",
+      params: { category: "athleticWarmup" },
     });
   });
 

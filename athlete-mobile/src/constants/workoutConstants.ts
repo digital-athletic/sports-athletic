@@ -321,6 +321,10 @@ const DAILY_TRAINING_FOCUS_IMAGES: Partial<
   COMBINED: require("../../assets/img/dailyTrainingFocuses/strength-endurance.jpg"),
 };
 
+export type AthleticWarmupType =
+  | "ATHLETIK_WARMUP_10_15"
+  | "ATHLETIK_WARMUP_20_25";
+
 export type TileSilhouette = {
   side: Side;
   regions: readonly SilhouetteRegionId[];
@@ -343,7 +347,7 @@ export type TileData = {
   navigate: {
     key: RoutePath;
     params?: {
-      type: SkillTypes | "PLAN" | "TEST_WORKOUT";
+      type: SkillTypes | AthleticWarmupType | "PLAN" | "TEST_WORKOUT";
       weekday?: number;
       sectionIndex?: number;
       sectionType?: SectionTypes;
@@ -389,6 +393,25 @@ export const QUICKSTART_TILES: TileData[] = [
     title: "training.quickstart.QUICKSTART_COOL_DOWN",
     description: { text: "training.quickstart.QUICKSTART_COOL_DOWN_DESC" },
     navigate: { key: "/training/muscle-soreness", params: { type: "CD" } },
+  },
+];
+
+export const ATHLETIC_WARMUP_TILES: TileData[] = [
+  {
+    title: "training.athleticWarmup.SHORT_TITLE",
+    description: { text: "training.athleticWarmup.SHORT_DESC" },
+    navigate: {
+      key: "/training/muscle-soreness",
+      params: { type: "ATHLETIK_WARMUP_10_15" },
+    },
+  },
+  {
+    title: "training.athleticWarmup.LONG_TITLE",
+    description: { text: "training.athleticWarmup.LONG_DESC" },
+    navigate: {
+      key: "/training/muscle-soreness",
+      params: { type: "ATHLETIK_WARMUP_20_25" },
+    },
   },
 ];
 
@@ -1123,6 +1146,7 @@ const SPORTS = {
 export const WorkoutConstants = {
   AGE_GROUPS,
   AGE_GROUPS_MAX_AGE,
+  ATHLETIC_WARMUP_TILES,
   BIG_MUSCLES,
   DAILY_TRAINING_FOCUS_IMAGES,
   DEACTIVATED_EQUIPMENT,

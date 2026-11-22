@@ -136,12 +136,3 @@ export const generateFinishedWorkout = (
     replacementPools: options.replacementPools,
   });
 };
-
-/** Generates the set list of any workout; see generateFinishedWorkout. */
-export const generateSetList = (
-  workout: InterpretedWorkout,
-  lookUpBranch: StoredBranchLookup,
-  input: GenerationInput,
-  options: WorkoutGenerationOptions = {},
-): GeneratedSetListEntry[] =>
-  generateFinishedWorkout(workout, lookUpBranch, input, options).setList;

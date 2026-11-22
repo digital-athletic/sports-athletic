@@ -94,8 +94,8 @@ const generateSessionOfPlanDay = (
 ): UserExerciseDataType[] => {
   const { workout, lookUpBranch } = readTrainingDayWorkout(training.workout);
   return workoutGeneration
-    .generateSetList(workout, lookUpBranch, generateHomeInput())
-    .map(toUserExerciseData);
+    .generateFinishedWorkout(workout, lookUpBranch, generateHomeInput())
+    .setList.map(toUserExerciseData);
 };
 
 /**
@@ -107,7 +107,7 @@ const generateSessionOfShortWorkout = (
   template: Template,
 ): UserExerciseDataType[] =>
   workoutGeneration
-    .generateSetList(
+    .generateFinishedWorkout(
       template,
       lookUpStoredBranchInCatalog,
       generateHomeInput(),
@@ -116,7 +116,7 @@ const generateSessionOfShortWorkout = (
         filters: SHORT_WORKOUT_FILTERS,
       },
     )
-    .map(toUserExerciseData);
+    .setList.map(toUserExerciseData);
 
 /** Seeds the stores of an athlete at HOME with the equipment of the specs. */
 const seedHomeAthlete = () => {

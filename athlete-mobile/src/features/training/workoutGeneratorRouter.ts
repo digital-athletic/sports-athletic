@@ -13,7 +13,7 @@ import {
 } from "@/features/training/workoutGenerator/workoutGeneration";
 import {
   readReplacementPools,
-  type SavedBlock,
+  type DrawnBlock,
 } from "@/features/training/workoutGenerator/replacementPools";
 import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -35,15 +35,14 @@ export interface WorkoutGenerationRequest {
   userExerciseData: UserExerciseDataMapType;
 }
 
-const createInput = (request: WorkoutGenerationRequest) =>
+const createInput = (request: WorkoutGenerationRequest, random: () => number) =>
   createGenerationInput({
     athlete: request.user,
     place: request.place,
     equipment: request.equipment,
     exerciseCatalog: request.exercises,
     exerciseData: request.userExerciseData,
-    // every draw reads Math.random when it runs
-    random: () => Math.random(),
+    random,
   });
 
 /** Short and custom workouts ignore muscle soreness, as Pain, Soreness, and Prevention defines. */
@@ -122,30 +121,42 @@ export const selectWorkout = (
   };
 };
 
+export interface SetListOptions {
+  /** Every draw reads it; the app passes Math.random. */
+  random: () => number;
+  /**
+   * previousDrawnBlocks replays a saved version: its branches blocks run instead of the
+   * template's draws. The template is still needed because a blocked branch is
+   * replaced from the pool of the template block it was drawn from
+   * (DrawnBlock.templateIndex), and a branches block does not know that pool.
+   */
+  previousDrawnBlocks?: readonly DrawnBlock[];
+}
+
 /**
- * Runs the selected workout and returns the finished workout. Only saved
- * versions of custom workouts pass `saved`: the saved blocks then run as
- * branches blocks, and a blocked branch is refilled in its own slot from the
- * pool of the template block it was drawn from.
+ * Runs the selected workout and returns its set list and what each block drew.
  *
- * generateWorkout(selectWorkout(request), request, [{ block: wuBlock, templateIndex: 0 }])
+ * generateSetList(selectWorkout(request), request, { random: Math.random })
  * → { setList: [{ branchId: "410", skill: "WU", ... }], blocks: [...] }
  */
-export const generateWorkout = (
+export const generateSetList = (
   selection: WorkoutSelection,
   request: WorkoutGenerationRequest,
-  saved?: readonly SavedBlock[],
+  { random, previousDrawnBlocks }: SetListOptions,
 ): FinishedWorkout<GeneratedSetListEntry> => {
   const { workout, lookUpBranch, filters } = selection;
-  const input = createInput(request);
+  const input = createInput(request, random);
   const options = { skillTrees: request.skillTrees, filters };
-  if (saved === undefined) {
+  if (previousDrawnBlocks === undefined) {
     return generateFinishedWorkout(workout, lookUpBranch, input, options);
   }
-  const replay = { id: workout.id, blocks: saved.map(({ block }) => block) };
+  const replay = {
+    id: workout.id,
+    blocks: previousDrawnBlocks.map(({ block }) => block),
+  };
   const replacementPools = readReplacementPools(
     workout,
-    saved,
+    previousDrawnBlocks,
     input,
     request.skillTrees,
   );

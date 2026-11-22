@@ -3,7 +3,7 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
 } from "@/features/training/workoutGeneratorRouter";
 import type { Template } from "@/schemas/aiwl.schema";
@@ -34,10 +34,10 @@ jest.mock("react-i18next", () => ({
 
 jest.mock("@/features/training/workoutGeneratorRouter", () => ({
   selectWorkout: jest.fn(),
-  generateWorkout: jest.fn(),
+  generateSetList: jest.fn(),
 }));
 
-const mockGenerateWorkout = jest.mocked(generateWorkout);
+const mockGenerateSetList = jest.mocked(generateSetList);
 const mockSelectWorkout = jest.mocked(selectWorkout);
 const alertSpy = jest.spyOn(Alert, "alert");
 
@@ -80,7 +80,7 @@ const pressAlertOk = async (callIndex: number) => {
 beforeEach(() => {
   jest.clearAllMocks();
   alertSpy.mockImplementation(() => {});
-  mockGenerateWorkout.mockReturnValue({ setList: [], blocks: [] });
+  mockGenerateSetList.mockReturnValue({ setList: [], blocks: [] });
   useUserProfileStore.setState({ warnings: { painAlertSeen: false } });
   useCustomWorkoutsStore.setState({ workoutsById: {} });
   useSetListVersionsStore.setState({
@@ -100,7 +100,22 @@ describe("useTrainingGeneration: double taps", () => {
       result.current.generateTraining("STUDIO");
     });
 
-    expect(mockGenerateWorkout).toHaveBeenCalledTimes(1);
+    expect(mockGenerateSetList).toHaveBeenCalledTimes(1);
+  });
+
+  it("passes Math.random as the random source of the generator", async () => {
+    const mathRandom = jest.spyOn(Math, "random").mockReturnValue(0.42);
+    const { result } = await renderHook(() =>
+      useTrainingGeneration(generatePlanParams()),
+    );
+
+    await act(() => {
+      result.current.generateTraining("STUDIO");
+    });
+
+    const [, , options] = mockGenerateSetList.mock.calls[0];
+    expect(options.random()).toBe(0.42);
+    mathRandom.mockRestore();
   });
 
   it("navigates once to the training overview for two synchronous calls", async () => {
@@ -122,7 +137,7 @@ describe("useTrainingGeneration: double taps", () => {
 
 describe("useTrainingGeneration: generator error", () => {
   it("replaces to home after the error alert is confirmed", async () => {
-    mockGenerateWorkout.mockImplementationOnce(() => {
+    mockGenerateSetList.mockImplementationOnce(() => {
       throw new Error("no exercises");
     });
     const { result } = await renderHook(() =>
@@ -139,7 +154,7 @@ describe("useTrainingGeneration: generator error", () => {
   });
 
   it("generates again on a new call after the error alert is confirmed", async () => {
-    mockGenerateWorkout.mockImplementationOnce(() => {
+    mockGenerateSetList.mockImplementationOnce(() => {
       throw new Error("no exercises");
     });
     const { result } = await renderHook(() =>
@@ -154,7 +169,7 @@ describe("useTrainingGeneration: generator error", () => {
       result.current.generateTraining("STUDIO");
     });
 
-    expect(mockGenerateWorkout).toHaveBeenCalledTimes(2);
+    expect(mockGenerateSetList).toHaveBeenCalledTimes(2);
     expect(mockNavigate).toHaveBeenCalledTimes(1);
   });
 });
@@ -210,7 +225,7 @@ describe("useTrainingGeneration: saved versions of custom workouts", () => {
       lookUpBranch: lookUpStoredBranchInCatalog,
       filters: {},
     });
-    mockGenerateWorkout.mockReturnValue(
+    mockGenerateSetList.mockReturnValue(
       generateFinishedWorkout(template, "510"),
     );
     const { result } = await renderHook(() =>

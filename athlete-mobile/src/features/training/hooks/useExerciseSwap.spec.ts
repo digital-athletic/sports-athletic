@@ -95,8 +95,8 @@ const generateSessionOfPlanDay = (
 ): UserExerciseDataType[] => {
   const { workout, lookUpBranch } = readTrainingDayWorkout(training.workout);
   return workoutGeneration
-    .generateSetList(workout, lookUpBranch, generateHomeInput())
-    .map(toUserExerciseData);
+    .generateFinishedWorkout(workout, lookUpBranch, generateHomeInput())
+    .setList.map(toUserExerciseData);
 };
 
 /**
@@ -108,7 +108,7 @@ const generateSessionOfShortWorkout = (
   template: Template,
 ): UserExerciseDataType[] =>
   workoutGeneration
-    .generateSetList(
+    .generateFinishedWorkout(
       template,
       lookUpStoredBranchInCatalog,
       generateHomeInput(),
@@ -117,7 +117,7 @@ const generateSessionOfShortWorkout = (
         filters: SHORT_WORKOUT_FILTERS,
       },
     )
-    .map(toUserExerciseData);
+    .setList.map(toUserExerciseData);
 
 /** Seeds the stores of an athlete at HOME with the equipment of the specs. */
 const seedHomeAthlete = () => {
@@ -346,7 +346,7 @@ describe("useExerciseSwap: swap in a short training", () => {
   it("lists the alternatives of the original template for a session replayed from a saved version", async () => {
     seedShortWorkout();
     const replayed = workoutGeneration
-      .generateSetList(
+      .generateFinishedWorkout(
         {
           id: "SHORT_SWAP",
           blocks: [
@@ -357,7 +357,7 @@ describe("useExerciseSwap: swap in a short training", () => {
         generateHomeInput(),
         { skillTrees: getAllSkillTrees(), filters: SHORT_WORKOUT_FILTERS },
       )
-      .map(toUserExerciseData);
+      .setList.map(toUserExerciseData);
     useTrainingStore.setState({ exerciseList: replayed });
     const { result } = await renderHook(() => useExerciseSwap(params, "HOME"));
     await waitFor(() =>

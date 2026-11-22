@@ -217,7 +217,7 @@ function generateExerciseList(
   const sectionIndex = parseIntParam(params.sectionIndex);
   const branchData = maintainStoredBranchLevels(user, ctx);
 
-  const generatedList = generateTrainingSetList(ctx, {
+  const generatedList = generateTrainingSetList(ctx, () => Math.random(), {
     type: trainingType,
     user,
     place: selectedPlace,

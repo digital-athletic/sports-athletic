@@ -2,7 +2,7 @@ import type { PlaceType } from "@/constants/workoutConstants";
 import { generateVersionedSetList } from "@/features/customWorkouts/savedVersion";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   type WorkoutGenerationRequest,
 } from "@/features/training/workoutGeneratorRouter";
@@ -43,17 +43,19 @@ export const useSetListVersionsContext = (): SetListVersionsContext => {
  */
 export const generateTrainingSetList = (
   ctx: SetListVersionsContext,
+  random: () => number,
   request: WorkoutGenerationRequest & { place: PlaceType },
 ): GeneratedSetListEntry[] => {
   const selection = selectWorkout(request);
   const isCustom = findCustomTemplate(ctx.workoutsById, request.type);
   if (!isCustom || !ctx.versionsHydrated) {
-    return generateWorkout(selection, request).setList;
+    return generateSetList(selection, request, { random }).setList;
   }
   const { setList, versionToSave } = generateVersionedSetList({
     request,
     selection,
     saved: ctx.versionsByWorkout[request.type]?.[request.place],
+    random,
   });
   if (versionToSave) {
     ctx.saveVersion(request.type, request.place, versionToSave);

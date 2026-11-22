@@ -1,5 +1,5 @@
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { SavedBlock } from "@/features/training/workoutGenerator/replacementPools";
+import type { DrawnBlock } from "@/features/training/workoutGenerator/replacementPools";
 import type {
   FilledBlockResult,
   FinishedWorkout,
@@ -9,18 +9,19 @@ import type {
   InterpretedWorkout,
 } from "@/features/training/workoutGenerator/stages/blockWalk";
 import {
-  generateWorkout,
+  generateSetList,
   type WorkoutGenerationRequest,
   type WorkoutSelection,
 } from "@/features/training/workoutGeneratorRouter";
 
 /** The first generation of a custom workout at one place. */
-export type SavedVersion = { templateBlocks: string; blocks: SavedBlock[] };
+export type SavedVersion = { templateBlocks: string; blocks: DrawnBlock[] };
 
 type VersionedSetListInput = {
   request: WorkoutGenerationRequest;
   selection: WorkoutSelection;
   saved?: SavedVersion;
+  random: () => number;
 };
 
 type VersionedSetList = {
@@ -57,7 +58,7 @@ const toBranchesBlock = (
 };
 
 /**
- * Reads the saved blocks of a finished workout: the branches of each filled
+ * Reads the drawn blocks of a finished workout: the branches of each filled
  * block in draw order, and the template index of each picks block, from which
  * a replay rebuilds the replacement pool.
  *
@@ -67,8 +68,8 @@ const toBranchesBlock = (
 export const readVersionBlocks = (
   finished: FinishedWorkout<GeneratedSetListEntry>,
   template: InterpretedWorkout,
-): SavedBlock[] =>
-  finished.blocks.flatMap((result): SavedBlock[] => {
+): DrawnBlock[] =>
+  finished.blocks.flatMap((result): DrawnBlock[] => {
     if (result.status !== "filled") return [];
     const branches = readBranches(result);
     if (branches.length === 0) return [];
@@ -86,12 +87,16 @@ export const generateVersionedSetList = ({
   request,
   selection,
   saved,
+  random,
 }: VersionedSetListInput): VersionedSetList => {
   const templateBlocks = JSON.stringify(selection.workout.blocks);
-  const replayBlocks =
+  const previousDrawnBlocks =
     saved?.templateBlocks === templateBlocks ? saved.blocks : undefined;
-  const finished = generateWorkout(selection, request, replayBlocks);
-  if (replayBlocks) {
+  const finished = generateSetList(selection, request, {
+    random,
+    previousDrawnBlocks,
+  });
+  if (previousDrawnBlocks) {
     return { setList: finished.setList, versionToSave: null };
   }
   const blocks = readVersionBlocks(finished, selection.workout);

@@ -2,7 +2,7 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   type WorkoutGenerationRequest,
   type WorkoutSelection,
@@ -19,10 +19,10 @@ import { generateTrainingSetList } from "./trainingSetList";
 
 jest.mock("@/features/training/workoutGeneratorRouter", () => ({
   selectWorkout: jest.fn(),
-  generateWorkout: jest.fn(),
+  generateSetList: jest.fn(),
 }));
 
-const mockGenerateWorkout = jest.mocked(generateWorkout);
+const mockGenerateSetList = jest.mocked(generateSetList);
 const mockSelectWorkout = jest.mocked(selectWorkout);
 
 /**
@@ -89,7 +89,7 @@ const generateFinishedWorkout = (
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockGenerateWorkout.mockReturnValue({ setList: [], blocks: [] });
+  mockGenerateSetList.mockReturnValue({ setList: [], blocks: [] });
 });
 
 describe("trainingSetList: generateTrainingSetList", () => {
@@ -97,7 +97,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
     const saveVersion = jest.fn();
     mockSelectWorkout.mockReturnValue(generateSelection(template));
-    mockGenerateWorkout.mockReturnValue(
+    mockGenerateSetList.mockReturnValue(
       generateFinishedWorkout(template, "510"),
     );
 
@@ -108,6 +108,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
         versionsHydrated: true,
         saveVersion,
       },
+      () => Math.random(),
       generateRequest(),
     );
 
@@ -131,7 +132,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
     const saveVersion = jest.fn();
     // A pain blocks branch 523, so the replay draws 518 in its slot.
     mockSelectWorkout.mockReturnValue(generateSelection(template));
-    mockGenerateWorkout.mockReturnValue(
+    mockGenerateSetList.mockReturnValue(
       generateFinishedWorkout(template, "518"),
     );
 
@@ -149,10 +150,13 @@ describe("trainingSetList: generateTrainingSetList", () => {
         versionsHydrated: true,
         saveVersion,
       },
+      () => Math.random(),
       generateRequest(),
     );
 
-    expect(mockGenerateWorkout.mock.calls[0][2]).toEqual(savedBlocks);
+    expect(mockGenerateSetList.mock.calls[0][2].previousDrawnBlocks).toEqual(
+      savedBlocks,
+    );
     expect(saveVersion).not.toHaveBeenCalled();
   });
 
@@ -167,12 +171,15 @@ describe("trainingSetList: generateTrainingSetList", () => {
         versionsHydrated: false,
         saveVersion,
       },
+      () => Math.random(),
       generateRequest(),
     );
 
     expect(mockSelectWorkout).toHaveBeenCalledTimes(1);
-    expect(mockGenerateWorkout).toHaveBeenCalledTimes(1);
-    expect(mockGenerateWorkout.mock.calls[0][2]).toBeUndefined();
+    expect(mockGenerateSetList).toHaveBeenCalledTimes(1);
+    expect(
+      mockGenerateSetList.mock.calls[0][2].previousDrawnBlocks,
+    ).toBeUndefined();
     expect(saveVersion).not.toHaveBeenCalled();
   });
 
@@ -188,12 +195,15 @@ describe("trainingSetList: generateTrainingSetList", () => {
           versionsHydrated: true,
           saveVersion,
         },
+        () => Math.random(),
         generateRequest({ type }),
       );
 
       expect(mockSelectWorkout).toHaveBeenCalledTimes(1);
-      expect(mockGenerateWorkout).toHaveBeenCalledTimes(1);
-      expect(mockGenerateWorkout.mock.calls[0][2]).toBeUndefined();
+      expect(mockGenerateSetList).toHaveBeenCalledTimes(1);
+      expect(
+        mockGenerateSetList.mock.calls[0][2].previousDrawnBlocks,
+      ).toBeUndefined();
       expect(saveVersion).not.toHaveBeenCalled();
     },
   );

@@ -31,9 +31,10 @@ import {
 } from "@test/factories/templateBlock";
 import { generateAthlete } from "@test/factories/athlete";
 import { catchThrownValue } from "@test/factories/thrownValue";
+import { generateSeededRandom } from "@test/factories/seededRandom";
 import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   SHORT_WORKOUT_FILTERS,
   STRENGTH_TEST_FILTERS,
@@ -71,10 +72,12 @@ const generateWorkoutOf = (type: TrainingType) => {
     daysSinceLastWorkout: 0,
     userExerciseData: { exerciseData: {}, branchData: {} },
   };
-  return generateWorkout(selectWorkout(request), request).setList;
+  return generateSetList(selectWorkout(request), request, {
+    random: () => Math.random(),
+  }).setList;
 };
 
-describe("generateWorkout: routing", () => {
+describe("generateSetList: routing", () => {
   beforeEach(() => {
     jest.mocked(generateFinishedWorkout).mockClear();
   });
@@ -153,15 +156,6 @@ describe("generateWorkout: routing", () => {
       expect(result.map((entry) => entry.branchId)).toContain("410");
     });
 
-    it("reads Math.random when a draw runs, not when the input is built", () => {
-      jest.spyOn(Math, "random").mockReturnValue(0);
-      generatePlanWorkoutForWeekday(generateWarmUpOnlyPlanUser());
-      const [, , input] = jest.mocked(generateFinishedWorkout).mock.calls[0];
-      jest.spyOn(Math, "random").mockReturnValue(0.75);
-
-      expect(input.random()).toBe(0.75);
-    });
-
     it("throws the anamnesis error for an athlete without workout data", () => {
       const user = { ...generateWarmUpOnlyPlanUser(), workoutData: undefined };
 
@@ -202,7 +196,49 @@ describe("generateWorkout: routing", () => {
   });
 });
 
-describe("generateWorkout: progress per skill", () => {
+describe("generateSetList: random source", () => {
+  afterEach(jest.restoreAllMocks);
+
+  // generateMobilityRequest() → { type: "MOB", place: "HOME", equipment: [], weekday: 1, ... }
+  const generateMobilityRequest = (): WorkoutGenerationRequest => ({
+    type: "MOB",
+    user: generateWarmUpOnlyPlanUser(),
+    place: "HOME",
+    exercises: loadExercises(),
+    skillTrees: getAllSkillTrees(),
+    weekday: 1,
+    equipment: [],
+    givenSection: undefined,
+    daysSinceLastWorkout: 0,
+    userExerciseData: { exerciseData: {}, branchData: {} },
+  });
+
+  it("draws from the random source the caller passes and never from Math.random", () => {
+    const mathRandom = jest.spyOn(Math, "random");
+    const random = jest.fn(generateSeededRandom(7));
+    const request = generateMobilityRequest();
+
+    generateSetList(selectWorkout(request), request, { random });
+
+    expect(random).toHaveBeenCalled();
+    expect(mathRandom).not.toHaveBeenCalled();
+  });
+
+  it("returns the same set list for two runs with the same seed", () => {
+    const request = generateMobilityRequest();
+
+    const first = generateSetList(selectWorkout(request), request, {
+      random: generateSeededRandom(7),
+    });
+    const second = generateSetList(selectWorkout(request), request, {
+      random: generateSeededRandom(7),
+    });
+
+    expect(second.setList).toEqual(first.setList);
+  });
+});
+
+describe("generateSetList: progress per skill", () => {
   afterEach(jest.restoreAllMocks);
 
   it("continues a plan day under the resolved prevention skill from its record", () => {
@@ -242,7 +278,7 @@ describe("generateWorkout: progress per skill", () => {
   });
 });
 
-describe("generateWorkout: short workouts", () => {
+describe("generateSetList: short workouts", () => {
   afterEach(jest.restoreAllMocks);
   afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
   afterEach(() => jest.useRealTimers());
@@ -310,7 +346,11 @@ describe("generateWorkout: short workouts", () => {
     };
 
     expect(
-      catchThrownValue(() => generateWorkout(selectWorkout(request), request)),
+      catchThrownValue(() =>
+        generateSetList(selectWorkout(request), request, {
+          random: () => Math.random(),
+        }),
+      ),
     ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: [] });
   });
 
@@ -341,7 +381,9 @@ describe("generateWorkout: short workouts", () => {
       userExerciseData: { exerciseData: {}, branchData: {} },
     };
 
-    const { setList } = generateWorkout(selectWorkout(request), request);
+    const { setList } = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    });
 
     expect([...new Set(setList.map((entry) => entry.skill))]).toEqual([
       "CARDIO_2",
@@ -473,7 +515,7 @@ describe("selectWorkout: workout per training type", () => {
   });
 });
 
-describe("generateWorkout: replay of saved blocks", () => {
+describe("generateSetList: replay of previous drawn blocks", () => {
   afterEach(jest.restoreAllMocks);
   afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
 
@@ -500,22 +542,25 @@ describe("generateWorkout: replay of saved blocks", () => {
     { id: "own", name: { en: "Own" } },
   );
 
-  it("runs the saved blocks of a replay and returns their branches", () => {
+  it("runs the previous drawn blocks and returns their branches", () => {
     const { id } = useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(customTemplate, null);
     const request = generateRequest(id);
-    const saved = [
+    const previousDrawnBlocks = [
       { block: generateBranchesBlock("WU", ["410"]), templateIndex: 0 },
     ];
 
-    const { setList } = generateWorkout(selectWorkout(request), request, saved);
+    const { setList } = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+      previousDrawnBlocks,
+    });
 
     expect(setList.length).toBeGreaterThan(0);
     expect(setList.every((entry) => entry.branchId === "410")).toBe(true);
   });
 
-  it("replaces a pain blocked saved branch from the pool of its original pick only", () => {
+  it("replaces a pain blocked drawn branch from the pool of its original pick only", () => {
     // Branch 523 trains the knee direction and knee pain blocks it. The knee
     // pick pool contains 518, 767 and 866 after the pain check; the hip pick
     // pool contains other branches.
@@ -543,12 +588,14 @@ describe("generateWorkout: replay of saved blocks", () => {
       },
       equipment: ["DUMBBELL", "BARBELL"],
     };
-    const saved = [
+    const previousDrawnBlocks = [
       { block: generateBranchesBlock("GKS", ["523"]), templateIndex: 0 },
     ];
-    jest.spyOn(Math, "random").mockReturnValue(0.99);
 
-    const { setList } = generateWorkout(selectWorkout(request), request, saved);
+    const { setList } = generateSetList(selectWorkout(request), request, {
+      random: () => 0.99,
+      previousDrawnBlocks,
+    });
 
     expect(["518", "767", "866"]).toContain(setList[0].branchId);
   });

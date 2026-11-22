@@ -1,7 +1,7 @@
 import { loadExercises } from "@/data/loadExercises";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { SavedBlock } from "@/features/training/workoutGenerator/replacementPools";
+import type { DrawnBlock } from "@/features/training/workoutGenerator/replacementPools";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import {
   SHORT_WORKOUT_FILTERS,
@@ -85,7 +85,7 @@ const generateStrengthTemplate = (): Template =>
  */
 const generateSavedVersion = (
   template: Template,
-  blocks: SavedBlock[],
+  blocks: DrawnBlock[],
 ): SavedVersion => ({
   templateBlocks: JSON.stringify(template.blocks),
   blocks,
@@ -147,7 +147,7 @@ const listPairsOfSkill = (
 };
 
 /**
- * Seeds Math.random, which the generator reads for every draw.
+ * Seeds Math.random, which the random source of each start reads.
  *
  * seedRandom(7) → the next draws are the seed 7 sequence
  */
@@ -180,7 +180,7 @@ describe("savedVersion: readVersionBlocks", () => {
   });
 
   // The template starts with a mobility block, so the template index is 1.
-  it.each<[string, Block, SavedBlock]>([
+  it.each<[string, Block, DrawnBlock]>([
     [
       "copies the timing fields of a picks block",
       generatePicksBlock("GKS", {
@@ -270,6 +270,7 @@ describe("savedVersion: generateVersionedSetList on the first start", () => {
     seedRandom(1);
 
     const { setList, versionToSave } = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest(),
       selection: generateSelection(template),
     });
@@ -294,6 +295,7 @@ describe("savedVersion: generateVersionedSetList on the first start", () => {
     ]);
 
     const { setList, versionToSave } = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest({
         place: "HALL",
         equipment: ["AREA_10", "AREA_20", "TRACK_20", "TREADMILL"],
@@ -321,12 +323,14 @@ describe("savedVersion: generateVersionedSetList on a reuse", () => {
     const template = generateStrengthTemplate();
     seedRandom(1);
     const first = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest(),
       selection: generateSelection(template),
     });
     seedRandom(2);
 
     const second = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest(),
       selection: generateSelection(template),
       saved: first.versionToSave ?? undefined,
@@ -356,12 +360,14 @@ describe("savedVersion: generateVersionedSetList on a reuse", () => {
       ]);
       seedRandom(1);
       const first = generateVersionedSetList({
+        random: () => Math.random(),
         request: generateRequest(),
         selection: generateSelection(template),
       });
       seedRandom(2);
 
       const second = generateVersionedSetList({
+        random: () => Math.random(),
         request: generateRequest(),
         selection: generateSelection(template),
         saved: first.versionToSave ?? undefined,
@@ -386,12 +392,14 @@ describe("savedVersion: generateVersionedSetList on a reuse", () => {
     ]);
     seedRandom(1);
     const first = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest(),
       selection: generateSelection(template),
     });
     seedRandom(9);
 
     const second = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest(),
       selection: generateSelection(template),
       saved: first.versionToSave ?? undefined,
@@ -418,6 +426,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
     const template = generateStrengthTemplate();
     seedRandom(1);
     const first = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest({
         user: generateAthlete({ level: "BEGINNER" }),
       }),
@@ -426,6 +435,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
     seedRandom(2);
 
     const second = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest({
         user: generateAthlete({ level: "PROFESSIONAL" }),
       }),
@@ -448,6 +458,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
     const template = generateStrengthTemplate();
     seedRandom(1);
     const first = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest(),
       selection: generateSelection(template),
     });
@@ -459,6 +470,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
     seedRandom(2);
 
     const second = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest({
         userExerciseData: { exerciseData: {}, branchData },
       }),
@@ -497,6 +509,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
     seedRandom(3);
 
     const blocked = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest({
         equipment: ["DUMBBELL", "BARBELL"],
         user: generateAthlete({ pains: ["KNEE_LEFT"] }),
@@ -505,6 +518,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
       saved,
     });
     const cleared = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest({ equipment: ["DUMBBELL", "BARBELL"] }),
       selection: generateSelection(template),
       saved,
@@ -532,6 +546,7 @@ describe("savedVersion: generateVersionedSetList after a template change", () =>
     seedRandom(1);
 
     const { setList, versionToSave } = generateVersionedSetList({
+      random: () => Math.random(),
       request: generateRequest(),
       selection: generateSelection(newTemplate),
       saved,

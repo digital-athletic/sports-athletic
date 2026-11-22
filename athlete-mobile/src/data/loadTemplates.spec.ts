@@ -35,6 +35,7 @@ const IDS = [
   "PREVANKLE",
   "PREVSPINE",
 ];
+const ATHLETIC_WARMUP_IDS = ["ATHLETIK_WARMUP_10_15", "ATHLETIK_WARMUP_20_25"];
 const PLACES = ["withWeights", "withoutWeights"] as const;
 type Place = (typeof PLACES)[number];
 
@@ -261,8 +262,10 @@ const validGks = {
 };
 
 describe("loadTemplates: real files", () => {
-  it("has the 13 templates", () => {
-    expect(Object.keys(loadTemplates()).sort()).toEqual([...IDS].sort());
+  it("has the 15 templates", () => {
+    expect(Object.keys(loadTemplates()).sort()).toEqual(
+      [...IDS, ...ATHLETIC_WARMUP_IDS].sort(),
+    );
   });
 
   it.each(IDS)("keys the template %s by its id", (id) => {
@@ -294,6 +297,70 @@ describe("loadTemplates: real files", () => {
       blocksOf(id).forEach((block) =>
         expect(loadSkillCatalogEntry(block.skill)?.skillTree).toBeDefined(),
       );
+    },
+  );
+});
+
+const picksBlocksOf = (id: string): PicksBlock[] =>
+  templateOf(id).blocks.filter((block) => block.kind === "picks");
+
+describe("loadTemplates: athletic warm-ups", () => {
+  it.each([
+    [
+      "ATHLETIK_WARMUP_10_15",
+      {
+        en: "Athletic Warm-up (approx. 10 to 15 min)",
+        de: "Athletik Warm-up (ca. 10 bis 15 Min.)",
+      },
+    ],
+    [
+      "ATHLETIK_WARMUP_20_25",
+      {
+        en: "Athletic Warm-up (approx. 20 to 25 min)",
+        de: "Athletik Warm-up (ca. 20 bis 25 Min.)",
+      },
+    ],
+  ])("names %s", (id, name) => {
+    expect(templateOf(id).name).toEqual(name);
+  });
+
+  it.each(ATHLETIC_WARMUP_IDS)(
+    "lists the block skills of %s in order",
+    (id) => {
+      expect(templateOf(id).blocks.map((block) => block.skill)).toEqual([
+        "MOB",
+        "WU",
+        "BAS",
+        "WUSKSA",
+        "PLYO_MEDIUM",
+        "CARDIO_1_SHORT",
+      ]);
+    },
+  );
+
+  it.each(
+    ATHLETIC_WARMUP_IDS.flatMap((id) =>
+      PLACES.map((place) => [id, place] as const),
+    ),
+  )(
+    "matches a branch of the skill trees for every pick of %s %s",
+    (id, place) => {
+      const trees = getAllSkillTrees();
+      const unmatched = picksBlocksOf(id).flatMap((block, index) => {
+        const branches: SkillTreeType = {};
+        entryOf(block.skill).skillTree[place].forEach((name) =>
+          Object.assign(branches, trees[name]),
+        );
+        return picksAt(block.picks, place)
+          .filter(
+            (pick) =>
+              Object.keys(filterBranchesByTags(branches, pick.tags)).length ===
+              0,
+          )
+          .map((pick) => `${index}: ${pick.tags.join(",")}`);
+      });
+
+      expect(unmatched).toEqual([]);
     },
   );
 });

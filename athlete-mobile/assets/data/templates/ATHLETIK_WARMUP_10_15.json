@@ -1,0 +1,142 @@
+{
+  "aiwl": 1,
+  "id": "ATHLETIK_WARMUP_10_15",
+  "name": {
+    "de": "Athletik Warm-up (ca. 10 bis 15 Min.)",
+    "en": "Athletic Warm-up (approx. 10 to 15 min)"
+  },
+  "description": {
+    "de": "Kompaktes, sportartenuebergreifendes Athletik-Warm-up mit Mobilisation, Aktivierung, Beinachsenstabilitaet, Schnelligkeits-Warm-up, Plyometrie und kurzen Sprintintervallen. Die sportartspezifische Vorbereitung erfolgt separat.",
+    "en": "Compact, multi-sport athletic warm-up combining mobility, activation, leg-axis stability, speed warm-up, plyometrics and short sprint intervals. Sport-specific preparation follows separately."
+  },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "MOB",
+      "picks": [
+        {
+          "tags": [
+            "REGION_LOWER_BODY"
+          ],
+          "count": 1
+        },
+        {
+          "tags": [
+            "REGION_UPPER_BODY"
+          ],
+          "count": 1
+        }
+      ],
+      "countBy": "entries",
+      "superset": "none",
+      "sets": 1,
+      "values": "exercise",
+      "rest": {
+        "betweenSets": 10,
+        "afterExercise": 10,
+        "afterBlock": 10
+      }
+    },
+    {
+      "kind": "picks",
+      "skill": "WU",
+      "picks": [
+        {
+          "tags": [
+            "REGION_LOWER_BODY"
+          ],
+          "count": 1
+        },
+        {
+          "tags": [
+            "REGION_UPPER_BODY"
+          ],
+          "count": 1
+        }
+      ],
+      "countBy": "entries",
+      "superset": "none",
+      "sets": 1,
+      "values": "exercise",
+      "rest": {
+        "betweenSets": 10,
+        "afterExercise": 10,
+        "afterBlock": 10
+      }
+    },
+    {
+      "kind": "picks",
+      "skill": "BAS",
+      "picks": [
+        {
+          "tags": [
+            "SKILL_STABILITY_LEG"
+          ],
+          "count": 2
+        }
+      ],
+      "countBy": "entries",
+      "superset": "none",
+      "sets": 1,
+      "fallbackToWholeTree": false,
+      "values": "exercise",
+      "rest": {
+        "betweenSets": 30,
+        "afterExercise": 30,
+        "afterBlock": 30
+      }
+    },
+    {
+      "kind": "picks",
+      "skill": "WUSKSA",
+      "picks": [
+        {
+          "tags": [
+            "REGION_LOWER_BODY"
+          ],
+          "count": 1
+        },
+        {
+          "tags": [
+            "REGION_UPPER_BODY"
+          ],
+          "count": 1
+        }
+      ],
+      "countBy": "entries",
+      "superset": "none",
+      "sets": 1,
+      "rest": {
+        "betweenSets": 30,
+        "afterExercise": 30,
+        "afterBlock": 30
+      }
+    },
+    {
+      "kind": "picks",
+      "skill": "PLYO_MEDIUM",
+      "picks": [
+        {
+          "tags": [
+            "REGION_LOWER_BODY"
+          ],
+          "count": 1
+        }
+      ],
+      "countBy": "entries",
+      "superset": "none",
+      "sets": 1,
+      "values": "exercise",
+      "rest": {
+        "betweenSets": 60,
+        "afterExercise": 60,
+        "afterBlock": 60
+      }
+    },
+    {
+      "kind": "duration",
+      "skill": "CARDIO_1_SHORT",
+      "duration": 180
+    }
+  ]
+}

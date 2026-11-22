@@ -2,7 +2,12 @@ import { loadExercises } from "@/data/loadExercises";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { SavedBlock } from "@/features/training/workoutGenerator/replacementPools";
-import type { WorkoutGenerationRequest } from "@/features/training/workoutGeneratorRouter";
+import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
+import {
+  SHORT_WORKOUT_FILTERS,
+  type WorkoutGenerationRequest,
+  type WorkoutSelection,
+} from "@/features/training/workoutGeneratorRouter";
 import type { Block, Template } from "@/schemas/aiwl.schema";
 import { generateAthlete } from "@test/factories/athlete";
 import {
@@ -44,6 +49,18 @@ const generateRequest = (
   daysSinceLastWorkout: 0,
   userExerciseData: { exerciseData: {}, branchData: {} },
   ...overrides,
+});
+
+/**
+ * Builds the selection the router makes for a custom workout template.
+ *
+ * generateSelection(template)
+ * → { workout: template, lookUpBranch: lookUpStoredBranchInCatalog, filters: SHORT_WORKOUT_FILTERS }
+ */
+const generateSelection = (template: Template): WorkoutSelection => ({
+  workout: template,
+  lookUpBranch: lookUpStoredBranchInCatalog,
+  filters: SHORT_WORKOUT_FILTERS,
 });
 
 /**
@@ -254,7 +271,7 @@ describe("savedVersion: generateVersionedSetList on the first start", () => {
 
     const { setList, versionToSave } = generateVersionedSetList({
       request: generateRequest(),
-      template,
+      selection: generateSelection(template),
     });
 
     expect(versionToSave?.templateBlocks).toBe(JSON.stringify(template.blocks));
@@ -282,7 +299,7 @@ describe("savedVersion: generateVersionedSetList on the first start", () => {
         equipment: ["AREA_10", "AREA_20", "TRACK_20", "TREADMILL"],
         user: generateAthlete({ pains: ["KNEE_LEFT"] }),
       }),
-      template,
+      selection: generateSelection(template),
     });
 
     expect(listSkills(setList)).toEqual(["CARDIO_5"]);
@@ -305,13 +322,13 @@ describe("savedVersion: generateVersionedSetList on a reuse", () => {
     seedRandom(1);
     const first = generateVersionedSetList({
       request: generateRequest(),
-      template,
+      selection: generateSelection(template),
     });
     seedRandom(2);
 
     const second = generateVersionedSetList({
       request: generateRequest(),
-      template,
+      selection: generateSelection(template),
       saved: first.versionToSave ?? undefined,
     });
 
@@ -340,13 +357,13 @@ describe("savedVersion: generateVersionedSetList on a reuse", () => {
       seedRandom(1);
       const first = generateVersionedSetList({
         request: generateRequest(),
-        template,
+        selection: generateSelection(template),
       });
       seedRandom(2);
 
       const second = generateVersionedSetList({
         request: generateRequest(),
-        template,
+        selection: generateSelection(template),
         saved: first.versionToSave ?? undefined,
       });
 
@@ -370,13 +387,13 @@ describe("savedVersion: generateVersionedSetList on a reuse", () => {
     seedRandom(1);
     const first = generateVersionedSetList({
       request: generateRequest(),
-      template,
+      selection: generateSelection(template),
     });
     seedRandom(9);
 
     const second = generateVersionedSetList({
       request: generateRequest(),
-      template,
+      selection: generateSelection(template),
       saved: first.versionToSave ?? undefined,
     });
 
@@ -404,7 +421,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
       request: generateRequest({
         user: generateAthlete({ level: "BEGINNER" }),
       }),
-      template,
+      selection: generateSelection(template),
     });
     seedRandom(2);
 
@@ -412,7 +429,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
       request: generateRequest({
         user: generateAthlete({ level: "PROFESSIONAL" }),
       }),
-      template,
+      selection: generateSelection(template),
       saved: first.versionToSave ?? undefined,
     });
 
@@ -432,7 +449,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
     seedRandom(1);
     const first = generateVersionedSetList({
       request: generateRequest(),
-      template,
+      selection: generateSelection(template),
     });
     const branchData = Object.fromEntries(
       (first.versionToSave?.blocks ?? [])
@@ -445,7 +462,7 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
       request: generateRequest({
         userExerciseData: { exerciseData: {}, branchData },
       }),
-      template,
+      selection: generateSelection(template),
       saved: first.versionToSave ?? undefined,
     });
 
@@ -484,12 +501,12 @@ describe("savedVersion: generateVersionedSetList after a change of the athlete",
         equipment: ["DUMBBELL", "BARBELL"],
         user: generateAthlete({ pains: ["KNEE_LEFT"] }),
       }),
-      template,
+      selection: generateSelection(template),
       saved,
     });
     const cleared = generateVersionedSetList({
       request: generateRequest({ equipment: ["DUMBBELL", "BARBELL"] }),
-      template,
+      selection: generateSelection(template),
       saved,
     });
 
@@ -516,7 +533,7 @@ describe("savedVersion: generateVersionedSetList after a template change", () =>
 
     const { setList, versionToSave } = generateVersionedSetList({
       request: generateRequest(),
-      template: newTemplate,
+      selection: generateSelection(newTemplate),
       saved,
     });
 

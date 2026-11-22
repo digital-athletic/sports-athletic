@@ -6,7 +6,11 @@
  */
 import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import {
+  generateWorkout,
+  selectWorkout,
+  type WorkoutGenerationRequest,
+} from "@/features/training/workoutGeneratorRouter";
 import type { UserType } from "@/schemas/user.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { ExerciseType } from "@/schemas/exercise.schema";
@@ -220,7 +224,7 @@ export function generatePlanWorkoutForWeekday(
   user: UserType,
   options: PlanWorkoutOptions = {},
 ): GeneratedSetListEntry[] {
-  return generateWorkout({
+  const request: WorkoutGenerationRequest = {
     type: "PLAN",
     user,
     place: options.place ?? "HALL",
@@ -234,5 +238,6 @@ export function generatePlanWorkoutForWeekday(
       ...(options.storedProgress ?? { exerciseData: {} }),
       branchData: {},
     },
-  });
+  };
+  return generateWorkout(selectWorkout(request), request).setList;
 }

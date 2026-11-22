@@ -5,7 +5,11 @@ import PlanGenerator from "@/features/training/generators/PlanGenerator";
 import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import { minutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import {
+  generateWorkout,
+  selectWorkout,
+  type WorkoutGenerationRequest,
+} from "@/features/training/workoutGeneratorRouter";
 import type { PlacesData } from "@/store/placesStore";
 
 const TRAINING_WEEKDAYS = [1, 3];
@@ -53,8 +57,8 @@ const powerEnduranceEntries = (birthday: string) => {
   );
   expect(sectionIndex).toBeGreaterThan(-1);
 
-  return TRAINING_WEEKDAYS.flatMap((weekday) =>
-    generateWorkout({
+  return TRAINING_WEEKDAYS.flatMap((weekday) => {
+    const request: WorkoutGenerationRequest = {
       type: "PLAN",
       user: { ...user, trainingPlan },
       place: "STUDIO",
@@ -65,8 +69,9 @@ const powerEnduranceEntries = (birthday: string) => {
       givenSection: sectionIndex,
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
-    }),
-  );
+    };
+    return generateWorkout(selectWorkout(request), request).setList;
+  });
 };
 
 const specialBranchIds = new Set(Object.keys(getAllSkillTrees().SAS));

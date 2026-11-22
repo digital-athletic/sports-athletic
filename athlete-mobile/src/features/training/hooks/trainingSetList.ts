@@ -3,6 +3,7 @@ import { generateVersionedSetList } from "@/features/customWorkouts/savedVersion
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import {
   generateWorkout,
+  selectWorkout,
   type WorkoutGenerationRequest,
 } from "@/features/training/workoutGeneratorRouter";
 import {
@@ -44,13 +45,14 @@ export const generateTrainingSetList = (
   ctx: SetListVersionsContext,
   request: WorkoutGenerationRequest & { place: PlaceType },
 ): GeneratedSetListEntry[] => {
-  const template = findCustomTemplate(ctx.workoutsById, request.type);
-  if (!template || !ctx.versionsHydrated) {
-    return generateWorkout(request);
+  const selection = selectWorkout(request);
+  const isCustom = findCustomTemplate(ctx.workoutsById, request.type);
+  if (!isCustom || !ctx.versionsHydrated) {
+    return generateWorkout(selection, request).setList;
   }
   const { setList, versionToSave } = generateVersionedSetList({
     request,
-    template,
+    selection,
     saved: ctx.versionsByWorkout[request.type]?.[request.place],
   });
   if (versionToSave) {

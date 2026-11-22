@@ -1,9 +1,10 @@
 import { Alert } from "@/common/Alert";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
+import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import {
-  generateCustomWorkout,
   generateWorkout,
+  selectWorkout,
 } from "@/features/training/workoutGeneratorRouter";
 import type { Template } from "@/schemas/aiwl.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
@@ -32,12 +33,12 @@ jest.mock("react-i18next", () => ({
 }));
 
 jest.mock("@/features/training/workoutGeneratorRouter", () => ({
+  selectWorkout: jest.fn(),
   generateWorkout: jest.fn(),
-  generateCustomWorkout: jest.fn(),
 }));
 
 const mockGenerateWorkout = jest.mocked(generateWorkout);
-const mockGenerateCustomWorkout = jest.mocked(generateCustomWorkout);
+const mockSelectWorkout = jest.mocked(selectWorkout);
 const alertSpy = jest.spyOn(Alert, "alert");
 
 /** Plan training params, e.g. { type: "PLAN" }. */
@@ -79,7 +80,7 @@ const pressAlertOk = async (callIndex: number) => {
 beforeEach(() => {
   jest.clearAllMocks();
   alertSpy.mockImplementation(() => {});
-  mockGenerateWorkout.mockReturnValue([]);
+  mockGenerateWorkout.mockReturnValue({ setList: [], blocks: [] });
   useUserProfileStore.setState({ warnings: { painAlertSeen: false } });
   useCustomWorkoutsStore.setState({ workoutsById: {} });
   useSetListVersionsStore.setState({
@@ -204,7 +205,12 @@ describe("useTrainingGeneration: saved versions of custom workouts", () => {
         "custom-a": { id: "custom-a", teamId: null, template, importedAt: 0 },
       },
     });
-    mockGenerateCustomWorkout.mockReturnValue(
+    mockSelectWorkout.mockReturnValue({
+      workout: template,
+      lookUpBranch: lookUpStoredBranchInCatalog,
+      filters: {},
+    });
+    mockGenerateWorkout.mockReturnValue(
       generateFinishedWorkout(template, "510"),
     );
     const { result } = await renderHook(() =>

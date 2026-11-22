@@ -1,9 +1,11 @@
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
-import type { WorkoutGenerationRequest } from "@/features/training/workoutGeneratorRouter";
+import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import {
-  generateCustomWorkout,
   generateWorkout,
+  selectWorkout,
+  type WorkoutGenerationRequest,
+  type WorkoutSelection,
 } from "@/features/training/workoutGeneratorRouter";
 import type { Template } from "@/schemas/aiwl.schema";
 import { generateAthlete } from "@test/factories/athlete";
@@ -16,12 +18,12 @@ import {
 import { generateTrainingSetList } from "./trainingSetList";
 
 jest.mock("@/features/training/workoutGeneratorRouter", () => ({
+  selectWorkout: jest.fn(),
   generateWorkout: jest.fn(),
-  generateCustomWorkout: jest.fn(),
 }));
 
 const mockGenerateWorkout = jest.mocked(generateWorkout);
-const mockGenerateCustomWorkout = jest.mocked(generateCustomWorkout);
+const mockSelectWorkout = jest.mocked(selectWorkout);
 
 /**
  * Builds the request of a training start at the studio. The overrides
@@ -57,6 +59,18 @@ const generateWorkoutsById = (template: Template) => ({
 });
 
 /**
+ * Builds the selection the router makes for a custom workout template.
+ *
+ * generateSelection(template)
+ * → { workout: template, lookUpBranch: lookUpStoredBranchInCatalog, filters: {} }
+ */
+const generateSelection = (template: Template): WorkoutSelection => ({
+  workout: template,
+  lookUpBranch: lookUpStoredBranchInCatalog,
+  filters: {},
+});
+
+/**
  * Builds what the generator returns when the GKS block of the template drew
  * the branch.
  *
@@ -75,14 +89,15 @@ const generateFinishedWorkout = (
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockGenerateWorkout.mockReturnValue([]);
+  mockGenerateWorkout.mockReturnValue({ setList: [], blocks: [] });
 });
 
 describe("trainingSetList: generateTrainingSetList", () => {
   it("saves the first set list of a custom workout at the place", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
     const saveVersion = jest.fn();
-    mockGenerateCustomWorkout.mockReturnValue(
+    mockSelectWorkout.mockReturnValue(generateSelection(template));
+    mockGenerateWorkout.mockReturnValue(
       generateFinishedWorkout(template, "510"),
     );
 
@@ -115,7 +130,8 @@ describe("trainingSetList: generateTrainingSetList", () => {
     ];
     const saveVersion = jest.fn();
     // A pain blocks branch 523, so the replay draws 518 in its slot.
-    mockGenerateCustomWorkout.mockReturnValue(
+    mockSelectWorkout.mockReturnValue(generateSelection(template));
+    mockGenerateWorkout.mockReturnValue(
       generateFinishedWorkout(template, "518"),
     );
 
@@ -136,7 +152,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
       generateRequest(),
     );
 
-    expect(mockGenerateCustomWorkout.mock.calls[0][2]).toEqual(savedBlocks);
+    expect(mockGenerateWorkout.mock.calls[0][2]).toEqual(savedBlocks);
     expect(saveVersion).not.toHaveBeenCalled();
   });
 
@@ -154,8 +170,9 @@ describe("trainingSetList: generateTrainingSetList", () => {
       generateRequest(),
     );
 
+    expect(mockSelectWorkout).toHaveBeenCalledTimes(1);
     expect(mockGenerateWorkout).toHaveBeenCalledTimes(1);
-    expect(mockGenerateCustomWorkout).not.toHaveBeenCalled();
+    expect(mockGenerateWorkout.mock.calls[0][2]).toBeUndefined();
     expect(saveVersion).not.toHaveBeenCalled();
   });
 
@@ -174,8 +191,9 @@ describe("trainingSetList: generateTrainingSetList", () => {
         generateRequest({ type }),
       );
 
+      expect(mockSelectWorkout).toHaveBeenCalledTimes(1);
       expect(mockGenerateWorkout).toHaveBeenCalledTimes(1);
-      expect(mockGenerateCustomWorkout).not.toHaveBeenCalled();
+      expect(mockGenerateWorkout.mock.calls[0][2]).toBeUndefined();
       expect(saveVersion).not.toHaveBeenCalled();
     },
   );

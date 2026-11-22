@@ -3,7 +3,11 @@ import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import {
+  generateWorkout,
+  selectWorkout,
+  type WorkoutGenerationRequest,
+} from "@/features/training/workoutGeneratorRouter";
 import * as exercisePairing from "@/features/training/workoutGenerator/setListBuilders/exercisePairing";
 import { generateAthleteWithMaxValues } from "@test/factories/athlete";
 import { spyOnDrawnBranches } from "@test/factories/drawnBranches";
@@ -33,7 +37,7 @@ const selectedBranches = (
   } = {},
 ) => {
   const readDrawnBranches = spyOnDrawnBranches();
-  generateWorkout({
+  const request: WorkoutGenerationRequest = {
     type,
     user: options.user ?? beginner,
     place: "HOME",
@@ -44,7 +48,8 @@ const selectedBranches = (
     givenSection: undefined,
     daysSinceLastWorkout: 0,
     userExerciseData: { exerciseData: {}, branchData: {} },
-  });
+  };
+  generateWorkout(selectWorkout(request), request);
   // a prevention training also draws a special warm up block
   return readDrawnBranches(type);
 };
@@ -190,7 +195,7 @@ describe("AIWL short workout: authored exercise values", () => {
         },
       };
 
-      const setList = generateWorkout({
+      const request: WorkoutGenerationRequest = {
         type,
         user: beginner,
         place: "HOME",
@@ -205,7 +210,8 @@ describe("AIWL short workout: authored exercise values", () => {
         givenSection: undefined,
         daysSinceLastWorkout: 0,
         userExerciseData: { exerciseData: {}, branchData: {} },
-      });
+      };
+      const setList = generateWorkout(selectWorkout(request), request).setList;
 
       const exerciseSets = setList.filter(
         (entry) => entry.exerciseId === "501",
@@ -222,7 +228,7 @@ const mainPairs = (
   equipment: string[] = [],
 ): string[][] => {
   const pairBranches = jest.spyOn(exercisePairing, "pairBranchExercises");
-  generateWorkout({
+  const request: WorkoutGenerationRequest = {
     type,
     user: beginner,
     place: "HOME",
@@ -233,7 +239,8 @@ const mainPairs = (
     givenSection: undefined,
     daysSinceLastWorkout: 0,
     userExerciseData: { exerciseData: {}, branchData: {} },
-  });
+  };
+  generateWorkout(selectWorkout(request), request);
   // a prevention training also pairs its special warm up block; skip it
   const warmUpBranchIds = Object.keys(skillTrees.WUSPEZIAL ?? {});
   const mainResult = pairBranches.mock.results.find(

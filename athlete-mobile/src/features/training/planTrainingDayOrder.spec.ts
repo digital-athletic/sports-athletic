@@ -15,7 +15,11 @@ import {
   generateTemplate,
 } from "@test/factories/templateBlock";
 import type { UserType } from "@/schemas/user.schema";
-import { generateWorkout } from "./workoutGeneratorRouter";
+import {
+  generateWorkout,
+  selectWorkout,
+  type WorkoutGenerationRequest,
+} from "./workoutGeneratorRouter";
 
 // The plan generator writes an AIWL day in skill priority order, GKS before
 // MOB and WU. A hand written day in section order would prove nothing.
@@ -54,7 +58,7 @@ describe("generateWorkout: plan training day order", () => {
   it("lists the skills of an AIWL plan day in section order", () => {
     jest.spyOn(Math, "random").mockReturnValue(0);
 
-    const setList = generateWorkout({
+    const request: WorkoutGenerationRequest = {
       type: "PLAN",
       user: generateAiwlPlanUserOutOfOrder(),
       place: "STUDIO",
@@ -65,7 +69,8 @@ describe("generateWorkout: plan training day order", () => {
       givenSection: undefined,
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
-    });
+    };
+    const setList = generateWorkout(selectWorkout(request), request).setList;
 
     expect([...new Set(listTrainedSkills(setList))]).toEqual([
       "MOB",
@@ -77,7 +82,7 @@ describe("generateWorkout: plan training day order", () => {
   it("lists the skills of an old plan day in section order", () => {
     jest.spyOn(Math, "random").mockReturnValue(0);
 
-    const setList = generateWorkout({
+    const request: WorkoutGenerationRequest = {
       type: "PLAN",
       user: generateLegacyPlanUserOutOfOrder(),
       place: "STUDIO",
@@ -88,7 +93,8 @@ describe("generateWorkout: plan training day order", () => {
       givenSection: undefined,
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
-    });
+    };
+    const setList = generateWorkout(selectWorkout(request), request).setList;
 
     expect([...new Set(listTrainedSkills(setList))]).toEqual([
       "MOB",

@@ -1,22 +1,25 @@
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import type { SavedBlock } from "@/features/training/workoutGenerator/replacementPools";
-import type { BranchesBlock } from "@/features/training/workoutGenerator/stages/blockWalk";
 import type {
   FilledBlockResult,
   FinishedWorkout,
 } from "@/features/training/workoutGenerator/stages/workoutFinish";
+import type {
+  BranchesBlock,
+  InterpretedWorkout,
+} from "@/features/training/workoutGenerator/stages/blockWalk";
 import {
-  generateCustomWorkout,
+  generateWorkout,
   type WorkoutGenerationRequest,
+  type WorkoutSelection,
 } from "@/features/training/workoutGeneratorRouter";
-import type { Template } from "@/schemas/aiwl.schema";
 
 /** The first generation of a custom workout at one place. */
 export type SavedVersion = { templateBlocks: string; blocks: SavedBlock[] };
 
 type VersionedSetListInput = {
   request: WorkoutGenerationRequest;
-  template: Template;
+  selection: WorkoutSelection;
   saved?: SavedVersion;
 };
 
@@ -63,7 +66,7 @@ const toBranchesBlock = (
  */
 export const readVersionBlocks = (
   finished: FinishedWorkout<GeneratedSetListEntry>,
-  template: Template,
+  template: InterpretedWorkout,
 ): SavedBlock[] =>
   finished.blocks.flatMap((result): SavedBlock[] => {
     if (result.status !== "filled") return [];
@@ -81,17 +84,17 @@ export const readVersionBlocks = (
  */
 export const generateVersionedSetList = ({
   request,
-  template,
+  selection,
   saved,
 }: VersionedSetListInput): VersionedSetList => {
-  const templateBlocks = JSON.stringify(template.blocks);
+  const templateBlocks = JSON.stringify(selection.workout.blocks);
   const replayBlocks =
     saved?.templateBlocks === templateBlocks ? saved.blocks : undefined;
-  const finished = generateCustomWorkout(request, template, replayBlocks);
+  const finished = generateWorkout(selection, request, replayBlocks);
   if (replayBlocks) {
     return { setList: finished.setList, versionToSave: null };
   }
-  const blocks = readVersionBlocks(finished, template);
+  const blocks = readVersionBlocks(finished, selection.workout);
   return {
     setList: finished.setList,
     versionToSave: blocks.length > 0 ? { templateBlocks, blocks } : null,

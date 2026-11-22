@@ -73,6 +73,10 @@
         "title": "Fokus-Trainings",
         "subtitle": "10-20 minütige Trainings für ausgewählte Schwerpunkte"
       },
+      "athleticWarmup": {
+        "title": "Athletik Warm-up",
+        "subtitle": "10 bis 25 Min. Warm-up vor deinem Training"
+      },
       "preventionTraining": {
         "title": "Präventions-Trainings",
         "subtitle": "Beschwerden vorbeugen & verbessern"
@@ -317,6 +321,14 @@
       "gridEyebrow": "Fokus-Training · 10-20 Min",
       "gridHeading": "Was möchtest du trainieren?"
     },
+    "athleticWarmup": {
+      "gridEyebrow": "Athletik Warm-up · 10 bis 25 Min.",
+      "gridHeading": "Wie viel Zeit hast du?",
+      "SHORT_TITLE": "10 bis 15 Min.",
+      "SHORT_DESC": "Kompaktes Warm-up vor deinem Training",
+      "LONG_TITLE": "20 bis 25 Min.",
+      "LONG_DESC": "Erweitertes Warm-up mit mehr Stabilität und Sprüngen"
+    },
     "prevention": {
       "PREVENTION_TILE_ANKLE": "Knöchel",
       "PREVENTION_TILE_KNEE": "Knie & Hüfte",
@@ -522,6 +534,7 @@
     "active": {
       "title": {
         "focus": "Fokus-Training",
+        "athleticWarmup": "Athletik Warm-up",
         "plan": "Training",
         "prevention": "Präventionstraining",
         "strengthTest": "Krafttest"

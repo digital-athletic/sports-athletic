@@ -4,6 +4,7 @@ import { TrainingTile } from "@/common/TrainingTile";
 import type { TrainingCategory } from "@/features/training/models/Training";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
+import IconRocket from "@tabler/icons-react-native/IconRocket";
 import IconShieldHeart from "@tabler/icons-react-native/IconShieldHeart";
 import IconTargetArrow from "@tabler/icons-react-native/IconTargetArrow";
 
@@ -26,6 +27,13 @@ export default function FocusTrainingListScreen() {
           description={t("screens.home.focusTraining.subtitle")}
           onPress={() => startTraining("focus")}
           testID="focus-training-tile"
+        />
+        <TrainingTile
+          icon={IconRocket}
+          title={t("screens.home.athleticWarmup.title")}
+          description={t("screens.home.athleticWarmup.subtitle")}
+          onPress={() => startTraining("athleticWarmup")}
+          testID="athletic-warmup-tile"
         />
         <TrainingTile
           icon={IconShieldHeart}

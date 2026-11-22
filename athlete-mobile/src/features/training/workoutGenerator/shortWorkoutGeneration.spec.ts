@@ -168,6 +168,30 @@ describe("shortWorkoutGeneration: generateFinishedWorkout of a short workout tem
     },
   );
 
+  it.each(["ATHLETIK_WARMUP_10_15", "ATHLETIK_WARMUP_20_25"])(
+    "trains every block skill of the %s template in template order",
+    (templateId) => {
+      const setList = generateSetList(
+        loadTemplates()[templateId],
+        lookUpStoredBranchInCatalog,
+        generateGenerationInput({
+          exerciseCatalog: loadExercises(),
+          random: generateSeededRandom(7),
+        }),
+        { skillTrees: getAllSkillTrees() },
+      );
+
+      expect([...new Set(listTrainedSkills(setList))]).toEqual([
+        "MOB",
+        "WU",
+        "BAS",
+        "WUSKSA",
+        "PLYO_MEDIUM",
+        "CARDIO_1_SHORT",
+      ]);
+    },
+  );
+
   it("runs picks, branches and picks blocks and lists their skills in template order", () => {
     const template = generateShortTemplate([
       generatePicksBlock("MOB"),

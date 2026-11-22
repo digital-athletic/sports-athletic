@@ -171,7 +171,7 @@ describe("shortWorkoutGeneration: generateFinishedWorkout of a short workout tem
   it.each(["ATHLETIK_WARMUP_10_15", "ATHLETIK_WARMUP_20_25"])(
     "trains every block skill of the %s template in template order",
     (templateId) => {
-      const setList = generateSetList(
+      const setList = generateFinishedWorkout(
         loadTemplates()[templateId],
         lookUpStoredBranchInCatalog,
         generateGenerationInput({
@@ -179,7 +179,7 @@ describe("shortWorkoutGeneration: generateFinishedWorkout of a short workout tem
           random: generateSeededRandom(7),
         }),
         { skillTrees: getAllSkillTrees() },
-      );
+      ).setList;
 
       expect([...new Set(listTrainedSkills(setList))]).toEqual([
         "MOB",

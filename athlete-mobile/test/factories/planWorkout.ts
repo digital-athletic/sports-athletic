@@ -7,7 +7,7 @@
 import type { ExerciseProgressSourceType } from "@/features/training/models/ExerciseProgress";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   type WorkoutGenerationRequest,
 } from "@/features/training/workoutGeneratorRouter";
@@ -239,5 +239,7 @@ export function generatePlanWorkoutForWeekday(
       branchData: {},
     },
   };
-  return generateWorkout(selectWorkout(request), request).setList;
+  return generateSetList(selectWorkout(request), request, {
+    random: () => Math.random(),
+  }).setList;
 }

@@ -4,7 +4,7 @@ import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { ExercisePair } from "@/features/training/models/ExerciseBranch";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   type WorkoutGenerationRequest,
 } from "@/features/training/workoutGeneratorRouter";
@@ -49,7 +49,9 @@ const selectedBranches = (
     daysSinceLastWorkout: 0,
     userExerciseData: { exerciseData: {}, branchData: {} },
   };
-  generateWorkout(selectWorkout(request), request);
+  generateSetList(selectWorkout(request), request, {
+    random: () => Math.random(),
+  });
   // a prevention training also draws a special warm up block
   return readDrawnBranches(type);
 };
@@ -211,7 +213,9 @@ describe("AIWL short workout: authored exercise values", () => {
         daysSinceLastWorkout: 0,
         userExerciseData: { exerciseData: {}, branchData: {} },
       };
-      const setList = generateWorkout(selectWorkout(request), request).setList;
+      const setList = generateSetList(selectWorkout(request), request, {
+        random: () => Math.random(),
+      }).setList;
 
       const exerciseSets = setList.filter(
         (entry) => entry.exerciseId === "501",
@@ -240,7 +244,9 @@ const mainPairs = (
     daysSinceLastWorkout: 0,
     userExerciseData: { exerciseData: {}, branchData: {} },
   };
-  generateWorkout(selectWorkout(request), request);
+  generateSetList(selectWorkout(request), request, {
+    random: () => Math.random(),
+  });
   // a prevention training also pairs its special warm up block; skip it
   const warmUpBranchIds = Object.keys(skillTrees.WUSPEZIAL ?? {});
   const mainResult = pairBranches.mock.results.find(

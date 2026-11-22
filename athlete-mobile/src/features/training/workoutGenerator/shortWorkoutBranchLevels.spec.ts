@@ -2,7 +2,7 @@ import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   type WorkoutGenerationRequest,
 } from "@/features/training/workoutGeneratorRouter";
@@ -37,7 +37,9 @@ const selectedExerciseIds = (
     daysSinceLastWorkout: 0,
     userExerciseData: { exerciseData: {}, branchData },
   };
-  generateWorkout(selectWorkout(request), request);
+  generateSetList(selectWorkout(request), request, {
+    random: () => Math.random(),
+  });
   return readDrawnBranches().map((branch) => branch.exerciseId);
 };
 
@@ -58,7 +60,9 @@ const thrownError = (
     userExerciseData: { exerciseData: {}, branchData: {} },
   };
   return catchThrownValue(() =>
-    generateWorkout(selectWorkout(request), request),
+    generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }),
   );
 };
 
@@ -149,7 +153,9 @@ describe("AIWL short workout: region quota fallback", () => {
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
     };
-    generateWorkout(selectWorkout(request), request);
+    generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    });
     expect(readDrawnBranches()).toHaveLength(4);
   });
 });

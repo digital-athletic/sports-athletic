@@ -6,7 +6,7 @@ import { SeasonPhase } from "@/features/training/models/SeasonPhase";
 import { minutes } from "@/features/training/models/TimeUnits";
 import type { TrainingDayType } from "@/features/training/models/TrainingDay";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   type WorkoutGenerationRequest,
 } from "@/features/training/workoutGeneratorRouter";
@@ -70,7 +70,9 @@ const powerEnduranceEntries = (birthday: string) => {
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
     };
-    return generateWorkout(selectWorkout(request), request).setList;
+    return generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }).setList;
   });
 };
 

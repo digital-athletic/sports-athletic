@@ -64,7 +64,7 @@ describe("replacementPools: readReplacementPools", () => {
     expect(Object.keys(pools.get(ankleBlock) ?? {})).not.toContain("153");
   });
 
-  it("maps a saved block to its own template index whatever the saved order", () => {
+  it("maps a drawn block to its own template index whatever the drawn order", () => {
     const input = generateGenerationInput();
     const kneeBlock = generateBranchesBlock("PREVKNEE", ["153"]);
     const ankleBlock = generateBranchesBlock("PREVKNEE", ["154"]);
@@ -87,7 +87,7 @@ describe("replacementPools: readReplacementPools", () => {
     expect(Object.keys(pools.get(ankleBlock) ?? {})).toContain("154");
   });
 
-  it("leaves a saved block without a template index out", () => {
+  it("leaves a drawn block without a template index out", () => {
     const input = generateGenerationInput();
     const kneeBlock = generateBranchesBlock("PREVKNEE", ["153"]);
     const cardioBlock = generateBranchesBlock("CARDIO_3", ["580"]);

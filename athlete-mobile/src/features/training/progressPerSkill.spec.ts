@@ -4,7 +4,7 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { BASELINE_TRAINING_STATE } from "@/features/training/utils/testFixtures";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
 } from "@/features/training/workoutGeneratorRouter";
 import type { SkillCode } from "@/schemas/generator.schema";
@@ -111,9 +111,10 @@ describe("Progress per skill: short workout", () => {
       ),
     );
     const shortRequest = generateStoredProgressRequest(shortWorkoutId);
-    const shortWorkout = generateWorkout(
+    const shortWorkout = generateSetList(
       selectWorkout(shortRequest),
       shortRequest,
+      { random: () => Math.random() },
     ).setList;
     setUpActiveTraining(shortWorkout, "short-session", shortWorkoutId);
     const { result } = await renderHook(() => useExerciseCompletion());
@@ -144,13 +145,15 @@ describe("Progress per skill: moved training day", () => {
 
     const mondayRequest = generateStoredProgressRequest("PLAN", 1);
     const thursdayRequest = generateStoredProgressRequest("PLAN", 4);
-    const monday = generateWorkout(
+    const monday = generateSetList(
       selectWorkout(mondayRequest),
       mondayRequest,
+      { random: () => Math.random() },
     ).setList;
-    const thursday = generateWorkout(
+    const thursday = generateSetList(
       selectWorkout(thursdayRequest),
       thursdayRequest,
+      { random: () => Math.random() },
     ).setList;
 
     expect(frontSquatValues(monday)).toEqual({ weight: 26, repetition: 11 });
@@ -184,9 +187,10 @@ describe("Progress per skill: recreated plan", () => {
       },
       swr1Training?.weekday,
     );
-    const nextDay = generateWorkout(
+    const nextDay = generateSetList(
       selectWorkout(nextDayRequest),
       nextDayRequest,
+      { random: () => Math.random() },
     ).setList;
 
     expect(recreatedPlan).not.toBe(firstPlan);

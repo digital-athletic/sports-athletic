@@ -16,7 +16,7 @@ import {
 } from "@test/factories/templateBlock";
 import type { UserType } from "@/schemas/user.schema";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   type WorkoutGenerationRequest,
 } from "./workoutGeneratorRouter";
@@ -52,7 +52,7 @@ const generateLegacyPlanUserOutOfOrder = (): UserType =>
     lengths: { GKS: 10, MOB: 5 },
   });
 
-describe("generateWorkout: plan training day order", () => {
+describe("generateSetList: plan training day order", () => {
   afterEach(jest.restoreAllMocks);
 
   it("lists the skills of an AIWL plan day in section order", () => {
@@ -70,7 +70,9 @@ describe("generateWorkout: plan training day order", () => {
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
     };
-    const setList = generateWorkout(selectWorkout(request), request).setList;
+    const setList = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }).setList;
 
     expect([...new Set(listTrainedSkills(setList))]).toEqual([
       "MOB",
@@ -94,7 +96,9 @@ describe("generateWorkout: plan training day order", () => {
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
     };
-    const setList = generateWorkout(selectWorkout(request), request).setList;
+    const setList = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }).setList;
 
     expect([...new Set(listTrainedSkills(setList))]).toEqual([
       "MOB",

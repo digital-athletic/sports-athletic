@@ -8,7 +8,7 @@ import { requireAiwlTraining } from "@/features/training/utils/testFixtures";
 import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
 import { generateFinishedWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   type WorkoutGenerationRequest,
 } from "@/features/training/workoutGeneratorRouter";
@@ -182,7 +182,9 @@ describe("generateTrainingPlan: end to end with the workout generator", () => {
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
     };
-    const setList = generateWorkout(selectWorkout(request), request).setList;
+    const setList = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }).setList;
     // Pause and support entries carry a placeholder branch.
     const exerciseEntries = setList.filter(
       ({ branchId }) => !isPlaceholderBranch(branchId),

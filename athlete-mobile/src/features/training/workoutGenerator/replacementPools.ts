@@ -7,12 +7,12 @@ import {
 } from "./blockHandlers/picks/picksBlockResolution";
 import type { GenerationInput } from "./generationInput/generationInput";
 
-/** A saved block and the index of the template block it was drawn from. */
-export type SavedBlock = { block: BranchesBlock; templateIndex?: number };
+/** A branches block a template block drew, and the index of that template block. */
+export type DrawnBlock = { block: BranchesBlock; templateIndex?: number };
 
 /**
- * Rebuilds the pool each saved block draws a replacement from: the pool of
- * the picks block at its template index, keyed by the saved block. A saved
+ * Rebuilds the pool each drawn block draws a replacement from: the pool of
+ * the picks block at its template index, keyed by the drawn block. A drawn
  * block without a template index, such as a cardio block, has no pool.
  * Throws like resolvePicksBlocks, for example when a pool is empty, and
  * throws when a template index matches no picks block.
@@ -22,7 +22,7 @@ export type SavedBlock = { block: BranchesBlock; templateIndex?: number };
  */
 export const readReplacementPools = (
   template: InterpretedWorkout,
-  saved: readonly SavedBlock[],
+  drawnBlocks: readonly DrawnBlock[],
   input: Pick<GenerationInput, "equipment" | "skillCatalog">,
   skillTrees: Readonly<Record<string, SkillTreeType>>,
 ): ReadonlyMap<Block, SkillTreeType> => {
@@ -32,7 +32,7 @@ export const readReplacementPools = (
     isPicksBlock(block) ? [index] : [],
   );
   const pools = new Map<Block, SkillTreeType>();
-  for (const { block, templateIndex } of saved) {
+  for (const { block, templateIndex } of drawnBlocks) {
     if (templateIndex === undefined) continue;
     const resolved =
       resolvedBlocks[picksTemplateIndices.indexOf(templateIndex)];

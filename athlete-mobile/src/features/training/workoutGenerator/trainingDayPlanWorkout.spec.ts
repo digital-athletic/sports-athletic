@@ -1,6 +1,6 @@
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
   type WorkoutGenerationRequest,
 } from "@/features/training/workoutGeneratorRouter";
@@ -50,7 +50,9 @@ describe("AIWL training day: plan workout", () => {
       daysSinceLastWorkout: 14, // > 7 days triggers extendSectionsForMissedWeeks
       userExerciseData: { exerciseData: {}, branchData: {} },
     };
-    const result = generateWorkout(selectWorkout(request), request).setList;
+    const result = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }).setList;
     expect(result.length).toBeGreaterThan(0);
   });
 
@@ -108,7 +110,9 @@ describe("AIWL training day: plan workout", () => {
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData, branchData },
     };
-    const result = generateWorkout(selectWorkout(request), request).setList;
+    const result = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }).setList;
     expect(result.length).toBeGreaterThan(0);
   });
 

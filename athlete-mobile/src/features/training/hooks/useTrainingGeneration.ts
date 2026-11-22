@@ -15,7 +15,7 @@ import { TrainingType } from "@/features/training/models/Training";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import {
-  generateWorkout,
+  generateSetList,
   selectWorkout,
 } from "@/features/training/workoutGeneratorRouter";
 import { maintainBranchLevels } from "@/features/training/utils/branchMaintenance";
@@ -228,7 +228,9 @@ function generateExerciseList(
     daysSinceLastWorkout,
     userExerciseData: { ...ctx.storedProgress, branchData },
   };
-  const { setList } = generateWorkout(selectWorkout(request), request);
+  const { setList } = generateSetList(selectWorkout(request), request, {
+    random: () => Math.random(),
+  });
 
   return saveGeneratedTraining(
     setList,

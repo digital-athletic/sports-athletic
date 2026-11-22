@@ -9,7 +9,7 @@ import {
 } from "@/features/training/utils/testFixtures";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import * as picksHandler from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
-import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
+import { generateFinishedWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
 import type * as WorkoutGeneration from "@/features/training/workoutGenerator/workoutGeneration";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import type { UserType } from "@/schemas/user.schema";
@@ -30,11 +30,9 @@ import {
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { generateAthlete } from "@test/factories/athlete";
-import { generateSeededRandom } from "@test/factories/seededRandom";
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { lookupTemplate } from "@/features/customWorkouts/lookupTemplate";
 import {
-  generateCustomWorkout,
   generateWorkout,
   selectWorkout,
   SHORT_WORKOUT_FILTERS,
@@ -49,7 +47,7 @@ jest.mock("@/features/training/workoutGenerator/workoutGeneration", () => {
   );
   return {
     ...actual,
-    generateSetList: jest.fn(actual.generateSetList),
+    generateFinishedWorkout: jest.fn(actual.generateFinishedWorkout),
   };
 });
 
@@ -60,8 +58,8 @@ jest.mock("@/features/training/workoutGenerator/workoutGeneration", () => {
  * generateWorkoutOf("MOB")
  * → [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...]
  */
-const generateWorkoutOf = (type: TrainingType) =>
-  generateWorkout({
+const generateWorkoutOf = (type: TrainingType) => {
+  const request: WorkoutGenerationRequest = {
     type,
     user: generateWarmUpOnlyPlanUser(),
     place: "HOME",
@@ -72,11 +70,13 @@ const generateWorkoutOf = (type: TrainingType) =>
     givenSection: undefined,
     daysSinceLastWorkout: 0,
     userExerciseData: { exerciseData: {}, branchData: {} },
-  });
+  };
+  return generateWorkout(selectWorkout(request), request).setList;
+};
 
 describe("generateWorkout: routing", () => {
   beforeEach(() => {
-    jest.mocked(generateSetList).mockClear();
+    jest.mocked(generateFinishedWorkout).mockClear();
   });
 
   afterEach(jest.restoreAllMocks);
@@ -85,9 +85,10 @@ describe("generateWorkout: routing", () => {
     const setList = generateWorkoutOf("MOB");
 
     expect(setList.length).toBeGreaterThan(0);
-    expect(generateSetList).toHaveBeenCalledTimes(1);
-    const [workout, lookUpBranch, , options] =
-      jest.mocked(generateSetList).mock.calls[0];
+    expect(generateFinishedWorkout).toHaveBeenCalledTimes(1);
+    const [workout, lookUpBranch, , options] = jest.mocked(
+      generateFinishedWorkout,
+    ).mock.calls[0];
     expect(workout).toEqual(loadTemplate("MOB"));
     expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
     expect(options).toEqual({
@@ -101,9 +102,10 @@ describe("generateWorkout: routing", () => {
       const setList = generateWorkoutOf("TEST_WORKOUT");
 
       expect(setList.length).toBeGreaterThan(0);
-      expect(generateSetList).toHaveBeenCalledTimes(1);
-      const [workout, lookUpBranch, , options] =
-        jest.mocked(generateSetList).mock.calls[0];
+      expect(generateFinishedWorkout).toHaveBeenCalledTimes(1);
+      const [workout, lookUpBranch, , options] = jest.mocked(
+        generateFinishedWorkout,
+      ).mock.calls[0];
       expect(workout).toEqual(loadStrengthTestTemplate());
       expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
       expect(options).toEqual({
@@ -117,9 +119,10 @@ describe("generateWorkout: routing", () => {
         generateWarmUpOnlyPlanUser(),
       );
 
-      expect(generateSetList).toHaveBeenCalledTimes(1);
-      const [workout, lookUpBranch, , options] =
-        jest.mocked(generateSetList).mock.calls[0];
+      expect(generateFinishedWorkout).toHaveBeenCalledTimes(1);
+      const [workout, lookUpBranch, , options] = jest.mocked(
+        generateFinishedWorkout,
+      ).mock.calls[0];
       expect(options).toStrictEqual({
         skillTrees: expect.any(Object),
         filters: {},
@@ -143,8 +146,8 @@ describe("generateWorkout: routing", () => {
 
       const result = generatePlanWorkoutForWeekday(user);
 
-      const [workout, lookUpBranch] =
-        jest.mocked(generateSetList).mock.calls[0];
+      const [workout, lookUpBranch] = jest.mocked(generateFinishedWorkout).mock
+        .calls[0];
       expect(workout).toEqual(training.workout);
       expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
       expect(result.map((entry) => entry.branchId)).toContain("410");
@@ -153,7 +156,7 @@ describe("generateWorkout: routing", () => {
     it("reads Math.random when a draw runs, not when the input is built", () => {
       jest.spyOn(Math, "random").mockReturnValue(0);
       generatePlanWorkoutForWeekday(generateWarmUpOnlyPlanUser());
-      const [, , input] = jest.mocked(generateSetList).mock.calls[0];
+      const [, , input] = jest.mocked(generateFinishedWorkout).mock.calls[0];
       jest.spyOn(Math, "random").mockReturnValue(0.75);
 
       expect(input.random()).toBe(0.75);
@@ -169,7 +172,7 @@ describe("generateWorkout: routing", () => {
         subtype: "MISSING_WORKOUT_DATA",
         params: [],
       });
-      expect(generateSetList).not.toHaveBeenCalled();
+      expect(generateFinishedWorkout).not.toHaveBeenCalled();
     });
   });
 
@@ -193,7 +196,7 @@ describe("generateWorkout: routing", () => {
         expect(
           catchThrownValue(() => generatePlanWorkoutForWeekday(user)),
         ).toEqual(new Error("Invalid data structure for currTraining.skills"));
-        expect(generateSetList).not.toHaveBeenCalled();
+        expect(generateFinishedWorkout).not.toHaveBeenCalled();
       },
     );
   });
@@ -293,21 +296,21 @@ describe("generateWorkout: short workouts", () => {
       workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] } },
     };
 
+    const request: WorkoutGenerationRequest = {
+      type: id,
+      user,
+      place: "HOME",
+      exercises: loadExercises(),
+      skillTrees: getAllSkillTrees(),
+      weekday: 1,
+      equipment: [],
+      givenSection: undefined,
+      daysSinceLastWorkout: 0,
+      userExerciseData: { exerciseData: {}, branchData: {} },
+    };
+
     expect(
-      catchThrownValue(() =>
-        generateWorkout({
-          type: id,
-          user,
-          place: "HOME",
-          exercises: loadExercises(),
-          skillTrees: getAllSkillTrees(),
-          weekday: 1,
-          equipment: [],
-          givenSection: undefined,
-          daysSinceLastWorkout: 0,
-          userExerciseData: { exerciseData: {}, branchData: {} },
-        }),
-      ),
+      catchThrownValue(() => generateWorkout(selectWorkout(request), request)),
     ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: [] });
   });
 
@@ -325,7 +328,7 @@ describe("generateWorkout: short workouts", () => {
       null,
     );
 
-    const setList = generateWorkout({
+    const request: WorkoutGenerationRequest = {
       type: id,
       user: generateAthlete({ soreMuscles: ["QUADRICEPS"] }),
       place: "STUDIO",
@@ -336,7 +339,9 @@ describe("generateWorkout: short workouts", () => {
       givenSection: undefined,
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
-    });
+    };
+
+    const { setList } = generateWorkout(selectWorkout(request), request);
 
     expect([...new Set(setList.map((entry) => entry.skill))]).toEqual([
       "CARDIO_2",
@@ -468,7 +473,7 @@ describe("selectWorkout: workout per training type", () => {
   });
 });
 
-describe("generateCustomWorkout: fresh and replay", () => {
+describe("generateWorkout: replay of saved blocks", () => {
   afterEach(jest.restoreAllMocks);
   afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
 
@@ -495,32 +500,16 @@ describe("generateCustomWorkout: fresh and replay", () => {
     { id: "own", name: { en: "Own" } },
   );
 
-  it("generates the set list of generateWorkout for the same custom template and random input", () => {
+  it("runs the saved blocks of a replay and returns their branches", () => {
     const { id } = useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(customTemplate, null);
-    jest.spyOn(Math, "random").mockImplementation(generateSeededRandom(7));
-    const expected = generateWorkout(generateRequest(id));
-    jest.spyOn(Math, "random").mockImplementation(generateSeededRandom(7));
-
-    const { setList } = generateCustomWorkout(
-      generateRequest(id),
-      customTemplate,
-    );
-
-    expect(setList).toEqual(expected);
-  });
-
-  it("runs the saved blocks of a replay and returns their branches", () => {
+    const request = generateRequest(id);
     const saved = [
       { block: generateBranchesBlock("WU", ["410"]), templateIndex: 0 },
     ];
 
-    const { setList } = generateCustomWorkout(
-      generateRequest("own"),
-      customTemplate,
-      saved,
-    );
+    const { setList } = generateWorkout(selectWorkout(request), request, saved);
 
     expect(setList.length).toBeGreaterThan(0);
     expect(setList.every((entry) => entry.branchId === "410")).toBe(true);
@@ -543,34 +532,24 @@ describe("generateCustomWorkout: fresh and replay", () => {
       ],
       { id: "gks" },
     );
+    const { id } = useCustomWorkoutsStore
+      .getState()
+      .saveCustomWorkout(template, null);
+    const request: WorkoutGenerationRequest = {
+      ...generateRequest(id),
+      user: {
+        ...generateWarmUpOnlyPlanUser(),
+        workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] } },
+      },
+      equipment: ["DUMBBELL", "BARBELL"],
+    };
     const saved = [
       { block: generateBranchesBlock("GKS", ["523"]), templateIndex: 0 },
     ];
     jest.spyOn(Math, "random").mockReturnValue(0.99);
 
-    const { setList } = generateCustomWorkout(
-      {
-        ...generateRequest("gks"),
-        user: {
-          ...generateWarmUpOnlyPlanUser(),
-          workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] } },
-        },
-        equipment: ["DUMBBELL", "BARBELL"],
-      },
-      template,
-      saved,
-    );
+    const { setList } = generateWorkout(selectWorkout(request), request, saved);
 
     expect(["518", "767", "866"]).toContain(setList[0].branchId);
-  });
-
-  it("throws the pain error for a template without blocks", () => {
-    const emptyTemplate = generateTemplate([], { id: "empty" });
-
-    expect(
-      catchThrownValue(() =>
-        generateCustomWorkout(generateRequest("empty"), emptyTemplate),
-      ),
-    ).toStrictEqual({ type: "NO_EXERCISES", subtype: "PAIN", params: [] });
   });
 });

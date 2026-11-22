@@ -3,7 +3,10 @@ import { useUpdateTrainingPlan } from "@/features/training/hooks/useUpdateTraini
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { useTrainingStore } from "@/features/training/trainingStore";
 import { BASELINE_TRAINING_STATE } from "@/features/training/utils/testFixtures";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import {
+  generateWorkout,
+  selectWorkout,
+} from "@/features/training/workoutGeneratorRouter";
 import type { SkillCode } from "@/schemas/generator.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
@@ -107,9 +110,11 @@ describe("Progress per skill: short workout", () => {
         generateFrontSquatRecord("SA", { weight: 20, repetition: 12 }),
       ),
     );
+    const shortRequest = generateStoredProgressRequest(shortWorkoutId);
     const shortWorkout = generateWorkout(
-      generateStoredProgressRequest(shortWorkoutId),
-    );
+      selectWorkout(shortRequest),
+      shortRequest,
+    ).setList;
     setUpActiveTraining(shortWorkout, "short-session", shortWorkoutId);
     const { result } = await renderHook(() => useExerciseCompletion());
 
@@ -137,8 +142,16 @@ describe("Progress per skill: moved training day", () => {
       ),
     );
 
-    const monday = generateWorkout(generateStoredProgressRequest("PLAN", 1));
-    const thursday = generateWorkout(generateStoredProgressRequest("PLAN", 4));
+    const mondayRequest = generateStoredProgressRequest("PLAN", 1);
+    const thursdayRequest = generateStoredProgressRequest("PLAN", 4);
+    const monday = generateWorkout(
+      selectWorkout(mondayRequest),
+      mondayRequest,
+    ).setList;
+    const thursday = generateWorkout(
+      selectWorkout(thursdayRequest),
+      thursdayRequest,
+    ).setList;
 
     expect(frontSquatValues(monday)).toEqual({ weight: 26, repetition: 11 });
     expect(frontSquatValues(thursday)).toEqual(frontSquatValues(monday));
@@ -160,19 +173,21 @@ describe("Progress per skill: recreated plan", () => {
     const { result } = await renderHook(() => useUpdateTrainingPlan());
     await act(() => result.current.updateTrainingPlan({ redrawAllDays: true }));
     const recreatedPlan = useUserWorkoutStore.getState().trainingPlan;
-    const nextDay = generateWorkout(
-      generateStudioWorkoutRequest(
-        "PLAN",
-        { ...user, trainingPlan: recreatedPlan },
-        {
-          ...readStoredProgress(),
-          branchData: {
-            [branchId]: { branchId, level: Number(level), exerciseId },
-          },
+    const nextDayRequest = generateStudioWorkoutRequest(
+      "PLAN",
+      { ...user, trainingPlan: recreatedPlan },
+      {
+        ...readStoredProgress(),
+        branchData: {
+          [branchId]: { branchId, level: Number(level), exerciseId },
         },
-        swr1Training?.weekday,
-      ),
+      },
+      swr1Training?.weekday,
     );
+    const nextDay = generateWorkout(
+      selectWorkout(nextDayRequest),
+      nextDayRequest,
+    ).setList;
 
     expect(recreatedPlan).not.toBe(firstPlan);
     expect(readStoredProgress()).toEqual(recordsBefore);

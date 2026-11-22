@@ -19,6 +19,7 @@ jest.mock("react-i18next", () => ({
 }));
 
 jest.mock("@/features/training/workoutGeneratorRouter", () => ({
+  selectWorkout: jest.fn(),
   generateWorkout: jest.fn(),
 }));
 
@@ -41,7 +42,7 @@ const pressAlertOk = async (callIndex: number) => {
 beforeEach(() => {
   jest.clearAllMocks();
   alertSpy.mockImplementation(() => {});
-  mockGenerateWorkout.mockReturnValue([]);
+  mockGenerateWorkout.mockReturnValue({ setList: [], blocks: [] });
   useUserProfileStore.setState({ warnings: { painAlertSeen: false } });
 });
 

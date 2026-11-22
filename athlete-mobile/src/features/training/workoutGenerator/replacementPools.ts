@@ -1,5 +1,5 @@
-import type { BranchesBlock } from "./stages/blockWalk";
-import type { Block, Template } from "@/schemas/aiwl.schema";
+import type { BranchesBlock, InterpretedWorkout } from "./stages/blockWalk";
+import type { Block } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import {
   isPicksBlock,
@@ -21,7 +21,7 @@ export type SavedBlock = { block: BranchesBlock; templateIndex?: number };
  * → Map { kneeBlock => { ...pool of template.blocks[1] } }
  */
 export const readReplacementPools = (
-  template: Template,
+  template: InterpretedWorkout,
   saved: readonly SavedBlock[],
   input: Pick<GenerationInput, "equipment" | "skillCatalog">,
   skillTrees: Readonly<Record<string, SkillTreeType>>,

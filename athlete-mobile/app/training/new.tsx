@@ -3,6 +3,7 @@ import { FullScreenCoaching } from "@/common/FullScreenCoaching";
 import { TileData, WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { useAgeGroup } from "@/features/anamnesis/useAgeGroup";
+import { AthleticWarmupGrid } from "@/features/training/AthleticWarmupGrid";
 import { FocusTrainingGrid } from "@/features/training/FocusTrainingGrid";
 import { PlanDayScreen } from "@/features/training/PlanDayScreen";
 import { PreventionBodyPartScreen } from "@/features/training/PreventionBodyPartScreen";
@@ -22,19 +23,28 @@ import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { type ComponentType, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type ScreenState = "SELECT" | "TEST";
 
-const titleKeyFor = (
-  screenState: ScreenState,
-  category: TrainingCategory,
-): I18nKey => {
-  if (screenState === "TEST") return "training.powerTest.title";
-  if (category === "focus") return "training.active.title.focus";
-  if (category === "prevention") return "training.active.title.prevention";
-  return "training.selectTraining.title";
+type GridCategory = Exclude<TrainingCategory, "plan">;
+
+type CategoryScreenProps = { title: string; onBack: () => void };
+
+const CATEGORY_SCREENS: Record<
+  GridCategory,
+  { titleKey: I18nKey; Screen: ComponentType<CategoryScreenProps> }
+> = {
+  focus: { titleKey: "training.active.title.focus", Screen: FocusTrainingGrid },
+  athleticWarmup: {
+    titleKey: "training.active.title.athleticWarmup",
+    Screen: AthleticWarmupGrid,
+  },
+  prevention: {
+    titleKey: "training.active.title.prevention",
+    Screen: PreventionBodyPartScreen,
+  },
 };
 
 const handleBack = () => {
@@ -46,26 +56,30 @@ const handleBack = () => {
 };
 
 /**
- * Selection screen at /training/new?category=plan|focus|prevention, the first
- * step of a new training. A missing or unknown category redirects to Home.
+ * Selection screen at /training/new?category=plan|focus|athleticWarmup|prevention,
+ * the first step of a new training. A missing or unknown category redirects to Home.
+ * Back has no Android handler of its own, so the default pop applies like the
+ * header arrow and the iOS swipe.
  * Legacy: views/training/SelectTraining
  */
 export default function NewTraining() {
+  const { t } = useTranslation();
   const { category } = useLocalSearchParams<{ category?: string }>();
 
   if (!isTrainingCategory(category)) {
     return <Redirect href="/(tabs)/(home)" />;
   }
 
-  return <SelectTraining category={category} />;
+  if (category === "plan") {
+    return <SelectPlanTraining />;
+  }
+
+  const { titleKey, Screen } = CATEGORY_SCREENS[category];
+  return <Screen title={t(titleKey)} onBack={handleBack} />;
 }
 
-/**
- * Shows the plan days (with the power test coaching when a test is due), the
- * focus grid or the prevention body parts. Back has no Android handler of its
- * own, so the default pop applies like the header arrow and the iOS swipe.
- */
-function SelectTraining({ category }: { category: TrainingCategory }) {
+/** Shows the plan days, with the power test coaching when a test is due. */
+function SelectPlanTraining() {
   const { t } = useTranslation();
 
   const { workoutData, trainingPlan } = useUserWorkoutStore();
@@ -79,12 +93,16 @@ function SelectTraining({ category }: { category: TrainingCategory }) {
     trainingPlan?.sections ?? [],
   );
 
-  useTrainingGapCheck(category === "plan");
+  useTrainingGapCheck(true);
 
-  const title = t(titleKeyFor(screenState, category));
+  const title = t(
+    screenState === "TEST"
+      ? "training.powerTest.title"
+      : "training.selectTraining.title",
+  );
 
   const getTrainingDays = useCallback((): TileData[] => {
-    if (!workoutData || category !== "plan" || !trainingPlan) {
+    if (!workoutData || !trainingPlan) {
       return [];
     }
 
@@ -169,7 +187,6 @@ function SelectTraining({ category }: { category: TrainingCategory }) {
     return tiles;
   }, [
     workoutData,
-    category,
     trainingPlan,
     trainingDays,
     exercises,
@@ -178,17 +195,11 @@ function SelectTraining({ category }: { category: TrainingCategory }) {
     ageGroup,
   ]);
 
-  // Focus and prevention have their own screens, so only the plan uses the list.
-  const tiles = useMemo<TileData[]>(
-    () => (category === "plan" ? getTrainingDays() : []),
-    [getTrainingDays, category],
-  );
+  const tiles = useMemo<TileData[]>(() => getTrainingDays(), [getTrainingDays]);
 
   const activeSection = trainingPlan?.sections[activeSectionIndex];
   const currentPhase =
-    category === "plan" && activeSection
-      ? t(`training.sections.${activeSection.type}`)
-      : undefined;
+    activeSection && t(`training.sections.${activeSection.type}`);
 
   const startPowerTest = () => {
     Logger.logEvent("test_coaching_selected_start");
@@ -215,14 +226,6 @@ function SelectTraining({ category }: { category: TrainingCategory }) {
       />
     );
   };
-
-  if (screenState === "SELECT" && category === "focus") {
-    return <FocusTrainingGrid title={title} onBack={handleBack} />;
-  }
-
-  if (category === "prevention") {
-    return <PreventionBodyPartScreen title={title} onBack={handleBack} />;
-  }
 
   if (screenState === "SELECT") {
     return (

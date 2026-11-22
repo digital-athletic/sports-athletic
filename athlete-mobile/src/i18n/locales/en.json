@@ -73,6 +73,10 @@
         "title": "Focus-Trainings",
         "subtitle": "10-20 minutes topic specific training"
       },
+      "athleticWarmup": {
+        "title": "Athletic Warm-up",
+        "subtitle": "10 to 25 min warm-up before your sport"
+      },
       "preventionTraining": {
         "title": "Imminent Pains",
         "subtitle": "Specifically improve imminent pains"
@@ -317,6 +321,14 @@
       "gridEyebrow": "Focus training · 10-20 min",
       "gridHeading": "What do you want to train?"
     },
+    "athleticWarmup": {
+      "gridEyebrow": "Athletic warm-up · 10 to 25 min",
+      "gridHeading": "How much time do you have?",
+      "SHORT_TITLE": "10 to 15 min",
+      "SHORT_DESC": "Compact warm-up before your sport",
+      "LONG_TITLE": "20 to 25 min",
+      "LONG_DESC": "Extended warm-up with more stability and jumps"
+    },
     "prevention": {
       "PREVENTION_TILE_ANKLE": "Ankle",
       "PREVENTION_TILE_KNEE": "Knee & Hip",
@@ -522,6 +534,7 @@
     "active": {
       "title": {
         "focus": "Focus Training",
+        "athleticWarmup": "Athletic Warm-up",
         "plan": "Training",
         "prevention": "Prevention Training",
         "strengthTest": "Strength Test"

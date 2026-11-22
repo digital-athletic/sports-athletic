@@ -1,3 +1,5 @@
+import ATHLETIK_WARMUP_10_15 from "../../assets/data/templates/ATHLETIK_WARMUP_10_15.json";
+import ATHLETIK_WARMUP_20_25 from "../../assets/data/templates/ATHLETIK_WARMUP_20_25.json";
 import BAS from "../../assets/data/templates/BAS.json";
 import BR from "../../assets/data/templates/BR.json";
 import CD from "../../assets/data/templates/CD.json";
@@ -29,6 +31,8 @@ const TEMPLATE_FILES: Record<string, unknown> = {
   PREVWRIST,
   PREVANKLE,
   PREVSPINE,
+  ATHLETIK_WARMUP_10_15,
+  ATHLETIK_WARMUP_20_25,
 };
 
 export const parseTemplates = (

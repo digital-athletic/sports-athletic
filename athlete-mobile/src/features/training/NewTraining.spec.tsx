@@ -44,6 +44,25 @@ jest.mock("@/features/training/FocusTrainingGrid", () => {
   };
 });
 
+jest.mock("@/features/training/AthleticWarmupGrid", () => {
+  const { createElement } = jest.requireActual("react");
+  const { Pressable } = jest.requireActual("react-native");
+  return {
+    AthleticWarmupGrid: ({
+      title,
+      onBack,
+    }: {
+      title: string;
+      onBack: () => void;
+    }) =>
+      createElement(Pressable, {
+        testID: "athletic-warmup-grid",
+        accessibilityLabel: title,
+        onPress: onBack,
+      }),
+  };
+});
+
 jest.mock("@/features/training/PreventionBodyPartScreen", () => {
   const { createElement } = jest.requireActual("react");
   const { Pressable } = jest.requireActual("react-native");
@@ -101,6 +120,21 @@ describe("NewTraining: screen per category", () => {
   });
 });
 
+describe("NewTraining: athletic warm-up category", () => {
+  it("shows the athletic warm-up grid for the athleticWarmup category", async () => {
+    mockCategory = "athleticWarmup";
+
+    const { getByTestId, queryByTestId } = await render(<NewTraining />);
+
+    expect(getByTestId("athletic-warmup-grid").props.accessibilityLabel).toBe(
+      "Athletic Warm-up",
+    );
+    expect(queryByTestId("plan-day-screen")).toBeNull();
+    expect(queryByTestId("focus-training-grid")).toBeNull();
+    expect(queryByTestId("prevention-body-part-screen")).toBeNull();
+  });
+});
+
 describe("NewTraining: invalid category", () => {
   it("redirects to Home when the category is missing", async () => {
     mockCategory = undefined;
@@ -124,6 +158,7 @@ describe("NewTraining: back", () => {
     { category: "plan", testID: "plan-day-screen" },
     { category: "focus", testID: "focus-training-grid" },
     { category: "prevention", testID: "prevention-body-part-screen" },
+    { category: "athleticWarmup", testID: "athletic-warmup-grid" },
   ])(
     "goes back one screen from the $category selection when there is history",
     async ({ category, testID }) => {

@@ -13,6 +13,20 @@ const NEW_TEAM = {
   members: [{ user_id: MOCK_USER.id, role: "owner" as const }],
 };
 
+const OTHER_OWNER = "11111111-1111-4111-8111-11111111cccc";
+
+/** A group somebody else owns, in which the signed-in user is a plain member. */
+const JOINED_TEAM = {
+  id: "33333333-3333-4333-8333-333333333333",
+  name: "U17 Handball",
+  invite_code: "JOIN01",
+  owner_id: OTHER_OWNER,
+  members: [
+    { user_id: OTHER_OWNER, role: "owner" as const },
+    { user_id: MOCK_USER.id, role: "member" as const },
+  ],
+};
+
 test.describe("Creating a group", () => {
   test("a trainer creates a group and lands on its dashboard", async ({
     page,
@@ -84,21 +98,21 @@ test.describe("Creating a group", () => {
 });
 
 test.describe("Joining a group", () => {
-  test("an invite code opens the group", async ({ page }) => {
+  test("an invite code adds the group to the selection", async ({ page }) => {
     await mockSupabase(page, { trainerGrantedAt: null, teams: [] });
 
     const login = new LoginPage(page);
     const teamSelection = new TeamSelectionPage(page);
-    const dashboard = new DashboardPage(page);
 
     await login.goto();
     await login.signIn(MOCK_USER.email);
     await teamSelection.expectNoTeams();
 
-    await mockSupabase(page, { trainerGrantedAt: null, teams: [NEW_TEAM] });
-    await teamSelection.joinTeam(NEW_TEAM.invite_code);
+    await mockSupabase(page, { trainerGrantedAt: null, teams: [JOINED_TEAM] });
+    await teamSelection.joinTeam(JOINED_TEAM.invite_code);
 
-    await dashboard.expectVisible(NEW_TEAM.id);
+    await teamSelection.expectVisible();
+    await teamSelection.expectMemberTeam(JOINED_TEAM.name);
   });
 
   test("a wrong invite code keeps the user on the selection", async ({
@@ -107,7 +121,7 @@ test.describe("Joining a group", () => {
     // Unlike the group name, a code that does not match really is rejected by
     // the backend, so the mock checks it rather than accepting anything. Which
     // codes exist is settled in supabase/tests/accept_invitation.test.sql.
-    await mockSupabase(page, { trainerGrantedAt: null, teams: [NEW_TEAM] });
+    await mockSupabase(page, { trainerGrantedAt: null, teams: [JOINED_TEAM] });
 
     const login = new LoginPage(page);
     const teamSelection = new TeamSelectionPage(page);
@@ -117,6 +131,63 @@ test.describe("Joining a group", () => {
     await teamSelection.joinTeam("WRONG1");
 
     await teamSelection.expectErrorWithoutCode("INVITE_CODE_INVALID");
+  });
+});
+
+test.describe("A group as a plain member", () => {
+  // What a member may read is settled in
+  // supabase/tests/member_visibility.test.sql. These tests cover the UI only.
+  test("the group is listed but does not open", async ({ page }) => {
+    await mockSupabase(page, { trainerGrantedAt: null, teams: [JOINED_TEAM] });
+
+    const login = new LoginPage(page);
+    const teamSelection = new TeamSelectionPage(page);
+
+    await login.goto();
+    await login.signIn(MOCK_USER.email);
+
+    await teamSelection.expectMemberTeam(JOINED_TEAM.name);
+    await teamSelection.clickTeamName(JOINED_TEAM.name);
+    await teamSelection.expectVisible();
+  });
+
+  test("the dashboard address leads back to the selection", async ({
+    page,
+  }) => {
+    await mockSupabase(page, { trainerGrantedAt: null, teams: [JOINED_TEAM] });
+
+    const login = new LoginPage(page);
+    const teamSelection = new TeamSelectionPage(page);
+
+    await login.goto();
+    await login.signIn(MOCK_USER.email);
+    await teamSelection.expectVisible();
+    await page.goto(`/dashboard?team=${JOINED_TEAM.id}`);
+
+    await teamSelection.expectVisible();
+    await teamSelection.expectMemberTeam(JOINED_TEAM.name);
+  });
+
+  test("the member leaves the group from the selection", async ({ page }) => {
+    await mockSupabase(page, { trainerGrantedAt: null, teams: [JOINED_TEAM] });
+
+    const login = new LoginPage(page);
+    const teamSelection = new TeamSelectionPage(page);
+
+    await login.goto();
+    await login.signIn(MOCK_USER.email);
+    await teamSelection.expectMemberTeam(JOINED_TEAM.name);
+
+    await mockSupabase(page, { trainerGrantedAt: null, teams: [] });
+    const left = page.waitForRequest((request) =>
+      request.url().includes("/rpc/leave_team"),
+    );
+    await teamSelection.leaveTeam(JOINED_TEAM.name);
+    expect((await left).postDataJSON()).toMatchObject({
+      p_team_id: JOINED_TEAM.id,
+    });
+
+    await teamSelection.expectNoTeams();
   });
 });
 

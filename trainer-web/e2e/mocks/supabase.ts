@@ -189,7 +189,16 @@ export async function mockSupabase(page: Page, options: MockOptions = {}) {
   await page.route("**/rest/v1/team_members**", (route) => {
     const teamId = equalsFilter(route.request().url(), "team_id");
     if (teamId === null) {
-      return route.fulfill(json(teams.map((team) => ({ team_id: team.id }))));
+      return route.fulfill(
+        json(
+          teams.map((team) => ({
+            team_id: team.id,
+            role:
+              membersOf(team).find((member) => member.user_id === user.id)
+                ?.role ?? "member",
+          })),
+        ),
+      );
     }
     const team = teams.find((candidate) => candidate.id === teamId);
     if (!team) return route.fulfill(json([]));

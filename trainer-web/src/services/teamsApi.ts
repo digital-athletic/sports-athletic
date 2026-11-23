@@ -9,6 +9,7 @@ import type {
   InviteCode,
   Team,
   TeamMember,
+  TeamRole,
   TeamWithMemberCount,
   UpdateTeamGuidanceResponse,
 } from "../types/team";
@@ -105,12 +106,15 @@ export async function getUserTeams(): Promise<TeamWithMemberCount[]> {
   // Get all teams where user is a member
   const { data: memberships, error: membershipError } = await supabase
     .from("team_members")
-    .select("team_id")
+    .select("team_id, role")
     .eq("user_id", user.id);
 
   if (membershipError || !memberships?.length) return [];
 
   const teamIds = memberships.map((m) => m.team_id);
+  const roleByTeam = new Map(
+    memberships.map((m) => [m.team_id as string, m.role as TeamRole]),
+  );
 
   const { data: teams, error } = await supabase
     .from("teams")
@@ -123,6 +127,11 @@ export async function getUserTeams(): Promise<TeamWithMemberCount[]> {
   return teams.map((team) => ({
     ...team,
     member_count: team.team_members?.[0]?.count ?? 0,
+    // Ownership is stored in teams.owner_id, so it wins over the role column.
+    role:
+      team.owner_id === user.id
+        ? "owner"
+        : (roleByTeam.get(team.id) ?? "member"),
   }));
 }
 

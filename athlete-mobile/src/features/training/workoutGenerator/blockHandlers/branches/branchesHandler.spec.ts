@@ -200,10 +200,19 @@ describe("branchesHandler: createBranchesBlockHandler", () => {
   );
 });
 
+// Lists the branch IDs of a filled block in block order, or none.
+// listBranchIds(filledResultOfBranches510And523) → ["510", "523"]
+const listBranchIds = (result: BlockResult) =>
+  result.status === "filled"
+    ? result.exercises.map(({ branchId }) => branchId)
+    : [];
+
 describe("branchesHandler: blockedSlots refill", () => {
   const handleBlock = createBranchesBlockHandler(lookUpStoredBranchInCatalog);
   const kneeTags = ["PREVENTION_KNEE_HIP", "REGION_LOWER_BODY", "SIDE_BOTH"];
-  // each branch trains the exercise "e<id>"; knee pain blocks the blocked ones
+  // Builds a knee pain input with a PREVKG tree; each branch trains "e<id>",
+  // and knee pain blocks the blocked ones.
+  // generateKneeInput(["1"], ["2"]) → PREVKG { "1": e1, "2": e2 with BLOCK_KNEE }
   const generateKneeInput = (fitting: string[], blocked: string[]) =>
     generateReplacementInput({
       pains: ["KNEE_LEFT"],
@@ -224,12 +233,6 @@ describe("branchesHandler: blockedSlots refill", () => {
       ),
       random: () => 0.99,
     });
-  // Lists the branch IDs of a filled block in ascending order, or none.
-  // listBranchIds(filledResultOfBranches1And3) → ["1", "3"]
-  const listBranchIds = (result: BlockResult) =>
-    result.status === "filled"
-      ? result.exercises.map(({ branchId }) => branchId).sort()
-      : [];
   const savedBlock = generateBranchesBlock("PREVKNEE", ["1", "2", "3"]);
 
   it("replaces only the blocked branch of a prevention block and leaves the others unchanged", () => {
@@ -240,7 +243,7 @@ describe("branchesHandler: blockedSlots refill", () => {
 
     const result = handleBlock(savedBlock, input, NO_BRANCHES);
 
-    expect(listBranchIds(result)).toEqual(["1", "3", "7"]);
+    expect(listBranchIds(result).sort()).toEqual(["1", "3", "7"]);
   });
 
   it("drops a slot with no fitting branch and leaves the other slots unchanged", () => {
@@ -252,7 +255,7 @@ describe("branchesHandler: blockedSlots refill", () => {
 
     const result = handleBlock(savedBlock, input, NO_BRANCHES);
 
-    expect(listBranchIds(result)).toEqual(["1", "4"]);
+    expect(listBranchIds(result).sort()).toEqual(["1", "4"]);
   });
 
   it("refills every slot of a prevention block when the option is absent", () => {
@@ -271,13 +274,6 @@ describe("branchesHandler: a branch ID the catalog lacks", () => {
     exerciseCatalog,
     random: () => 0,
   });
-
-  // Lists the branch IDs of a filled block in block order, or none.
-  // listBranchIds(filledResultOfBranches510And523) → ["510", "523"]
-  const listBranchIds = (result: BlockResult) =>
-    result.status === "filled"
-      ? result.exercises.map(({ branchId }) => branchId)
-      : [];
 
   // no skill tree holds the branch ID 900001
   it("keeps the found branch and adds a replacement of the same skill", () => {

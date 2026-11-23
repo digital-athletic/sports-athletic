@@ -119,9 +119,9 @@ const createHandlerRegistry = (
  * 4. Builds the sets, reps, loads and rests of each drawn exercise.
  *
  * Returns the set list and the result of each block (its drawn exercises, or
- * empty). A workout with test sets throws when a block stays empty; any other
- * workout keeps the blocks that filled. Every random draw reads
- * `input.random`.
+ * empty). A workout with test sets throws when a block stays empty. Any other
+ * workout returns the blocks that filled and leaves out the empty ones. Every
+ * random draw reads `input.random`.
  *
  * generateSetListFromWorkout(mobilityTemplate, lookUpStoredBranchInCatalog, input)
  * → { setList: [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...], blocks: [...] }

@@ -276,11 +276,16 @@ The router `src/features/training/workoutGeneratorRouter.ts` selects a workout, 
 | `TEST_WORKOUT` | `loadStrengthTestTemplate`: the bundled `TEST.json`; the entry point checks it with `checkStrengthTestTemplate` | branch lookup index | `STRENGTH_TEST_FILTERS`: `{ pain: false, equipment: false }` |
 | any other | the template of the type, short or custom | branch lookup index | `{ soreness: false }` |
 
-`selectWorkout(request)` in the router returns the workout, the branch lookup and the filters of the table, and `generateSetList` passes them to `generateSetListFromWorkout`. The [exercise swap](#exercise-swap) calls `selectWorkout` too, sets the workout up once, builds one branch through `buildBranchSetList` and runs no `generateSetList`.
+`selectWorkout(request)` in the router returns the workout, the branch lookup and the filters of the table. `generateSetList` passes them to `generateSetListFromWorkout`. The [exercise swap](#exercise-swap) calls `selectWorkout` too, sets the workout up once, builds one branch through `buildBranchSetList` and runs no `generateSetList`.
 
 A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A template without blocks throws `NO_EXERCISES/PAIN` without regions, whatever the athlete's pains.
 
-The router has one lookup and one run. `selectWorkout(request)` is the lookup. `generateSetList(selection, request, { random, previousDrawnBlocks? })` runs the selection and returns the set list and what each block drew. The caller passes the random source. Only saved versions of custom workouts pass `previousDrawnBlocks`: these drawn blocks then run as `branches` blocks with the same lookup and filters, plus the replay options of [block handlers](#block-handlers-strategy), and `readReplacementPools` rebuilds the pools from the selected template. The template stays an input because a blocked branch is replaced from the pool of the template block it was drawn from, which a `branches` block does not know.
+The router has one lookup and one run:
+
+- `selectWorkout(request)` is the lookup.
+- `generateSetList(selection, request, { random, previousDrawnBlocks? })` is the run. It returns the set list and the result of each block, and draws from the random source its caller passes.
+
+Only saved versions of custom workouts pass `previousDrawnBlocks`. These drawn blocks run as `branches` blocks with the same lookup and filters, plus the replay options of [block handlers](#block-handlers-strategy). `readReplacementPools` rebuilds their pools from the selected template. The template stays an input because a blocked branch is replaced from the pool of the template block it was drawn from, which a `branches` block does not know.
 
 `generateSetListFromWorkout` runs every workout with one handler registry and one finish rule:
 

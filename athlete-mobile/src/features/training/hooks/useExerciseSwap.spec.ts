@@ -16,7 +16,7 @@ import { toUserExerciseData } from "@/schemas/generator.schema";
 import { Logger } from "@/services/Logger";
 import { useAuthStore } from "@/store/authStore";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
-import { useSetListVersionsStore } from "@/store/setListVersionsStore";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { generateGenerationInput } from "@test/factories/generationInput";
@@ -297,20 +297,20 @@ describe("useExerciseSwap: swap in a short training", () => {
   afterEach(() => {
     jest.restoreAllMocks();
     useCustomWorkoutsStore.setState({ workoutsById: {} });
-    useSetListVersionsStore.setState({ versionsByWorkout: {} });
+    useDrawnWorkoutsStore.setState({ drawnWorkouts: {} });
   });
 
-  it("leaves the saved versions unchanged after a swap", async () => {
+  it("leaves the drawn workouts unchanged after a swap", async () => {
     const drawn = seedShortWorkout();
     const drawnBranchId = drawn[0].branchId ?? "";
     const template =
       useCustomWorkoutsStore.getState().workoutsById.SHORT_SWAP.template;
-    useSetListVersionsStore.setState({
-      versionsByWorkout: {
+    useDrawnWorkoutsStore.setState({
+      drawnWorkouts: {
         SHORT_SWAP: {
           HOME: {
             templateBlocks: JSON.stringify(template.blocks),
-            blocks: [
+            drawnBlocks: [
               {
                 block: generateBranchesBlock("GKS", [drawnBranchId], {
                   duration: undefined,
@@ -324,7 +324,7 @@ describe("useExerciseSwap: swap in a short training", () => {
       _hasHydrated: true,
     });
     const before = structuredClone(
-      useSetListVersionsStore.getState().versionsByWorkout,
+      useDrawnWorkoutsStore.getState().drawnWorkouts,
     );
     const { result } = await renderHook(() => useExerciseSwap(params, "HOME"));
     await waitFor(() =>
@@ -338,12 +338,10 @@ describe("useExerciseSwap: swap in a short training", () => {
     expect(useTrainingStore.getState().exerciseList?.[0].branchId).not.toBe(
       drawnBranchId,
     );
-    expect(useSetListVersionsStore.getState().versionsByWorkout).toEqual(
-      before,
-    );
+    expect(useDrawnWorkoutsStore.getState().drawnWorkouts).toEqual(before);
   });
 
-  it("lists the alternatives of the original template for a session replayed from a saved version", async () => {
+  it("lists the alternatives of the original template for a session replayed from a drawn workout", async () => {
     seedShortWorkout();
     const replayed = workoutGeneration
       .generateSetListFromWorkout(

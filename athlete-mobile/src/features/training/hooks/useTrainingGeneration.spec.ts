@@ -8,7 +8,7 @@ import {
 } from "@/features/training/workoutGeneratorRouter";
 import type { Template } from "@/schemas/aiwl.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
-import { useSetListVersionsStore } from "@/store/setListVersionsStore";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { generateFilledBlockResult } from "@test/factories/blockResult";
@@ -83,8 +83,8 @@ beforeEach(() => {
   mockGenerateSetList.mockReturnValue({ setList: [], blocks: [] });
   useUserProfileStore.setState({ warnings: { painAlertSeen: false } });
   useCustomWorkoutsStore.setState({ workoutsById: {} });
-  useSetListVersionsStore.setState({
-    versionsByWorkout: {},
+  useDrawnWorkoutsStore.setState({
+    drawnWorkouts: {},
     _hasHydrated: true,
   });
 });
@@ -212,7 +212,7 @@ describe("useTrainingGeneration: pain alert", () => {
   });
 });
 
-describe("useTrainingGeneration: saved versions of custom workouts", () => {
+describe("useTrainingGeneration: drawn workouts of custom workouts", () => {
   it("saves the first set list of an own training at the place", async () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
     useCustomWorkoutsStore.setState({
@@ -235,7 +235,9 @@ describe("useTrainingGeneration: saved versions of custom workouts", () => {
     });
 
     const saved =
-      useSetListVersionsStore.getState().versionsByWorkout["custom-a"]?.STUDIO;
-    expect(saved?.blocks.map(({ block }) => block.branches)).toEqual([["510"]]);
+      useDrawnWorkoutsStore.getState().drawnWorkouts["custom-a"]?.STUDIO;
+    expect(saved?.drawnBlocks.map(({ block }) => block.branches)).toEqual([
+      ["510"],
+    ]);
   });
 });

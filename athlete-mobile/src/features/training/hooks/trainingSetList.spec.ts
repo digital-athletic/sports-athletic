@@ -95,25 +95,25 @@ beforeEach(() => {
 describe("trainingSetList: generateTrainingSetList", () => {
   it("saves the first set list of a custom workout at the place", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
-    const saveVersion = jest.fn();
+    const saveDrawnWorkout = jest.fn();
     mockSelectWorkout.mockReturnValue(generateSelection(template));
     mockGenerateSetList.mockReturnValue(generateSetListResult(template, "510"));
 
     const setList = generateTrainingSetList(
       {
         workoutsById: generateWorkoutsById(template),
-        versionsByWorkout: {},
-        versionsHydrated: true,
-        saveVersion,
+        drawnWorkouts: {},
+        drawnWorkoutsHydrated: true,
+        saveDrawnWorkout,
       },
       () => Math.random(),
       generateRequest(),
     );
 
     expect(setList.map(({ branchId }) => branchId)).toEqual(["510"]);
-    expect(saveVersion).toHaveBeenCalledWith("custom-a", "STUDIO", {
+    expect(saveDrawnWorkout).toHaveBeenCalledWith("custom-a", "STUDIO", {
       templateBlocks: JSON.stringify(template.blocks),
-      blocks: [
+      drawnBlocks: [
         {
           block: { kind: "branches", skill: "GKS", branches: ["510"] },
           templateIndex: 0,
@@ -122,12 +122,12 @@ describe("trainingSetList: generateTrainingSetList", () => {
     });
   });
 
-  it("replays the saved version of the place and saves nothing when a blocked branch was replaced", () => {
+  it("replays the drawn workout of the place and saves nothing when a blocked branch was replaced", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
     const savedBlocks = [
       { block: generateBranchesBlock("GKS", ["523"]), templateIndex: 0 },
     ];
-    const saveVersion = jest.fn();
+    const saveDrawnWorkout = jest.fn();
     // A pain blocks branch 523, so the replay draws 518 in its slot.
     mockSelectWorkout.mockReturnValue(generateSelection(template));
     mockGenerateSetList.mockReturnValue(generateSetListResult(template, "518"));
@@ -135,16 +135,16 @@ describe("trainingSetList: generateTrainingSetList", () => {
     generateTrainingSetList(
       {
         workoutsById: generateWorkoutsById(template),
-        versionsByWorkout: {
+        drawnWorkouts: {
           "custom-a": {
             STUDIO: {
               templateBlocks: JSON.stringify(template.blocks),
-              blocks: savedBlocks,
+              drawnBlocks: savedBlocks,
             },
           },
         },
-        versionsHydrated: true,
-        saveVersion,
+        drawnWorkoutsHydrated: true,
+        saveDrawnWorkout,
       },
       () => Math.random(),
       generateRequest(),
@@ -153,19 +153,19 @@ describe("trainingSetList: generateTrainingSetList", () => {
     expect(mockGenerateSetList.mock.calls[0][2].previousDrawnBlocks).toEqual(
       savedBlocks,
     );
-    expect(saveVersion).not.toHaveBeenCalled();
+    expect(saveDrawnWorkout).not.toHaveBeenCalled();
   });
 
-  it("starts fresh and saves nothing before the versions store hydrates", () => {
+  it("starts fresh and saves nothing before the drawn workouts store hydrates", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
-    const saveVersion = jest.fn();
+    const saveDrawnWorkout = jest.fn();
 
     generateTrainingSetList(
       {
         workoutsById: generateWorkoutsById(template),
-        versionsByWorkout: {},
-        versionsHydrated: false,
-        saveVersion,
+        drawnWorkouts: {},
+        drawnWorkoutsHydrated: false,
+        saveDrawnWorkout,
       },
       () => Math.random(),
       generateRequest(),
@@ -176,20 +176,20 @@ describe("trainingSetList: generateTrainingSetList", () => {
     expect(
       mockGenerateSetList.mock.calls[0][2].previousDrawnBlocks,
     ).toBeUndefined();
-    expect(saveVersion).not.toHaveBeenCalled();
+    expect(saveDrawnWorkout).not.toHaveBeenCalled();
   });
 
   it.each(["MOB", "PLAN", "TEST_WORKOUT"])(
     "saves nothing for the bundled type %s",
     (type) => {
-      const saveVersion = jest.fn();
+      const saveDrawnWorkout = jest.fn();
 
       generateTrainingSetList(
         {
           workoutsById: {},
-          versionsByWorkout: {},
-          versionsHydrated: true,
-          saveVersion,
+          drawnWorkouts: {},
+          drawnWorkoutsHydrated: true,
+          saveDrawnWorkout,
         },
         () => Math.random(),
         generateRequest({ type }),
@@ -200,7 +200,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
       expect(
         mockGenerateSetList.mock.calls[0][2].previousDrawnBlocks,
       ).toBeUndefined();
-      expect(saveVersion).not.toHaveBeenCalled();
+      expect(saveDrawnWorkout).not.toHaveBeenCalled();
     },
   );
 });

@@ -13,7 +13,7 @@ import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useExerciseProgressStore } from "@/store/exerciseProgressStore";
 import { usePerformanceTestValuesStore } from "@/store/performanceTestValuesStore";
 import { usePlacesStore } from "@/store/placesStore";
-import { useSetListVersionsStore } from "@/store/setListVersionsStore";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { useSyncQueueStore } from "@/store/syncQueueStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserDataBackupStore } from "@/store/userDataBackupStore";
@@ -43,7 +43,7 @@ export function useLogout() {
 
     // Order matters, otherwise user is stuck on the wrong screen
     clearAuth();
-    useSetListVersionsStore.getState().clearSetListVersions();
+    useDrawnWorkoutsStore.getState().clearDrawnWorkouts();
     router.replace("/onboarding");
     return supabaseLogout()
       .catch(() => {
@@ -94,7 +94,7 @@ export function useDeleteAccount() {
   const { resetUserWorkoutData } = useUserWorkoutStore();
   const { clearWorkoutHistory } = useCompletedWorkoutsStore();
   const { clearCustomWorkouts } = useCustomWorkoutsStore();
-  const { clearSetListVersions } = useSetListVersionsStore();
+  const { clearDrawnWorkouts } = useDrawnWorkoutsStore();
   const { resetTrainingSchedule } = useTrainingScheduleStore();
   const { resetPlaces } = usePlacesStore();
   const { reset: resetPerformanceTestValues } = usePerformanceTestValuesStore();
@@ -126,7 +126,7 @@ export function useDeleteAccount() {
           resetProfile();
           clearWorkoutHistory();
           clearCustomWorkouts();
-          clearSetListVersions();
+          clearDrawnWorkouts();
           resetTrainingSchedule();
           resetPlaces();
           resetPerformanceTestValues();

@@ -166,12 +166,12 @@ jest.mock("@/store/customWorkoutsStore", () => ({
   }),
 }));
 
-const mockClearSetListVersions = jest.fn();
-jest.mock("@/store/setListVersionsStore", () => {
+const mockClearDrawnWorkouts = jest.fn();
+jest.mock("@/store/drawnWorkoutsStore", () => {
   // Built on each call: the mock function is defined after the hoisted mock.
-  const readState = () => ({ clearSetListVersions: mockClearSetListVersions });
+  const readState = () => ({ clearDrawnWorkouts: mockClearDrawnWorkouts });
   return {
-    useSetListVersionsStore: Object.assign(readState, { getState: readState }),
+    useDrawnWorkoutsStore: Object.assign(readState, { getState: readState }),
   };
 });
 
@@ -192,7 +192,7 @@ function storeCallCounts() {
     clearTraining: mockClearTraining.mock.calls.length,
     resetSynchronization: mockResetSynchronization.mock.calls.length,
     clearCustomWorkouts: mockClearCustomWorkouts.mock.calls.length,
-    clearSetListVersions: mockClearSetListVersions.mock.calls.length,
+    clearDrawnWorkouts: mockClearDrawnWorkouts.mock.calls.length,
   };
 }
 
@@ -211,7 +211,7 @@ const ALL_STORES_CALLED_ONCE = {
   clearTraining: 1,
   resetSynchronization: 1,
   clearCustomWorkouts: 1,
-  clearSetListVersions: 1,
+  clearDrawnWorkouts: 1,
 };
 
 const ALL_STORES_NOT_CALLED = Object.fromEntries(
@@ -362,27 +362,27 @@ describe("useLogout", () => {
     expect(mockTakeSnapshot).not.toHaveBeenCalled();
   });
 
-  it("clears the saved set list versions right after the auth and before the navigation", async () => {
+  it("clears the drawn workouts right after the auth and before the navigation", async () => {
     await confirmLogout();
 
     await waitFor(() => {
-      expect(mockClearSetListVersions).toHaveBeenCalled();
+      expect(mockClearDrawnWorkouts).toHaveBeenCalled();
     });
     const [clearAuthOrder] = mockClearAuth.mock.invocationCallOrder;
-    const [clearVersionsOrder] =
-      mockClearSetListVersions.mock.invocationCallOrder;
+    const [clearDrawnWorkoutsOrder] =
+      mockClearDrawnWorkouts.mock.invocationCallOrder;
     const [replaceOrder] = mockReplace.mock.invocationCallOrder;
-    expect(clearVersionsOrder).toBeGreaterThan(clearAuthOrder);
-    expect(clearVersionsOrder).toBeLessThan(replaceOrder);
+    expect(clearDrawnWorkoutsOrder).toBeGreaterThan(clearAuthOrder);
+    expect(clearDrawnWorkoutsOrder).toBeLessThan(replaceOrder);
   });
 
-  it("clears the saved set list versions when the logout fails", async () => {
+  it("clears the drawn workouts when the logout fails", async () => {
     mockSupabaseLogout.mockRejectedValue(new Error("network"));
 
     await confirmLogout();
 
     await waitFor(() => {
-      expect(mockClearSetListVersions).toHaveBeenCalledTimes(1);
+      expect(mockClearDrawnWorkouts).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -125,7 +125,7 @@ export interface SetListOptions {
   /** Every draw reads it; the app passes Math.random. */
   random: () => number;
   /**
-   * previousDrawnBlocks replays a saved version: its branches blocks run instead of the
+   * previousDrawnBlocks replays a drawn workout: its branches blocks run instead of the
    * template's draws. The template is still needed because a blocked branch is
    * replaced from the pool of the template block it was drawn from
    * (DrawnBlock.templateIndex), and a branches block does not know that pool.
@@ -141,7 +141,7 @@ export interface SetListOptions {
  * 1. Builds the generator input from the request (athlete, place, equipment,
  *    exercise catalog, progress) and the given random source.
  * 2. Without `previousDrawnBlocks`, generates from the selected template.
- * 3. With `previousDrawnBlocks` (a saved version), generates from the saved
+ * 3. With `previousDrawnBlocks` (a drawn workout), generates from the drawn
  *    branches instead of the template's picks. A branch the athlete can no
  *    longer train (new pain, missing equipment) is replaced in its own slot
  *    only, from the pool of the template block it was drawn from.

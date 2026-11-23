@@ -14,19 +14,26 @@ import {
   type WorkoutSelection,
 } from "@/features/training/workoutGeneratorRouter";
 
-/** The first generation of a custom workout at one place. */
-export type SavedVersion = { templateBlocks: string; blocks: DrawnBlock[] };
+/**
+ * The branches a custom workout drew on its first start at one place, as one
+ * branches block per drawn template block. `templateBlocks` fingerprints the
+ * template, so a template change starts a fresh draw.
+ */
+export type DrawnWorkout = {
+  templateBlocks: string;
+  drawnBlocks: DrawnBlock[];
+};
 
-type VersionedSetListInput = {
+type DrawnWorkoutSetListInput = {
   request: WorkoutGenerationRequest;
   selection: WorkoutSelection;
-  saved?: SavedVersion;
+  drawnWorkout?: DrawnWorkout;
   random: () => number;
 };
 
-type VersionedSetList = {
+type DrawnWorkoutSetList = {
   setList: GeneratedSetListEntry[];
-  versionToSave: SavedVersion | null;
+  drawnWorkoutToSave: DrawnWorkout | null;
 };
 
 // A swapped cardio block saves its original, so a replay tries it again.
@@ -62,10 +69,10 @@ const toBranchesBlock = (
  * block in draw order, and the template index of each picks block, from which
  * a replay rebuilds the replacement pool.
  *
- * readVersionBlocks({ blocks: [<GKS picks result: 523, 510>], setList }, template)
+ * readDrawnBlocks({ blocks: [<GKS picks result: 523, 510>], setList }, template)
  * → [{ block: { kind: "branches", skill: "GKS", branches: ["523", "510"] }, templateIndex: 0 }]
  */
-export const readVersionBlocks = (
+export const readDrawnBlocks = (
   finished: FinishedWorkout<GeneratedSetListEntry>,
   template: InterpretedWorkout,
 ): DrawnBlock[] =>
@@ -79,29 +86,32 @@ export const readVersionBlocks = (
   });
 
 /**
- * Replays the saved version while the template blocks are unchanged.
- * Otherwise generates fresh and returns the version to save, or null when
+ * Replays the drawn workout while the template blocks are unchanged.
+ * Otherwise generates fresh and returns the drawn workout to save, or null when
  * no block drew a branch.
  */
-export const generateVersionedSetList = ({
+export const generateSetListFromDrawnWorkout = ({
   request,
   selection,
-  saved,
+  drawnWorkout,
   random,
-}: VersionedSetListInput): VersionedSetList => {
+}: DrawnWorkoutSetListInput): DrawnWorkoutSetList => {
   const templateBlocks = JSON.stringify(selection.workout.blocks);
   const previousDrawnBlocks =
-    saved?.templateBlocks === templateBlocks ? saved.blocks : undefined;
+    drawnWorkout?.templateBlocks === templateBlocks
+      ? drawnWorkout.drawnBlocks
+      : undefined;
   const finished = generateSetList(selection, request, {
     random,
     previousDrawnBlocks,
   });
   if (previousDrawnBlocks) {
-    return { setList: finished.setList, versionToSave: null };
+    return { setList: finished.setList, drawnWorkoutToSave: null };
   }
-  const blocks = readVersionBlocks(finished, selection.workout);
+  const drawnBlocks = readDrawnBlocks(finished, selection.workout);
   return {
     setList: finished.setList,
-    versionToSave: blocks.length > 0 ? { templateBlocks, blocks } : null,
+    drawnWorkoutToSave:
+      drawnBlocks.length > 0 ? { templateBlocks, drawnBlocks } : null,
   };
 };

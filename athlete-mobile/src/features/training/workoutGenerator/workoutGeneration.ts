@@ -105,7 +105,7 @@ const createHandlerRegistry = (
 /**
  * Generates the set list of one workout template for the athlete of the
  * input. The core of the workout generator: it knows no training type, no
- * training place and no saved version. `generateSetList` in the router
+ * training place and no drawn workout. `generateSetList` in the router
  * prepares those and calls this function.
  *
  * 1. Rejects a block kind the generator does not support.

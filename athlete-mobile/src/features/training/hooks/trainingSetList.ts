@@ -1,5 +1,5 @@
 import type { PlaceType } from "@/constants/workoutConstants";
-import { generateVersionedSetList } from "@/features/customWorkouts/savedVersion";
+import { generateSetListFromDrawnWorkout } from "@/features/customWorkouts/drawnWorkout";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import {
   generateSetList,
@@ -12,53 +12,53 @@ import {
   useCustomWorkoutsStore,
 } from "@/store/customWorkoutsStore";
 import {
-  type SetListVersionsState,
-  useSetListVersionsStore,
-} from "@/store/setListVersionsStore";
+  type DrawnWorkoutsState,
+  useDrawnWorkoutsStore,
+} from "@/store/drawnWorkoutsStore";
 
-/** The store state a training start reads and writes for saved versions. */
-export type SetListVersionsContext = {
+/** The store state a training start reads and writes for drawn workouts. */
+export type DrawnWorkoutsContext = {
   workoutsById: CustomWorkoutsState["workoutsById"];
-  versionsByWorkout: SetListVersionsState["versionsByWorkout"];
-  versionsHydrated: boolean;
-  saveVersion: SetListVersionsState["saveVersion"];
+  drawnWorkouts: DrawnWorkoutsState["drawnWorkouts"];
+  drawnWorkoutsHydrated: boolean;
+  saveDrawnWorkout: DrawnWorkoutsState["saveDrawnWorkout"];
 };
 
-export const useSetListVersionsContext = (): SetListVersionsContext => {
+export const useDrawnWorkoutsContext = (): DrawnWorkoutsContext => {
   const { workoutsById } = useCustomWorkoutsStore();
-  const { versionsByWorkout, _hasHydrated, saveVersion } =
-    useSetListVersionsStore();
+  const { drawnWorkouts, _hasHydrated, saveDrawnWorkout } =
+    useDrawnWorkoutsStore();
   return {
     workoutsById,
-    versionsByWorkout,
-    versionsHydrated: _hasHydrated,
-    saveVersion,
+    drawnWorkouts,
+    drawnWorkoutsHydrated: _hasHydrated,
+    saveDrawnWorkout,
   };
 };
 
 /**
  * Generates the set list of a training start. A custom workout replays its
- * saved version for the place, or saves its first set list there. Before the
- * versions store hydrates, a custom workout generates fresh and saves nothing.
+ * drawn workout for the place, or saves its first draw there. Before the
+ * drawn workouts store hydrates, a custom workout generates fresh and saves nothing.
  */
 export const generateTrainingSetList = (
-  ctx: SetListVersionsContext,
+  ctx: DrawnWorkoutsContext,
   random: () => number,
   request: WorkoutGenerationRequest & { place: PlaceType },
 ): GeneratedSetListEntry[] => {
   const selection = selectWorkout(request);
   const isCustom = findCustomTemplate(ctx.workoutsById, request.type);
-  if (!isCustom || !ctx.versionsHydrated) {
+  if (!isCustom || !ctx.drawnWorkoutsHydrated) {
     return generateSetList(selection, request, { random }).setList;
   }
-  const { setList, versionToSave } = generateVersionedSetList({
+  const { setList, drawnWorkoutToSave } = generateSetListFromDrawnWorkout({
     request,
     selection,
-    saved: ctx.versionsByWorkout[request.type]?.[request.place],
+    drawnWorkout: ctx.drawnWorkouts[request.type]?.[request.place],
     random,
   });
-  if (versionToSave) {
-    ctx.saveVersion(request.type, request.place, versionToSave);
+  if (drawnWorkoutToSave) {
+    ctx.saveDrawnWorkout(request.type, request.place, drawnWorkoutToSave);
   }
   return setList;
 };

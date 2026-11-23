@@ -168,11 +168,11 @@ jest.mock("../store/userDataBackupStore", () => ({
   ) => selector({ restoreSnapshot: mockRestoreSnapshot }),
 }));
 
-const mockClearSetListVersions = jest.fn();
-jest.mock("../store/setListVersionsStore", () => ({
-  useSetListVersionsStore: (
-    selector: (state: { clearSetListVersions: () => void }) => unknown,
-  ) => selector({ clearSetListVersions: mockClearSetListVersions }),
+const mockClearDrawnWorkouts = jest.fn();
+jest.mock("../store/drawnWorkoutsStore", () => ({
+  useDrawnWorkoutsStore: (
+    selector: (state: { clearDrawnWorkouts: () => void }) => unknown,
+  ) => selector({ clearDrawnWorkouts: mockClearDrawnWorkouts }),
 }));
 
 let mockPendingConsent: {
@@ -461,15 +461,15 @@ describe("useAuthStateListener — consent gate", () => {
     expect(mockSetConsentStatus).toHaveBeenCalledWith("loading");
   });
 
-  it("clears the saved set list versions on SIGNED_OUT", async () => {
+  it("clears the drawn workouts on SIGNED_OUT", async () => {
     await renderHook(() => useAuthStateListener());
 
     capturedAuthCallback!("SIGNED_OUT", null);
 
-    expect(mockClearSetListVersions).toHaveBeenCalledTimes(1);
+    expect(mockClearDrawnWorkouts).toHaveBeenCalledTimes(1);
   });
 
-  it("leaves the saved set list versions unchanged on TOKEN_REFRESHED", async () => {
+  it("leaves the drawn workouts unchanged on TOKEN_REFRESHED", async () => {
     await renderHook(() => useAuthStateListener());
 
     capturedAuthCallback!("TOKEN_REFRESHED", {
@@ -477,7 +477,7 @@ describe("useAuthStateListener — consent gate", () => {
       access_token: "new-token",
     });
 
-    expect(mockClearSetListVersions).not.toHaveBeenCalled();
+    expect(mockClearDrawnWorkouts).not.toHaveBeenCalled();
   });
 
   it("re-checks consent when app foregrounds with status missing", async () => {

@@ -32,7 +32,7 @@ describe("Per-Store Migration Versioning", () => {
         "CUSTOM_WORKOUTS",
         "SPORT_TESTS",
         "PERFORMANCE_TEST_VALUES",
-        "SET_LIST_VERSIONS",
+        "DRAWN_WORKOUTS",
       ] as const;
 
       for (const store of expectedStores) {

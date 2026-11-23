@@ -5,6 +5,7 @@ import {
   getUserTeams,
   createTeam as createTeamApi,
   acceptInvitation as acceptInvitationApi,
+  leaveTeam as leaveTeamApi,
   ApiError,
 } from "../services/teamsApi";
 
@@ -70,12 +71,24 @@ export function useTeamSelection() {
     }
   };
 
+  const leaveTeam = async (teamId: string) => {
+    setError(null);
+    try {
+      await leaveTeamApi(teamId);
+      await loadTeams();
+    } catch (err) {
+      setError(translateError(err, "common.error"));
+      throw err;
+    }
+  };
+
   return {
     teams,
     loading,
     error,
     createTeam,
     joinTeam,
+    leaveTeam,
     refresh: loadTeams,
   };
 }

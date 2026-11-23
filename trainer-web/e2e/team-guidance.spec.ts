@@ -17,14 +17,14 @@ const OWNED_TEAM: MockTeam = {
   invite_code: "KEEP01",
 };
 
-const foreignTeam = (role: "member" | "co_owner"): MockTeam => ({
+const CO_OWNED_TEAM: MockTeam = {
   ...OWNED_TEAM,
   owner_id: OTHER_OWNER,
   members: [
     { user_id: OTHER_OWNER, role: "owner" },
-    { user_id: MOCK_USER.id, role },
+    { user_id: MOCK_USER.id, role: "co_owner" },
   ],
-});
+};
 
 async function signInAndOpen(page: Page, team: MockTeam) {
   const login = new LoginPage(page);
@@ -56,13 +56,11 @@ test.describe("Team guidance", () => {
     await form.expectValues("Team sessions Mon and Thu 18:00.", "3");
   });
 
-  for (const role of ["member", "co_owner"] as const) {
-    test(`a ${role} does not see the form`, async ({ page }) => {
-      await openDashboard(page, foreignTeam(role));
+  test("a co-owner does not see the form", async ({ page }) => {
+    await openDashboard(page, CO_OWNED_TEAM);
 
-      await new TeamGuidanceForm(page).expectHidden();
-    });
-  }
+    await new TeamGuidanceForm(page).expectHidden();
+  });
 
   test("saving shows the stored values, and they survive a reload", async ({
     page,

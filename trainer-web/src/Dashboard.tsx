@@ -23,6 +23,7 @@ export const Dashboard = () => {
     loading,
     error,
     isOwner,
+    isStaff,
     currentUserId,
     currentUserDisplayName,
     regenerateInviteCode,
@@ -33,11 +34,21 @@ export const Dashboard = () => {
     updateGuidance,
   } = useTeam(teamId);
 
+  // A plain member sees nobody else in the team, so the dashboard has nothing
+  // to show them. Their team is listed on the selection page instead.
+  const isPlainMember = !loading && team !== null && !isStaff;
+
   useEffect(() => {
     if (!loading && !teamId) {
       navigate("/teams");
     }
   }, [loading, teamId, navigate]);
+
+  useEffect(() => {
+    if (isPlainMember) {
+      navigate("/teams", { replace: true });
+    }
+  }, [isPlainMember, navigate]);
 
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
@@ -114,6 +125,8 @@ export const Dashboard = () => {
       setIsRemoving(false);
     }
   };
+
+  if (isPlainMember) return null;
 
   return (
     <PageLayout>

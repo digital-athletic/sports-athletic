@@ -33,6 +33,7 @@
     "description": "Select a team to continue or create a new one.",
     "players": "{{count}} players",
     "noTeam": "You are not a member of any team yet.",
+    "memberHint": "As a member you use this team in the app. There is nothing to manage here.",
     "createTeam": "Create Team",
     "joinTeam": "Join Team",
     "or": "or",

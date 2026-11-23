@@ -112,7 +112,6 @@ const PickedFromSchema = v.strictObject({
   picks: PlacePicksSchema,
   fallbackToWholeTree: v.optional(v.boolean()),
 });
-export type PickedFrom = v.InferOutput<typeof PickedFromSchema>;
 const BranchesBlockSchema = v.strictObject({
   kind: v.literal("branches"),
   ...blockBase,

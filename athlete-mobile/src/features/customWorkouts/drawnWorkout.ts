@@ -64,7 +64,7 @@ const toBranchesBlock = (
 
 /**
  * Reads the drawn blocks of a finished workout: one branches block per filled
- * block with its branches in draw order. A block drawn by picks keeps them as
+ * block with its branches in draw order. A block drawn by picks copies them as
  * `pickedFrom`, so a replay replaces a blocked branch from the same pool.
  *
  * readDrawnBlocks({ blocks: [<GKS picks result: 523, 510>], setList })

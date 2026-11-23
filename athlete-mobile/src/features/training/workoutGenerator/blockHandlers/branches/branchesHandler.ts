@@ -74,9 +74,9 @@ const keepOwnPreventionRegionReplacement = (
 
 // A prevention or special warm-up skill requests a slot for each kept branch
 // too and puts that branch back into the pool. Any other skill keeps its kept
-// branches and adds the replacement after them. On replay, the "blockedSlots"
-// refill leaves the kept branches in place and refills each blocked slot on
-// its own.
+// branches and adds the replacement after them. The "blockedSlots" refill of a
+// block with pickedFrom leaves the kept branches in place and refills each
+// blocked slot on its own.
 const refillRequestedRegions = (
   skill: string,
   keptBranches: StoredBranch[],
@@ -110,7 +110,8 @@ const refillRequestedRegions = (
 };
 
 // Refills each duplicate slot on its own: a slot without a fitting branch
-// drops out and the others stay. A replay runs this path for every skill.
+// drops out and the others stay. A block with pickedFrom runs this path for
+// every skill.
 const refillDuplicateSlots = (
   skill: string,
   keptBranches: StoredBranch[],
@@ -280,11 +281,6 @@ const buildBlockResult = (
         usedBranchIds: [],
       };
 
-/**
- * Builds the branches handler. The lookup reads the stored branch IDs: the
- * branch lookup index, or the entries a stored training day saved at plan
- * creation.
- */
 // A block with pickedFrom refills only its blocked slots, from the pool of
 // its picks.
 const readBlockReplacementInput = (
@@ -299,6 +295,11 @@ const readBlockReplacementInput = (
       }
     : input;
 
+/**
+ * Builds the branches handler. The lookup reads the stored branch IDs: the
+ * branch lookup index, or the entries a stored training day saved at plan
+ * creation.
+ */
 export const createBranchesBlockHandler =
   (lookUpStoredBranch: StoredBranchLookup): BlockHandlerRegistry["branches"] =>
   (storedBlock, input, _usedBranches, walk): BlockResult => {

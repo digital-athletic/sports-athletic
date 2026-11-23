@@ -1,23 +1,20 @@
 import { Alert } from "@/common/Alert";
-import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import {
   generateSetList,
   selectWorkout,
 } from "@/features/training/workoutGeneratorRouter";
-import type { Template } from "@/schemas/aiwl.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { generateFilledBlockResult } from "@test/factories/blockResult";
 import {
   generatePicksBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { act, renderHook } from "@testing-library/react-native";
 import { useTrainingGeneration } from "./useTrainingGeneration";
+import { generateSetListResult } from "@test/factories/setListResult";
 
 const mockNavigate = jest.fn();
 const mockReplace = jest.fn();
@@ -46,29 +43,6 @@ const generatePlanParams = () => ({ type: "PLAN" as const });
 
 /** Strength test params, which show the pain alert for declared pains. */
 const generateTestWorkoutParams = () => ({ type: "TEST_WORKOUT" as const });
-
-/**
- * Builds what the generator returns for the template when its block drew the
- * branch.
- *
- * generateSetListResult(template, "510")
- * → { blocks: [{ status: "filled", block: template.blocks[0], exercises: [{ branchId: "510", ... }], ... }],
- *     setList: [{ branchId: "510", exerciseId: "exercise510", set: [1, 1], skill: "GKS" }] }
- */
-const generateSetListResult = (
-  template: Template,
-  branchId: string,
-): FinishedWorkout<GeneratedSetListEntry> => ({
-  blocks: [generateFilledBlockResult(template.blocks[0], [branchId])],
-  setList: [
-    {
-      branchId,
-      exerciseId: `exercise${branchId}`,
-      set: [1, 1],
-      skill: "GKS",
-    },
-  ],
-});
 
 const pressAlertOk = async (callIndex: number) => {
   const [, , buttons] = alertSpy.mock.calls[callIndex];

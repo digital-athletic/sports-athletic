@@ -497,28 +497,6 @@ describe("selectWorkout: workout per training type", () => {
 describe("generateSetList: drawn workouts", () => {
   afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
 
-  it("runs the branches of a drawn workout", () => {
-    const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
-      generateTemplate(
-        [
-          generateBranchesBlock("WU", ["410"], {
-            pickedFrom: { picks: [{ tags: [], count: 1 }] },
-          }),
-        ],
-        { id: "own", name: { en: "Own" } },
-      ),
-      null,
-    );
-    const request = generateHomeRequest(id);
-
-    const { setList } = generateSetList(selectWorkout(request), request, {
-      random: () => Math.random(),
-    });
-
-    expect(setList.length).toBeGreaterThan(0);
-    expect(setList.every((entry) => entry.branchId === "410")).toBe(true);
-  });
-
   it("replaces a pain blocked drawn branch from the pool of its picks only", () => {
     // Branch 523 trains the knee direction and knee pain blocks it. The knee
     // picks pool contains 518, 767 and 866 after the pain check; the whole

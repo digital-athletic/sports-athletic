@@ -1,5 +1,3 @@
-import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import {
   generateSetList,
@@ -9,13 +7,13 @@ import {
 } from "@/features/training/workoutGeneratorRouter";
 import type { Template } from "@/schemas/aiwl.schema";
 import { generateAthlete } from "@test/factories/athlete";
-import { generateFilledBlockResult } from "@test/factories/blockResult";
 import {
   generateBranchesBlock,
   generatePicksBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { generateTrainingSetList } from "./trainingSetList";
+import { generateSetListResult } from "@test/factories/setListResult";
 
 jest.mock("@/features/training/workoutGeneratorRouter", () => ({
   selectWorkout: jest.fn(),
@@ -70,23 +68,6 @@ const generateSelection = (template: Template): WorkoutSelection => ({
   filters: {},
 });
 
-/**
- * Builds what the generator returns when the GKS block of the template drew
- * the branch.
- *
- * generateSetListResult(template, "510")
- * → { blocks: [<filled GKS result of 510>], setList: [{ branchId: "510", exerciseId: "exercise510", set: [1, 1], skill: "GKS" }] }
- */
-const generateSetListResult = (
-  template: Template,
-  branchId: string,
-): FinishedWorkout<GeneratedSetListEntry> => ({
-  blocks: [generateFilledBlockResult(template.blocks[0], [branchId])],
-  setList: [
-    { branchId, exerciseId: `exercise${branchId}`, set: [1, 1], skill: "GKS" },
-  ],
-});
-
 beforeEach(() => {
   jest.clearAllMocks();
   mockGenerateSetList.mockReturnValue({ setList: [], blocks: [] });
@@ -131,10 +112,17 @@ describe("trainingSetList: generateTrainingSetList", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
     const drawnWorkout = {
       templateBlocks: JSON.stringify(template.blocks),
-      workout: { ...template, blocks: [generateBranchesBlock("GKS", ["523"])] },
+      workout: {
+        ...template,
+        blocks: [
+          generateBranchesBlock("GKS", ["523"], {
+            pickedFrom: { picks: [{ tags: [], count: 1 }] },
+          }),
+        ],
+      },
     };
     const saveDrawnWorkout = jest.fn();
-    // A pain blocks branch 523, so the replay draws 518 in its slot.
+    // The mocked generator returns 518, as a replay that replaced the blocked 523.
     mockSelectWorkout.mockReturnValue(generateSelection(template));
     mockGenerateSetList.mockReturnValue(generateSetListResult(template, "518"));
 

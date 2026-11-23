@@ -80,10 +80,10 @@ const generateStrengthTemplate = (): Template =>
 /**
  * Builds the drawn workout of a template from drawn branches blocks.
  *
- * generateDrawnWorkout(template, [gksBranchesBlock])
+ * generateDrawnWorkoutOfBlocks(template, [gksBranchesBlock])
  * → { templateBlocks: '[{"kind":"picks",...}]', workout: { ...template, blocks: [gksBranchesBlock] } }
  */
-const generateDrawnWorkout = (
+const generateDrawnWorkoutOfBlocks = (
   template: Template,
   blocks: BranchesBlock[],
 ): DrawnWorkout => ({
@@ -504,7 +504,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
     });
     const mobBlock = generatePicksBlock("MOB");
     const template = generateTemplate([gksBlock, mobBlock]);
-    const drawnWorkout = generateDrawnWorkout(template, [
+    const drawnWorkout = generateDrawnWorkoutOfBlocks(template, [
       {
         ...generateBranchesBlock("GKS", ["523"], { duration: undefined }),
         pickedFrom: { picks: gksBlock.picks, fallbackToWholeTree: false },
@@ -548,7 +548,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a template change"
   it("generates fresh and returns a drawn workout of the new template blocks", () => {
     const oldTemplate = generateStrengthTemplate();
     const newTemplate = generateTemplate([generatePicksBlock("MOB")]);
-    const drawnWorkout = generateDrawnWorkout(oldTemplate, [
+    const drawnWorkout = generateDrawnWorkoutOfBlocks(oldTemplate, [
       generateBranchesBlock("GKS", ["510"], { duration: undefined }),
     ]);
     seedRandom(1);

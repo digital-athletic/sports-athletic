@@ -53,25 +53,36 @@ jest.mock("@/features/training/workoutGenerator/workoutGeneration", () => {
 });
 
 /**
- * Generates a workout of the type for the warm up only plan user at home with
- * no equipment, all catalog trees and no earlier progress.
+ * Builds the request of the warm up only plan user at home with no equipment,
+ * all catalog trees and no earlier progress. The overrides replace any field.
+ *
+ * generateHomeRequest("MOB") → { type: "MOB", place: "HOME", equipment: [], weekday: 1, ... }
+ */
+const generateHomeRequest = (
+  type: TrainingType,
+  overrides: Partial<WorkoutGenerationRequest> = {},
+): WorkoutGenerationRequest => ({
+  type,
+  user: generateWarmUpOnlyPlanUser(),
+  place: "HOME",
+  exercises: loadExercises(),
+  skillTrees: getAllSkillTrees(),
+  weekday: 1,
+  equipment: [],
+  givenSection: undefined,
+  daysSinceLastWorkout: 0,
+  userExerciseData: { exerciseData: {}, branchData: {} },
+  ...overrides,
+});
+
+/**
+ * Generates a workout of the type for the request of generateHomeRequest.
  *
  * generateWorkoutOf("MOB")
  * → [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...]
  */
 const generateWorkoutOf = (type: TrainingType) => {
-  const request: WorkoutGenerationRequest = {
-    type,
-    user: generateWarmUpOnlyPlanUser(),
-    place: "HOME",
-    exercises: loadExercises(),
-    skillTrees: getAllSkillTrees(),
-    weekday: 1,
-    equipment: [],
-    givenSection: undefined,
-    daysSinceLastWorkout: 0,
-    userExerciseData: { exerciseData: {}, branchData: {} },
-  };
+  const request = generateHomeRequest(type);
   return generateSetList(selectWorkout(request), request, {
     random: () => Math.random(),
   }).setList;
@@ -199,24 +210,10 @@ describe("generateSetList: routing", () => {
 describe("generateSetList: random source", () => {
   afterEach(jest.restoreAllMocks);
 
-  // generateMobilityRequest() → { type: "MOB", place: "HOME", equipment: [], weekday: 1, ... }
-  const generateMobilityRequest = (): WorkoutGenerationRequest => ({
-    type: "MOB",
-    user: generateWarmUpOnlyPlanUser(),
-    place: "HOME",
-    exercises: loadExercises(),
-    skillTrees: getAllSkillTrees(),
-    weekday: 1,
-    equipment: [],
-    givenSection: undefined,
-    daysSinceLastWorkout: 0,
-    userExerciseData: { exerciseData: {}, branchData: {} },
-  });
-
   it("draws from the random source the caller passes and never from Math.random", () => {
     const mathRandom = jest.spyOn(Math, "random");
     const random = jest.fn(generateSeededRandom(7));
-    const request = generateMobilityRequest();
+    const request = generateHomeRequest("MOB");
 
     generateSetList(selectWorkout(request), request, { random });
 
@@ -225,7 +222,7 @@ describe("generateSetList: random source", () => {
   });
 
   it("returns the same set list for two runs with the same seed", () => {
-    const request = generateMobilityRequest();
+    const request = generateHomeRequest("MOB");
 
     const first = generateSetList(selectWorkout(request), request, {
       random: generateSeededRandom(7),
@@ -332,18 +329,7 @@ describe("generateSetList: short workouts", () => {
       workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] } },
     };
 
-    const request: WorkoutGenerationRequest = {
-      type: id,
-      user,
-      place: "HOME",
-      exercises: loadExercises(),
-      skillTrees: getAllSkillTrees(),
-      weekday: 1,
-      equipment: [],
-      givenSection: undefined,
-      daysSinceLastWorkout: 0,
-      userExerciseData: { exerciseData: {}, branchData: {} },
-    };
+    const request = generateHomeRequest(id, { user });
 
     expect(
       catchThrownValue(() =>
@@ -368,18 +354,11 @@ describe("generateSetList: short workouts", () => {
       null,
     );
 
-    const request: WorkoutGenerationRequest = {
-      type: id,
+    const request = generateHomeRequest(id, {
       user: generateAthlete({ soreMuscles: ["QUADRICEPS"] }),
       place: "STUDIO",
-      exercises: loadExercises(),
-      skillTrees: getAllSkillTrees(),
-      weekday: 1,
       equipment: ["TREADMILL"],
-      givenSection: undefined,
-      daysSinceLastWorkout: 0,
-      userExerciseData: { exerciseData: {}, branchData: {} },
-    };
+    });
 
     const { setList } = generateSetList(selectWorkout(request), request, {
       random: () => Math.random(),
@@ -519,21 +498,6 @@ describe("generateSetList: replay of previous drawn blocks", () => {
   afterEach(jest.restoreAllMocks);
   afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
 
-  // Builds the request of the warm up only plan user at home with no equipment
-  // and all catalog trees.
-  // generateRequest("own") → { type: "own", place: "HOME", equipment: [], weekday: 1, ... }
-  const generateRequest = (type: string): WorkoutGenerationRequest => ({
-    type,
-    user: generateWarmUpOnlyPlanUser(),
-    place: "HOME",
-    exercises: loadExercises(),
-    skillTrees: getAllSkillTrees(),
-    weekday: 1,
-    equipment: [],
-    givenSection: undefined,
-    daysSinceLastWorkout: 0,
-    userExerciseData: { exerciseData: {}, branchData: {} },
-  });
   const customTemplate = generateTemplate(
     [
       generatePicksBlock("WU", { picks: [{ tags: [], count: 2 }] }),
@@ -546,7 +510,7 @@ describe("generateSetList: replay of previous drawn blocks", () => {
     const { id } = useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(customTemplate, null);
-    const request = generateRequest(id);
+    const request = generateHomeRequest(id);
     const previousDrawnBlocks = [
       { block: generateBranchesBlock("WU", ["410"]), templateIndex: 0 },
     ];
@@ -580,14 +544,13 @@ describe("generateSetList: replay of previous drawn blocks", () => {
     const { id } = useCustomWorkoutsStore
       .getState()
       .saveCustomWorkout(template, null);
-    const request: WorkoutGenerationRequest = {
-      ...generateRequest(id),
+    const request = generateHomeRequest(id, {
       user: {
         ...generateWarmUpOnlyPlanUser(),
         workoutData: { tags: { LEVEL: ["ADVANCED"], PAIN: ["KNEE_LEFT"] } },
       },
       equipment: ["DUMBBELL", "BARBELL"],
-    };
+    });
     const previousDrawnBlocks = [
       { block: generateBranchesBlock("GKS", ["523"]), templateIndex: 0 },
     ];

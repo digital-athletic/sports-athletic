@@ -373,22 +373,7 @@ describe("branchReplacement: replacementPool", () => {
   const listBranchIds = (replacement: { branchId: string }[]) =>
     replacement.map(({ branchId }) => branchId);
 
-  it("never chooses a candidate outside the pool", () => {
-    const skillTrees = { BAS: generateBasTree(["1", "2", "3"]) };
-    const input = {
-      ...generateReplacementInput({ skillTrees, exerciseCatalog }),
-      replacementPool: { "2": skillTrees.BAS["2"] },
-    };
-
-    const replacement = replaceBlockedBranches(
-      { skill: "BAS", replace: ["LOWER_BODY"], usedBranchIds: [] },
-      input,
-    );
-
-    expect(listBranchIds(replacement)).toEqual(["2"]);
-  });
-
-  it("drops the slot an exhausted pool cannot fill and fills the earlier slot", () => {
+  it("never chooses a candidate outside the pool and drops the slot an exhausted pool cannot fill", () => {
     const skillTrees = { BAS: generateBasTree(["1", "2", "3"]) };
     const input = {
       ...generateReplacementInput({ skillTrees, exerciseCatalog }),

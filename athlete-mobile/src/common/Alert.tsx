@@ -7,10 +7,10 @@ export interface AlertButton {
   onPress?: () => void;
 }
 
-/** iOS shows the native alert; Android and web are drawn by AlertHost */
+/** iOS and Android show the native alert; web is drawn by AlertHost */
 export const Alert = {
   alert(title: string, message?: string, buttons?: AlertButton[]) {
-    if (Platform.OS === "ios") {
+    if (Platform.OS !== "web") {
       RNAlert.alert(title, message, buttons);
     } else {
       enqueueAlert(title, message, buttons);

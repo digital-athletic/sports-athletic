@@ -1,4 +1,11 @@
 import { ExpoConfig } from "expo/config";
+import {
+  AndroidConfig,
+  type ConfigPlugin,
+  withAndroidColors,
+  withAndroidStyles,
+  withAppBuildGradle,
+} from "expo/config-plugins";
 
 const variant =
   (process.env.APP_VARIANT as
@@ -30,7 +37,61 @@ const packageName = {
   production: "de.digital_athletic.app",
 }[variant];
 
-export default (): ExpoConfig => ({
+// Same version as @expo/ui pulls in
+const MATERIAL_DEPENDENCY = "com.google.android.material:material:1.13.0";
+
+// Mirrors src/theme/colors.ts; config plugins cannot import app TypeScript
+const MATERIAL3_COLORS = {
+  colorOnPrimary: "#FFFFFF",
+  colorError: "#D70015",
+  colorOnError: "#FFFFFF",
+};
+
+/** Android: bases the app theme on Material 3, so native dialogs and widgets use it */
+const withMaterial3Theme: ConfigPlugin = (config) => {
+  config = withAppBuildGradle(config, (mod) => {
+    if (!mod.modResults.contents.includes(MATERIAL_DEPENDENCY)) {
+      mod.modResults.contents = mod.modResults.contents.replace(
+        /dependencies\s*\{/,
+        (match) => `${match}\n    implementation("${MATERIAL_DEPENDENCY}")`,
+      );
+    }
+    return mod;
+  });
+
+  config = withAndroidColors(config, (mod) => {
+    for (const [name, value] of Object.entries(MATERIAL3_COLORS)) {
+      mod.modResults = AndroidConfig.Colors.assignColorValue(mod.modResults, {
+        name,
+        value,
+      });
+    }
+    return mod;
+  });
+
+  return withAndroidStyles(config, (mod) => {
+    const appTheme = AndroidConfig.Styles.getAppThemeGroup();
+    const style = mod.modResults.resources.style?.find(
+      (group) => group.$.name === appTheme.name,
+    );
+    if (style) {
+      style.$.parent = "Theme.Material3.Light.NoActionBar";
+    }
+    for (const name of Object.keys(MATERIAL3_COLORS)) {
+      mod.modResults = AndroidConfig.Styles.assignStylesValue(mod.modResults, {
+        add: true,
+        parent: appTheme,
+        name,
+        value: `@color/${name}`,
+      });
+    }
+    return mod;
+  });
+};
+
+export default (): ExpoConfig => withMaterial3Theme(baseConfig());
+
+const baseConfig = (): ExpoConfig => ({
   name,
   slug: "digital-athletic",
   scheme: "digitalathletic",

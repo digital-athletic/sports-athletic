@@ -24,6 +24,7 @@ import {
 } from "@test/factories/templateBlock";
 import {
   generateSetListFromDrawnWorkout,
+  hashTemplateBlocks,
   readDrawnBlocks,
   type DrawnWorkout,
 } from "./drawnWorkout";
@@ -81,13 +82,13 @@ const generateStrengthTemplate = (): Template =>
  * Builds the drawn workout of a template from drawn branches blocks.
  *
  * generateDrawnWorkoutOfBlocks(template, [gksBranchesBlock])
- * → { templateBlocks: '[{"kind":"picks",...}]', workout: { ...template, blocks: [gksBranchesBlock] } }
+ * → { templateHash: "3f2a9c10", workout: { ...template, blocks: [gksBranchesBlock] } }
  */
 const generateDrawnWorkoutOfBlocks = (
   template: Template,
   blocks: BranchesBlock[],
 ): DrawnWorkout => ({
-  templateBlocks: JSON.stringify(template.blocks),
+  templateHash: hashTemplateBlocks(template.blocks),
   workout: { ...template, blocks },
 });
 
@@ -155,6 +156,26 @@ const seedRandom = (seed: number) =>
   jest.spyOn(Math, "random").mockImplementation(generateSeededRandom(seed));
 
 afterEach(jest.restoreAllMocks);
+
+describe("drawnWorkout: hashTemplateBlocks", () => {
+  it("returns the same 8 digit hash for equal blocks", () => {
+    const hash = hashTemplateBlocks(generateStrengthTemplate().blocks);
+
+    expect(hash).toMatch(/^[0-9a-f]{8}$/);
+    expect(hashTemplateBlocks(generateStrengthTemplate().blocks)).toBe(hash);
+  });
+
+  it("returns another hash after a change of one pick", () => {
+    const changed = generateTemplate([
+      generatePicksBlock("GKS", { picks: [{ tags: [], count: 2 }] }),
+      generatePicksBlock("SWR1", { picks: [{ tags: [], count: 2 }] }),
+    ]);
+
+    expect(hashTemplateBlocks(changed.blocks)).not.toBe(
+      hashTemplateBlocks(generateStrengthTemplate().blocks),
+    );
+  });
+});
 
 describe("drawnWorkout: readDrawnBlocks", () => {
   it("reads the distinct branch IDs of a block in draw order", () => {
@@ -270,8 +291,8 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on the first start", () 
       selection: generateSelection(template),
     });
 
-    expect(drawnWorkoutToSave?.templateBlocks).toBe(
-      JSON.stringify(template.blocks),
+    expect(drawnWorkoutToSave?.templateHash).toBe(
+      hashTemplateBlocks(template.blocks),
     );
     expect(
       drawnWorkoutToSave?.workout.blocks.map((block) => [
@@ -561,8 +582,8 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a template change"
       drawnWorkout,
     });
 
-    expect(drawnWorkoutToSave?.templateBlocks).toBe(
-      JSON.stringify(newTemplate.blocks),
+    expect(drawnWorkoutToSave?.templateHash).toBe(
+      hashTemplateBlocks(newTemplate.blocks),
     );
     expect(
       drawnWorkoutToSave?.workout.blocks.map((block) => block.skill),

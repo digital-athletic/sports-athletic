@@ -14,6 +14,7 @@ import {
 } from "@test/factories/templateBlock";
 import { generateTrainingSetList } from "./trainingSetList";
 import { generateSetListResult } from "@test/factories/setListResult";
+import { hashTemplateBlocks } from "@/features/customWorkouts/drawnWorkout";
 
 jest.mock("@/features/training/workoutGeneratorRouter", () => ({
   selectWorkout: jest.fn(),
@@ -93,7 +94,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
 
     expect(setList.map(({ branchId }) => branchId)).toEqual(["510"]);
     expect(saveDrawnWorkout).toHaveBeenCalledWith("custom-a", "STUDIO", {
-      templateBlocks: JSON.stringify(template.blocks),
+      templateHash: hashTemplateBlocks(template.blocks),
       workout: {
         ...template,
         blocks: [
@@ -111,7 +112,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
   it("replays the drawn workout of the place and saves nothing when a blocked branch was replaced", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
     const drawnWorkout = {
-      templateBlocks: JSON.stringify(template.blocks),
+      templateHash: hashTemplateBlocks(template.blocks),
       workout: {
         ...template,
         blocks: [

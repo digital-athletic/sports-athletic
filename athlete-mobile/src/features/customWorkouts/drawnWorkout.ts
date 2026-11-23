@@ -13,12 +13,28 @@ import type { Template } from "@/schemas/aiwl.schema";
 
 /**
  * What a custom workout drew on its first start at one place: an AIWL
- * workout with one branches block per filled template block. `templateBlocks`
- * fingerprints the template, so a template change starts a fresh draw.
+ * workout with one branches block per filled template block. `templateHash`
+ * identifies the template blocks, so a template change starts a fresh draw.
  */
 export type DrawnWorkout = {
-  templateBlocks: string;
+  templateHash: string;
   workout: Template;
+};
+
+/**
+ * Hashes the blocks of a template (FNV-1a, 32 bit) into 8 hex digits. Equal
+ * blocks give the same hash on every start. The hash only detects a change:
+ * in the unlikely case of a collision, a changed template replays its old
+ * draw until the athlete refreshes it.
+ *
+ * hashTemplateBlocks(template.blocks) → "3f2a9c10"
+ */
+export const hashTemplateBlocks = (blocks: Template["blocks"]): string => {
+  let hash = 0x811c9dc5;
+  for (const char of JSON.stringify(blocks)) {
+    hash = Math.imul(hash ^ (char.codePointAt(0) ?? 0), 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
 };
 
 type DrawnWorkoutSetListInput = {
@@ -103,8 +119,8 @@ export const generateSetListFromDrawnWorkout = ({
   drawnWorkout,
   random,
 }: DrawnWorkoutSetListInput): DrawnWorkoutSetList => {
-  const templateBlocks = JSON.stringify(template.blocks);
-  if (drawnWorkout?.templateBlocks === templateBlocks) {
+  const templateHash = hashTemplateBlocks(template.blocks);
+  if (drawnWorkout?.templateHash === templateHash) {
     const replay = { ...selection, workout: drawnWorkout.workout };
     const { setList } = generateSetList(replay, request, { random });
     return { setList, drawnWorkoutToSave: null };
@@ -115,7 +131,7 @@ export const generateSetListFromDrawnWorkout = ({
     setList: finished.setList,
     drawnWorkoutToSave:
       blocks.length > 0
-        ? { templateBlocks, workout: { ...template, blocks } }
+        ? { templateHash, workout: { ...template, blocks } }
         : null,
   };
 };

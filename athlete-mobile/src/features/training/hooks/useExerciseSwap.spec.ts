@@ -35,6 +35,7 @@ import {
 } from "@test/factories/templateBlock";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { useExerciseSwap } from "./useExerciseSwap";
+import { hashTemplateBlocks } from "@/features/customWorkouts/drawnWorkout";
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ navigate: jest.fn(), replace: jest.fn() }),
@@ -309,7 +310,7 @@ describe("useExerciseSwap: swap in a short training", () => {
       drawnWorkouts: {
         SHORT_SWAP: {
           HOME: {
-            templateBlocks: JSON.stringify(template.blocks),
+            templateHash: hashTemplateBlocks(template.blocks),
             workout: {
               ...template,
               blocks: [

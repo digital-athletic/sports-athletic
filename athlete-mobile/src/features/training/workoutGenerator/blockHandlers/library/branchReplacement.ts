@@ -112,8 +112,12 @@ const buildReplacementPool = (
     );
   return {
     skillTree,
+    // a replay draws only from the pool of the stored block
     candidates: Object.keys(filtered).filter(
-      (branchId) => !usedBranchIds.includes(branchId),
+      (branchId) =>
+        !usedBranchIds.includes(branchId) &&
+        (!input.replacementPool ||
+          Object.hasOwn(input.replacementPool, branchId)),
     ),
     usedExerciseIds: new Set(
       usedBranchIds.flatMap((branchId) =>

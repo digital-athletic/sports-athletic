@@ -26,6 +26,7 @@ import type {
   InterpretedWorkout,
 } from "./stages/blockWalk";
 import { createSetListBuilder } from "./stages/setListBuilding";
+import type { FinishedWorkout } from "./stages/workoutFinish";
 import { requireSupportedTemplateBlocks } from "./stages/templateBlockCheck";
 import type { WorkoutInput } from "./stages/workoutSetup";
 import { loadStrengthTestLoadData } from "./strengthTestLoadData";
@@ -48,6 +49,10 @@ export interface WorkoutGenerationOptions {
   loadData?: StrengthTestLoadData;
   /** The athlete filters the workout switches off; every filter applies by default. */
   filters?: Partial<WorkoutFilters>;
+  /** Replay only: see WorkoutInput.branchRefill. */
+  branchRefill?: WorkoutInput["branchRefill"];
+  /** Replay only: see WorkoutInput.replacementPools. */
+  replacementPools?: WorkoutInput["replacementPools"];
 }
 
 // The spec bars athletes under 16 from the test; the menu hides it from them
@@ -98,23 +103,35 @@ const createHandlerRegistry = (
 };
 
 /**
- * Generates the set list of any workout with one handler registry and one set
- * of finish rules. Every workout passes the block kind check first. A workout
- * with test sets then passes the test set checks with the load data, rejects
- * an athlete without workout data, under 16 or with muscle soreness before any
- * block runs, and throws when a block stays empty. Its lifts build with the
- * strength test builder. `options.filters` switches off soreness, pain or
- * equipment for every block; each one applies by default.
+ * Generates the set list of one workout template for the athlete of the
+ * input. The core of the workout generator: it knows no training type, no
+ * training place and no saved version. `generateSetList` in the router
+ * prepares those and calls this function.
  *
- * generateSetList(mobilityTemplate, lookUpStoredBranchInCatalog, input, { skillTrees })
- * → [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...]
+ * 1. Rejects a block kind the generator does not support.
+ * 2. A workout with test sets (the strength test) checks its lifts against
+ *    the load data, then rejects an athlete without workout data, under 16 or
+ *    with muscle soreness, before any block runs.
+ * 3. Runs the blocks in template order: each block draws its branches through
+ *    `lookUpBranch` and picks the exercise at the athlete's branch level, with
+ *    the soreness, pain and equipment filters on unless `options.filters`
+ *    switches one off.
+ * 4. Builds the sets, reps, loads and rests of each drawn exercise.
+ *
+ * Returns the set list and the result of each block (its drawn exercises, or
+ * empty). A workout with test sets throws when a block stays empty. Any other
+ * workout returns the blocks that filled and leaves out the empty ones. Every
+ * random draw reads `input.random`.
+ *
+ * generateSetListFromWorkout(mobilityTemplate, lookUpStoredBranchInCatalog, input)
+ * → { setList: [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...], blocks: [...] }
  */
-export const generateSetList = (
+export const generateSetListFromWorkout = (
   workout: InterpretedWorkout,
   lookUpBranch: StoredBranchLookup,
   input: GenerationInput,
   options: WorkoutGenerationOptions = {},
-): GeneratedSetListEntry[] => {
+): FinishedWorkout<GeneratedSetListEntry> => {
   requireSupportedTemplateBlocks(workout);
   const withTestSets = holdsTestSets(workout);
   const prescribedBuilders = withTestSets
@@ -127,5 +144,7 @@ export const generateSetList = (
       createSetListBuilder(workoutInput, prescribedBuilders),
     skillTrees: options.skillTrees,
     filters: resolveWorkoutFilters(options.filters),
-  }).setList;
+    branchRefill: options.branchRefill,
+    replacementPools: options.replacementPools,
+  });
 };

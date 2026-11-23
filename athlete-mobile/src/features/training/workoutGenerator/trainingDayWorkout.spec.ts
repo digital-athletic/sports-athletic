@@ -14,7 +14,7 @@ import { toExerciseBranch } from "@/features/training/utils/plannedBranches";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import type { GenerationInput } from "./generationInput/generationInput";
 import { readTrainingDayWorkout } from "./trainingDayWorkout";
-import { generateSetList } from "./workoutGeneration";
+import { generateSetListFromWorkout } from "./workoutGeneration";
 
 const exerciseCatalog = loadExercises();
 
@@ -45,7 +45,11 @@ describe("trainingDayWorkout: set list of an AIWL training", () => {
     const input = generateInput();
     const day = readTrainingDayWorkout(workout);
 
-    const setList = generateSetList(day.workout, day.lookUpBranch, input);
+    const setList = generateSetListFromWorkout(
+      day.workout,
+      day.lookUpBranch,
+      input,
+    ).setList;
 
     expect([...new Set(setList.map(({ skill }) => skill))]).toEqual([
       "GKS",
@@ -84,11 +88,11 @@ describe("trainingDayWorkout: set list of an AIWL training", () => {
       lengths: { GKS: 10, CARDIO_5: 25 },
     });
     expect(setList).toEqual(
-      generateSetList(
+      generateSetListFromWorkout(
         legacyDay.workout,
         legacyDay.lookUpBranch,
         generateInput(),
-      ),
+      ).setList,
     );
   });
 
@@ -100,11 +104,11 @@ describe("trainingDayWorkout: set list of an AIWL training", () => {
       ]),
     );
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateInput(),
-    );
+    ).setList;
 
     expect(setList).toEqual([
       {
@@ -192,11 +196,11 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       generateStoredTrainingDay({ CARDIO_5: ["576"] }, { CARDIO_5: 25 }, "721"),
     );
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
-    );
+    ).setList;
 
     expect(setList).toEqual([
       {
@@ -219,11 +223,11 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       ),
     );
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
-    );
+    ).setList;
 
     expect(setList).toEqual([
       {
@@ -245,11 +249,11 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       ),
     );
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
-    );
+    ).setList;
 
     expect(setList.map(({ duration }) => duration)).toEqual([750]);
   });
@@ -264,11 +268,11 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       ),
     );
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
-    );
+    ).setList;
 
     expect(setList.map(({ duration }) => duration)).toEqual([0.6]);
   });
@@ -282,11 +286,11 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       ),
     );
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
-    );
+    ).setList;
 
     expect(setList).toEqual([
       {
@@ -304,7 +308,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       generateStoredTrainingDay({ CARDIO_3: ["580"] }, { CARDIO_3: 30 }, "721"),
     );
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({
@@ -312,7 +316,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
         soreMuscles: ["QUADRICEPS"],
         random: () => 0,
       }),
-    );
+    ).setList;
 
     expect(setList).toEqual([
       {
@@ -331,11 +335,11 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
     );
 
     expect(
-      generateSetList(
+      generateSetListFromWorkout(
         day.workout,
         day.lookUpBranch,
         generateGenerationInput({ exerciseCatalog }),
-      ),
+      ).setList,
     ).toEqual([]);
   });
 
@@ -344,12 +348,13 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       generateStoredTrainingDay({ WU: [] }, { WU: 5 }),
     );
 
-    const thrown = catchThrownValue(() =>
-      generateSetList(
-        day.workout,
-        day.lookUpBranch,
-        generateGenerationInput({ exerciseCatalog }),
-      ),
+    const thrown = catchThrownValue(
+      () =>
+        generateSetListFromWorkout(
+          day.workout,
+          day.lookUpBranch,
+          generateGenerationInput({ exerciseCatalog }),
+        ).setList,
     );
 
     expect(thrown).toEqual({
@@ -393,14 +398,14 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       lengths: { CARDIO_2: 20 },
     });
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({
         exerciseCatalog,
         random: generateSeededRandom(7),
       }),
-    );
+    ).setList;
 
     expect(describeSetListEntries(setList)).toEqual([
       "45 1/2",

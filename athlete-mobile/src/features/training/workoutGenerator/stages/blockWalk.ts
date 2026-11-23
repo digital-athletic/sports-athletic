@@ -43,8 +43,8 @@ export type BlockResult =
       block: BranchSelectingBlock;
       exercises: BranchExerciseReference[];
       usedBranchIds: string[];
-      /** The skill of the stored block, set when a handler swapped the skill. */
-      swappedFromSkill?: string;
+      /** The stored block, set when a handler swapped the skill. */
+      swappedFrom?: BranchesBlock;
     }
   | {
       status: "prescribed";

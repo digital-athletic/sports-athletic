@@ -8,7 +8,7 @@ import {
   generateShortTemplate,
 } from "@test/factories/templateBlock";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
-import { generateSetList } from "./workoutGeneration";
+import { generateSetListFromWorkout } from "./workoutGeneration";
 
 // Every prevention branch of the PREV tree needs a dumbbell. Without equipment
 // the PREVKG tree keeps at least 3 branches per prevention area (wrist and
@@ -29,12 +29,12 @@ describe("shortWorkoutGeneration: prevention without equipment", () => {
         generatePicksBlock("PREV", { picks: [{ tags: [tag], count }] }),
       ]);
 
-      const drawn = generateSetList(
+      const drawn = generateSetListFromWorkout(
         template,
         lookUpStoredBranchInCatalog,
         generateRuleFamilyInput({ exerciseCatalog: loadExercises() }),
         { skillTrees: getAllSkillTrees() },
-      ).filter(({ exerciseId }) => !isPauseExercise(exerciseId));
+      ).setList.filter(({ exerciseId }) => !isPauseExercise(exerciseId));
 
       expect(drawn.length).toBeGreaterThan(0);
       drawn.forEach(({ branchId }) =>
@@ -47,12 +47,12 @@ describe("shortWorkoutGeneration: prevention without equipment", () => {
     const template = loadTemplate("PREV");
     if (!template) throw new Error("bundled PREV template is missing");
 
-    const drawn = generateSetList(
+    const drawn = generateSetListFromWorkout(
       template,
       lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({ exerciseCatalog: loadExercises() }),
       { skillTrees: getAllSkillTrees() },
-    ).filter(
+    ).setList.filter(
       ({ skill, exerciseId }) =>
         skill === "PREV" && !isPauseExercise(exerciseId),
     );

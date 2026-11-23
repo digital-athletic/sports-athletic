@@ -6,6 +6,7 @@ import {
   getPreventionsFromPains,
 } from "@/features/training/utils/painUtils";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
+import type { Block } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import { getUserTagValues } from "@/utils/tagUtils";
 import {
@@ -26,6 +27,12 @@ export interface WorkoutInput extends GenerationInput {
   readonly hasWeights: boolean;
   readonly filters: WorkoutFilters;
   readonly picksWorkout: PicksWorkout;
+  /** Replay only: "blockedSlots" refills a blocked branch in its own slot. */
+  readonly branchRefill?: "blockedSlots";
+  /** Replay only: the pool each stored block draws a replacement from. */
+  readonly replacementPools?: ReadonlyMap<Block, SkillTreeType>;
+  /** The pool of the block that runs; a replacement draws only from it. */
+  readonly replacementPool?: SkillTreeType;
 }
 
 const createFrozenList = (list: string[]): readonly string[] =>

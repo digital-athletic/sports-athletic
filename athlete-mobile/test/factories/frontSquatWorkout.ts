@@ -5,7 +5,7 @@ import type {
   UserExerciseDataMapType,
 } from "@/schemas/generator.schema";
 import type { UserType } from "@/schemas/user.schema";
-import type { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import type { WorkoutGenerationRequest } from "@/features/training/workoutGeneratorRouter";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { generateAdultMalePersonalData } from "./completionAthlete";
 import { buildPlanUser, realExercises } from "./planWorkout";
@@ -120,7 +120,7 @@ export const generateStudioWorkoutRequest = (
   user: UserType,
   userExerciseData: UserExerciseDataMapType,
   weekday = 1,
-): Parameters<typeof generateWorkout>[0] => ({
+): WorkoutGenerationRequest => ({
   type,
   user,
   place: "STUDIO",

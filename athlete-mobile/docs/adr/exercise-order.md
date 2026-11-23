@@ -60,3 +60,5 @@ Option 1 fails because the size groups split the regions whenever one region hol
 ## More information
 
 Specs: Plan Workout Generation. ADRs: Duplicate exercises in a session (skill boundary rule).
+
+Open item: a replayed custom workout should keep its unit order. A replay runs its saved branches blocks, and set list building orders their units by the rules above, so a replay can order the units differently from the first start.

@@ -6,8 +6,12 @@ import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySe
 import { toExerciseBranch } from "@/features/training/utils/plannedBranches";
 import { requireAiwlTraining } from "@/features/training/utils/testFixtures";
 import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
-import { generateSetList } from "@/features/training/workoutGenerator/workoutGeneration";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import { generateSetListFromWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
+import {
+  generateSetList,
+  selectWorkout,
+  type WorkoutGenerationRequest,
+} from "@/features/training/workoutGeneratorRouter";
 import { TemplateSchema } from "@/schemas/aiwl.schema";
 import type { UserType } from "@/schemas/user.schema";
 import * as v from "valibot";
@@ -166,7 +170,7 @@ describe("generateTrainingPlan: end to end with the workout generator", () => {
         ({ weekday }) => weekday === STUDIO_WEEKDAY,
       )[0],
     );
-    const setList = generateWorkout({
+    const request: WorkoutGenerationRequest = {
       type: "PLAN",
       user: generateUserWithPlan(input, plan),
       place: "STUDIO",
@@ -177,7 +181,10 @@ describe("generateTrainingPlan: end to end with the workout generator", () => {
       givenSection: undefined,
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
-    });
+    };
+    const setList = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }).setList;
     // Pause and support entries carry a placeholder branch.
     const exerciseEntries = setList.filter(
       ({ branchId }) => !isPlaceholderBranch(branchId),
@@ -255,13 +262,17 @@ describe("generateTrainingPlan: end to end with the workout generator", () => {
     const legacyDayWorkout = readTrainingDayWorkout(legacyDay);
 
     expect(
-      generateSetList(aiwlDay.workout, aiwlDay.lookUpBranch, createInput()),
+      generateSetListFromWorkout(
+        aiwlDay.workout,
+        aiwlDay.lookUpBranch,
+        createInput(),
+      ).setList,
     ).toEqual(
-      generateSetList(
+      generateSetListFromWorkout(
         legacyDayWorkout.workout,
         legacyDayWorkout.lookUpBranch,
         createInput(),
-      ),
+      ).setList,
     );
   });
 

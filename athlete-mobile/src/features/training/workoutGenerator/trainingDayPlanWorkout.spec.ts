@@ -1,5 +1,9 @@
 import type { UserExerciseDataType } from "@/features/training/models/UserExerciseData";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import {
+  generateSetList,
+  selectWorkout,
+  type WorkoutGenerationRequest,
+} from "@/features/training/workoutGeneratorRouter";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
 import { deepFreeze } from "@test/factories/deepFreeze";
 import {
@@ -34,7 +38,7 @@ describe("AIWL training day: plan workout", () => {
     // Simulate immer's recursive deep freeze (Zustand immer middleware freezes all store state)
     deepFreeze(user.trainingPlan!);
 
-    const result = generateWorkout({
+    const request: WorkoutGenerationRequest = {
       type: "PLAN",
       user,
       place: "STUDIO",
@@ -45,7 +49,10 @@ describe("AIWL training day: plan workout", () => {
       givenSection: undefined,
       daysSinceLastWorkout: 14, // > 7 days triggers extendSectionsForMissedWeeks
       userExerciseData: { exerciseData: {}, branchData: {} },
-    });
+    };
+    const result = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }).setList;
     expect(result.length).toBeGreaterThan(0);
   });
 
@@ -91,7 +98,7 @@ describe("AIWL training day: plan workout", () => {
       "22": { branchId: "22", level: 2 },
     };
 
-    const result = generateWorkout({
+    const request: WorkoutGenerationRequest = {
       type: "PLAN",
       user,
       place: "STUDIO",
@@ -102,7 +109,10 @@ describe("AIWL training day: plan workout", () => {
       givenSection: 0,
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData, branchData },
-    });
+    };
+    const result = generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
+    }).setList;
     expect(result.length).toBeGreaterThan(0);
   });
 

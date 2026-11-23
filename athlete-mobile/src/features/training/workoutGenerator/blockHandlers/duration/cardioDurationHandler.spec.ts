@@ -139,7 +139,7 @@ describe("cardioDurationHandler: createCardioDurationHandler", () => {
     expect(result).toMatchObject({
       status: "filled",
       block: { skill: "CARDIO_5", branches: ["576"] },
-      swappedFromSkill: "CARDIO_2",
+      swappedFrom: { skill: "CARDIO_2" },
     });
   });
 
@@ -199,7 +199,7 @@ describe("cardioDurationHandler: createCardioDurationHandler", () => {
     expect(result).toMatchObject({
       status: "filled",
       block: { skill: "CARDIO_5" },
-      swappedFromSkill: "CARDIO_2",
+      swappedFrom: { skill: "CARDIO_2" },
     });
   });
 
@@ -220,6 +220,6 @@ describe("cardioDurationHandler: createCardioDurationHandler", () => {
       status: "filled",
       block: { skill: "CARDIO_2", duration: 1200 },
     });
-    expect(result).not.toHaveProperty("swappedFromSkill");
+    expect(result).not.toHaveProperty("swappedFrom");
   });
 });

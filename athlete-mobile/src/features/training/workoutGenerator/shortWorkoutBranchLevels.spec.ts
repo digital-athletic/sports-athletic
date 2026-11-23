@@ -1,7 +1,11 @@
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { UserType } from "@/schemas/user.schema";
 import type { UserExerciseBranchDataType } from "@/store/exerciseProgressStore";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import {
+  generateSetList,
+  selectWorkout,
+  type WorkoutGenerationRequest,
+} from "@/features/training/workoutGeneratorRouter";
 import { generateAthleteWithMaxValues } from "@test/factories/athlete";
 import { spyOnDrawnBranches } from "@test/factories/drawnBranches";
 import {
@@ -21,7 +25,7 @@ const selectedExerciseIds = (
   branchData: Record<string, UserExerciseBranchDataType | undefined> = {},
 ): string[] => {
   const readDrawnBranches = spyOnDrawnBranches();
-  generateWorkout({
+  const request: WorkoutGenerationRequest = {
     type: "MOB",
     user,
     place: "HOME",
@@ -32,6 +36,9 @@ const selectedExerciseIds = (
     givenSection: undefined,
     daysSinceLastWorkout: 0,
     userExerciseData: { exerciseData: {}, branchData },
+  };
+  generateSetList(selectWorkout(request), request, {
+    random: () => Math.random(),
   });
   return readDrawnBranches().map((branch) => branch.exerciseId);
 };
@@ -39,21 +46,25 @@ const selectedExerciseIds = (
 const thrownError = (
   user: UserType,
   skillTrees: { [skillName: string]: SkillTreeType },
-): unknown =>
-  catchThrownValue(() =>
-    generateWorkout({
-      type: "MOB",
-      user,
-      place: "HOME",
-      exercises: [],
-      skillTrees,
-      weekday: 0,
-      equipment: [],
-      givenSection: undefined,
-      daysSinceLastWorkout: 0,
-      userExerciseData: { exerciseData: {}, branchData: {} },
+): unknown => {
+  const request: WorkoutGenerationRequest = {
+    type: "MOB",
+    user,
+    place: "HOME",
+    exercises: [],
+    skillTrees,
+    weekday: 0,
+    equipment: [],
+    givenSection: undefined,
+    daysSinceLastWorkout: 0,
+    userExerciseData: { exerciseData: {}, branchData: {} },
+  };
+  return catchThrownValue(() =>
+    generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
     }),
   );
+};
 
 afterEach(jest.restoreAllMocks);
 
@@ -122,7 +133,7 @@ describe("AIWL short workout: region quota fallback", () => {
 
   it("falls back to any region when the region's branches resolve no exercise", () => {
     const readDrawnBranches = spyOnDrawnBranches();
-    generateWorkout({
+    const request: WorkoutGenerationRequest = {
       type: "GKS",
       user: generateAthleteWithMaxValues({ level: "BEGINNER" }),
       place: "HOME",
@@ -141,6 +152,9 @@ describe("AIWL short workout: region quota fallback", () => {
       givenSection: undefined,
       daysSinceLastWorkout: 0,
       userExerciseData: { exerciseData: {}, branchData: {} },
+    };
+    generateSetList(selectWorkout(request), request, {
+      random: () => Math.random(),
     });
     expect(readDrawnBranches()).toHaveLength(4);
   });

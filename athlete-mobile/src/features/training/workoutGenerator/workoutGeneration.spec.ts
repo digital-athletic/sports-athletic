@@ -14,9 +14,9 @@ import {
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { generateLowerBodyExercises } from "@test/factories/valueExercise";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
-import { generateSetList } from "./workoutGeneration";
+import { generateSetListFromWorkout } from "./workoutGeneration";
 
-describe("workoutGeneration: generateSetList of a workout with test sets", () => {
+describe("workoutGeneration: generateSetListFromWorkout of a workout with test sets", () => {
   // Muscle soreness counts on the day the factory dates it.
   beforeEach(() => {
     jest.useFakeTimers({ now: new Date("2026-10-24T12:00:00Z") });
@@ -33,12 +33,13 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
       random,
     });
 
-    const thrown = catchThrownValue(() =>
-      generateSetList(
-        generateStrengthTestTemplate(),
-        lookUpStoredBranchInCatalog,
-        input,
-      ),
+    const thrown = catchThrownValue(
+      () =>
+        generateSetListFromWorkout(
+          generateStrengthTestTemplate(),
+          lookUpStoredBranchInCatalog,
+          input,
+        ).setList,
     );
 
     expect(thrown).toEqual({
@@ -56,12 +57,13 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
       random,
     });
 
-    const thrown = catchThrownValue(() =>
-      generateSetList(
-        generateStrengthTestTemplate(),
-        lookUpStoredBranchInCatalog,
-        input,
-      ),
+    const thrown = catchThrownValue(
+      () =>
+        generateSetListFromWorkout(
+          generateStrengthTestTemplate(),
+          lookUpStoredBranchInCatalog,
+          input,
+        ).setList,
     );
 
     expect(thrown).toEqual({
@@ -77,13 +79,14 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
       random: generateSeededRandom(7),
     });
 
-    const thrown = catchThrownValue(() =>
-      generateSetList(
-        generateStrengthTestTemplate(),
-        lookUpStoredBranchInCatalog,
-        input,
-        { skillTrees: {} },
-      ),
+    const thrown = catchThrownValue(
+      () =>
+        generateSetListFromWorkout(
+          generateStrengthTestTemplate(),
+          lookUpStoredBranchInCatalog,
+          input,
+          { skillTrees: {} },
+        ).setList,
     );
 
     expect(thrown).toEqual({
@@ -99,13 +102,14 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
       random: generateSeededRandom(7),
     });
 
-    const thrown = catchThrownValue(() =>
-      generateSetList(
-        generateStrengthTestTemplate({ exercises: ["25"] }),
-        lookUpStoredBranchInCatalog,
-        input,
-        { skillTrees: getAllSkillTrees() },
-      ),
+    const thrown = catchThrownValue(
+      () =>
+        generateSetListFromWorkout(
+          generateStrengthTestTemplate({ exercises: ["25"] }),
+          lookUpStoredBranchInCatalog,
+          input,
+          { skillTrees: getAllSkillTrees() },
+        ).setList,
     );
 
     expect(thrown).toMatchObject({
@@ -120,12 +124,12 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
       random: generateSeededRandom(7),
     });
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       generateStrengthTestTemplate({ exercises: ["25"] }),
       lookUpStoredBranchInCatalog,
       input,
       { skillTrees: getAllSkillTrees(), filters: { equipment: false } },
-    );
+    ).setList;
 
     expect(listTrainedExercises(setList)).toContain("25");
   });
@@ -136,13 +140,14 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
       random: generateSeededRandom(7),
     });
 
-    const thrown = catchThrownValue(() =>
-      generateSetList(
-        generateStrengthTestTemplate(),
-        lookUpStoredBranchInCatalog,
-        input,
-        { skillTrees: { WU: generateRegionWarmUpTree(["BLOCK_KNEE"]) } },
-      ),
+    const thrown = catchThrownValue(
+      () =>
+        generateSetListFromWorkout(
+          generateStrengthTestTemplate(),
+          lookUpStoredBranchInCatalog,
+          input,
+          { skillTrees: { WU: generateRegionWarmUpTree(["BLOCK_KNEE"]) } },
+        ).setList,
     );
 
     expect(thrown).toMatchObject({ type: "NO_EXERCISES", subtype: "PAIN" });
@@ -154,7 +159,7 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
       random: generateSeededRandom(7),
     });
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       generateStrengthTestTemplate(),
       lookUpStoredBranchInCatalog,
       input,
@@ -162,7 +167,7 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
         skillTrees: { WU: generateRegionWarmUpTree(["BLOCK_KNEE"]) },
         filters: { pain: false },
       },
-    );
+    ).setList;
 
     expect(
       setList.filter(
@@ -172,7 +177,7 @@ describe("workoutGeneration: generateSetList of a workout with test sets", () =>
   });
 });
 
-describe("workoutGeneration: generateSetList with the soreness filter off", () => {
+describe("workoutGeneration: generateSetListFromWorkout with the soreness filter off", () => {
   // Muscle soreness counts on the day the factory dates it.
   beforeEach(() => {
     jest.useFakeTimers({ now: new Date("2026-10-24T12:00:00Z") });
@@ -194,7 +199,7 @@ describe("workoutGeneration: generateSetList with the soreness filter off", () =
       generateUntimedBranchesBlock("BAS", { branches: ["1"] }),
     ]);
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       workout,
       lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
@@ -204,13 +209,13 @@ describe("workoutGeneration: generateSetList with the soreness filter off", () =
         random: () => 0,
       }),
       { skillTrees, filters: { soreness: false } },
-    );
+    ).setList;
 
     expect([...new Set(listTrainedExercises(setList))]).toEqual(["e1"]);
   });
 });
 
-describe("workoutGeneration: generateSetList of a short workout", () => {
+describe("workoutGeneration: generateSetListFromWorkout of a short workout", () => {
   it("trains a replacement branch of the same skill when pain blocks every listed branch", () => {
     // MOB branch 1 is blocked for knee pain, branch 2 is free
     const skillTrees = {
@@ -225,7 +230,7 @@ describe("workoutGeneration: generateSetList of a short workout", () => {
       generateUntimedBranchesBlock("MOB", { branches: ["1"] }),
     ]);
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       workout,
       lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
@@ -235,7 +240,7 @@ describe("workoutGeneration: generateSetList of a short workout", () => {
         random: () => 0,
       }),
       { skillTrees },
-    );
+    ).setList;
 
     expect(listTrainedExercises(setList)).toEqual(["e2"]);
   });
@@ -249,7 +254,7 @@ describe("workoutGeneration: generateSetList of a short workout", () => {
       generateUntimedBranchesBlock("MOB", { branches: ["900001"] }),
     ]);
 
-    const setList = generateSetList(
+    const setList = generateSetListFromWorkout(
       workout,
       lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
@@ -258,7 +263,7 @@ describe("workoutGeneration: generateSetList of a short workout", () => {
         random: () => 0,
       }),
       { skillTrees },
-    );
+    ).setList;
 
     expect(listTrainedExercises(setList)).toEqual(["e2"]);
   });
@@ -266,12 +271,13 @@ describe("workoutGeneration: generateSetList of a short workout", () => {
   it("throws OTHER BLOCK_KIND for an exercises block without test sets", () => {
     const workout = generateShortTemplate([generateExercisesBlock(["25"])]);
 
-    const thrown = catchThrownValue(() =>
-      generateSetList(
-        workout,
-        lookUpStoredBranchInCatalog,
-        generateRuleFamilyInput(),
-      ),
+    const thrown = catchThrownValue(
+      () =>
+        generateSetListFromWorkout(
+          workout,
+          lookUpStoredBranchInCatalog,
+          generateRuleFamilyInput(),
+        ).setList,
     );
 
     expect(thrown).toStrictEqual({

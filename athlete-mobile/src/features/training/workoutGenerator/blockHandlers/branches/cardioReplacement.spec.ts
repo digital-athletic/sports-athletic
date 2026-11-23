@@ -9,7 +9,7 @@ const exerciseCatalog = loadExercises();
 describe("cardioReplacement: replaceCardioBlock", () => {
   const input = generateWorkoutInput({ exerciseCatalog });
 
-  it("swaps the block for the CARDIO_5 branch and names the skill it replaces", () => {
+  it("swaps the block for the CARDIO_5 branch", () => {
     const result = replaceCardioBlock(
       generateCardioBlock("CARDIO_3", 600),
       input,
@@ -24,7 +24,6 @@ describe("cardioReplacement: replaceCardioBlock", () => {
         duration: 600,
       },
       usedBranchIds: ["576"],
-      swappedFromSkill: "CARDIO_3",
     });
     expect(
       result.status === "filled" &&

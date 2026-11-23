@@ -14,7 +14,10 @@ import { isGeneratorError } from "@/features/training/models/GeneratorError";
 import { TrainingType } from "@/features/training/models/Training";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import { generateWorkout } from "@/features/training/workoutGeneratorRouter";
+import {
+  generateSetList,
+  selectWorkout,
+} from "@/features/training/workoutGeneratorRouter";
 import { maintainBranchLevels } from "@/features/training/utils/branchMaintenance";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { daysSinceLastTraining } from "@/features/training/utils/trainingGapUtils";
@@ -213,7 +216,7 @@ function generateExerciseList(
   const sectionIndex = parseIntParam(params.sectionIndex);
   const branchData = maintainStoredBranchLevels(user, ctx);
 
-  const generatedList = generateWorkout({
+  const request = {
     type: trainingType,
     user,
     place: selectedPlace,
@@ -224,10 +227,13 @@ function generateExerciseList(
     givenSection: sectionIndex,
     daysSinceLastWorkout,
     userExerciseData: { ...ctx.storedProgress, branchData },
+  };
+  const { setList } = generateSetList(selectWorkout(request), request, {
+    random: () => Math.random(),
   });
 
   return saveGeneratedTraining(
-    generatedList,
+    setList,
     { trainingType, sectionIndex, weekdayNumber, equipment },
     params,
     ctx,

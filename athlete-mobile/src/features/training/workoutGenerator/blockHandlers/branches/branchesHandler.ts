@@ -74,13 +74,21 @@ const keepOwnPreventionRegionReplacement = (
 
 // A prevention or special warm-up skill requests a slot for each kept branch
 // too and puts that branch back into the pool. Any other skill keeps its kept
-// branches and adds the replacement after them.
+// branches and adds the replacement after them. On replay, the "blockedSlots"
+// refill leaves the kept branches in place and refills each blocked slot on
+// its own.
 const refillRequestedRegions = (
   skill: string,
   keptBranches: StoredBranch[],
   regions: string[],
   input: WorkoutInput,
 ): StoredBranch[] => {
+  if (input.branchRefill === "blockedSlots") {
+    return [
+      ...keptBranches,
+      ...refillDuplicateSlots(skill, keptBranches, regions, input),
+    ];
+  }
   const refillsEverySlot = isPreventionOrSpecialWarmUpSkill(skill);
   const keep = refillsEverySlot ? [] : keptBranches;
   const replace = refillsEverySlot
@@ -101,8 +109,8 @@ const refillRequestedRegions = (
   ];
 };
 
-// A prevention or special warm-up skill refills each duplicate slot on its
-// own: a slot without a fitting branch drops out and the others stay.
+// Refills each duplicate slot on its own: a slot without a fitting branch
+// drops out and the others stay. A replay runs this path for every skill.
 const refillDuplicateSlots = (
   skill: string,
   keptBranches: StoredBranch[],
@@ -202,7 +210,7 @@ const findEarlierCardioSwap = (
   const swap = earlierResults.findLast(
     (result) =>
       result.status === "filled" &&
-      result.swappedFromSkill !== undefined &&
+      result.swappedFrom !== undefined &&
       result.block.skill === skill,
   );
   return swap?.block.kind === "branches" ? swap.block : undefined;
@@ -246,6 +254,32 @@ const applyBlockRuleChain = (
   };
 };
 
+// Filled with the resolved exercises, else empty with the rule chain reason
+const buildBlockResult = (
+  block: BranchesBlock,
+  exercises: BranchExerciseReference[],
+  chain: BranchesRuleChainResult,
+): BlockResult =>
+  exercises.length > 0
+    ? {
+        status: "filled",
+        block,
+        exercises,
+        usedBranchIds: [...new Set(exercises.map(({ branchId }) => branchId))],
+      }
+    : {
+        status: "empty",
+        block,
+        // a prevention or special warm-up skill that its replacement
+        // emptied records no reason
+        reason:
+          isPreventionOrSpecialWarmUpSkill(block.skill) &&
+          chain.replace.length > 0
+            ? undefined
+            : chain.emptyReason,
+        usedBranchIds: [],
+      };
+
 /**
  * Builds the branches handler. The lookup reads the stored branch IDs: the
  * branch lookup index, or the entries a stored training day saved at plan
@@ -267,31 +301,19 @@ export const createBranchesBlockHandler =
     const chain = applyBlockRuleChain(block, storedBranches, input);
     // a cardio skill with a region request runs the CARDIO_5 branch instead
     if (block.skill.indexOf("CARDIO") !== -1 && chain.replace.length > 0) {
-      return replaceCardioBlock(block, input);
+      return { ...replaceCardioBlock(block, input), swappedFrom: storedBlock };
     }
+    // a replay draws a replacement only from the pool of the stored block
+    const blockInput = {
+      ...input,
+      replacementPool: input.replacementPools?.get(storedBlock),
+    };
     const exercises = resolveBranchExercises(
-      chooseBlockBranches(block.skill, storedBranches, chain, input),
+      chooseBlockBranches(block.skill, storedBranches, chain, blockInput),
       input,
     );
-    return exercises.length > 0
-      ? {
-          status: "filled",
-          block,
-          exercises,
-          usedBranchIds: [
-            ...new Set(exercises.map(({ branchId }) => branchId)),
-          ],
-        }
-      : {
-          status: "empty",
-          block,
-          // a prevention or special warm-up skill that its replacement
-          // emptied records no reason
-          reason:
-            isPreventionOrSpecialWarmUpSkill(block.skill) &&
-            chain.replace.length > 0
-              ? undefined
-              : chain.emptyReason,
-          usedBranchIds: [],
-        };
+    const result = buildBlockResult(block, exercises, chain);
+    return earlierSwap && result.status === "filled"
+      ? { ...result, swappedFrom: storedBlock }
+      : result;
   };

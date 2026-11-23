@@ -13,7 +13,7 @@ const CARDIO_REPLACEMENT_MAX_SECONDS = 20 * 60;
 export const replaceCardioBlock = (
   block: BranchesBlock,
   input: WorkoutInput,
-): BlockResult => {
+): Extract<BlockResult, { status: "filled" }> => {
   const indexed = input.branchLookupIndex.get(CARDIO_REPLACEMENT_BRANCH_ID);
   if (indexed?.skillTreeName !== CARDIO_REPLACEMENT_SKILL) {
     throw { type: "NO_EXERCISES", subtype: "CARDIO_5_MISSING", params: [] };
@@ -43,6 +43,5 @@ export const replaceCardioBlock = (
       },
     ],
     usedBranchIds: [CARDIO_REPLACEMENT_BRANCH_ID],
-    swappedFromSkill: block.skill,
   };
 };

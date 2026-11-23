@@ -162,6 +162,20 @@ Resolution runs inside selection, because the specs drop a candidate whose exerc
 
 The block walk hands every block the branches all earlier blocks used, whatever the kind of either block. The branches handler reads no used branches. One registry maps each block kind to its handler function for every workout, so one workout can mix block kinds: a short workout runs picks and branches blocks in template order.
 
+The branches handler sets `swappedFrom` on a result whose skill it swapped. Its value is the stored block, and it replaces the former `swappedFromSkill`. The handler sets it on both swap paths: a cardio block that runs CARDIO_5, and a later block of the same skill that reads an earlier swap.
+
+Two replay options are set only by `generateSetList` with `previousDrawnBlocks`. A fresh run sets neither:
+
+- `branchRefill: "blockedSlots"`: a blocked branch refills only its own slot. Without it, a prevention or special warm-up skill refills every slot.
+- `replacementPools`: maps each drawn block to the pool of the picks block it was drawn from. The pool is rebuilt with `resolvePicksBlocks`, and the handler gives it to the block as `replacementPool`. A replacement draws only from that pool.
+
+Edge cases of a replay:
+
+- A slot or block with no replacement drops silently, because a short workout's finish has `requiredBlocks: "none"`.
+- The PREV and WUSPEZIAL region narrowing runs before the pool applies. A slot drops when the narrowed tree and the pool share no branch.
+- The duplicate check runs per block only. A level change can resolve two blocks to the same exercise.
+- The "last block per skill" rule (AIWL rule 7) applies to training days only. A template run trains every block of a repeated skill, so a replay trains both.
+
 A later picks block skips the exercises of an earlier exercises block, and an exercises block keeps an exercise an earlier block trained.
 
 A training day stores its cardio skill as a branches block. The branches handler applies the cardio rules from [Soreness and blocking](../specs/session/cardio-training-system.md#soreness-and-blocking). This ADR amends AIWL rule 1, so the rule applies to duration blocks only.
@@ -254,7 +268,7 @@ The plan features outside the generator read both shapes. `readPlannedBranches` 
 
 ### Routing
 
-The router `src/features/training/workoutGeneratorRouter.ts` selects a workout, a branch lookup and the filters per training type, then calls the one entry point `generateSetList(workout, lookUpBranch, input, { skillTrees, filters })` in `workoutGenerator/workoutGeneration.ts`:
+The router `src/features/training/workoutGeneratorRouter.ts` selects a workout, a branch lookup and the filters per training type, then calls the one entry point `generateSetListFromWorkout(workout, lookUpBranch, input, { skillTrees, filters })` in `workoutGenerator/workoutGeneration.ts`:
 
 | Training type | Workout | Branch lookup | Filters |
 |---|---|---|---|
@@ -262,11 +276,18 @@ The router `src/features/training/workoutGeneratorRouter.ts` selects a workout, 
 | `TEST_WORKOUT` | `loadStrengthTestTemplate`: the bundled `TEST.json`; the entry point checks it with `checkStrengthTestTemplate` | branch lookup index | `STRENGTH_TEST_FILTERS`: `{ pain: false, equipment: false }` |
 | any other | the template of the type, short or custom | branch lookup index | `{ soreness: false }` |
 
-`selectWorkout(request)` in the router returns the workout, the branch lookup and the filters of the table, and `generateWorkout` passes them to `generateSetList`. The [exercise swap](#exercise-swap) calls `selectWorkout` too, sets the workout up once, builds one branch through `buildBranchSetList` and runs no `generateSetList`.
+`selectWorkout(request)` in the router returns the workout, the branch lookup and the filters of the table. `generateSetList` passes them to `generateSetListFromWorkout`. The [exercise swap](#exercise-swap) calls `selectWorkout` too, sets the workout up once, builds one branch through `buildBranchSetList` and runs no `generateSetList`.
 
 A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A template without blocks throws `NO_EXERCISES/PAIN` without regions, whatever the athlete's pains.
 
-`generateSetList` runs every workout with one handler registry and one finish rule:
+The router has one lookup and one run:
+
+- `selectWorkout(request)` is the lookup.
+- `generateSetList(selection, request, { random, previousDrawnBlocks? })` is the run. It returns the set list and the result of each block, and draws from the random source its caller passes.
+
+Only saved versions of custom workouts pass `previousDrawnBlocks`. These drawn blocks run as `branches` blocks with the same lookup and filters, plus the replay options of [block handlers](#block-handlers-strategy). `readReplacementPools` rebuilds their pools from the selected template. The template stays an input because a blocked branch is replaced from the pool of the template block it was drawn from, which a `branches` block does not know.
+
+`generateSetListFromWorkout` runs every workout with one handler registry and one finish rule:
 
 1. The block kind check rejects an exercises block without `testSets`, a duration block of a skill other than a cardio zone and `bodyParts` on a picks or duration block with `OTHER/BLOCK_KIND`. An `order` field passes the check; set list building ignores it with a warning.
 2. A workout with test sets runs the test set checks with the load data, then the athlete checks of the strength test section, before any block runs. Only such a workout loads the bundled load data.
@@ -295,7 +316,7 @@ The other pairs of the block decide only the closing rest, a pause entry without
 
 #### Reused generator parts
 
-- `selectWorkout` in `workoutGeneratorRouter.ts` selects the workout and its filters, the call `generateWorkout` makes.
+- `selectWorkout` in `workoutGeneratorRouter.ts` selects the workout and its filters, the call `generateSetList` makes.
 - `setUpSwapWorkout` in `swapWorkout.ts` calls `setUpWorkout` once per overview, with a fixed random draw. The result and the session form the **swap workout** `{ session, workout, input }`.
 - `readBlockTiming` and `createSetListBlock` in `setListBlockResolution.ts` read the block timing and minutes, as set list building does.
 - `buildBranchSetList` in `branchSetList.ts` builds the entries of one branch with the skill's set list builder.
@@ -361,6 +382,7 @@ The generator deviates from the target architecture in these places, so that sto
 1. The duration handler of a skill other than a cardio zone, with the minutes table chooser. Until then, the block kind check rejects such a block.
 2. The `order` field, which the generator ignores with a warning, and the `bodyParts` filter, which the block kind check rejects until then.
 3. The stored plan migration.
+4. Domain errors (`NO_EXERCISES`, `TOO_MUCH_SORENESS`, `NO_ANAMNESIS`) as a returned result at the generator boundary instead of thrown values. Programmer and data errors keep throwing.
 
 ### Errors
 
@@ -374,7 +396,7 @@ The generator raises three classes of error:
 
 - **Discriminated unions.** Block kinds, block results and errors are tagged unions, and every `switch` over them is exhaustive.
 - **No mutation.** Every stage returns new values and changes neither the template nor the generation input.
-- **Random source.** The generation input carries the random function, with `Math.random` as the default, and every component draws through it. Tests pass a fixed sequence. Each component draws in a fixed order.
+- **Random source.** The generation input carries the random function, and every component draws through it. The router reads no `Math.random`: `useTrainingGeneration` passes it at the app edge, and tests pass a fixed sequence or a seeded source. Each component draws in a fixed order.
 - **Module layout.** The top level of the `workoutGenerator` folder holds the modules other code calls: the entry point `workoutGeneration.ts`, the modules that load or read a workout (`trainingDayWorkout.ts`, `strengthTestLoadData.ts`, the stored day workout), the test set checks, and the template interpreter the entry point hands the workout to. The interpreter delegates to one subfolder per component of the patterns diagram:
 
   | Folder                    | Component                                | Modules                                                                                   |

@@ -9,7 +9,7 @@ import {
 } from "@/features/training/utils/testFixtures";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import * as picksHandler from "@/features/training/workoutGenerator/blockHandlers/picks/picksHandler";
-import { generateFinishedWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
+import { generateSetListFromWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
 import type * as WorkoutGeneration from "@/features/training/workoutGenerator/workoutGeneration";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import type { UserType } from "@/schemas/user.schema";
@@ -48,7 +48,7 @@ jest.mock("@/features/training/workoutGenerator/workoutGeneration", () => {
   );
   return {
     ...actual,
-    generateFinishedWorkout: jest.fn(actual.generateFinishedWorkout),
+    generateSetListFromWorkout: jest.fn(actual.generateSetListFromWorkout),
   };
 });
 
@@ -79,7 +79,7 @@ const generateWorkoutOf = (type: TrainingType) => {
 
 describe("generateSetList: routing", () => {
   beforeEach(() => {
-    jest.mocked(generateFinishedWorkout).mockClear();
+    jest.mocked(generateSetListFromWorkout).mockClear();
   });
 
   afterEach(jest.restoreAllMocks);
@@ -88,9 +88,9 @@ describe("generateSetList: routing", () => {
     const setList = generateWorkoutOf("MOB");
 
     expect(setList.length).toBeGreaterThan(0);
-    expect(generateFinishedWorkout).toHaveBeenCalledTimes(1);
+    expect(generateSetListFromWorkout).toHaveBeenCalledTimes(1);
     const [workout, lookUpBranch, , options] = jest.mocked(
-      generateFinishedWorkout,
+      generateSetListFromWorkout,
     ).mock.calls[0];
     expect(workout).toEqual(loadTemplate("MOB"));
     expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
@@ -105,9 +105,9 @@ describe("generateSetList: routing", () => {
       const setList = generateWorkoutOf("TEST_WORKOUT");
 
       expect(setList.length).toBeGreaterThan(0);
-      expect(generateFinishedWorkout).toHaveBeenCalledTimes(1);
+      expect(generateSetListFromWorkout).toHaveBeenCalledTimes(1);
       const [workout, lookUpBranch, , options] = jest.mocked(
-        generateFinishedWorkout,
+        generateSetListFromWorkout,
       ).mock.calls[0];
       expect(workout).toEqual(loadStrengthTestTemplate());
       expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
@@ -122,9 +122,9 @@ describe("generateSetList: routing", () => {
         generateWarmUpOnlyPlanUser(),
       );
 
-      expect(generateFinishedWorkout).toHaveBeenCalledTimes(1);
+      expect(generateSetListFromWorkout).toHaveBeenCalledTimes(1);
       const [workout, lookUpBranch, , options] = jest.mocked(
-        generateFinishedWorkout,
+        generateSetListFromWorkout,
       ).mock.calls[0];
       expect(options).toStrictEqual({
         skillTrees: expect.any(Object),
@@ -149,8 +149,8 @@ describe("generateSetList: routing", () => {
 
       const result = generatePlanWorkoutForWeekday(user);
 
-      const [workout, lookUpBranch] = jest.mocked(generateFinishedWorkout).mock
-        .calls[0];
+      const [workout, lookUpBranch] = jest.mocked(generateSetListFromWorkout)
+        .mock.calls[0];
       expect(workout).toEqual(training.workout);
       expect(lookUpBranch).toBe(lookUpStoredBranchInCatalog);
       expect(result.map((entry) => entry.branchId)).toContain("410");
@@ -166,7 +166,7 @@ describe("generateSetList: routing", () => {
         subtype: "MISSING_WORKOUT_DATA",
         params: [],
       });
-      expect(generateFinishedWorkout).not.toHaveBeenCalled();
+      expect(generateSetListFromWorkout).not.toHaveBeenCalled();
     });
   });
 
@@ -190,7 +190,7 @@ describe("generateSetList: routing", () => {
         expect(
           catchThrownValue(() => generatePlanWorkoutForWeekday(user)),
         ).toEqual(new Error("Invalid data structure for currTraining.skills"));
-        expect(generateFinishedWorkout).not.toHaveBeenCalled();
+        expect(generateSetListFromWorkout).not.toHaveBeenCalled();
       },
     );
   });

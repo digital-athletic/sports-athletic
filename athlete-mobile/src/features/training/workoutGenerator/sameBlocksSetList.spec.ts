@@ -9,7 +9,7 @@ import {
 } from "@test/factories/templateBlock";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import type { GenerationInput } from "./generationInput/generationInput";
-import { generateFinishedWorkout } from "./workoutGeneration";
+import { generateSetListFromWorkout } from "./workoutGeneration";
 
 const exerciseCatalog = loadExercises();
 
@@ -41,7 +41,7 @@ const workout = generateTemplate([
 
 describe("sameBlocksSetList: a workout of branches blocks", () => {
   it("train every block and end on a set", () => {
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       workout,
       lookUpStoredBranchInCatalog,
       generateInput(),

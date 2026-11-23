@@ -103,18 +103,30 @@ const createHandlerRegistry = (
 };
 
 /**
- * Generates the finished workout of any workout with one handler registry and
- * one set of finish rules. Every workout passes the block kind check first. A workout
- * with test sets then passes the test set checks with the load data, rejects
- * an athlete without workout data, under 16 or with muscle soreness before any
- * block runs, and throws when a block stays empty. Its lifts build with the
- * strength test builder. `options.filters` switches off soreness, pain or
- * equipment for every block; each one applies by default.
+ * Generates the set list of one workout template for the athlete of the
+ * input. The core of the workout generator: it knows no training type, no
+ * training place and no saved version. `generateSetList` in the router
+ * prepares those and calls this function.
  *
- * generateFinishedWorkout(mobilityTemplate, lookUpStoredBranchInCatalog, input)
+ * 1. Rejects a block kind the generator does not support.
+ * 2. A workout with test sets (the strength test) checks its lifts against
+ *    the load data, then rejects an athlete without workout data, under 16 or
+ *    with muscle soreness, before any block runs.
+ * 3. Runs the blocks in template order: each block draws its branches through
+ *    `lookUpBranch` and picks the exercise at the athlete's branch level, with
+ *    the soreness, pain and equipment filters on unless `options.filters`
+ *    switches one off.
+ * 4. Builds the sets, reps, loads and rests of each drawn exercise.
+ *
+ * Returns the set list and the result of each block (its drawn exercises, or
+ * empty). A workout with test sets throws when a block stays empty; any other
+ * workout keeps the blocks that filled. Every random draw reads
+ * `input.random`.
+ *
+ * generateSetListFromWorkout(mobilityTemplate, lookUpStoredBranchInCatalog, input)
  * → { setList: [{ branchId: "2", exerciseId: "21", skill: "MOB", ... }, ...], blocks: [...] }
  */
-export const generateFinishedWorkout = (
+export const generateSetListFromWorkout = (
   workout: InterpretedWorkout,
   lookUpBranch: StoredBranchLookup,
   input: GenerationInput,

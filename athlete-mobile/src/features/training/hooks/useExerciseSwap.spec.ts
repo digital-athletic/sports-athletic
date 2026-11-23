@@ -94,7 +94,7 @@ const generateSessionOfPlanDay = (
 ): UserExerciseDataType[] => {
   const { workout, lookUpBranch } = readTrainingDayWorkout(training.workout);
   return workoutGeneration
-    .generateFinishedWorkout(workout, lookUpBranch, generateHomeInput())
+    .generateSetListFromWorkout(workout, lookUpBranch, generateHomeInput())
     .setList.map(toUserExerciseData);
 };
 
@@ -107,7 +107,7 @@ const generateSessionOfShortWorkout = (
   template: Template,
 ): UserExerciseDataType[] =>
   workoutGeneration
-    .generateFinishedWorkout(
+    .generateSetListFromWorkout(
       template,
       lookUpStoredBranchInCatalog,
       generateHomeInput(),

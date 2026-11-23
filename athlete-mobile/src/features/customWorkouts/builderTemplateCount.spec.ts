@@ -3,7 +3,7 @@ import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { isPauseExercise } from "@/features/training/models/IdTypes";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
-import { generateFinishedWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
+import { generateSetListFromWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
 import { generateRuleFamilyInput } from "@test/factories/ruleFamilyInput";
 import { generateSeededRandom } from "@test/factories/seededRandom";
 import { describeSetListEntries } from "@test/factories/setListDescription";
@@ -73,7 +73,7 @@ const runIds = (
     );
     if (!parsed.success) throw new Error("builder template is invalid");
     return rowIds(
-      generateFinishedWorkout(
+      generateSetListFromWorkout(
         parsed.template,
         lookUpStoredBranchInCatalog,
         generateRuleFamilyInput({
@@ -126,7 +126,7 @@ describe("builder template: generated set list lock", () => {
     );
     if (!parsed.success) throw new Error("builder template is invalid");
     return describeSetListEntries(
-      generateFinishedWorkout(
+      generateSetListFromWorkout(
         parsed.template,
         lookUpStoredBranchInCatalog,
         generateRuleFamilyInput({

@@ -8,7 +8,7 @@ import {
   generateShortTemplate,
 } from "@test/factories/templateBlock";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
-import { generateFinishedWorkout } from "./workoutGeneration";
+import { generateSetListFromWorkout } from "./workoutGeneration";
 
 // Every prevention branch of the PREV tree needs a dumbbell. Without equipment
 // the PREVKG tree keeps at least 3 branches per prevention area (wrist and
@@ -29,7 +29,7 @@ describe("shortWorkoutGeneration: prevention without equipment", () => {
         generatePicksBlock("PREV", { picks: [{ tags: [tag], count }] }),
       ]);
 
-      const drawn = generateFinishedWorkout(
+      const drawn = generateSetListFromWorkout(
         template,
         lookUpStoredBranchInCatalog,
         generateRuleFamilyInput({ exerciseCatalog: loadExercises() }),
@@ -47,7 +47,7 @@ describe("shortWorkoutGeneration: prevention without equipment", () => {
     const template = loadTemplate("PREV");
     if (!template) throw new Error("bundled PREV template is missing");
 
-    const drawn = generateFinishedWorkout(
+    const drawn = generateSetListFromWorkout(
       template,
       lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({ exerciseCatalog: loadExercises() }),

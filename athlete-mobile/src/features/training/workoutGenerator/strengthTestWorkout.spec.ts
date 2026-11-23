@@ -26,7 +26,7 @@ import type { GeneratedSetListEntry } from "@/features/training/models/SetListEn
 import { STRENGTH_TEST_FILTERS } from "@/features/training/workoutGeneratorRouter";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import { loadStrengthTestLoadData } from "./strengthTestLoadData";
-import { generateFinishedWorkout } from "./workoutGeneration";
+import { generateSetListFromWorkout } from "./workoutGeneration";
 
 const LEVELS = ["BEGINNER", "ADVANCED", "PROFESSIONAL"] as const;
 const GENDERS = ["MALE", "FEMALE"] as const;
@@ -42,7 +42,7 @@ const listWarmUpBranchIds = (setList: GeneratedSetListEntry[]): string[] =>
     .filter((entry) => entry.skill === "WU" && entry.branchId !== "-1")
     .map((entry) => entry.branchId);
 
-describe("strengthTestWorkout: generateFinishedWorkout of the strength test", () => {
+describe("strengthTestWorkout: generateSetListFromWorkout of the strength test", () => {
   const skillTrees = getAllSkillTrees();
 
   beforeEach(() => {
@@ -69,7 +69,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
 
       expect(
         () =>
-          generateFinishedWorkout(
+          generateSetListFromWorkout(
             template,
             lookUpStoredBranchInCatalog,
             input,
@@ -91,7 +91,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
 
       expect(
         () =>
-          generateFinishedWorkout(
+          generateSetListFromWorkout(
             template,
             lookUpStoredBranchInCatalog,
             input,
@@ -118,7 +118,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
 
       expect(
         () =>
-          generateFinishedWorkout(
+          generateSetListFromWorkout(
             template,
             lookUpStoredBranchInCatalog,
             input,
@@ -141,7 +141,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
       expect(
         catchThrownValue(
           () =>
-            generateFinishedWorkout(
+            generateSetListFromWorkout(
               loadStrengthTestTemplate(),
               lookUpStoredBranchInCatalog,
               input,
@@ -160,7 +160,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
 
       expect(
         listTrainedExercises(
-          generateFinishedWorkout(
+          generateSetListFromWorkout(
             loadStrengthTestTemplate(),
             lookUpStoredBranchInCatalog,
             input,
@@ -184,7 +184,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
           exercises: ["54", "25"],
         });
 
-        const setList = generateFinishedWorkout(
+        const setList = generateSetListFromWorkout(
           template,
           lookUpStoredBranchInCatalog,
           input,
@@ -212,7 +212,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         random: generateSeededRandom(7),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         input,
@@ -234,7 +234,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         random: generateSeededRandom(7),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         input,
@@ -269,7 +269,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
 
       expect(
         () =>
-          generateFinishedWorkout(
+          generateSetListFromWorkout(
             template,
             lookUpStoredBranchInCatalog,
             input,
@@ -293,7 +293,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         testSets: generateAuthoredTestSets(),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         template,
         lookUpStoredBranchInCatalog,
         input,
@@ -320,7 +320,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         testSets: generateAuthoredTestSets(),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         template,
         lookUpStoredBranchInCatalog,
         input,
@@ -354,7 +354,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         testSets: generateAuthoredTestSets(),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         template,
         lookUpStoredBranchInCatalog,
         input,
@@ -380,7 +380,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
       ) =>
         SEEDS.map((seed) =>
           listWarmUpBranchIds(
-            generateFinishedWorkout(
+            generateSetListFromWorkout(
               loadStrengthTestTemplate(),
               lookUpStoredBranchInCatalog,
               generateStrengthTestInput({
@@ -403,7 +403,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         random: generateSeededRandom(7),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         bundledTemplate,
         lookUpStoredBranchInCatalog,
         input,
@@ -422,7 +422,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         random: generateSeededRandom(7),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         bundledTemplate,
         lookUpStoredBranchInCatalog,
         input,
@@ -439,7 +439,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
     it("draws five distinct branches, one per quota slot, from one sided branches", () => {
       const warmUpTree = generateRegionWarmUpTree(["SIDE_ONE"]);
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         bundledTemplate,
         lookUpStoredBranchInCatalog,
         generateStrengthTestInput({ random: generateSeededRandom(7) }),
@@ -462,7 +462,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         ),
       };
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         bundledTemplate,
         lookUpStoredBranchInCatalog,
         generateStrengthTestInput({ random: generateSeededRandom(7) }),
@@ -484,7 +484,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
     it("draws any unused branch for a region quota without a matching branch", () => {
       const { upper: _upper, ...warmUpTree } = generateRegionWarmUpTree();
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         bundledTemplate,
         lookUpStoredBranchInCatalog,
         generateStrengthTestInput({ random: generateSeededRandom(7) }),
@@ -505,7 +505,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
     });
 
     it("orders the warm up like any other block, not in draw order", () => {
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         bundledTemplate,
         lookUpStoredBranchInCatalog,
         generateStrengthTestInput({ random: generateSeededRandom(7) }),
@@ -531,7 +531,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
     });
 
     it("times every warm up exercise as one 60 second set with 10 second rests and 30 seconds before the lifts", () => {
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         generateStrengthTestInput({ random: generateSeededRandom(5) }),
@@ -573,7 +573,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         },
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         template,
         lookUpStoredBranchInCatalog,
         generateStrengthTestInput({ random: generateSeededRandom(5) }),
@@ -632,13 +632,13 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         random: generateSeededRandom(3),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         kneeInput,
         { skillTrees, filters: STRENGTH_TEST_FILTERS },
       ).setList;
-      const painFreeSetList = generateFinishedWorkout(
+      const painFreeSetList = generateSetListFromWorkout(
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         painFreeInput,
@@ -679,7 +679,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         random: generateSeededRandom(7),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         input,
@@ -745,7 +745,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         random: generateSeededRandom(7),
       });
 
-      const testEntries = generateFinishedWorkout(
+      const testEntries = generateSetListFromWorkout(
         template,
         lookUpStoredBranchInCatalog,
         input,
@@ -774,7 +774,7 @@ describe("strengthTestWorkout: generateFinishedWorkout of the strength test", ()
         random: generateSeededRandom(7),
       });
 
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         loadStrengthTestTemplate(),
         lookUpStoredBranchInCatalog,
         input,

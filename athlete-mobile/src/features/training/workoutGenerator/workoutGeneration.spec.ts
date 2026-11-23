@@ -14,9 +14,9 @@ import {
 import { catchThrownValue } from "@test/factories/thrownValue";
 import { generateLowerBodyExercises } from "@test/factories/valueExercise";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
-import { generateFinishedWorkout } from "./workoutGeneration";
+import { generateSetListFromWorkout } from "./workoutGeneration";
 
-describe("workoutGeneration: generateFinishedWorkout of a workout with test sets", () => {
+describe("workoutGeneration: generateSetListFromWorkout of a workout with test sets", () => {
   // Muscle soreness counts on the day the factory dates it.
   beforeEach(() => {
     jest.useFakeTimers({ now: new Date("2026-10-24T12:00:00Z") });
@@ -35,7 +35,7 @@ describe("workoutGeneration: generateFinishedWorkout of a workout with test sets
 
     const thrown = catchThrownValue(
       () =>
-        generateFinishedWorkout(
+        generateSetListFromWorkout(
           generateStrengthTestTemplate(),
           lookUpStoredBranchInCatalog,
           input,
@@ -59,7 +59,7 @@ describe("workoutGeneration: generateFinishedWorkout of a workout with test sets
 
     const thrown = catchThrownValue(
       () =>
-        generateFinishedWorkout(
+        generateSetListFromWorkout(
           generateStrengthTestTemplate(),
           lookUpStoredBranchInCatalog,
           input,
@@ -81,7 +81,7 @@ describe("workoutGeneration: generateFinishedWorkout of a workout with test sets
 
     const thrown = catchThrownValue(
       () =>
-        generateFinishedWorkout(
+        generateSetListFromWorkout(
           generateStrengthTestTemplate(),
           lookUpStoredBranchInCatalog,
           input,
@@ -104,7 +104,7 @@ describe("workoutGeneration: generateFinishedWorkout of a workout with test sets
 
     const thrown = catchThrownValue(
       () =>
-        generateFinishedWorkout(
+        generateSetListFromWorkout(
           generateStrengthTestTemplate({ exercises: ["25"] }),
           lookUpStoredBranchInCatalog,
           input,
@@ -124,7 +124,7 @@ describe("workoutGeneration: generateFinishedWorkout of a workout with test sets
       random: generateSeededRandom(7),
     });
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       generateStrengthTestTemplate({ exercises: ["25"] }),
       lookUpStoredBranchInCatalog,
       input,
@@ -142,7 +142,7 @@ describe("workoutGeneration: generateFinishedWorkout of a workout with test sets
 
     const thrown = catchThrownValue(
       () =>
-        generateFinishedWorkout(
+        generateSetListFromWorkout(
           generateStrengthTestTemplate(),
           lookUpStoredBranchInCatalog,
           input,
@@ -159,7 +159,7 @@ describe("workoutGeneration: generateFinishedWorkout of a workout with test sets
       random: generateSeededRandom(7),
     });
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       generateStrengthTestTemplate(),
       lookUpStoredBranchInCatalog,
       input,
@@ -177,7 +177,7 @@ describe("workoutGeneration: generateFinishedWorkout of a workout with test sets
   });
 });
 
-describe("workoutGeneration: generateFinishedWorkout with the soreness filter off", () => {
+describe("workoutGeneration: generateSetListFromWorkout with the soreness filter off", () => {
   // Muscle soreness counts on the day the factory dates it.
   beforeEach(() => {
     jest.useFakeTimers({ now: new Date("2026-10-24T12:00:00Z") });
@@ -199,7 +199,7 @@ describe("workoutGeneration: generateFinishedWorkout with the soreness filter of
       generateUntimedBranchesBlock("BAS", { branches: ["1"] }),
     ]);
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       workout,
       lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
@@ -215,7 +215,7 @@ describe("workoutGeneration: generateFinishedWorkout with the soreness filter of
   });
 });
 
-describe("workoutGeneration: generateFinishedWorkout of a short workout", () => {
+describe("workoutGeneration: generateSetListFromWorkout of a short workout", () => {
   it("trains a replacement branch of the same skill when pain blocks every listed branch", () => {
     // MOB branch 1 is blocked for knee pain, branch 2 is free
     const skillTrees = {
@@ -230,7 +230,7 @@ describe("workoutGeneration: generateFinishedWorkout of a short workout", () => 
       generateUntimedBranchesBlock("MOB", { branches: ["1"] }),
     ]);
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       workout,
       lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
@@ -254,7 +254,7 @@ describe("workoutGeneration: generateFinishedWorkout of a short workout", () => 
       generateUntimedBranchesBlock("MOB", { branches: ["900001"] }),
     ]);
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       workout,
       lookUpStoredBranchInCatalog,
       generateRuleFamilyInput({
@@ -273,7 +273,7 @@ describe("workoutGeneration: generateFinishedWorkout of a short workout", () => 
 
     const thrown = catchThrownValue(
       () =>
-        generateFinishedWorkout(
+        generateSetListFromWorkout(
           workout,
           lookUpStoredBranchInCatalog,
           generateRuleFamilyInput(),

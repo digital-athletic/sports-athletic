@@ -6,7 +6,7 @@ import { selectStoredTrainingDay } from "@/features/training/storedTrainingDaySe
 import { toExerciseBranch } from "@/features/training/utils/plannedBranches";
 import { requireAiwlTraining } from "@/features/training/utils/testFixtures";
 import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
-import { generateFinishedWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
+import { generateSetListFromWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
 import {
   generateSetList,
   selectWorkout,
@@ -262,13 +262,13 @@ describe("generateTrainingPlan: end to end with the workout generator", () => {
     const legacyDayWorkout = readTrainingDayWorkout(legacyDay);
 
     expect(
-      generateFinishedWorkout(
+      generateSetListFromWorkout(
         aiwlDay.workout,
         aiwlDay.lookUpBranch,
         createInput(),
       ).setList,
     ).toEqual(
-      generateFinishedWorkout(
+      generateSetListFromWorkout(
         legacyDayWorkout.workout,
         legacyDayWorkout.lookUpBranch,
         createInput(),

@@ -14,7 +14,7 @@ import { toExerciseBranch } from "@/features/training/utils/plannedBranches";
 import { lookUpStoredBranchInCatalog } from "./blockHandlers/branches/storedBranchLookup";
 import type { GenerationInput } from "./generationInput/generationInput";
 import { readTrainingDayWorkout } from "./trainingDayWorkout";
-import { generateFinishedWorkout } from "./workoutGeneration";
+import { generateSetListFromWorkout } from "./workoutGeneration";
 
 const exerciseCatalog = loadExercises();
 
@@ -45,7 +45,7 @@ describe("trainingDayWorkout: set list of an AIWL training", () => {
     const input = generateInput();
     const day = readTrainingDayWorkout(workout);
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       input,
@@ -88,7 +88,7 @@ describe("trainingDayWorkout: set list of an AIWL training", () => {
       lengths: { GKS: 10, CARDIO_5: 25 },
     });
     expect(setList).toEqual(
-      generateFinishedWorkout(
+      generateSetListFromWorkout(
         legacyDay.workout,
         legacyDay.lookUpBranch,
         generateInput(),
@@ -104,7 +104,7 @@ describe("trainingDayWorkout: set list of an AIWL training", () => {
       ]),
     );
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateInput(),
@@ -196,7 +196,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       generateStoredTrainingDay({ CARDIO_5: ["576"] }, { CARDIO_5: 25 }, "721"),
     );
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
@@ -223,7 +223,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       ),
     );
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
@@ -249,7 +249,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       ),
     );
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
@@ -268,7 +268,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       ),
     );
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
@@ -286,7 +286,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       ),
     );
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({ exerciseCatalog, random: () => 0 }),
@@ -308,7 +308,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       generateStoredTrainingDay({ CARDIO_3: ["580"] }, { CARDIO_3: 30 }, "721"),
     );
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({
@@ -335,7 +335,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
     );
 
     expect(
-      generateFinishedWorkout(
+      generateSetListFromWorkout(
         day.workout,
         day.lookUpBranch,
         generateGenerationInput({ exerciseCatalog }),
@@ -350,7 +350,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
 
     const thrown = catchThrownValue(
       () =>
-        generateFinishedWorkout(
+        generateSetListFromWorkout(
           day.workout,
           day.lookUpBranch,
           generateGenerationInput({ exerciseCatalog }),
@@ -398,7 +398,7 @@ describe("trainingDayWorkout: set list of a legacy training", () => {
       lengths: { CARDIO_2: 20 },
     });
 
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       day.workout,
       day.lookUpBranch,
       generateGenerationInput({

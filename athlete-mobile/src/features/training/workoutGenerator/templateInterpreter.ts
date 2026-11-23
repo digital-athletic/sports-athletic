@@ -1,5 +1,7 @@
+import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
 import type { GenerationInput } from "./generationInput/generationInput";
+import { readReplacementPools } from "./replacementPools";
 import {
   type BlockHandlerRegistry,
   type InterpretedWorkout,
@@ -22,10 +24,6 @@ export interface TemplateInterpreterOptions<TEntry> {
   skillTrees?: Readonly<Record<string, SkillTreeType>>;
   /** The athlete filters every block applies. */
   filters: WorkoutFilters;
-  /** Replay only: see WorkoutInput.branchRefill. */
-  branchRefill?: WorkoutInput["branchRefill"];
-  /** Replay only: see WorkoutInput.replacementPools. */
-  replacementPools?: WorkoutInput["replacementPools"];
 }
 
 /**
@@ -41,14 +39,15 @@ export const interpretTemplate = <TEntry>(
     createSetListBuilder,
     skillTrees,
     filters,
-    branchRefill,
-    replacementPools,
   }: TemplateInterpreterOptions<TEntry>,
 ): FinishedWorkout<TEntry> => {
   const workoutInput: WorkoutInput = Object.freeze({
     ...setUpWorkout(input, filters, template, skillTrees),
-    branchRefill,
-    replacementPools,
+    replacementPools: readReplacementPools(
+      template,
+      input,
+      skillTrees ?? getAllSkillTrees(),
+    ),
   });
   return finishWorkout(
     walkTemplateBlocks(template, workoutInput, handlers),

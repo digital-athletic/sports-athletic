@@ -1,7 +1,7 @@
 import { loadExercises } from "@/data/loadExercises";
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { DrawnBlock } from "@/features/training/workoutGenerator/replacementPools";
+import type { BranchesBlock } from "@/features/training/workoutGenerator/stages/blockWalk";
 import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
 import {
   SHORT_WORKOUT_FILTERS,
@@ -78,17 +78,17 @@ const generateStrengthTemplate = (): Template =>
   ]);
 
 /**
- * Builds the drawn workout of a template from drawn blocks.
+ * Builds the drawn workout of a template from drawn branches blocks.
  *
- * generateDrawnWorkout(template, [{ block: gksBlock, templateIndex: 0 }])
- * → { templateBlocks: '[{"kind":"picks",...}]', drawnBlocks: [{ block: gksBlock, templateIndex: 0 }] }
+ * generateDrawnWorkout(template, [gksBranchesBlock])
+ * → { templateBlocks: '[{"kind":"picks",...}]', workout: { ...template, blocks: [gksBranchesBlock] } }
  */
 const generateDrawnWorkout = (
   template: Template,
-  drawnBlocks: DrawnBlock[],
+  blocks: BranchesBlock[],
 ): DrawnWorkout => ({
   templateBlocks: JSON.stringify(template.blocks),
-  drawnBlocks,
+  workout: { ...template, blocks },
 });
 
 /**
@@ -169,18 +169,18 @@ describe("drawnWorkout: readDrawnBlocks", () => {
       ],
     });
 
-    const blocks = readDrawnBlocks({ blocks: [result], setList: [] }, template);
+    const blocks = readDrawnBlocks({ blocks: [result], setList: [] });
 
-    expect(blocks.map(({ block }) => block.branches)).toEqual([
+    expect(blocks.map((block) => block.branches)).toEqual([
       ["523", "510", "520"],
     ]);
   });
 
-  // The template starts with a mobility block, so the template index is 1.
-  it.each<[string, Block, DrawnBlock]>([
+  it.each<[string, Block, BranchesBlock]>([
     [
       "copies the timing fields of a picks block",
       generatePicksBlock("GKS", {
+        picks: [{ tags: [], count: 1 }],
         sets: 4,
         setDuration: 40,
         values: "exercise",
@@ -188,50 +188,50 @@ describe("drawnWorkout: readDrawnBlocks", () => {
         superset: "drawOrder",
       }),
       {
-        block: {
-          kind: "branches",
-          skill: "GKS",
-          branches: ["510"],
-          sets: 4,
-          setDuration: 40,
-          values: "exercise",
-          rest: { withinSuperset: 10, betweenSets: 45, afterExercise: 60 },
-          superset: "drawOrder",
-        },
-        templateIndex: 1,
+        kind: "branches",
+        skill: "GKS",
+        branches: ["510"],
+        sets: 4,
+        setDuration: 40,
+        values: "exercise",
+        rest: { withinSuperset: 10, betweenSets: 45, afterExercise: 60 },
+        superset: "drawOrder",
+        pickedFrom: { picks: [{ tags: [], count: 1 }] },
       },
     ],
     [
       "copies no picks setting other than the timing fields",
       generatePicksBlock("GKS", {
+        picks: [{ tags: [], count: 1 }],
         countBy: "pairs",
         fallbackToWholeTree: false,
         order: "asDrawn",
       }),
       {
-        block: { kind: "branches", skill: "GKS", branches: ["510"] },
-        templateIndex: 1,
-      },
-    ],
-    [
-      "copies the duration of a branches block and omits the template index",
-      generateBranchesBlock("CARDIO_2", ["510"], { duration: 1500 }),
-      {
-        block: {
-          kind: "branches",
-          skill: "CARDIO_2",
-          branches: ["510"],
-          duration: 1500,
+        kind: "branches",
+        skill: "GKS",
+        branches: ["510"],
+        pickedFrom: {
+          picks: [{ tags: [], count: 1 }],
+          fallbackToWholeTree: false,
         },
       },
     ],
+    [
+      "copies the duration of a branches block and omits pickedFrom",
+      generateBranchesBlock("CARDIO_2", ["510"], { duration: 1500 }),
+      {
+        kind: "branches",
+        skill: "CARDIO_2",
+        branches: ["510"],
+        duration: 1500,
+      },
+    ],
   ])("%s", (_name, block, expected) => {
-    const template = generateTemplate([generatePicksBlock("MOB"), block]);
-
-    const blocks = readDrawnBlocks(
-      { blocks: [generateFilledBlockResult(block, ["510"])], setList: [] },
-      template,
-    );
+    const blocks = readDrawnBlocks({
+      blocks: [generateFilledBlockResult(block, ["510"])],
+      setList: [],
+    });
 
     expect(blocks).toStrictEqual([expected]);
   });
@@ -246,18 +246,15 @@ describe("drawnWorkout: readDrawnBlocks", () => {
       exercises: [],
     });
 
-    const blocks = readDrawnBlocks(
-      {
-        blocks: [
-          emptyBlock,
-          generateFilledBlockResult(template.blocks[1], ["510"]),
-        ],
-        setList: [],
-      },
-      template,
-    );
+    const blocks = readDrawnBlocks({
+      blocks: [
+        emptyBlock,
+        generateFilledBlockResult(template.blocks[1], ["510"]),
+      ],
+      setList: [],
+    });
 
-    expect(blocks.map(({ block }) => block.skill)).toEqual(["GKS"]);
+    expect(blocks.map((block) => block.skill)).toEqual(["GKS"]);
   });
 });
 
@@ -269,6 +266,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on the first start", () 
     const { setList, drawnWorkoutToSave } = generateSetListFromDrawnWorkout({
       random: () => Math.random(),
       request: generateRequest(),
+      template,
       selection: generateSelection(template),
     });
 
@@ -276,14 +274,14 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on the first start", () 
       JSON.stringify(template.blocks),
     );
     expect(
-      drawnWorkoutToSave?.drawnBlocks.map(({ block, templateIndex }) => [
+      drawnWorkoutToSave?.workout.blocks.map((block) => [
         block.skill,
-        templateIndex,
-        [...block.branches].sort(),
+        block.kind === "branches" ? block.pickedFrom?.picks : undefined,
+        block.kind === "branches" ? [...block.branches].sort() : undefined,
       ]),
     ).toEqual([
-      ["GKS", 0, listBranchIdsOfSkill(setList, "GKS")],
-      ["SWR1", 1, listBranchIdsOfSkill(setList, "SWR1")],
+      ["GKS", [{ tags: [], count: 3 }], listBranchIdsOfSkill(setList, "GKS")],
+      ["SWR1", [{ tags: [], count: 2 }], listBranchIdsOfSkill(setList, "SWR1")],
     ]);
   });
 
@@ -300,18 +298,17 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on the first start", () 
         equipment: ["AREA_10", "AREA_20", "TRACK_20", "TREADMILL"],
         user: generateAthlete({ pains: ["KNEE_LEFT"] }),
       }),
+      template,
       selection: generateSelection(template),
     });
 
     expect(listSkills(setList)).toEqual(["CARDIO_5"]);
-    expect(drawnWorkoutToSave?.drawnBlocks).toStrictEqual([
+    expect(drawnWorkoutToSave?.workout.blocks).toStrictEqual([
       {
-        block: {
-          kind: "branches",
-          skill: "CARDIO_2",
-          branches: ["585"],
-          duration: 1500,
-        },
+        kind: "branches",
+        skill: "CARDIO_2",
+        branches: ["585"],
+        duration: 1500,
       },
     ]);
   });
@@ -324,6 +321,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
     const first = generateSetListFromDrawnWorkout({
       random: () => Math.random(),
       request: generateRequest(),
+      template,
       selection: generateSelection(template),
     });
     seedRandom(2);
@@ -331,6 +329,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
     const second = generateSetListFromDrawnWorkout({
       random: () => Math.random(),
       request: generateRequest(),
+      template,
       selection: generateSelection(template),
       drawnWorkout: first.drawnWorkoutToSave ?? undefined,
     });
@@ -361,6 +360,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
       const first = generateSetListFromDrawnWorkout({
         random: () => Math.random(),
         request: generateRequest(),
+        template,
         selection: generateSelection(template),
       });
       seedRandom(2);
@@ -368,6 +368,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
       const second = generateSetListFromDrawnWorkout({
         random: () => Math.random(),
         request: generateRequest(),
+        template,
         selection: generateSelection(template),
         drawnWorkout: first.drawnWorkoutToSave ?? undefined,
       });
@@ -393,6 +394,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
     const first = generateSetListFromDrawnWorkout({
       random: () => Math.random(),
       request: generateRequest(),
+      template,
       selection: generateSelection(template),
     });
     seedRandom(9);
@@ -400,18 +402,23 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
     const second = generateSetListFromDrawnWorkout({
       random: () => Math.random(),
       request: generateRequest(),
+      template,
       selection: generateSelection(template),
       drawnWorkout: first.drawnWorkoutToSave ?? undefined,
     });
 
     const preventionBlocks = (
-      first.drawnWorkoutToSave?.drawnBlocks ?? []
-    ).filter(({ block }) => block.skill === "PREVKNEE");
-    const preventionBranchIds = preventionBlocks.flatMap(
-      ({ block }) => block.branches,
+      first.drawnWorkoutToSave?.workout.blocks ?? []
+    ).filter(
+      (block): block is BranchesBlock =>
+        block.kind === "branches" && block.skill === "PREVKNEE",
     );
-    expect(preventionBlocks.map(({ templateIndex }) => templateIndex)).toEqual([
-      1, 2,
+    const preventionBranchIds = preventionBlocks.flatMap(
+      (block) => block.branches,
+    );
+    expect(preventionBlocks.map((block) => block.pickedFrom?.picks)).toEqual([
+      [{ tags: ["PREVENTION_KNEE_HIP"], count: 1 }],
+      [{ tags: ["PREVENTION_ANKLE"], count: 1 }],
     ]);
     expect(new Set(preventionBranchIds).size).toBe(preventionBranchIds.length);
     expect(listBranchIdsOfSkill(second.setList, "PREVKNEE")).toEqual(
@@ -429,6 +436,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
       request: generateRequest({
         user: generateAthlete({ level: "BEGINNER" }),
       }),
+      template,
       selection: generateSelection(template),
     });
     seedRandom(2);
@@ -438,6 +446,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
       request: generateRequest({
         user: generateAthlete({ level: "PROFESSIONAL" }),
       }),
+      template,
       selection: generateSelection(template),
       drawnWorkout: first.drawnWorkoutToSave ?? undefined,
     });
@@ -459,11 +468,12 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
     const first = generateSetListFromDrawnWorkout({
       random: () => Math.random(),
       request: generateRequest(),
+      template,
       selection: generateSelection(template),
     });
     const branchData = Object.fromEntries(
-      (first.drawnWorkoutToSave?.drawnBlocks ?? [])
-        .flatMap(({ block }) => block.branches)
+      (first.drawnWorkoutToSave?.workout.blocks ?? [])
+        .flatMap((block) => (block.kind === "branches" ? block.branches : []))
         .map((branchId) => [branchId, generateBranchLevel(branchId, 1)]),
     );
     seedRandom(2);
@@ -473,6 +483,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
       request: generateRequest({
         userExerciseData: { exerciseData: {}, branchData },
       }),
+      template,
       selection: generateSelection(template),
       drawnWorkout: first.drawnWorkoutToSave ?? undefined,
     });
@@ -487,21 +498,20 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
 
   it("replaces a blocked saved branch for that start only", () => {
     // Knee pain blocks branch 523, which trains the knee.
-    const template = generateTemplate([
-      generatePicksBlock("GKS", {
-        picks: [{ tags: ["EXERCISE_DIRECTION_KNEE"], count: 1 }],
-        fallbackToWholeTree: false,
-      }),
-      generatePicksBlock("MOB"),
-    ]);
+    const gksBlock = generatePicksBlock("GKS", {
+      picks: [{ tags: ["EXERCISE_DIRECTION_KNEE"], count: 1 }],
+      fallbackToWholeTree: false,
+    });
+    const mobBlock = generatePicksBlock("MOB");
+    const template = generateTemplate([gksBlock, mobBlock]);
     const drawnWorkout = generateDrawnWorkout(template, [
       {
-        block: generateBranchesBlock("GKS", ["523"], { duration: undefined }),
-        templateIndex: 0,
+        ...generateBranchesBlock("GKS", ["523"], { duration: undefined }),
+        pickedFrom: { picks: gksBlock.picks, fallbackToWholeTree: false },
       },
       {
-        block: generateBranchesBlock("MOB", ["952"], { duration: undefined }),
-        templateIndex: 1,
+        ...generateBranchesBlock("MOB", ["952"], { duration: undefined }),
+        pickedFrom: { picks: mobBlock.picks },
       },
     ]);
     const before = structuredClone(drawnWorkout);
@@ -513,12 +523,14 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
         equipment: ["DUMBBELL", "BARBELL"],
         user: generateAthlete({ pains: ["KNEE_LEFT"] }),
       }),
+      template,
       selection: generateSelection(template),
       drawnWorkout,
     });
     const cleared = generateSetListFromDrawnWorkout({
       random: () => Math.random(),
       request: generateRequest({ equipment: ["DUMBBELL", "BARBELL"] }),
+      template,
       selection: generateSelection(template),
       drawnWorkout,
     });
@@ -537,16 +549,14 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a template change"
     const oldTemplate = generateStrengthTemplate();
     const newTemplate = generateTemplate([generatePicksBlock("MOB")]);
     const drawnWorkout = generateDrawnWorkout(oldTemplate, [
-      {
-        block: generateBranchesBlock("GKS", ["510"], { duration: undefined }),
-        templateIndex: 0,
-      },
+      generateBranchesBlock("GKS", ["510"], { duration: undefined }),
     ]);
     seedRandom(1);
 
     const { setList, drawnWorkoutToSave } = generateSetListFromDrawnWorkout({
       random: () => Math.random(),
       request: generateRequest(),
+      template: newTemplate,
       selection: generateSelection(newTemplate),
       drawnWorkout,
     });
@@ -555,7 +565,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a template change"
       JSON.stringify(newTemplate.blocks),
     );
     expect(
-      drawnWorkoutToSave?.drawnBlocks.map(({ block }) => block.skill),
+      drawnWorkoutToSave?.workout.blocks.map((block) => block.skill),
     ).toEqual(["MOB"]);
     expect(listSkills(setList)).toEqual(["MOB"]);
   });

@@ -164,10 +164,10 @@ The block walk hands every block the branches all earlier blocks used, whatever 
 
 The branches handler sets `swappedFrom` on a result whose skill it swapped. Its value is the stored block, and it replaces the former `swappedFromSkill`. The handler sets it on both swap paths: a cardio block that runs CARDIO_5, and a later block of the same skill that reads an earlier swap.
 
-Two replay options are set only by `generateSetList` with `previousDrawnBlocks`. A fresh run sets neither:
+A branches block with `pickedFrom` gets two options from the branches handler. Any other block gets neither:
 
 - `branchRefill: "blockedSlots"`: a blocked branch refills only its own slot. Without it, a prevention or special warm-up skill refills every slot.
-- `replacementPools`: maps each drawn block to the pool of the picks block it was drawn from. The pool is rebuilt with `resolvePicksBlocks`, and the handler gives it to the block as `replacementPool`. A replacement draws only from that pool.
+- `replacementPool`: the pool its `pickedFrom` picks draw. `readReplacementPools` resolves the pool of every such block once per workout with `resolvePicksBlocks`. A replacement draws only from that pool.
 
 Edge cases of a replay:
 
@@ -283,9 +283,9 @@ A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A temp
 The router has one lookup and one run:
 
 - `selectWorkout(request)` is the lookup.
-- `generateSetList(selection, request, { random, previousDrawnBlocks? })` is the run. It returns the set list and the result of each block, and draws from the random source its caller passes.
+- `generateSetList(selection, request, { random })` is the run. It returns the set list and the result of each block, and draws from the random source its caller passes.
 
-Only drawn workouts of custom workouts pass `previousDrawnBlocks`. These drawn blocks run as `branches` blocks with the same lookup and filters, plus the replay options of [block handlers](#block-handlers-strategy). `readReplacementPools` rebuilds their pools from the selected template. The template stays an input because a blocked branch is replaced from the pool of the template block it was drawn from, which a `branches` block does not know.
+A drawn workout replaces the selected workout and runs with the same lookup and filters.
 
 `generateSetListFromWorkout` runs every workout with one handler registry and one finish rule:
 
@@ -345,11 +345,11 @@ A branch-to-block map that the generator records would lift the one-block limit.
 
 ### Drawn workouts of custom workouts
 
-An own or team training saves the branches of its first start per training place as a **drawn workout**, so later starts at that place train the same branches. `drawnWorkout.ts` in `features/customWorkouts` reads and replays drawn workouts. Apart from the replay options, the generator is unchanged.
+An own or team training saves the branches of its first start per training place as a **drawn workout**, so later starts at that place train the same branches. `drawnWorkout.ts` in `features/customWorkouts` reads and replays drawn workouts. The generator runs a drawn workout like any template.
 
-- **Format.** A drawn workout is `{ templateBlocks, drawnBlocks }`, where `templateBlocks` is `JSON.stringify(template.blocks)`. Each drawn block is a `DrawnBlock` `{ block, templateIndex? }`. `block` is a `branches` block with the skill of `swappedFrom ?? block` and the distinct branch IDs of the block result in draw order; a swapped cardio block saves the `swappedFrom` branches. `block` copies the timing fields `sets`, `setDuration`, `values`, `rest`, `superset` and `duration`. `templateIndex` names the picks block of the template that the block was drawn from. A block without branches is not saved.
-- **Replay.** While `templateBlocks` matches the template, `generateSetList(selection, request, { random, previousDrawnBlocks: drawnWorkout.drawnBlocks })` runs the drawn blocks. Levels, values and loads come from the current progress. After a template change, the start generates fresh and overwrites the drawn workout.
-- **Transparency rule.** A blocked saved branch changes only its own slot, and only for that start. `branchRefill: "blockedSlots"` refills the blocked slots alone, from the pool of the original picks block, which `replacementPools` rebuilds from the template block at `templateIndex`. A slot without a replacement is dropped alone. No replacement is persisted, so the original branch returns once the block is gone.
+- **Format.** A drawn workout is `{ templateBlocks, workout }`, where `templateBlocks` is `JSON.stringify(template.blocks)` and `workout` is the template with one `branches` block per filled block. Each block has the skill of `swappedFrom ?? block` and the distinct branch IDs of the block result in draw order; a swapped cardio block saves the `swappedFrom` branches. Each block copies the timing fields `sets`, `setDuration`, `values`, `rest`, `superset` and `duration`. A block drawn by a picks block copies its picks as `pickedFrom`. A block without branches is not saved.
+- **Replay.** While `templateBlocks` matches the template, `generateSetList` runs `drawnWorkout.workout` in place of the template. Levels, values and loads come from the current progress. After a template change, the start generates fresh and overwrites the drawn workout.
+- **Transparency rule.** A blocked saved branch changes only its own slot, and only for that start. A block with `pickedFrom` refills the blocked slots alone, from the pool of its picks. A block without `pickedFrom` (a swapped cardio block, a branches or duration block of the template) refills like a template block. A slot without a replacement is dropped alone. No replacement is persisted, so the original branch returns once the block is gone.
 - **Store.** `drawnWorkoutsStore` persists `drawnWorkouts[workoutId][place]` as `drawn-workouts-storage` (`DRAWN_WORKOUTS`). `useTrainingGeneration` reads and saves drawn workouts only after the store has hydrated. Logout, the Supabase `SIGNED_OUT` event and account deletion clear the drawn workouts. Exercise swaps stay session only.
 
 ### Strength test source

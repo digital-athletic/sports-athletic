@@ -1,32 +1,30 @@
 import type { GeneratedSetListEntry } from "@/features/training/models/SetListEntry";
-import type { DrawnBlock } from "@/features/training/workoutGenerator/replacementPools";
 import type {
   FilledBlockResult,
   FinishedWorkout,
 } from "@/features/training/workoutGenerator/stages/workoutFinish";
-import type {
-  BranchesBlock,
-  InterpretedWorkout,
-} from "@/features/training/workoutGenerator/stages/blockWalk";
+import type { BranchesBlock } from "@/features/training/workoutGenerator/stages/blockWalk";
 import {
   generateSetList,
   type WorkoutGenerationRequest,
   type WorkoutSelection,
 } from "@/features/training/workoutGeneratorRouter";
+import type { Template } from "@/schemas/aiwl.schema";
 
 /**
- * The branches a custom workout drew on its first start at one place, as one
- * branches block per drawn template block. `templateBlocks` fingerprints the
- * template, so a template change starts a fresh draw.
+ * What a custom workout drew on its first start at one place: an AIWL
+ * workout with one branches block per filled template block. `templateBlocks`
+ * fingerprints the template, so a template change starts a fresh draw.
  */
 export type DrawnWorkout = {
   templateBlocks: string;
-  drawnBlocks: DrawnBlock[];
+  workout: Template;
 };
 
 type DrawnWorkoutSetListInput = {
   request: WorkoutGenerationRequest;
   selection: WorkoutSelection;
+  template: Template;
   drawnWorkout?: DrawnWorkout;
   random: () => number;
 };
@@ -65,53 +63,59 @@ const toBranchesBlock = (
 };
 
 /**
- * Reads the drawn blocks of a finished workout: the branches of each filled
- * block in draw order, and the template index of each picks block, from which
- * a replay rebuilds the replacement pool.
+ * Reads the drawn blocks of a finished workout: one branches block per filled
+ * block with its branches in draw order. A block drawn by picks keeps them as
+ * `pickedFrom`, so a replay replaces a blocked branch from the same pool.
  *
- * readDrawnBlocks({ blocks: [<GKS picks result: 523, 510>], setList }, template)
- * → [{ block: { kind: "branches", skill: "GKS", branches: ["523", "510"] }, templateIndex: 0 }]
+ * readDrawnBlocks({ blocks: [<GKS picks result: 523, 510>], setList })
+ * → [{ kind: "branches", skill: "GKS", branches: ["523", "510"], pickedFrom: { picks: [...] } }]
  */
 export const readDrawnBlocks = (
   finished: FinishedWorkout<GeneratedSetListEntry>,
-  template: InterpretedWorkout,
-): DrawnBlock[] =>
-  finished.blocks.flatMap((result): DrawnBlock[] => {
+): BranchesBlock[] =>
+  finished.blocks.flatMap((result): BranchesBlock[] => {
     if (result.status !== "filled") return [];
     const branches = readBranches(result);
     if (branches.length === 0) return [];
     const block = toBranchesBlock(result, branches);
-    if (result.swappedFrom || result.block.kind !== "picks") return [{ block }];
-    return [{ block, templateIndex: template.blocks.indexOf(result.block) }];
+    if (result.swappedFrom || result.block.kind !== "picks") return [block];
+    const { picks, fallbackToWholeTree } = result.block;
+    return [
+      {
+        ...block,
+        pickedFrom: {
+          picks,
+          ...(fallbackToWholeTree !== undefined && { fallbackToWholeTree }),
+        },
+      },
+    ];
   });
 
 /**
- * Replays the drawn workout while the template blocks are unchanged.
- * Otherwise generates fresh and returns the drawn workout to save, or null when
- * no block drew a branch.
+ * Runs the drawn workout while the template blocks are unchanged. Otherwise
+ * generates fresh from the template and returns the drawn workout to save, or
+ * null when no block drew a branch.
  */
 export const generateSetListFromDrawnWorkout = ({
   request,
   selection,
+  template,
   drawnWorkout,
   random,
 }: DrawnWorkoutSetListInput): DrawnWorkoutSetList => {
-  const templateBlocks = JSON.stringify(selection.workout.blocks);
-  const previousDrawnBlocks =
-    drawnWorkout?.templateBlocks === templateBlocks
-      ? drawnWorkout.drawnBlocks
-      : undefined;
-  const finished = generateSetList(selection, request, {
-    random,
-    previousDrawnBlocks,
-  });
-  if (previousDrawnBlocks) {
-    return { setList: finished.setList, drawnWorkoutToSave: null };
+  const templateBlocks = JSON.stringify(template.blocks);
+  if (drawnWorkout?.templateBlocks === templateBlocks) {
+    const replay = { ...selection, workout: drawnWorkout.workout };
+    const { setList } = generateSetList(replay, request, { random });
+    return { setList, drawnWorkoutToSave: null };
   }
-  const drawnBlocks = readDrawnBlocks(finished, selection.workout);
+  const finished = generateSetList(selection, request, { random });
+  const blocks = readDrawnBlocks(finished);
   return {
     setList: finished.setList,
     drawnWorkoutToSave:
-      drawnBlocks.length > 0 ? { templateBlocks, drawnBlocks } : null,
+      blocks.length > 0
+        ? { templateBlocks, workout: { ...template, blocks } }
+        : null,
   };
 };

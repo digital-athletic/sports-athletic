@@ -49,10 +49,6 @@ export interface WorkoutGenerationOptions {
   loadData?: StrengthTestLoadData;
   /** The athlete filters the workout switches off; every filter applies by default. */
   filters?: Partial<WorkoutFilters>;
-  /** Replay only: see WorkoutInput.branchRefill. */
-  branchRefill?: WorkoutInput["branchRefill"];
-  /** Replay only: see WorkoutInput.replacementPools. */
-  replacementPools?: WorkoutInput["replacementPools"];
 }
 
 // The spec bars athletes under 16 from the test; the menu hides it from them
@@ -144,7 +140,5 @@ export const generateSetListFromWorkout = (
       createSetListBuilder(workoutInput, prescribedBuilders),
     skillTrees: options.skillTrees,
     filters: resolveWorkoutFilters(options.filters),
-    branchRefill: options.branchRefill,
-    replacementPools: options.replacementPools,
   });
 };

@@ -285,6 +285,20 @@ const buildBlockResult = (
  * branch lookup index, or the entries a stored training day saved at plan
  * creation.
  */
+// A block with pickedFrom refills only its blocked slots, from the pool of
+// its picks.
+const readBlockReplacementInput = (
+  block: BranchesBlock,
+  input: WorkoutInput,
+): WorkoutInput =>
+  block.pickedFrom
+    ? {
+        ...input,
+        branchRefill: "blockedSlots",
+        replacementPool: input.replacementPools?.get(block),
+      }
+    : input;
+
 export const createBranchesBlockHandler =
   (lookUpStoredBranch: StoredBranchLookup): BlockHandlerRegistry["branches"] =>
   (storedBlock, input, _usedBranches, walk): BlockResult => {
@@ -303,11 +317,7 @@ export const createBranchesBlockHandler =
     if (block.skill.indexOf("CARDIO") !== -1 && chain.replace.length > 0) {
       return { ...replaceCardioBlock(block, input), swappedFrom: storedBlock };
     }
-    // a replay draws a replacement only from the pool of the stored block
-    const blockInput = {
-      ...input,
-      replacementPool: input.replacementPools?.get(storedBlock),
-    };
+    const blockInput = readBlockReplacementInput(storedBlock, input);
     const exercises = resolveBranchExercises(
       chooseBlockBranches(block.skill, storedBranches, chain, blockInput),
       input,

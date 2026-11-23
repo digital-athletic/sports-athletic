@@ -39,7 +39,8 @@ export const useDrawnWorkoutsContext = (): DrawnWorkoutsContext => {
 /**
  * Generates the set list of a training start. A custom workout replays its
  * drawn workout for the place, or saves its first draw there. Before the
- * drawn workouts store hydrates, a custom workout generates fresh and saves nothing.
+ * drawn workouts store hydrates, a custom workout generates fresh and saves
+ * nothing.
  */
 export const generateTrainingSetList = (
   ctx: DrawnWorkoutsContext,
@@ -47,13 +48,14 @@ export const generateTrainingSetList = (
   request: WorkoutGenerationRequest & { place: PlaceType },
 ): GeneratedSetListEntry[] => {
   const selection = selectWorkout(request);
-  const isCustom = findCustomTemplate(ctx.workoutsById, request.type);
-  if (!isCustom || !ctx.drawnWorkoutsHydrated) {
+  const template = findCustomTemplate(ctx.workoutsById, request.type);
+  if (!template || !ctx.drawnWorkoutsHydrated) {
     return generateSetList(selection, request, { random }).setList;
   }
   const { setList, drawnWorkoutToSave } = generateSetListFromDrawnWorkout({
     request,
     selection,
+    template,
     drawnWorkout: ctx.drawnWorkouts[request.type]?.[request.place],
     random,
   });

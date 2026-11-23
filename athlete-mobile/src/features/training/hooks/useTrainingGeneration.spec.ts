@@ -236,8 +236,8 @@ describe("useTrainingGeneration: drawn workouts of custom workouts", () => {
 
     const saved =
       useDrawnWorkoutsStore.getState().drawnWorkouts["custom-a"]?.STUDIO;
-    expect(saved?.drawnBlocks.map(({ block }) => block.branches)).toEqual([
-      ["510"],
+    expect(saved?.workout.blocks).toMatchObject([
+      { kind: "branches", branches: ["510"] },
     ]);
   });
 });

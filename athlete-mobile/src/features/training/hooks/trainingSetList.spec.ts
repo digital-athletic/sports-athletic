@@ -113,20 +113,26 @@ describe("trainingSetList: generateTrainingSetList", () => {
     expect(setList.map(({ branchId }) => branchId)).toEqual(["510"]);
     expect(saveDrawnWorkout).toHaveBeenCalledWith("custom-a", "STUDIO", {
       templateBlocks: JSON.stringify(template.blocks),
-      drawnBlocks: [
-        {
-          block: { kind: "branches", skill: "GKS", branches: ["510"] },
-          templateIndex: 0,
-        },
-      ],
+      workout: {
+        ...template,
+        blocks: [
+          {
+            kind: "branches",
+            skill: "GKS",
+            branches: ["510"],
+            pickedFrom: { picks: [{ tags: [], count: 1 }] },
+          },
+        ],
+      },
     });
   });
 
   it("replays the drawn workout of the place and saves nothing when a blocked branch was replaced", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
-    const savedBlocks = [
-      { block: generateBranchesBlock("GKS", ["523"]), templateIndex: 0 },
-    ];
+    const drawnWorkout = {
+      templateBlocks: JSON.stringify(template.blocks),
+      workout: { ...template, blocks: [generateBranchesBlock("GKS", ["523"])] },
+    };
     const saveDrawnWorkout = jest.fn();
     // A pain blocks branch 523, so the replay draws 518 in its slot.
     mockSelectWorkout.mockReturnValue(generateSelection(template));
@@ -137,10 +143,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
         workoutsById: generateWorkoutsById(template),
         drawnWorkouts: {
           "custom-a": {
-            STUDIO: {
-              templateBlocks: JSON.stringify(template.blocks),
-              drawnBlocks: savedBlocks,
-            },
+            STUDIO: drawnWorkout,
           },
         },
         drawnWorkoutsHydrated: true,
@@ -150,8 +153,8 @@ describe("trainingSetList: generateTrainingSetList", () => {
       generateRequest(),
     );
 
-    expect(mockGenerateSetList.mock.calls[0][2].previousDrawnBlocks).toEqual(
-      savedBlocks,
+    expect(mockGenerateSetList.mock.calls[0][0].workout).toBe(
+      drawnWorkout.workout,
     );
     expect(saveDrawnWorkout).not.toHaveBeenCalled();
   });
@@ -159,6 +162,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
   it("starts fresh and saves nothing before the drawn workouts store hydrates", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
     const saveDrawnWorkout = jest.fn();
+    mockSelectWorkout.mockReturnValue(generateSelection(template));
 
     generateTrainingSetList(
       {
@@ -173,9 +177,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
 
     expect(mockSelectWorkout).toHaveBeenCalledTimes(1);
     expect(mockGenerateSetList).toHaveBeenCalledTimes(1);
-    expect(
-      mockGenerateSetList.mock.calls[0][2].previousDrawnBlocks,
-    ).toBeUndefined();
+    expect(mockGenerateSetList.mock.calls[0][0].workout).toBe(template);
     expect(saveDrawnWorkout).not.toHaveBeenCalled();
   });
 
@@ -197,9 +199,6 @@ describe("trainingSetList: generateTrainingSetList", () => {
 
       expect(mockSelectWorkout).toHaveBeenCalledTimes(1);
       expect(mockGenerateSetList).toHaveBeenCalledTimes(1);
-      expect(
-        mockGenerateSetList.mock.calls[0][2].previousDrawnBlocks,
-      ).toBeUndefined();
       expect(saveDrawnWorkout).not.toHaveBeenCalled();
     },
   );

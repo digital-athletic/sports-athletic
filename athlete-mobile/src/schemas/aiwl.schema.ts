@@ -106,11 +106,19 @@ const DurationBlockSchema = v.strictObject({
   duration: PositiveSecondsSchema,
   bodyParts: v.optional(BodyPartsSchema),
 });
+// The picks a branches block was drawn from. A blocked branch is replaced
+// only from the pool these picks draw.
+const PickedFromSchema = v.strictObject({
+  picks: PlacePicksSchema,
+  fallbackToWholeTree: v.optional(v.boolean()),
+});
+export type PickedFrom = v.InferOutput<typeof PickedFromSchema>;
 const BranchesBlockSchema = v.strictObject({
   kind: v.literal("branches"),
   ...blockBase,
   branches: v.pipe(v.array(NonEmptyStringSchema), v.minLength(1)),
   duration: v.optional(PositiveSecondsSchema),
+  pickedFrom: v.optional(PickedFromSchema),
 });
 
 /** A part of a load: above 0, at most the whole load. */

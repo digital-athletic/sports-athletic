@@ -310,14 +310,14 @@ describe("useExerciseSwap: swap in a short training", () => {
         SHORT_SWAP: {
           HOME: {
             templateBlocks: JSON.stringify(template.blocks),
-            drawnBlocks: [
-              {
-                block: generateBranchesBlock("GKS", [drawnBranchId], {
+            workout: {
+              ...template,
+              blocks: [
+                generateBranchesBlock("GKS", [drawnBranchId], {
                   duration: undefined,
                 }),
-                templateIndex: 0,
-              },
-            ],
+              ],
+            },
           },
         },
       },

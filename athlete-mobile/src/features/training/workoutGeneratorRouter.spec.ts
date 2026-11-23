@@ -494,56 +494,49 @@ describe("selectWorkout: workout per training type", () => {
   });
 });
 
-describe("generateSetList: replay of previous drawn blocks", () => {
-  afterEach(jest.restoreAllMocks);
+describe("generateSetList: drawn workouts", () => {
   afterEach(() => useCustomWorkoutsStore.getState().clearCustomWorkouts());
 
-  const customTemplate = generateTemplate(
-    [
-      generatePicksBlock("WU", { picks: [{ tags: [], count: 2 }] }),
-      generatePicksBlock("MOB", { picks: [{ tags: [], count: 2 }] }),
-    ],
-    { id: "own", name: { en: "Own" } },
-  );
-
-  it("runs the previous drawn blocks and returns their branches", () => {
-    const { id } = useCustomWorkoutsStore
-      .getState()
-      .saveCustomWorkout(customTemplate, null);
+  it("runs the branches of a drawn workout", () => {
+    const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
+      generateTemplate(
+        [
+          generateBranchesBlock("WU", ["410"], {
+            pickedFrom: { picks: [{ tags: [], count: 1 }] },
+          }),
+        ],
+        { id: "own", name: { en: "Own" } },
+      ),
+      null,
+    );
     const request = generateHomeRequest(id);
-    const previousDrawnBlocks = [
-      { block: generateBranchesBlock("WU", ["410"]), templateIndex: 0 },
-    ];
 
     const { setList } = generateSetList(selectWorkout(request), request, {
       random: () => Math.random(),
-      previousDrawnBlocks,
     });
 
     expect(setList.length).toBeGreaterThan(0);
     expect(setList.every((entry) => entry.branchId === "410")).toBe(true);
   });
 
-  it("replaces a pain blocked drawn branch from the pool of its original pick only", () => {
+  it("replaces a pain blocked drawn branch from the pool of its picks only", () => {
     // Branch 523 trains the knee direction and knee pain blocks it. The knee
-    // pick pool contains 518, 767 and 866 after the pain check; the hip pick
-    // pool contains other branches.
-    const template = generateTemplate(
-      [
-        generatePicksBlock("GKS", {
-          picks: [{ tags: ["EXERCISE_DIRECTION_KNEE"], count: 1 }],
-          fallbackToWholeTree: false,
-        }),
-        generatePicksBlock("GKS", {
-          picks: [{ tags: ["EXERCISE_DIRECTION_HIP"], count: 1 }],
-          fallbackToWholeTree: false,
-        }),
-      ],
-      { id: "gks" },
+    // picks pool contains 518, 767 and 866 after the pain check; the whole
+    // GKS tree contains hip branches too.
+    const { id } = useCustomWorkoutsStore.getState().saveCustomWorkout(
+      generateTemplate(
+        [
+          generateBranchesBlock("GKS", ["523"], {
+            pickedFrom: {
+              picks: [{ tags: ["EXERCISE_DIRECTION_KNEE"], count: 1 }],
+              fallbackToWholeTree: false,
+            },
+          }),
+        ],
+        { id: "gks" },
+      ),
+      null,
     );
-    const { id } = useCustomWorkoutsStore
-      .getState()
-      .saveCustomWorkout(template, null);
     const request = generateHomeRequest(id, {
       user: {
         ...generateWarmUpOnlyPlanUser(),
@@ -551,13 +544,9 @@ describe("generateSetList: replay of previous drawn blocks", () => {
       },
       equipment: ["DUMBBELL", "BARBELL"],
     });
-    const previousDrawnBlocks = [
-      { block: generateBranchesBlock("GKS", ["523"]), templateIndex: 0 },
-    ];
 
     const { setList } = generateSetList(selectWorkout(request), request, {
       random: () => 0.99,
-      previousDrawnBlocks,
     });
 
     expect(["518", "767", "866"]).toContain(setList[0].branchId);

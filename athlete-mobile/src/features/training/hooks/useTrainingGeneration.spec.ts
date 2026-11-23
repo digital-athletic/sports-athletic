@@ -51,11 +51,11 @@ const generateTestWorkoutParams = () => ({ type: "TEST_WORKOUT" as const });
  * Builds what the generator returns for the template when its block drew the
  * branch.
  *
- * generateFinishedWorkout(template, "510")
+ * generateSetListResult(template, "510")
  * → { blocks: [{ status: "filled", block: template.blocks[0], exercises: [{ branchId: "510", ... }], ... }],
  *     setList: [{ branchId: "510", exerciseId: "exercise510", set: [1, 1], skill: "GKS" }] }
  */
-const generateFinishedWorkout = (
+const generateSetListResult = (
   template: Template,
   branchId: string,
 ): FinishedWorkout<GeneratedSetListEntry> => ({
@@ -225,9 +225,7 @@ describe("useTrainingGeneration: saved versions of custom workouts", () => {
       lookUpBranch: lookUpStoredBranchInCatalog,
       filters: {},
     });
-    mockGenerateSetList.mockReturnValue(
-      generateFinishedWorkout(template, "510"),
-    );
+    mockGenerateSetList.mockReturnValue(generateSetListResult(template, "510"));
     const { result } = await renderHook(() =>
       useTrainingGeneration({ type: "custom-a" }),
     );

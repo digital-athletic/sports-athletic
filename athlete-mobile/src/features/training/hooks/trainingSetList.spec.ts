@@ -74,10 +74,10 @@ const generateSelection = (template: Template): WorkoutSelection => ({
  * Builds what the generator returns when the GKS block of the template drew
  * the branch.
  *
- * generateFinishedWorkout(template, "510")
+ * generateSetListResult(template, "510")
  * → { blocks: [<filled GKS result of 510>], setList: [{ branchId: "510", exerciseId: "exercise510", set: [1, 1], skill: "GKS" }] }
  */
-const generateFinishedWorkout = (
+const generateSetListResult = (
   template: Template,
   branchId: string,
 ): FinishedWorkout<GeneratedSetListEntry> => ({
@@ -97,9 +97,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
     const template = generateTemplate([generatePicksBlock("GKS")]);
     const saveVersion = jest.fn();
     mockSelectWorkout.mockReturnValue(generateSelection(template));
-    mockGenerateSetList.mockReturnValue(
-      generateFinishedWorkout(template, "510"),
-    );
+    mockGenerateSetList.mockReturnValue(generateSetListResult(template, "510"));
 
     const setList = generateTrainingSetList(
       {
@@ -132,9 +130,7 @@ describe("trainingSetList: generateTrainingSetList", () => {
     const saveVersion = jest.fn();
     // A pain blocks branch 523, so the replay draws 518 in its slot.
     mockSelectWorkout.mockReturnValue(generateSelection(template));
-    mockGenerateSetList.mockReturnValue(
-      generateFinishedWorkout(template, "518"),
-    );
+    mockGenerateSetList.mockReturnValue(generateSetListResult(template, "518"));
 
     generateTrainingSetList(
       {

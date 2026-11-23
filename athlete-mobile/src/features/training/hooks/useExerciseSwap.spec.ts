@@ -346,7 +346,7 @@ describe("useExerciseSwap: swap in a short training", () => {
   it("lists the alternatives of the original template for a session replayed from a saved version", async () => {
     seedShortWorkout();
     const replayed = workoutGeneration
-      .generateFinishedWorkout(
+      .generateSetListFromWorkout(
         {
           id: "SHORT_SWAP",
           blocks: [

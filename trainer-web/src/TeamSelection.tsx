@@ -2,24 +2,30 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { Button } from "./components/Button";
+import { ConfirmModal } from "./components/ConfirmModal";
 import { CreateTeamCard } from "./components/CreateTeamCard";
 import { CreateTeamForm } from "./components/CreateTeamForm";
 import { ErrorMessage } from "./components/ErrorMessage";
 import { JoinTeamForm } from "./components/JoinTeamForm";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+import { MemberTeamCard } from "./components/MemberTeamCard";
 import { PageLayout } from "./components/PageLayout";
 import { TeamCard } from "./components/TeamCard";
 import { useProfile } from "./hooks/useProfile";
 import { useTeamSelection } from "./hooks/useTeamSelection";
+import { isTeamStaff } from "./types/team";
 
 export const TeamSelection = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { teams, loading, error, createTeam, joinTeam } = useTeamSelection();
+  const { teams, loading, error, createTeam, joinTeam, leaveTeam } =
+    useTeamSelection();
   const { profile, loading: profileLoading } = useProfile();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showJoinForm, setShowJoinForm] = useState(false);
+  const [teamToLeave, setTeamToLeave] = useState<string | null>(null);
+  const [isLeaving, setIsLeaving] = useState(false);
 
   const handleSelectTeam = (teamId: string) => {
     navigate(`/dashboard?team=${teamId}`);
@@ -30,9 +36,24 @@ export const TeamSelection = () => {
     navigate(`/dashboard?team=${result.id}`);
   };
 
+  // Joining makes the user a plain member, whose team has no dashboard. The
+  // reloaded list shows the new team instead.
   const handleJoinTeam = async (code: string) => {
-    const result = await joinTeam(code);
-    navigate(`/dashboard?team=${result.team_id}`);
+    await joinTeam(code);
+    setShowJoinForm(false);
+  };
+
+  const handleLeaveTeam = async () => {
+    if (!teamToLeave) return;
+    setIsLeaving(true);
+    try {
+      await leaveTeam(teamToLeave);
+    } catch {
+      // useTeamSelection's `error` shows the failure.
+    } finally {
+      setIsLeaving(false);
+      setTeamToLeave(null);
+    }
   };
 
   return (
@@ -72,14 +93,22 @@ export const TeamSelection = () => {
               {t("teamSelection.noTeam")}
             </p>
           )}
-          {teams.map((team) => (
-            <TeamCard
-              key={team.id}
-              team={team}
-              memberCount={team.member_count}
-              onClick={() => handleSelectTeam(team.id)}
-            />
-          ))}
+          {teams.map((team) =>
+            isTeamStaff(team.role) ? (
+              <TeamCard
+                key={team.id}
+                team={team}
+                memberCount={team.member_count}
+                onClick={() => handleSelectTeam(team.id)}
+              />
+            ) : (
+              <MemberTeamCard
+                key={team.id}
+                team={team}
+                onLeaveClick={() => setTeamToLeave(team.id)}
+              />
+            ),
+          )}
           <CreateTeamCard
             onCreateClick={() => setShowCreateForm(true)}
             onJoinClick={() => setShowJoinForm(true)}
@@ -99,6 +128,18 @@ export const TeamSelection = () => {
         <JoinTeamForm
           onSubmit={handleJoinTeam}
           onCancel={() => setShowJoinForm(false)}
+        />
+      )}
+
+      {teamToLeave && (
+        <ConfirmModal
+          title={t("teamManagement.leaveTeam.confirmTitle")}
+          message={t("teamManagement.leaveTeam.confirmMessage")}
+          confirmLabel={t("teamManagement.leaveTeam.button")}
+          confirmTestId="member-team-leave-confirm"
+          isLoading={isLeaving}
+          onConfirm={handleLeaveTeam}
+          onCancel={() => setTeamToLeave(null)}
         />
       )}
     </PageLayout>

@@ -85,7 +85,18 @@ export interface UpdateTeamGuidanceResponse {
 }
 
 export interface TeamWithMemberCount extends Team {
+  /**
+   * Counts the members the user may see: all of them for the owner and
+   * co-owners, only the owner and the user for a plain member.
+   */
   member_count: number;
+  /** The role of the signed-in user in this team. */
+  role: TeamRole;
+}
+
+/** The owner and co-owners manage a team and see its athletes; members do not. */
+export function isTeamStaff(role: TeamRole): boolean {
+  return role === "owner" || role === "co_owner";
 }
 
 /** One block of an AIWL template, in the two kinds the workout builder writes. */

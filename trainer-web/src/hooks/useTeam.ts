@@ -226,6 +226,12 @@ export function useTeam(teamId: string | null) {
   };
 
   const isOwner = team?.owner_id === currentUserId;
+  const isStaff =
+    isOwner ||
+    members.some(
+      (member) =>
+        member.user_id === currentUserId && member.role === "co_owner",
+    );
 
   return {
     team,
@@ -234,6 +240,7 @@ export function useTeam(teamId: string | null) {
     loading,
     error,
     isOwner,
+    isStaff,
     currentUserId,
     currentUserDisplayName,
     createTeam,

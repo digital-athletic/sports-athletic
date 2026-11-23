@@ -27,6 +27,25 @@ export class TeamSelectionPage {
     await this.page.getByRole("heading", { name, level: 2 }).click();
   }
 
+  /** The card of a team the user is a plain member of. */
+  private memberTeam(name: string) {
+    return this.page.getByTestId("member-team-card").filter({ hasText: name });
+  }
+
+  async expectMemberTeam(name: string) {
+    await expect(this.memberTeam(name)).toBeVisible();
+  }
+
+  /** For a team that must not open: clicks the name without expecting a move. */
+  async clickTeamName(name: string) {
+    await this.page.getByRole("heading", { name, level: 2 }).click();
+  }
+
+  async leaveTeam(name: string) {
+    await this.memberTeam(name).getByTestId("member-team-leave").click();
+    await this.page.getByTestId("member-team-leave-confirm").click();
+  }
+
   async createTeam(name: string) {
     await this.page.getByTestId("team-selection-create").click();
     await this.page.getByTestId("create-team-name").fill(name);

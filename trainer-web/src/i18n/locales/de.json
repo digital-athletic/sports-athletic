@@ -33,6 +33,7 @@
     "description": "Wählen Sie ein Team aus oder erstellen Sie ein neues.",
     "players": "{{count}} Spieler",
     "noTeam": "Sie sind noch kein Mitglied eines Teams.",
+    "memberHint": "Als Mitglied nutzen Sie dieses Team in der App. Hier gibt es nichts zu verwalten.",
     "createTeam": "Team erstellen",
     "joinTeam": "Team beitreten",
     "or": "oder",

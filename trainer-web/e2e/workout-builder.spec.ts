@@ -422,26 +422,4 @@ test.describe("Workout builder", () => {
     await workouts.expectDraft("Tuesday stability");
     await workouts.expectNoEditActions();
   });
-
-  test("a member sees the published workouts without edit actions", async ({
-    page,
-  }) => {
-    const joined = {
-      ...TEAM,
-      owner_id: OTHER_OWNER,
-      members: [
-        { user_id: OTHER_OWNER, role: "owner" as const },
-        { user_id: MOCK_USER.id, role: "member" as const },
-      ],
-    };
-    await mockSupabase(page, {
-      trainerGrantedAt: TRAINER,
-      teams: [joined],
-      teamWorkouts: [SAVED],
-    });
-    const workouts = await openWorkouts(page);
-
-    await workouts.expectPublished("Tuesday stability");
-    await workouts.expectNoEditActions();
-  });
 });

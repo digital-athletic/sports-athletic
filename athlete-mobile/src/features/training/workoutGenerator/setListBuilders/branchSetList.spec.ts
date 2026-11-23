@@ -11,7 +11,7 @@ import {
 import { lookUpStoredBranchInCatalog } from "../blockHandlers/branches/storedBranchLookup";
 import { createEmptyPicksWorkout } from "../blockHandlers/picks/picksWorkoutRules";
 import type { GenerationInput } from "../generationInput/generationInput";
-import { generateFinishedWorkout } from "../workoutGeneration";
+import { generateSetListFromWorkout } from "../workoutGeneration";
 import { buildBranchSetList } from "./branchSetList";
 import { createSetListBlock, readBlockTiming } from "./setListBlockResolution";
 
@@ -75,7 +75,7 @@ describe("buildBranchSetList: the entries of one branch", () => {
   it("builds the entries of a single exercise as the block run does", () => {
     const input = generateCatalogInput();
     const block = generateBranchesBlock("GKS", ["510"], { superset: "none" });
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       generateTemplate([block]),
       lookUpStoredBranchInCatalog,
       input,
@@ -105,7 +105,7 @@ describe("buildBranchSetList: the entries of one branch", () => {
     const block = generateBranchesBlock("SWR1", ["16", "3"], {
       superset: "drawOrder",
     });
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       generateTemplate([block]),
       lookUpStoredBranchInCatalog,
       input,
@@ -138,7 +138,7 @@ describe("buildBranchSetList: the entries of one branch", () => {
     (superset) => {
       const input = generateCatalogInput();
       const block = generateBranchesBlock("GKS", ["512", "510"], { superset });
-      const setList = generateFinishedWorkout(
+      const setList = generateSetListFromWorkout(
         generateTemplate([block]),
         lookUpStoredBranchInCatalog,
         input,
@@ -165,7 +165,7 @@ describe("buildBranchSetList: the entries of one branch", () => {
   it("builds the entries of one exercise of a max strength block", () => {
     const input = generateCatalogInput();
     const block = generateBranchesBlock("MAX", ["133", "134"]);
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       generateTemplate([block]),
       lookUpStoredBranchInCatalog,
       input,
@@ -193,7 +193,7 @@ describe("buildBranchSetList: the entries of one branch", () => {
   it("builds the first side only of a one sided max strength branch", () => {
     const input = generateCatalogInput();
     const block = generateBranchesBlock("MAX", ["512", "133"]);
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       generateTemplate([block]),
       lookUpStoredBranchInCatalog,
       input,
@@ -221,7 +221,7 @@ describe("buildBranchSetList: the entries of one branch", () => {
   it("builds the lead alone when the partner is missing from the catalog", () => {
     const input = generateCatalogInput();
     const block = generateBranchesBlock("GKS", ["510"], { superset: "none" });
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       generateTemplate([block]),
       lookUpStoredBranchInCatalog,
       input,
@@ -257,7 +257,7 @@ describe("buildBranchSetList: the entries of one branch", () => {
     const block = generateBranchesBlock("CARDIO_2", ["582", "584"], {
       duration: 20 * SECONDS_PER_MINUTE,
     });
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       generateTemplate([block]),
       lookUpStoredBranchInCatalog,
       input,
@@ -289,7 +289,7 @@ describe("buildBranchSetList: the entries of one branch", () => {
       skill: "CARDIO_2",
       duration: 20 * SECONDS_PER_MINUTE,
     } as const;
-    const setList = generateFinishedWorkout(
+    const setList = generateSetListFromWorkout(
       generateTemplate([block]),
       lookUpStoredBranchInCatalog,
       input,

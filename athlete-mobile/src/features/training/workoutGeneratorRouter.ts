@@ -8,7 +8,7 @@ import { createGenerationInput } from "@/features/training/workoutGenerator/gene
 import { readTrainingDayWorkout } from "@/features/training/workoutGenerator/trainingDayWorkout";
 import type { WorkoutFilters } from "@/features/training/workoutGenerator/workoutFilters";
 import {
-  generateFinishedWorkout,
+  generateSetListFromWorkout,
   type SelectedWorkout,
 } from "@/features/training/workoutGenerator/workoutGeneration";
 import {
@@ -134,7 +134,21 @@ export interface SetListOptions {
 }
 
 /**
- * Runs the selected workout and returns its set list and what each block drew.
+ * Generates the set list of a training start: the public entry point the app
+ * calls after `selectWorkout`. Turns the request into the generator input and
+ * calls `generateSetListFromWorkout` once.
+ *
+ * 1. Builds the generator input from the request (athlete, place, equipment,
+ *    exercise catalog, progress) and the given random source.
+ * 2. Without `previousDrawnBlocks`, generates from the selected template.
+ * 3. With `previousDrawnBlocks` (a saved version), generates from the saved
+ *    branches instead of the template's picks. A branch the athlete can no
+ *    longer train (new pain, missing equipment) is replaced in its own slot
+ *    only, from the pool of the template block it was drawn from.
+ *
+ * Returns the set list and the result of each block. Throws the generator
+ * errors of `generateSetListFromWorkout`, and throws when a drawn block names a
+ * template index that matches no picks block of the template.
  *
  * generateSetList(selectWorkout(request), request, { random: Math.random })
  * → { setList: [{ branchId: "410", skill: "WU", ... }], blocks: [...] }
@@ -148,7 +162,7 @@ export const generateSetList = (
   const input = createInput(request, random);
   const options = { skillTrees: request.skillTrees, filters };
   if (previousDrawnBlocks === undefined) {
-    return generateFinishedWorkout(workout, lookUpBranch, input, options);
+    return generateSetListFromWorkout(workout, lookUpBranch, input, options);
   }
   const replay = {
     id: workout.id,
@@ -160,7 +174,7 @@ export const generateSetList = (
     input,
     request.skillTrees,
   );
-  return generateFinishedWorkout(replay, lookUpBranch, input, {
+  return generateSetListFromWorkout(replay, lookUpBranch, input, {
     ...options,
     branchRefill: "blockedSlots",
     replacementPools,

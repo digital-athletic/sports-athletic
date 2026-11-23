@@ -13,7 +13,7 @@ import {
   type TrainingDay,
 } from "@/features/training/workoutGenerator/trainingDayWorkout";
 import type { WorkoutFilters } from "@/features/training/workoutGenerator/workoutFilters";
-import { generateFinishedWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
+import { generateSetListFromWorkout } from "@/features/training/workoutGenerator/workoutGeneration";
 import { SHORT_WORKOUT_FILTERS } from "@/features/training/workoutGeneratorRouter";
 import type { Template } from "@/schemas/aiwl.schema";
 import { toUserExerciseDataList } from "@/schemas/generator.schema";
@@ -180,7 +180,7 @@ export const generatePlanDaySwapWorkout = (
   return generateSwapWorkout({
     workout,
     session: toUserExerciseDataList(
-      generateFinishedWorkout(workout, lookUpBranch, input, { skillTrees })
+      generateSetListFromWorkout(workout, lookUpBranch, input, { skillTrees })
         .setList,
     ),
     input,
@@ -203,7 +203,7 @@ export const generateShortWorkout = (
   generateSwapWorkout({
     workout: template,
     session: toUserExerciseDataList(
-      generateFinishedWorkout(template, lookUpStoredBranchInCatalog, input, {
+      generateSetListFromWorkout(template, lookUpStoredBranchInCatalog, input, {
         skillTrees,
         filters,
       }).setList,

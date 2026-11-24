@@ -5,56 +5,29 @@ import {
   generatePicksBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
-import { catchThrownValue } from "@test/factories/thrownValue";
 import { readReplacementPools } from "./replacementPools";
 
-// Builds a PREVKNEE picks block that draws one branch with the tag.
-// generatePreventionPicks("PREVENTION_ANKLE")
-// → { kind: "picks", skill: "PREVKNEE", picks: [{ tags: ["PREVENTION_ANKLE"], count: 1 }] }
-const generatePreventionPicks = (tag: string) =>
-  generatePicksBlock("PREVKNEE", { picks: [{ tags: [tag], count: 1 }] });
-
-describe("replacementPools: readReplacementPools", () => {
-  it("keys the pool of each picks block by its replay block", () => {
-    const input = generateGenerationInput();
-    const kneeBlock = generateBranchesBlock("PREVKNEE", ["153"]);
-    const ankleBlock = generateBranchesBlock("PREVKNEE", ["154"]);
-    const template = generateTemplate([
-      generatePicksBlock("MOB"),
-      generatePreventionPicks("PREVENTION_KNEE_HIP"),
-      generatePreventionPicks("PREVENTION_ANKLE"),
-    ]);
-
-    const pools = readReplacementPools(
-      template,
-      [
-        { block: kneeBlock, templateIndex: 1 },
-        { block: ankleBlock, templateIndex: 2 },
-      ],
-      input,
-      getAllSkillTrees(),
-    );
-
-    expect([...pools.keys()]).toEqual([kneeBlock, ankleBlock]);
+// Builds a PREVKNEE branches block of the branch, picked by one pick with the tag.
+// generatePreventionBlock("153", "PREVENTION_KNEE_HIP")
+// → { kind: "branches", skill: "PREVKNEE", branches: ["153"], pickedFrom: { picks: [{ tags: ["PREVENTION_KNEE_HIP"], count: 1 }] } }
+const generatePreventionBlock = (branchId: string, tag: string) =>
+  generateBranchesBlock("PREVKNEE", [branchId], {
+    pickedFrom: { picks: [{ tags: [tag], count: 1 }] },
   });
 
-  it("gives two blocks of one skill their own pools", () => {
-    const input = generateGenerationInput();
-    const kneeBlock = generateBranchesBlock("PREVKNEE", ["153"]);
-    const ankleBlock = generateBranchesBlock("PREVKNEE", ["154"]);
-    const template = generateTemplate([
+describe("replacementPools: readReplacementPools", () => {
+  it("gives two blocks of one skill the pools of their own picks", () => {
+    const kneeBlock = generatePreventionBlock("153", "PREVENTION_KNEE_HIP");
+    const ankleBlock = generatePreventionBlock("154", "PREVENTION_ANKLE");
+    const workout = generateTemplate([
       generatePicksBlock("MOB"),
-      generatePreventionPicks("PREVENTION_KNEE_HIP"),
-      generatePreventionPicks("PREVENTION_ANKLE"),
+      kneeBlock,
+      ankleBlock,
     ]);
 
     const pools = readReplacementPools(
-      template,
-      [
-        { block: kneeBlock, templateIndex: 1 },
-        { block: ankleBlock, templateIndex: 2 },
-      ],
-      input,
+      workout,
+      generateGenerationInput(),
       getAllSkillTrees(),
     );
 
@@ -64,67 +37,33 @@ describe("replacementPools: readReplacementPools", () => {
     expect(Object.keys(pools.get(ankleBlock) ?? {})).not.toContain("153");
   });
 
-  it("maps a drawn block to its own template index whatever the drawn order", () => {
-    const input = generateGenerationInput();
-    const kneeBlock = generateBranchesBlock("PREVKNEE", ["153"]);
-    const ankleBlock = generateBranchesBlock("PREVKNEE", ["154"]);
-    const template = generateTemplate([
-      generatePicksBlock("MOB"),
-      generatePreventionPicks("PREVENTION_KNEE_HIP"),
-      generatePreventionPicks("PREVENTION_ANKLE"),
-    ]);
-
-    const pools = readReplacementPools(
-      template,
-      [
-        { block: ankleBlock, templateIndex: 2 },
-        { block: kneeBlock, templateIndex: 1 },
-      ],
-      input,
-      getAllSkillTrees(),
-    );
-
-    expect(Object.keys(pools.get(ankleBlock) ?? {})).toContain("154");
-  });
-
-  it("leaves a drawn block without a template index out", () => {
-    const input = generateGenerationInput();
-    const kneeBlock = generateBranchesBlock("PREVKNEE", ["153"]);
+  it("leaves out a block without pickedFrom and the picks blocks", () => {
+    const picksBlock = generatePicksBlock("MOB");
     const cardioBlock = generateBranchesBlock("CARDIO_3", ["580"]);
-    const template = generateTemplate([
-      generatePicksBlock("MOB"),
-      generatePreventionPicks("PREVENTION_KNEE_HIP"),
-    ]);
+    const kneeBlock = generatePreventionBlock("153", "PREVENTION_KNEE_HIP");
+    const workout = generateTemplate([picksBlock, cardioBlock, kneeBlock]);
 
     const pools = readReplacementPools(
-      template,
-      [{ block: cardioBlock }, { block: kneeBlock, templateIndex: 1 }],
-      input,
+      workout,
+      generateGenerationInput(),
       getAllSkillTrees(),
     );
 
-    expect(pools.has(cardioBlock)).toBe(false);
+    expect([...pools.keys()]).toEqual([kneeBlock]);
   });
 
-  it("throws an error naming a template index that matches no picks block", () => {
-    const input = generateGenerationInput();
-    const kneeBlock = generateBranchesBlock("PREVKNEE", ["153"]);
-    const template = generateTemplate([
+  it("returns no pools for a workout without pickedFrom", () => {
+    const workout = generateTemplate([
       generatePicksBlock("MOB"),
-      generatePreventionPicks("PREVENTION_KNEE_HIP"),
+      generateBranchesBlock("GKS", ["510"]),
     ]);
 
-    const thrown = catchThrownValue(() =>
-      readReplacementPools(
-        template,
-        [{ block: kneeBlock, templateIndex: 5 }],
-        input,
-        getAllSkillTrees(),
-      ),
+    const pools = readReplacementPools(
+      workout,
+      generateGenerationInput(),
+      getAllSkillTrees(),
     );
 
-    expect(thrown).toEqual(
-      new Error("Template index 5 matches no picks block of the template"),
-    );
+    expect(pools.size).toBe(0);
   });
 });

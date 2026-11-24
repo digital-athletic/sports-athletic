@@ -27,9 +27,12 @@ export interface WorkoutInput extends GenerationInput {
   readonly hasWeights: boolean;
   readonly filters: WorkoutFilters;
   readonly picksWorkout: PicksWorkout;
-  /** Replay only: "blockedSlots" refills a blocked branch in its own slot. */
+  /**
+   * "blockedSlots" refills a blocked branch in its own slot; the branches
+   * handler sets it for a block with `pickedFrom`.
+   */
   readonly branchRefill?: "blockedSlots";
-  /** Replay only: the pool each stored block draws a replacement from. */
+  /** The pool of each branches block with `pickedFrom`. */
   readonly replacementPools?: ReadonlyMap<Block, SkillTreeType>;
   /** The pool of the block that runs; a replacement draws only from it. */
   readonly replacementPool?: SkillTreeType;

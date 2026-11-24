@@ -164,10 +164,10 @@ The block walk hands every block the branches all earlier blocks used, whatever 
 
 The branches handler sets `swappedFrom` on a result whose skill it swapped. Its value is the stored block, and it replaces the former `swappedFromSkill`. The handler sets it on both swap paths: a cardio block that runs CARDIO_5, and a later block of the same skill that reads an earlier swap.
 
-Two replay options are set only by `generateSetList` with `previousDrawnBlocks`. A fresh run sets neither:
+A branches block with `pickedFrom` gets two options from the branches handler. Any other block gets neither:
 
 - `branchRefill: "blockedSlots"`: a blocked branch refills only its own slot. Without it, a prevention or special warm-up skill refills every slot.
-- `replacementPools`: maps each drawn block to the pool of the picks block it was drawn from. The pool is rebuilt with `resolvePicksBlocks`, and the handler gives it to the block as `replacementPool`. A replacement draws only from that pool.
+- `replacementPool`: the pool its `pickedFrom` picks draw. `readReplacementPools` resolves the pool of every such block once per workout with `resolvePicksBlocks`. A replacement draws only from that pool.
 
 Edge cases of a replay:
 
@@ -283,9 +283,7 @@ A type without a template throws `NO_EXERCISES/SKILL_TREE` with the type. A temp
 The router has one lookup and one run:
 
 - `selectWorkout(request)` is the lookup.
-- `generateSetList(selection, request, { random, previousDrawnBlocks? })` is the run. It returns the set list and the result of each block, and draws from the random source its caller passes.
-
-Only saved versions of custom workouts pass `previousDrawnBlocks`. These drawn blocks run as `branches` blocks with the same lookup and filters, plus the replay options of [block handlers](#block-handlers-strategy). `readReplacementPools` rebuilds their pools from the selected template. The template stays an input because a blocked branch is replaced from the pool of the template block it was drawn from, which a `branches` block does not know.
+- `generateSetList(selection, request, { random })` is the run. It returns the set list and the result of each block, and draws from the random source its caller passes.
 
 `generateSetListFromWorkout` runs every workout with one handler registry and one finish rule:
 

@@ -207,7 +207,7 @@ const listBranchIds = (result: BlockResult) =>
     ? result.exercises.map(({ branchId }) => branchId)
     : [];
 
-describe("branchesHandler: blockedSlots refill", () => {
+describe("branchesHandler: refill of a block with pickedFrom", () => {
   const handleBlock = createBranchesBlockHandler(lookUpStoredBranchInCatalog);
   const kneeTags = ["PREVENTION_KNEE_HIP", "REGION_LOWER_BODY", "SIDE_BOTH"];
   // Builds a knee pain input with a PREVKG tree; each branch trains "e<id>",
@@ -233,35 +233,35 @@ describe("branchesHandler: blockedSlots refill", () => {
       ),
       random: () => 0.99,
     });
-  const savedBlock = generateBranchesBlock("PREVKNEE", ["1", "2", "3"]);
+  const pickedBlock = generateBranchesBlock("PREVKNEE", ["1", "2", "3"], {
+    pickedFrom: { picks: [{ tags: ["PREVENTION_KNEE_HIP"], count: 3 }] },
+  });
 
   it("replaces only the blocked branch of a prevention block and leaves the others unchanged", () => {
-    const input = {
-      ...generateKneeInput(["1", "3", "4", "6", "7"], ["2"]),
-      branchRefill: "blockedSlots" as const,
-    };
+    const input = generateKneeInput(["1", "3", "4", "6", "7"], ["2"]);
 
-    const result = handleBlock(savedBlock, input, NO_BRANCHES);
+    const result = handleBlock(pickedBlock, input, NO_BRANCHES);
 
     expect(listBranchIds(result).sort()).toEqual(["1", "3", "7"]);
   });
 
   it("drops a slot with no fitting branch and leaves the other slots unchanged", () => {
     // 4 is the only branch left for the two blocked slots
-    const input = {
-      ...generateKneeInput(["1", "4"], ["2", "3"]),
-      branchRefill: "blockedSlots" as const,
-    };
+    const input = generateKneeInput(["1", "4"], ["2", "3"]);
 
-    const result = handleBlock(savedBlock, input, NO_BRANCHES);
+    const result = handleBlock(pickedBlock, input, NO_BRANCHES);
 
     expect(listBranchIds(result).sort()).toEqual(["1", "4"]);
   });
 
-  it("refills every slot of a prevention block when the option is absent", () => {
+  it("refills every slot of a prevention block without pickedFrom", () => {
     const input = generateKneeInput(["1", "3", "4", "6", "7"], ["2"]);
 
-    const result = handleBlock(savedBlock, input, NO_BRANCHES);
+    const result = handleBlock(
+      generateBranchesBlock("PREVKNEE", ["1", "2", "3"]),
+      input,
+      NO_BRANCHES,
+    );
 
     expect(listBranchIds(result)).not.toContain("1");
   });

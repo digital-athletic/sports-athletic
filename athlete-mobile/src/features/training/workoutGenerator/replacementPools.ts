@@ -1,47 +1,46 @@
-import type { BranchesBlock, InterpretedWorkout } from "./stages/blockWalk";
 import type { Block } from "@/schemas/aiwl.schema";
 import type { SkillTreeType } from "@/schemas/skillTree.schema";
-import {
-  isPicksBlock,
-  resolvePicksBlocks,
-} from "./blockHandlers/picks/picksBlockResolution";
+import { resolvePicksBlocks } from "./blockHandlers/picks/picksBlockResolution";
 import type { GenerationInput } from "./generationInput/generationInput";
-
-/** A branches block a template block drew, and the index of that template block. */
-export type DrawnBlock = { block: BranchesBlock; templateIndex?: number };
+import type { InterpretedWorkout } from "./stages/blockWalk";
 
 /**
- * Rebuilds the pool each drawn block draws a replacement from: the pool of
- * the picks block at its template index, keyed by the drawn block. A drawn
- * block without a template index, such as a cardio block, has no pool.
- * Throws like resolvePicksBlocks, for example when a pool is empty, and
- * throws when a template index matches no picks block.
+ * Reads the replacement pool of each branches block with `pickedFrom`: the
+ * pool a picks block of the same skill with those picks would draw from, for
+ * the athlete's equipment. A block without `pickedFrom` has no pool. Throws
+ * like resolvePicksBlocks, for example when a pool is empty.
  *
- * readReplacementPools(template, [{ block: kneeBlock, templateIndex: 1 }], input, skillTrees)
- * → Map { kneeBlock => { ...pool of template.blocks[1] } }
+ * readReplacementPools({ blocks: [kneeBlock with pickedFrom] }, input, skillTrees)
+ * → Map { kneeBlock => { "518": ..., "523": ..., ... } }
  */
 export const readReplacementPools = (
-  template: InterpretedWorkout,
-  drawnBlocks: readonly DrawnBlock[],
+  workout: InterpretedWorkout,
   input: Pick<GenerationInput, "equipment" | "skillCatalog">,
   skillTrees: Readonly<Record<string, SkillTreeType>>,
 ): ReadonlyMap<Block, SkillTreeType> => {
-  const resolvedBlocks = resolvePicksBlocks(template, input, skillTrees).blocks;
-  // resolvePicksBlocks returns the picks blocks only, in template order
-  const picksTemplateIndices = template.blocks.flatMap((block, index) =>
-    isPicksBlock(block) ? [index] : [],
+  const replacing: Block[] = workout.blocks.filter(
+    (block) => block.kind === "branches" && block.pickedFrom !== undefined,
   );
-  const pools = new Map<Block, SkillTreeType>();
-  for (const { block, templateIndex } of drawnBlocks) {
-    if (templateIndex === undefined) continue;
-    const resolved =
-      resolvedBlocks[picksTemplateIndices.indexOf(templateIndex)];
-    if (!resolved) {
-      throw new Error(
-        `Template index ${templateIndex} matches no picks block of the template`,
-      );
-    }
-    pools.set(block, resolved.pool);
-  }
-  return pools;
+  if (replacing.length === 0) return new Map();
+  // The other blocks stay in, because their prevention skills narrow the pools.
+  const asPicks = {
+    id: workout.id,
+    blocks: workout.blocks.map((block) =>
+      block.kind === "branches" && block.pickedFrom
+        ? { kind: "picks" as const, skill: block.skill, ...block.pickedFrom }
+        : block,
+    ),
+  };
+  const resolved = resolvePicksBlocks(asPicks, input, skillTrees).blocks;
+  // resolvePicksBlocks returns the picks blocks only, in workout order, and a
+  // workout can mix picks blocks with replacing branches blocks.
+  const picksOrigins = workout.blocks.filter(
+    (block) => block.kind === "picks" || replacing.includes(block),
+  );
+  return new Map(
+    replacing.map((block) => [
+      block,
+      resolved[picksOrigins.indexOf(block)].pool,
+    ]),
+  );
 };

@@ -166,6 +166,15 @@ jest.mock("@/store/customWorkoutsStore", () => ({
   }),
 }));
 
+const mockClearDrawnWorkouts = jest.fn();
+jest.mock("@/store/drawnWorkoutsStore", () => {
+  // Built on each call: the mock function is defined after the hoisted mock.
+  const readState = () => ({ clearDrawnWorkouts: mockClearDrawnWorkouts });
+  return {
+    useDrawnWorkoutsStore: Object.assign(readState, { getState: readState }),
+  };
+});
+
 function storeCallCounts() {
   return {
     clearAuth: mockClearAuth.mock.calls.length,
@@ -183,6 +192,7 @@ function storeCallCounts() {
     clearTraining: mockClearTraining.mock.calls.length,
     resetSynchronization: mockResetSynchronization.mock.calls.length,
     clearCustomWorkouts: mockClearCustomWorkouts.mock.calls.length,
+    clearDrawnWorkouts: mockClearDrawnWorkouts.mock.calls.length,
   };
 }
 
@@ -201,6 +211,7 @@ const ALL_STORES_CALLED_ONCE = {
   clearTraining: 1,
   resetSynchronization: 1,
   clearCustomWorkouts: 1,
+  clearDrawnWorkouts: 1,
 };
 
 const ALL_STORES_NOT_CALLED = Object.fromEntries(
@@ -349,6 +360,30 @@ describe("useLogout", () => {
       expect(mockResetProfile).toHaveBeenCalled();
     });
     expect(mockTakeSnapshot).not.toHaveBeenCalled();
+  });
+
+  it("clears the drawn workouts right after the auth and before the navigation", async () => {
+    await confirmLogout();
+
+    await waitFor(() => {
+      expect(mockClearDrawnWorkouts).toHaveBeenCalled();
+    });
+    const [clearAuthOrder] = mockClearAuth.mock.invocationCallOrder;
+    const [clearDrawnWorkoutsOrder] =
+      mockClearDrawnWorkouts.mock.invocationCallOrder;
+    const [replaceOrder] = mockReplace.mock.invocationCallOrder;
+    expect(clearDrawnWorkoutsOrder).toBeGreaterThan(clearAuthOrder);
+    expect(clearDrawnWorkoutsOrder).toBeLessThan(replaceOrder);
+  });
+
+  it("clears the drawn workouts when the logout fails", async () => {
+    mockSupabaseLogout.mockRejectedValue(new Error("network"));
+
+    await confirmLogout();
+
+    await waitFor(() => {
+      expect(mockClearDrawnWorkouts).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("keeps the imported trainings on logout", async () => {

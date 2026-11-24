@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import {
+  type DrawnWorkoutsState,
+  useDrawnWorkoutsStore,
+} from "./drawnWorkoutsStore";
 import { asyncStorage } from "./middleware";
 import { createMigrate } from "./migrations/createMigrate";
 import { userDataBackupStoreMigrations } from "./migrations/userDataBackupStoreMigrations";
@@ -22,6 +26,8 @@ interface ProfileSnapshot {
 
 export interface UserDataSnapshot {
   profile?: ProfileSnapshot;
+  /** Optional: snapshots taken before drawn workouts existed lack them. */
+  drawnWorkouts?: DrawnWorkoutsState["drawnWorkouts"];
 }
 
 export type State = {
@@ -56,11 +62,17 @@ export const useUserDataBackupStore = create<UserDataBackupState>()(
               teamId,
               warnings: { ...warnings },
             },
+            drawnWorkouts: useDrawnWorkoutsStore.getState().drawnWorkouts,
           };
         }),
 
       restoreSnapshot: (userId) => {
         const backup = get().snapshots[userId];
+        if (backup?.drawnWorkouts) {
+          useDrawnWorkoutsStore.setState({
+            drawnWorkouts: backup.drawnWorkouts,
+          });
+        }
         if (!backup?.profile) return;
         const { setPersonalData, setAnamnesisCompleted, setTeamId } =
           useUserProfileStore.getState();

@@ -285,6 +285,8 @@ The router has one lookup and one run:
 - `selectWorkout(request)` is the lookup.
 - `generateSetList(selection, request, { random })` is the run. It returns the set list and the result of each block, and draws from the random source its caller passes.
 
+A drawn workout replaces the selected workout and runs with the same lookup and filters.
+
 `generateSetListFromWorkout` runs every workout with one handler registry and one finish rule:
 
 1. The block kind check rejects an exercises block without `testSets`, a duration block of a skill other than a cardio zone and `bodyParts` on a picks or duration block with `OTHER/BLOCK_KIND`. An `order` field passes the check; set list building ignores it with a warning.
@@ -340,6 +342,15 @@ The swap offers a branch only when the workout holds exactly one block of the br
 - The overview shows no swap button before the swap setup exists. `useExerciseSwap` runs the setup once, in a timeout after the overview renders. A failed setup logs the error and leaves no swap button.
 
 A branch-to-block map that the generator records would lift the one-block limit. No change builds it.
+
+### Drawn workouts of custom workouts
+
+An own or team training saves the branches of its first start per training place as a **drawn workout**, so later starts at that place train the same branches. `drawnWorkout.ts` in `features/customWorkouts` reads and replays drawn workouts. The generator runs a drawn workout like any template.
+
+- **Format.** A drawn workout is `{ templateHash, workout }`, where `templateHash` is an 8 digit FNV-1a hash of the template blocks and `workout` is the template with one `branches` block per filled block. Each block has the skill of `swappedFrom ?? block` and the distinct branch IDs of the block result in draw order; a swapped cardio block saves the `swappedFrom` branches. Each block copies the timing fields `sets`, `setDuration`, `values`, `rest`, `superset` and `duration`. A block drawn by a picks block copies its picks as `pickedFrom`. A block without branches is not saved.
+- **Replay.** While `templateHash` matches the hash of the template blocks, `generateSetList` runs `drawnWorkout.workout` in place of the template. Levels, values and loads come from the current progress. After a template change, the start generates fresh and overwrites the drawn workout.
+- **Transparency rule.** A blocked saved branch changes only its own slot, and only for that start. A block with `pickedFrom` refills the blocked slots alone, from the pool of its picks. A block without `pickedFrom` (a swapped cardio block, a branches or duration block of the template) refills like a template block. A slot without a replacement is dropped alone. No replacement is persisted, so the original branch returns once the block is gone.
+- **Store.** `drawnWorkoutsStore` persists `drawnWorkouts[workoutId][place]` as `drawn-workouts-storage` (`DRAWN_WORKOUTS`). `useTrainingGeneration` reads and saves drawn workouts only after the store has hydrated. Logout and the Supabase `SIGNED_OUT` event move the drawn workouts into the per-user snapshot of the user data backup, which the next sign-in of the same user restores; another user on the device starts without them. Account deletion clears them. Exercise swaps stay session only.
 
 ### Strength test source
 

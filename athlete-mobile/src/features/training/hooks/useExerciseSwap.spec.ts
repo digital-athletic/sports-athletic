@@ -16,6 +16,7 @@ import { toUserExerciseData } from "@/schemas/generator.schema";
 import { Logger } from "@/services/Logger";
 import { useAuthStore } from "@/store/authStore";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { generateGenerationInput } from "@test/factories/generationInput";
@@ -34,6 +35,7 @@ import {
 } from "@test/factories/templateBlock";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { useExerciseSwap } from "./useExerciseSwap";
+import { hashTemplateBlocks } from "@/features/customWorkouts/drawnWorkout";
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ navigate: jest.fn(), replace: jest.fn() }),
@@ -296,6 +298,78 @@ describe("useExerciseSwap: swap in a short training", () => {
   afterEach(() => {
     jest.restoreAllMocks();
     useCustomWorkoutsStore.setState({ workoutsById: {} });
+    useDrawnWorkoutsStore.setState({ drawnWorkouts: {} });
+  });
+
+  it("leaves the drawn workouts unchanged after a swap", async () => {
+    const drawn = seedShortWorkout();
+    const drawnBranchId = drawn[0].branchId ?? "";
+    const template =
+      useCustomWorkoutsStore.getState().workoutsById.SHORT_SWAP.template;
+    useDrawnWorkoutsStore.setState({
+      drawnWorkouts: {
+        SHORT_SWAP: {
+          HOME: {
+            templateHash: hashTemplateBlocks(template.blocks),
+            workout: {
+              ...template,
+              blocks: [
+                generateBranchesBlock("GKS", [drawnBranchId], {
+                  duration: undefined,
+                }),
+              ],
+            },
+          },
+        },
+      },
+      _hasHydrated: true,
+    });
+    const before = structuredClone(
+      useDrawnWorkoutsStore.getState().drawnWorkouts,
+    );
+    const { result } = await renderHook(() => useExerciseSwap(params, "HOME"));
+    await waitFor(() =>
+      expect(result.current.swapControls.canSwap(drawnBranchId)).toBe(true),
+    );
+
+    await act(() => {
+      result.current.swapControls.onSwap(drawnBranchId);
+    });
+
+    expect(useTrainingStore.getState().exerciseList?.[0].branchId).not.toBe(
+      drawnBranchId,
+    );
+    expect(useDrawnWorkoutsStore.getState().drawnWorkouts).toEqual(before);
+  });
+
+  it("lists the alternatives of the original template for a session replayed from a drawn workout", async () => {
+    seedShortWorkout();
+    const replayed = workoutGeneration
+      .generateSetListFromWorkout(
+        {
+          id: "SHORT_SWAP",
+          blocks: [
+            generateBranchesBlock("GKS", ["510"], { duration: undefined }),
+          ],
+        },
+        lookUpStoredBranchInCatalog,
+        generateHomeInput(),
+        { skillTrees: getAllSkillTrees(), filters: SHORT_WORKOUT_FILTERS },
+      )
+      .setList.map(toUserExerciseData);
+    useTrainingStore.setState({ exerciseList: replayed });
+    const { result } = await renderHook(() => useExerciseSwap(params, "HOME"));
+    await waitFor(() =>
+      expect(result.current.swapControls.canSwap("510")).toBe(true),
+    );
+
+    await act(() => {
+      result.current.swapControls.onSwap("510");
+    });
+
+    const shown = useTrainingStore.getState().exerciseList?.[0].branchId;
+    expect(shown).not.toBe("510");
+    expect(Object.keys(getAllSkillTrees().GKS)).toContain(shown);
   });
 
   it("restores the drawn entries on the last tap of the cycle", async () => {

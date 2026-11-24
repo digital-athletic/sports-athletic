@@ -298,6 +298,36 @@ describe("useExerciseSwap: swap in a short training", () => {
     useCustomWorkoutsStore.setState({ workoutsById: {} });
   });
 
+  it("lists the alternatives of the original template for a session replayed from a drawn workout", async () => {
+    seedShortWorkout();
+    const replayed = workoutGeneration
+      .generateSetListFromWorkout(
+        {
+          id: "SHORT_SWAP",
+          blocks: [
+            generateBranchesBlock("GKS", ["510"], { duration: undefined }),
+          ],
+        },
+        lookUpStoredBranchInCatalog,
+        generateHomeInput(),
+        { skillTrees: getAllSkillTrees(), filters: SHORT_WORKOUT_FILTERS },
+      )
+      .setList.map(toUserExerciseData);
+    useTrainingStore.setState({ exerciseList: replayed });
+    const { result } = await renderHook(() => useExerciseSwap(params, "HOME"));
+    await waitFor(() =>
+      expect(result.current.swapControls.canSwap("510")).toBe(true),
+    );
+
+    await act(() => {
+      result.current.swapControls.onSwap("510");
+    });
+
+    const shown = useTrainingStore.getState().exerciseList?.[0].branchId;
+    expect(shown).not.toBe("510");
+    expect(Object.keys(getAllSkillTrees().GKS)).toContain(shown);
+  });
+
   it("restores the drawn entries on the last tap of the cycle", async () => {
     const drawn = seedShortWorkout();
     const drawnBranchId = drawn[0].branchId;

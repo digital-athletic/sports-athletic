@@ -160,12 +160,25 @@ jest.mock("../store/userProfileStore", () => ({
 }));
 
 const mockRestoreSnapshot = jest.fn();
+const mockTakeSnapshot = jest.fn();
 jest.mock("../store/userDataBackupStore", () => ({
   useUserDataBackupStore: (
     selector: (state: {
       restoreSnapshot: typeof mockRestoreSnapshot;
+      takeSnapshot: typeof mockTakeSnapshot;
     }) => unknown,
-  ) => selector({ restoreSnapshot: mockRestoreSnapshot }),
+  ) =>
+    selector({
+      restoreSnapshot: mockRestoreSnapshot,
+      takeSnapshot: mockTakeSnapshot,
+    }),
+}));
+
+const mockClearDrawnWorkouts = jest.fn();
+jest.mock("../store/drawnWorkoutsStore", () => ({
+  useDrawnWorkoutsStore: (
+    selector: (state: { clearDrawnWorkouts: () => void }) => unknown,
+  ) => selector({ clearDrawnWorkouts: mockClearDrawnWorkouts }),
 }));
 
 let mockPendingConsent: {
@@ -452,6 +465,39 @@ describe("useAuthStateListener — consent gate", () => {
 
     expect(mockClearAuth).toHaveBeenCalledTimes(1);
     expect(mockSetConsentStatus).toHaveBeenCalledWith("loading");
+  });
+
+  it("saves the snapshot of the signed in user before clearing the drawn workouts on SIGNED_OUT", async () => {
+    mockAuthValue = { userId: "user-1" };
+    await renderHook(() => useAuthStateListener());
+
+    capturedAuthCallback!("SIGNED_OUT", null);
+
+    expect(mockTakeSnapshot).toHaveBeenCalledWith("user-1");
+    expect(mockClearDrawnWorkouts).toHaveBeenCalledTimes(1);
+    expect(mockTakeSnapshot.mock.invocationCallOrder[0]).toBeLessThan(
+      mockClearDrawnWorkouts.mock.invocationCallOrder[0],
+    );
+  });
+
+  it("saves no snapshot on SIGNED_OUT after a logout already cleared the auth", async () => {
+    mockAuthValue = null;
+    await renderHook(() => useAuthStateListener());
+
+    capturedAuthCallback!("SIGNED_OUT", null);
+
+    expect(mockTakeSnapshot).not.toHaveBeenCalled();
+  });
+
+  it("leaves the drawn workouts unchanged on TOKEN_REFRESHED", async () => {
+    await renderHook(() => useAuthStateListener());
+
+    capturedAuthCallback!("TOKEN_REFRESHED", {
+      user: { id: "user-1" },
+      access_token: "new-token",
+    });
+
+    expect(mockClearDrawnWorkouts).not.toHaveBeenCalled();
   });
 
   it("re-checks consent when app foregrounds with status missing", async () => {

@@ -12,7 +12,17 @@ import {
 import { useUserDataBackupStore } from "@/store/userDataBackupStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useRegistrationConsentStore } from "@/store/registrationConsentStore";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { featureFlags } from "@/config/featureFlags";
+
+// A logout cleared the auth after its own snapshot; a sign out the server
+// forced still has it, so the user's data survives it too.
+const saveSnapshotOfSignedInUser = (
+  takeSnapshot: (userId: string) => void,
+): void => {
+  const userId = useAuthStore.getState().auth?.userId;
+  if (userId) takeSnapshot(userId);
+};
 
 /**
  * Hook to subscribe to Supabase auth state changes.
@@ -36,6 +46,10 @@ export function useAuthStateListener() {
   const setUsername = useUserProfileStore((state) => state.setUsername);
   const restoreSnapshot = useUserDataBackupStore(
     (state) => state.restoreSnapshot,
+  );
+  const takeSnapshot = useUserDataBackupStore((state) => state.takeSnapshot);
+  const clearDrawnWorkouts = useDrawnWorkoutsStore(
+    (state) => state.clearDrawnWorkouts,
   );
 
   const wasOfflineRef = useRef(false);
@@ -158,7 +172,9 @@ export function useAuthStateListener() {
           }
         }
       } else if (event === "SIGNED_OUT") {
+        saveSnapshotOfSignedInUser(takeSnapshot);
         clearAuth();
+        clearDrawnWorkouts();
         setConsentStatus("loading");
         lastVerifiedUserIdRef.current = null;
       }
@@ -215,5 +231,7 @@ export function useAuthStateListener() {
     setConsentStatus,
     setUsername,
     restoreSnapshot,
+    takeSnapshot,
+    clearDrawnWorkouts,
   ]);
 }

@@ -10,9 +10,16 @@ jest.mock("@/services/TeamService", () => ({
   fetchTeamWorkouts: (teamId: string) => mockFetchTeamWorkouts(teamId),
 }));
 
-// The rows as TeamService returns them, e.g. [{ template, isDraft: false }].
+// The last change of a team workout, as Supabase returns team_workouts.updated_at.
+const UPDATED_AT = "2026-11-01T08:00:00.123456+00:00";
+
+// The rows as TeamService returns them, e.g. [{ template, isDraft: false, updatedAt: UPDATED_AT }].
 const asPublished = (...templates: unknown[]) =>
-  templates.map((template) => ({ template, isDraft: false }));
+  templates.map((template) => ({
+    template,
+    isDraft: false,
+    updatedAt: UPDATED_AT,
+  }));
 
 // e.g. { aiwl: 1, id: "TEAM_CORE", name: { en: "Team core" }, blocks: [{ kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2 }] }] }
 const generateTeamTemplate = (overrides: Partial<Template> = {}): Template => ({
@@ -55,8 +62,16 @@ describe("syncTeamWorkouts", () => {
 
   it("stores which workouts are drafts", async () => {
     mockFetchTeamWorkouts.mockResolvedValue([
-      { template: generateTeamTemplate({ id: "A" }), isDraft: false },
-      { template: generateTeamTemplate({ id: "B" }), isDraft: true },
+      {
+        template: generateTeamTemplate({ id: "A" }),
+        isDraft: false,
+        updatedAt: UPDATED_AT,
+      },
+      {
+        template: generateTeamTemplate({ id: "B" }),
+        isDraft: true,
+        updatedAt: UPDATED_AT,
+      },
     ]);
 
     await syncTeamWorkouts("team-1");
@@ -69,6 +84,21 @@ describe("syncTeamWorkouts", () => {
       ["A", false],
       ["B", true],
     ]);
+  });
+
+  it("stores the updated_at of each row as modifiedAt", async () => {
+    mockFetchTeamWorkouts.mockResolvedValue(
+      asPublished(generateTeamTemplate({ id: "A" })),
+    );
+
+    await syncTeamWorkouts("team-1");
+
+    expect(
+      listWorkoutsForTeam(
+        useCustomWorkoutsStore.getState().workoutsById,
+        "team-1",
+      ).map((workout) => workout.modifiedAt),
+    ).toEqual([UPDATED_AT]);
   });
 
   it("leaves out a workout that fails the import rules", async () => {

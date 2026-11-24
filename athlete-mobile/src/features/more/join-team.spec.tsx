@@ -1,4 +1,5 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react-native";
+import { generateTeamWorkoutInput } from "@test/factories/teamWorkoutInput";
 import { Linking } from "react-native";
 import { Alert } from "@/common/Alert";
 import type { Template } from "@/schemas/aiwl.schema";
@@ -205,8 +206,8 @@ describe("JoinTeamScreen: Leave flow", () => {
       name: { en: "A" },
       blocks: [],
     };
-    store.replaceTeamWorkouts("team-1", [template]);
-    store.replaceTeamWorkouts("team-2", [template]);
+    store.replaceTeamWorkouts("team-1", [generateTeamWorkoutInput(template)]);
+    store.replaceTeamWorkouts("team-2", [generateTeamWorkoutInput(template)]);
     mockLeaveTeam.mockResolvedValue(undefined);
 
     const { findByText, queryByText } = await render(<JoinTeamScreen />);

@@ -510,13 +510,21 @@ describe("fetchTeamWorkouts", () => {
     return { select, eq, order, retry };
   };
 
-  it("returns every readable workout of the team with its draft mark, oldest first without retries", async () => {
+  it("returns every readable workout of the team with its draft mark and last change, oldest first without retries", async () => {
     const template = { aiwl: 1, id: "TEAM_CORE" };
     const draft = { aiwl: 1, id: "TEAM_DRAFT" };
     const { select, eq, order, retry } = mockTeamWorkoutsQuery({
       data: [
-        { template, status: "published" },
-        { template: draft, status: "draft" },
+        {
+          template,
+          status: "published",
+          updated_at: "2026-11-01T08:00:00.123456+00:00",
+        },
+        {
+          template: draft,
+          status: "draft",
+          updated_at: "2026-11-02T09:30:00.654321+00:00",
+        },
       ],
       error: null,
     });
@@ -524,11 +532,19 @@ describe("fetchTeamWorkouts", () => {
     const result = await fetchTeamWorkouts("team-7");
 
     expect(result).toEqual([
-      { template, isDraft: false },
-      { template: draft, isDraft: true },
+      {
+        template,
+        isDraft: false,
+        updatedAt: "2026-11-01T08:00:00.123456+00:00",
+      },
+      {
+        template: draft,
+        isDraft: true,
+        updatedAt: "2026-11-02T09:30:00.654321+00:00",
+      },
     ]);
     expect(mockFrom).toHaveBeenCalledWith("team_workouts");
-    expect(select).toHaveBeenCalledWith("template, status");
+    expect(select).toHaveBeenCalledWith("template, status, updated_at");
     expect(eq).toHaveBeenCalledTimes(1);
     expect(eq).toHaveBeenCalledWith("team_id", "team-7");
     expect(order).toHaveBeenCalledWith("created_at", { ascending: true });

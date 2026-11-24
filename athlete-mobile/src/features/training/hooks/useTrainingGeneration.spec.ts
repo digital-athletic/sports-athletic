@@ -1,7 +1,18 @@
 import { Alert } from "@/common/Alert";
-import { generateSetList } from "@/features/training/workoutGeneratorRouter";
+import { lookUpStoredBranchInCatalog } from "@/features/training/workoutGenerator/blockHandlers/branches/storedBranchLookup";
+import {
+  generateSetList,
+  selectWorkout,
+} from "@/features/training/workoutGeneratorRouter";
+import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { generateFilledBlockResult } from "@test/factories/blockResult";
+import {
+  generatePicksBlock,
+  generateTemplate,
+} from "@test/factories/templateBlock";
 import { act, renderHook } from "@testing-library/react-native";
 import { useTrainingGeneration } from "./useTrainingGeneration";
 
@@ -24,6 +35,7 @@ jest.mock("@/features/training/workoutGeneratorRouter", () => ({
 }));
 
 const mockGenerateSetList = jest.mocked(generateSetList);
+const mockSelectWorkout = jest.mocked(selectWorkout);
 const alertSpy = jest.spyOn(Alert, "alert");
 
 /** Plan training params, e.g. { type: "PLAN" }. */
@@ -44,6 +56,11 @@ beforeEach(() => {
   alertSpy.mockImplementation(() => {});
   mockGenerateSetList.mockReturnValue({ setList: [], blocks: [] });
   useUserProfileStore.setState({ warnings: { painAlertSeen: false } });
+  useCustomWorkoutsStore.setState({ workoutsById: {} });
+  useDrawnWorkoutsStore.setState({
+    drawnWorkouts: {},
+    _hasHydrated: true,
+  });
 });
 
 describe("useTrainingGeneration: double taps", () => {
@@ -166,5 +183,38 @@ describe("useTrainingGeneration: pain alert", () => {
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(result.current.generating).toBe(false);
+  });
+});
+
+describe("useTrainingGeneration: drawn workouts of custom workouts", () => {
+  it("saves the first set list of an own training at the place", async () => {
+    const template = generateTemplate([generatePicksBlock("GKS")]);
+    useCustomWorkoutsStore.setState({
+      workoutsById: {
+        "custom-a": { id: "custom-a", teamId: null, template, importedAt: 0 },
+      },
+    });
+    mockSelectWorkout.mockReturnValue({
+      workout: template,
+      lookUpBranch: lookUpStoredBranchInCatalog,
+      filters: {},
+    });
+    mockGenerateSetList.mockReturnValue({
+      blocks: [generateFilledBlockResult(template.blocks[0], ["510"])],
+      setList: [],
+    });
+    const { result } = await renderHook(() =>
+      useTrainingGeneration({ type: "custom-a" }),
+    );
+
+    await act(() => {
+      result.current.generateTraining("STUDIO");
+    });
+
+    const saved =
+      useDrawnWorkoutsStore.getState().drawnWorkouts["custom-a"]?.STUDIO;
+    expect(saved?.workout.blocks).toMatchObject([
+      { kind: "branches", branches: ["510"] },
+    ]);
   });
 });

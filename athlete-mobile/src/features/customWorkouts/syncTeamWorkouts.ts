@@ -1,7 +1,9 @@
 import { getAllSkillTrees } from "@/data/skillTreeRegistry";
 import { fetchTeamWorkouts, type TeamWorkoutRow } from "@/services/TeamService";
-import type { Template } from "@/schemas/aiwl.schema";
-import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
+import {
+  type TeamWorkoutInput,
+  useCustomWorkoutsStore,
+} from "@/store/customWorkoutsStore";
 import { validateCustomWorkoutValue } from "./validateCustomWorkout";
 
 export type TeamWorkoutsSyncResult = "synced" | "offline";
@@ -20,16 +22,16 @@ export const syncTeamWorkouts = async (
     return "offline";
   }
   const skillTrees = getAllSkillTrees();
-  const templates: Template[] = [];
-  const draftTemplateIds: string[] = [];
+  const workouts: TeamWorkoutInput[] = [];
   for (const row of rows) {
     const validation = validateCustomWorkoutValue(row.template, skillTrees);
     if (!validation.success) continue;
-    templates.push(validation.template);
-    if (row.isDraft) draftTemplateIds.push(validation.template.id);
+    workouts.push({
+      template: validation.template,
+      modifiedAt: row.updatedAt,
+      isDraft: row.isDraft,
+    });
   }
-  useCustomWorkoutsStore
-    .getState()
-    .replaceTeamWorkouts(teamId, templates, draftTemplateIds);
+  useCustomWorkoutsStore.getState().replaceTeamWorkouts(teamId, workouts);
   return "synced";
 };

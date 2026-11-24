@@ -11,10 +11,6 @@ import {
   generateSetListFromWorkout,
   type SelectedWorkout,
 } from "@/features/training/workoutGenerator/workoutGeneration";
-import {
-  readReplacementPools,
-  type DrawnBlock,
-} from "@/features/training/workoutGenerator/replacementPools";
 import type { FinishedWorkout } from "@/features/training/workoutGenerator/stages/workoutFinish";
 import type { ExerciseType } from "@/schemas/exercise.schema";
 import type { UserExerciseDataMapType } from "@/schemas/generator.schema";
@@ -124,31 +120,21 @@ export const selectWorkout = (
 export interface SetListOptions {
   /** Every draw reads it; the app passes Math.random. */
   random: () => number;
-  /**
-   * previousDrawnBlocks replays a saved version: its branches blocks run instead of the
-   * template's draws. The template is still needed because a blocked branch is
-   * replaced from the pool of the template block it was drawn from
-   * (DrawnBlock.templateIndex), and a branches block does not know that pool.
-   */
-  previousDrawnBlocks?: readonly DrawnBlock[];
 }
 
 /**
  * Generates the set list of a training start: the public entry point the app
- * calls after `selectWorkout`. Turns the request into the generator input and
- * calls `generateSetListFromWorkout` once.
+ * calls after `selectWorkout`. Builds the generator input from the request
+ * (athlete, place, equipment, exercise catalog, progress) and the given random
+ * source, then calls `generateSetListFromWorkout` once with the selected
+ * workout, its branch lookup and its athlete filters.
  *
- * 1. Builds the generator input from the request (athlete, place, equipment,
- *    exercise catalog, progress) and the given random source.
- * 2. Without `previousDrawnBlocks`, generates from the selected template.
- * 3. With `previousDrawnBlocks` (a saved version), generates from the saved
- *    branches instead of the template's picks. A branch the athlete can no
- *    longer train (new pain, missing equipment) is replaced in its own slot
- *    only, from the pool of the template block it was drawn from.
+ * A drawn workout runs like any template: its branches blocks carry
+ * `pickedFrom`, so a branch the athlete can no longer train (new pain, missing
+ * equipment) is replaced in its own slot only, from the pool of those picks.
  *
  * Returns the set list and the result of each block. Throws the generator
- * errors of `generateSetListFromWorkout`, and throws when a drawn block names a
- * template index that matches no picks block of the template.
+ * errors of `generateSetListFromWorkout`.
  *
  * generateSetList(selectWorkout(request), request, { random: Math.random })
  * → { setList: [{ branchId: "410", skill: "WU", ... }], blocks: [...] }
@@ -156,27 +142,11 @@ export interface SetListOptions {
 export const generateSetList = (
   selection: WorkoutSelection,
   request: WorkoutGenerationRequest,
-  { random, previousDrawnBlocks }: SetListOptions,
-): FinishedWorkout<GeneratedSetListEntry> => {
-  const { workout, lookUpBranch, filters } = selection;
-  const input = createInput(request, random);
-  const options = { skillTrees: request.skillTrees, filters };
-  if (previousDrawnBlocks === undefined) {
-    return generateSetListFromWorkout(workout, lookUpBranch, input, options);
-  }
-  const replay = {
-    id: workout.id,
-    blocks: previousDrawnBlocks.map(({ block }) => block),
-  };
-  const replacementPools = readReplacementPools(
-    workout,
-    previousDrawnBlocks,
-    input,
-    request.skillTrees,
+  { random }: SetListOptions,
+): FinishedWorkout<GeneratedSetListEntry> =>
+  generateSetListFromWorkout(
+    selection.workout,
+    selection.lookUpBranch,
+    createInput(request, random),
+    { skillTrees: request.skillTrees, filters: selection.filters },
   );
-  return generateSetListFromWorkout(replay, lookUpBranch, input, {
-    ...options,
-    branchRefill: "blockedSlots",
-    replacementPools,
-  });
-};

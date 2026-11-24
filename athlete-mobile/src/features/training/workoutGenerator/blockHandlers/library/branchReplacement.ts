@@ -112,7 +112,7 @@ const buildReplacementPool = (
     );
   return {
     skillTree,
-    // a replay draws only from the pool of the stored block
+    // a block with pickedFrom draws only from the pool of its picks
     candidates: Object.keys(filtered).filter(
       (branchId) =>
         !usedBranchIds.includes(branchId) &&

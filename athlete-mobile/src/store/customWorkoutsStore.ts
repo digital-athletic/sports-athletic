@@ -15,7 +15,7 @@ export type CustomWorkout = {
   /**
    * ISO time of the last change: the save time of an own training, the
    * server's updated_at of a team training. Missing on entries saved before
-   * it existed; read it with `readModifiedAt`.
+   * it existed.
    */
   modifiedAt?: string;
   /** True for a team draft, which only the owner and co-owners receive. */
@@ -49,15 +49,6 @@ export const findCustomTemplate = (
   workoutsById: State["workoutsById"],
   id: string,
 ): Template | undefined => findCustomWorkout(workoutsById, id)?.template;
-
-/**
- * The last change of an entry. An entry without `modifiedAt` falls back to
- * its import time: an own training's last save, or for a team training a
- * time that holds until the next sync, which sets `modifiedAt` in the
- * server format that never equals the fallback. So no stale draw replays.
- */
-export const readModifiedAt = (workout: CustomWorkout): string =>
-  workout.modifiedAt ?? new Date(workout.importedAt).toISOString();
 
 type Actions = {
   saveCustomWorkout: (
@@ -108,7 +99,7 @@ const replaceTeamEntries = (
       template,
       importedAt: now + index,
       modifiedAt,
-      ...(isDraft === true && { isDraft }),
+      ...(isDraft && { isDraft }),
     };
   });
 };

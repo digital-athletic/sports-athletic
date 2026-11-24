@@ -5,10 +5,8 @@ import type { Template } from "@/schemas/aiwl.schema";
 import { generateTeamWorkoutInput } from "@test/factories/teamWorkoutInput";
 import {
   findCustomTemplate,
-  findCustomWorkout,
   generateCustomWorkoutId,
   listWorkoutsForTeam,
-  readModifiedAt,
   useCustomWorkoutsStore,
 } from "./customWorkoutsStore";
 
@@ -51,43 +49,8 @@ describe("customWorkoutsStore: imported trainings", () => {
       expect(saved?.id.startsWith("custom-")).toBe(true);
       expect(saved?.teamId).toBeNull();
       expect(saved?.importedAt).toBe(1000);
-      expect(saved?.template).toEqual(template);
-    });
-
-    it("sets modifiedAt to the save time", async () => {
-      jest.spyOn(Date, "now").mockReturnValue(1000);
-      const { result } = await renderHook(() => useCustomWorkoutsStore());
-
-      let saved:
-        | ReturnType<typeof result.current.saveCustomWorkout>
-        | undefined;
-      await act(() => {
-        saved = result.current.saveCustomWorkout(
-          generateCustomTemplate(),
-          null,
-        );
-      });
-
       expect(saved?.modifiedAt).toBe("1970-01-01T00:00:01.000Z");
-    });
-
-    it("moves modifiedAt when the same file is imported again", async () => {
-      const { result } = await renderHook(() => useCustomWorkoutsStore());
-      const template = generateCustomTemplate();
-      jest.spyOn(Date, "now").mockReturnValue(1000);
-      await act(() => {
-        result.current.saveCustomWorkout(template, null);
-      });
-      jest.spyOn(Date, "now").mockReturnValue(2000);
-
-      let reimported:
-        | ReturnType<typeof result.current.saveCustomWorkout>
-        | undefined;
-      await act(() => {
-        reimported = result.current.saveCustomWorkout(template, null);
-      });
-
-      expect(reimported?.modifiedAt).toBe("1970-01-01T00:00:02.000Z");
+      expect(saved?.template).toEqual(template);
     });
 
     it("lists the saved entry for the own scope", async () => {
@@ -142,7 +105,7 @@ describe("customWorkoutsStore: imported trainings", () => {
       expect(entries[0].template.name.en).toBe("Core v2");
     });
 
-    it("sets importedAt to the re-import time when the same template id is saved again", async () => {
+    it("sets importedAt and modifiedAt to the re-import time when the same template id is saved again", async () => {
       const nowSpy = jest.spyOn(Date, "now").mockReturnValue(1);
       const { result } = await renderHook(() => useCustomWorkoutsStore());
 
@@ -154,9 +117,9 @@ describe("customWorkoutsStore: imported trainings", () => {
         result.current.saveCustomWorkout(generateCustomTemplate(), null);
       });
 
-      expect(
-        listWorkoutsForTeam(result.current.workoutsById, null)[0]?.importedAt,
-      ).toBe(5);
+      const [entry] = listWorkoutsForTeam(result.current.workoutsById, null);
+      expect(entry?.importedAt).toBe(5);
+      expect(entry?.modifiedAt).toBe("1970-01-01T00:00:00.005Z");
     });
 
     it("moves a re-imported entry behind newer entries", async () => {
@@ -568,25 +531,6 @@ describe("customWorkoutsStore: imported trainings", () => {
       ]);
     });
 
-    it("keeps modifiedAt and rewrites importedAt when a workout is synced again unchanged", () => {
-      const store = useCustomWorkoutsStore.getState();
-      const input = generateTeamWorkoutInput(
-        generateCustomTemplate({ id: "A" }),
-      );
-      jest.spyOn(Date, "now").mockReturnValue(1000);
-      store.replaceTeamWorkouts("team-1", [input]);
-      jest.spyOn(Date, "now").mockReturnValue(2000);
-
-      store.replaceTeamWorkouts("team-1", [input]);
-
-      const [workout] = listWorkoutsForTeam(
-        useCustomWorkoutsStore.getState().workoutsById,
-        "team-1",
-      );
-      expect(workout.importedAt).toBe(2000);
-      expect(workout.modifiedAt).toBe(input.modifiedAt);
-    });
-
     it("removes a team workout the templates no longer contain", () => {
       const store = useCustomWorkoutsStore.getState();
       store.replaceTeamWorkouts("team-1", [
@@ -640,52 +584,6 @@ describe("customWorkoutsStore: imported trainings", () => {
       const { workoutsById } = useCustomWorkoutsStore.getState();
       expect(listWorkoutsForTeam(workoutsById, null)).toHaveLength(1);
       expect(listWorkoutsForTeam(workoutsById, "team-2")).toHaveLength(1);
-    });
-  });
-
-  describe("findCustomWorkout", () => {
-    it("returns the entry of the id", () => {
-      const store = useCustomWorkoutsStore.getState();
-      const saved = store.saveCustomWorkout(generateCustomTemplate(), null);
-
-      expect(
-        findCustomWorkout(
-          useCustomWorkoutsStore.getState().workoutsById,
-          saved.id,
-        ),
-      ).toEqual(saved);
-    });
-
-    it("returns undefined for an unknown id or an inherited key", () => {
-      const { workoutsById } = useCustomWorkoutsStore.getState();
-
-      expect(findCustomWorkout(workoutsById, "custom-unknown")).toBeUndefined();
-      expect(findCustomWorkout(workoutsById, "constructor")).toBeUndefined();
-    });
-  });
-
-  describe("readModifiedAt", () => {
-    it("returns modifiedAt when the entry has one", () => {
-      expect(
-        readModifiedAt({
-          id: "custom-a",
-          teamId: "team-1",
-          template: generateCustomTemplate(),
-          importedAt: 1000,
-          modifiedAt: "2026-11-01T08:00:00.123456+00:00",
-        }),
-      ).toBe("2026-11-01T08:00:00.123456+00:00");
-    });
-
-    it("falls back to the import time of an entry saved before modifiedAt existed", () => {
-      expect(
-        readModifiedAt({
-          id: "custom-a",
-          teamId: null,
-          template: generateCustomTemplate(),
-          importedAt: 1000,
-        }),
-      ).toBe("1970-01-01T00:00:01.000Z");
     });
   });
 

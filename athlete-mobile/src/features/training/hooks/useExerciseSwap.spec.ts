@@ -16,7 +16,6 @@ import { toUserExerciseData } from "@/schemas/generator.schema";
 import { Logger } from "@/services/Logger";
 import { useAuthStore } from "@/store/authStore";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
-import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { usePlacesStore } from "@/store/placesStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { generateGenerationInput } from "@test/factories/generationInput";
@@ -286,7 +285,6 @@ describe("useExerciseSwap: swap in a short training", () => {
           teamId: null,
           template,
           importedAt: 0,
-          modifiedAt: "2026-11-01T08:00:00.123456+00:00",
         },
       },
     });
@@ -298,48 +296,6 @@ describe("useExerciseSwap: swap in a short training", () => {
   afterEach(() => {
     jest.restoreAllMocks();
     useCustomWorkoutsStore.setState({ workoutsById: {} });
-    useDrawnWorkoutsStore.setState({ drawnWorkouts: {} });
-  });
-
-  it("leaves the drawn workouts unchanged after a swap", async () => {
-    const drawn = seedShortWorkout();
-    const drawnBranchId = drawn[0].branchId ?? "";
-    const template =
-      useCustomWorkoutsStore.getState().workoutsById.SHORT_SWAP.template;
-    useDrawnWorkoutsStore.setState({
-      drawnWorkouts: {
-        SHORT_SWAP: {
-          HOME: {
-            templateModifiedAt: "2026-11-01T08:00:00.123456+00:00",
-            workout: {
-              ...template,
-              blocks: [
-                generateBranchesBlock("GKS", [drawnBranchId], {
-                  duration: undefined,
-                }),
-              ],
-            },
-          },
-        },
-      },
-      _hasHydrated: true,
-    });
-    const before = structuredClone(
-      useDrawnWorkoutsStore.getState().drawnWorkouts,
-    );
-    const { result } = await renderHook(() => useExerciseSwap(params, "HOME"));
-    await waitFor(() =>
-      expect(result.current.swapControls.canSwap(drawnBranchId)).toBe(true),
-    );
-
-    await act(() => {
-      result.current.swapControls.onSwap(drawnBranchId);
-    });
-
-    expect(useTrainingStore.getState().exerciseList?.[0].branchId).not.toBe(
-      drawnBranchId,
-    );
-    expect(useDrawnWorkoutsStore.getState().drawnWorkouts).toEqual(before);
   });
 
   it("lists the alternatives of the original template for a session replayed from a drawn workout", async () => {

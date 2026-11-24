@@ -14,11 +14,7 @@ import { isGeneratorError } from "@/features/training/models/GeneratorError";
 import { TrainingType } from "@/features/training/models/Training";
 import { type TrainingDayType } from "@/features/training/models/TrainingDay";
 import { useTrainingStore } from "@/features/training/trainingStore";
-import {
-  generateTrainingSetList,
-  type DrawnWorkoutsContext,
-  useDrawnWorkoutsContext,
-} from "@/features/training/hooks/trainingSetList";
+import { generateTrainingSetList } from "@/features/training/hooks/trainingSetList";
 import { maintainBranchLevels } from "@/features/training/utils/branchMaintenance";
 import { getUserLevel } from "@/features/training/utils/workoutUtils";
 import { daysSinceLastTraining } from "@/features/training/utils/trainingGapUtils";
@@ -82,7 +78,7 @@ export type GenerationContext = {
   setActiveTraining: ReturnType<
     typeof useTrainingStore.getState
   >["setActiveTraining"];
-} & DrawnWorkoutsContext;
+};
 
 export function resolveSelectedPlace(
   trainingType: TrainingType,
@@ -217,7 +213,7 @@ function generateExerciseList(
   const sectionIndex = parseIntParam(params.sectionIndex);
   const branchData = maintainStoredBranchLevels(user, ctx);
 
-  const generatedList = generateTrainingSetList(ctx, () => Math.random(), {
+  const request = {
     type: trainingType,
     user,
     place: selectedPlace,
@@ -228,10 +224,11 @@ function generateExerciseList(
     givenSection: sectionIndex,
     daysSinceLastWorkout,
     userExerciseData: { ...ctx.storedProgress, branchData },
-  });
+  };
+  const setList = generateTrainingSetList(() => Math.random(), request);
 
   return saveGeneratedTraining(
-    generatedList,
+    setList,
     { trainingType, sectionIndex, weekdayNumber, equipment },
     params,
     ctx,
@@ -266,7 +263,6 @@ export function useGenerationContext(): GenerationContext {
   const { auth } = useAuthStore();
   const { personalData } = useUserProfileStore();
   const { workoutData, temporalData, trainingPlan } = useUserWorkoutStore();
-  const drawnWorkouts = useDrawnWorkoutsContext();
 
   return {
     trainingDays,
@@ -286,7 +282,6 @@ export function useGenerationContext(): GenerationContext {
     setExerciseList,
     setEquipment,
     setActiveTraining,
-    ...drawnWorkouts,
   };
 }
 

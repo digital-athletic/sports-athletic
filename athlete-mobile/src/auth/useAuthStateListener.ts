@@ -15,12 +15,6 @@ import { useRegistrationConsentStore } from "@/store/registrationConsentStore";
 import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { featureFlags } from "@/config/featureFlags";
 
-/**
- * Hook to subscribe to Supabase auth state changes.
- * Updates authStore when session changes (login, logout, token refresh).
- * Checks and caches consent status on sign-in, app foreground, and reconnect.
- * Resets consent on sign-out.
- */
 // A logout cleared the auth after its own snapshot; a sign out the server
 // forced still has it, so the user's data survives it too.
 const saveSnapshotOfSignedInUser = (
@@ -30,6 +24,12 @@ const saveSnapshotOfSignedInUser = (
   if (userId) takeSnapshot(userId);
 };
 
+/**
+ * Hook to subscribe to Supabase auth state changes.
+ * Updates authStore when session changes (login, logout, token refresh).
+ * Checks and caches consent status on sign-in, app foreground, and reconnect.
+ * Resets consent on sign-out.
+ */
 export function useAuthStateListener() {
   const setAuth = useAuthStore((state) => state.setAuth);
   const clearAuth = useAuthStore((state) => state.clearAuth);

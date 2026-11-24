@@ -4,11 +4,6 @@ import type {
   FinishedWorkout,
 } from "@/features/training/workoutGenerator/stages/workoutFinish";
 import type { BranchesBlock } from "@/features/training/workoutGenerator/stages/blockWalk";
-import {
-  generateSetList,
-  type WorkoutGenerationRequest,
-  type WorkoutSelection,
-} from "@/features/training/workoutGeneratorRouter";
 import type { Template } from "@/schemas/aiwl.schema";
 
 /**
@@ -20,21 +15,6 @@ import type { Template } from "@/schemas/aiwl.schema";
 export type DrawnWorkout = {
   templateModifiedAt: string;
   workout: Template;
-};
-
-type DrawnWorkoutSetListInput = {
-  request: WorkoutGenerationRequest;
-  selection: WorkoutSelection;
-  template: Template;
-  /** The last change of the custom workout, e.g. "2026-11-01T08:00:00.123456+00:00". */
-  modifiedAt: string;
-  drawnWorkout?: DrawnWorkout;
-  random: () => number;
-};
-
-type DrawnWorkoutSetList = {
-  setList: GeneratedSetListEntry[];
-  drawnWorkoutToSave: DrawnWorkout | null;
 };
 
 // A swapped cardio block saves its original, so a replay tries it again.
@@ -93,32 +73,3 @@ export const readDrawnBlocks = (
       },
     ];
   });
-
-/**
- * Runs the drawn workout while the custom workout has not changed since the
- * draw. Otherwise generates fresh from the template and returns the drawn
- * workout to save, or null when no block drew a branch.
- */
-export const generateSetListFromDrawnWorkout = ({
-  request,
-  selection,
-  template,
-  modifiedAt,
-  drawnWorkout,
-  random,
-}: DrawnWorkoutSetListInput): DrawnWorkoutSetList => {
-  if (drawnWorkout?.templateModifiedAt === modifiedAt) {
-    const replay = { ...selection, workout: drawnWorkout.workout };
-    const { setList } = generateSetList(replay, request, { random });
-    return { setList, drawnWorkoutToSave: null };
-  }
-  const finished = generateSetList(selection, request, { random });
-  const blocks = readDrawnBlocks(finished);
-  return {
-    setList: finished.setList,
-    drawnWorkoutToSave:
-      blocks.length > 0
-        ? { templateModifiedAt: modifiedAt, workout: { ...template, blocks } }
-        : null,
-  };
-};

@@ -467,14 +467,6 @@ describe("useAuthStateListener — consent gate", () => {
     expect(mockSetConsentStatus).toHaveBeenCalledWith("loading");
   });
 
-  it("clears the drawn workouts on SIGNED_OUT", async () => {
-    await renderHook(() => useAuthStateListener());
-
-    capturedAuthCallback!("SIGNED_OUT", null);
-
-    expect(mockClearDrawnWorkouts).toHaveBeenCalledTimes(1);
-  });
-
   it("saves the snapshot of the signed in user before clearing the drawn workouts on SIGNED_OUT", async () => {
     mockAuthValue = { userId: "user-1" };
     await renderHook(() => useAuthStateListener());
@@ -482,6 +474,7 @@ describe("useAuthStateListener — consent gate", () => {
     capturedAuthCallback!("SIGNED_OUT", null);
 
     expect(mockTakeSnapshot).toHaveBeenCalledWith("user-1");
+    expect(mockClearDrawnWorkouts).toHaveBeenCalledTimes(1);
     expect(mockTakeSnapshot.mock.invocationCallOrder[0]).toBeLessThan(
       mockClearDrawnWorkouts.mock.invocationCallOrder[0],
     );

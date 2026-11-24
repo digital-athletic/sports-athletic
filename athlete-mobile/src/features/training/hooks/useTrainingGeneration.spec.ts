@@ -8,13 +8,13 @@ import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
+import { generateFilledBlockResult } from "@test/factories/blockResult";
 import {
   generatePicksBlock,
   generateTemplate,
 } from "@test/factories/templateBlock";
 import { act, renderHook } from "@testing-library/react-native";
 import { useTrainingGeneration } from "./useTrainingGeneration";
-import { generateSetListResult } from "@test/factories/setListResult";
 
 const mockNavigate = jest.fn();
 const mockReplace = jest.fn();
@@ -199,7 +199,10 @@ describe("useTrainingGeneration: drawn workouts of custom workouts", () => {
       lookUpBranch: lookUpStoredBranchInCatalog,
       filters: {},
     });
-    mockGenerateSetList.mockReturnValue(generateSetListResult(template, "510"));
+    mockGenerateSetList.mockReturnValue({
+      blocks: [generateFilledBlockResult(template.blocks[0], ["510"])],
+      setList: [],
+    });
     const { result } = await renderHook(() =>
       useTrainingGeneration({ type: "custom-a" }),
     );

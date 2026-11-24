@@ -6,19 +6,7 @@ beforeEach(() => {
 });
 
 describe("drawnWorkoutsStore: saveDrawnWorkout", () => {
-  it("stores the drawn workout under its workout and place", () => {
-    const drawnWorkout = generateDrawnWorkout("510");
-
-    useDrawnWorkoutsStore
-      .getState()
-      .saveDrawnWorkout("custom-a", "HOME", drawnWorkout);
-
-    expect(useDrawnWorkoutsStore.getState().drawnWorkouts).toEqual({
-      "custom-a": { HOME: drawnWorkout },
-    });
-  });
-
-  it("leaves the drawn workout of another place of the workout unchanged", () => {
+  it("stores the drawn workout under its workout and place and leaves another place unchanged", () => {
     const { saveDrawnWorkout } = useDrawnWorkoutsStore.getState();
     const home = generateDrawnWorkout("510");
     saveDrawnWorkout("custom-a", "HOME", home);

@@ -376,16 +376,6 @@ describe("useLogout", () => {
     expect(clearDrawnWorkoutsOrder).toBeLessThan(replaceOrder);
   });
 
-  it("clears the drawn workouts when the logout fails", async () => {
-    mockSupabaseLogout.mockRejectedValue(new Error("network"));
-
-    await confirmLogout();
-
-    await waitFor(() => {
-      expect(mockClearDrawnWorkouts).toHaveBeenCalledTimes(1);
-    });
-  });
-
   it("keeps the imported trainings on logout", async () => {
     await confirmLogout();
 

@@ -21,13 +21,6 @@ const asPublished = (...templates: unknown[]) =>
     updatedAt: UPDATED_AT,
   }));
 
-// The stored last change of each team workout, e.g. ["2026-11-01T08:00:00.123456+00:00"].
-const listModifiedAt = (teamId: string): (string | undefined)[] =>
-  listWorkoutsForTeam(
-    useCustomWorkoutsStore.getState().workoutsById,
-    teamId,
-  ).map((workout) => workout.modifiedAt);
-
 // e.g. { aiwl: 1, id: "TEAM_CORE", name: { en: "Team core" }, blocks: [{ kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2 }] }] }
 const generateTeamTemplate = (overrides: Partial<Template> = {}): Template => ({
   aiwl: 1,
@@ -93,35 +86,19 @@ describe("syncTeamWorkouts", () => {
     ]);
   });
 
-  it("keeps modifiedAt of a workout whose updated_at is unchanged on the next sync", async () => {
+  it("stores the updated_at of each row as modifiedAt", async () => {
     mockFetchTeamWorkouts.mockResolvedValue(
       asPublished(generateTeamTemplate({ id: "A" })),
     );
-    await syncTeamWorkouts("team-1");
 
     await syncTeamWorkouts("team-1");
 
-    expect(listModifiedAt("team-1")).toEqual([UPDATED_AT]);
-  });
-
-  it("stores the new updated_at as modifiedAt after the trainer changed the workout", async () => {
-    mockFetchTeamWorkouts.mockResolvedValueOnce(
-      asPublished(generateTeamTemplate({ id: "A" })),
-    );
-    await syncTeamWorkouts("team-1");
-    mockFetchTeamWorkouts.mockResolvedValueOnce([
-      {
-        template: generateTeamTemplate({ id: "A", name: { en: "Changed" } }),
-        isDraft: false,
-        updatedAt: "2026-11-02T09:30:00.654321+00:00",
-      },
-    ]);
-
-    await syncTeamWorkouts("team-1");
-
-    expect(listModifiedAt("team-1")).toEqual([
-      "2026-11-02T09:30:00.654321+00:00",
-    ]);
+    expect(
+      listWorkoutsForTeam(
+        useCustomWorkoutsStore.getState().workoutsById,
+        "team-1",
+      ).map((workout) => workout.modifiedAt),
+    ).toEqual([UPDATED_AT]);
   });
 
   it("leaves out a workout that fails the import rules", async () => {

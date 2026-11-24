@@ -10,9 +10,23 @@ jest.mock("@/services/TeamService", () => ({
   fetchTeamWorkouts: (teamId: string) => mockFetchTeamWorkouts(teamId),
 }));
 
-// The rows as TeamService returns them, e.g. [{ template, isDraft: false }].
+// The last change of a team workout, as Supabase returns team_workouts.updated_at.
+const UPDATED_AT = "2026-11-01T08:00:00.123456+00:00";
+
+// The rows as TeamService returns them, e.g. [{ template, isDraft: false, updatedAt: UPDATED_AT }].
 const asPublished = (...templates: unknown[]) =>
-  templates.map((template) => ({ template, isDraft: false }));
+  templates.map((template) => ({
+    template,
+    isDraft: false,
+    updatedAt: UPDATED_AT,
+  }));
+
+// The stored last change of each team workout, e.g. ["2026-11-01T08:00:00.123456+00:00"].
+const listModifiedAt = (teamId: string): (string | undefined)[] =>
+  listWorkoutsForTeam(
+    useCustomWorkoutsStore.getState().workoutsById,
+    teamId,
+  ).map((workout) => workout.modifiedAt);
 
 // e.g. { aiwl: 1, id: "TEAM_CORE", name: { en: "Team core" }, blocks: [{ kind: "picks", skill: "GKS", picks: [{ tags: [], count: 2 }] }] }
 const generateTeamTemplate = (overrides: Partial<Template> = {}): Template => ({
@@ -55,8 +69,16 @@ describe("syncTeamWorkouts", () => {
 
   it("stores which workouts are drafts", async () => {
     mockFetchTeamWorkouts.mockResolvedValue([
-      { template: generateTeamTemplate({ id: "A" }), isDraft: false },
-      { template: generateTeamTemplate({ id: "B" }), isDraft: true },
+      {
+        template: generateTeamTemplate({ id: "A" }),
+        isDraft: false,
+        updatedAt: UPDATED_AT,
+      },
+      {
+        template: generateTeamTemplate({ id: "B" }),
+        isDraft: true,
+        updatedAt: UPDATED_AT,
+      },
     ]);
 
     await syncTeamWorkouts("team-1");
@@ -68,6 +90,37 @@ describe("syncTeamWorkouts", () => {
     expect(drafts).toEqual([
       ["A", false],
       ["B", true],
+    ]);
+  });
+
+  it("keeps modifiedAt of a workout whose updated_at is unchanged on the next sync", async () => {
+    mockFetchTeamWorkouts.mockResolvedValue(
+      asPublished(generateTeamTemplate({ id: "A" })),
+    );
+    await syncTeamWorkouts("team-1");
+
+    await syncTeamWorkouts("team-1");
+
+    expect(listModifiedAt("team-1")).toEqual([UPDATED_AT]);
+  });
+
+  it("stores the new updated_at as modifiedAt after the trainer changed the workout", async () => {
+    mockFetchTeamWorkouts.mockResolvedValueOnce(
+      asPublished(generateTeamTemplate({ id: "A" })),
+    );
+    await syncTeamWorkouts("team-1");
+    mockFetchTeamWorkouts.mockResolvedValueOnce([
+      {
+        template: generateTeamTemplate({ id: "A", name: { en: "Changed" } }),
+        isDraft: false,
+        updatedAt: "2026-11-02T09:30:00.654321+00:00",
+      },
+    ]);
+
+    await syncTeamWorkouts("team-1");
+
+    expect(listModifiedAt("team-1")).toEqual([
+      "2026-11-02T09:30:00.654321+00:00",
     ]);
   });
 

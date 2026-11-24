@@ -24,7 +24,6 @@ import {
 } from "@test/factories/templateBlock";
 import {
   generateSetListFromDrawnWorkout,
-  hashTemplateBlocks,
   readDrawnBlocks,
   type DrawnWorkout,
 } from "./drawnWorkout";
@@ -78,17 +77,21 @@ const generateStrengthTemplate = (): Template =>
     generatePicksBlock("SWR1", { picks: [{ tags: [], count: 2 }] }),
   ]);
 
+// The last change of the custom workout, as Supabase returns team_workouts.updated_at.
+const MODIFIED_AT = "2026-11-01T08:00:00.123456+00:00";
+
 /**
- * Builds the drawn workout of a template from drawn branches blocks.
+ * Builds the drawn workout of a template from drawn branches blocks, saved
+ * while the custom workout had the last change MODIFIED_AT.
  *
  * generateDrawnWorkoutOfBlocks(template, [gksBranchesBlock])
- * → { templateHash: "3f2a9c10", workout: { ...template, blocks: [gksBranchesBlock] } }
+ * → { templateModifiedAt: MODIFIED_AT, workout: { ...template, blocks: [gksBranchesBlock] } }
  */
 const generateDrawnWorkoutOfBlocks = (
   template: Template,
   blocks: BranchesBlock[],
 ): DrawnWorkout => ({
-  templateHash: hashTemplateBlocks(template.blocks),
+  templateModifiedAt: MODIFIED_AT,
   workout: { ...template, blocks },
 });
 
@@ -156,26 +159,6 @@ const seedRandom = (seed: number) =>
   jest.spyOn(Math, "random").mockImplementation(generateSeededRandom(seed));
 
 afterEach(jest.restoreAllMocks);
-
-describe("drawnWorkout: hashTemplateBlocks", () => {
-  it("returns the same 8 digit hash for equal blocks", () => {
-    const hash = hashTemplateBlocks(generateStrengthTemplate().blocks);
-
-    expect(hash).toMatch(/^[0-9a-f]{8}$/);
-    expect(hashTemplateBlocks(generateStrengthTemplate().blocks)).toBe(hash);
-  });
-
-  it("returns another hash after a change of one pick", () => {
-    const changed = generateTemplate([
-      generatePicksBlock("GKS", { picks: [{ tags: [], count: 2 }] }),
-      generatePicksBlock("SWR1", { picks: [{ tags: [], count: 2 }] }),
-    ]);
-
-    expect(hashTemplateBlocks(changed.blocks)).not.toBe(
-      hashTemplateBlocks(generateStrengthTemplate().blocks),
-    );
-  });
-});
 
 describe("drawnWorkout: readDrawnBlocks", () => {
   it("reads the distinct branch IDs of a block in draw order", () => {
@@ -288,12 +271,11 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on the first start", () 
       random: () => Math.random(),
       request: generateRequest(),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
     });
 
-    expect(drawnWorkoutToSave?.templateHash).toBe(
-      hashTemplateBlocks(template.blocks),
-    );
+    expect(drawnWorkoutToSave?.templateModifiedAt).toBe(MODIFIED_AT);
     expect(
       drawnWorkoutToSave?.workout.blocks.map((block) => [
         block.skill,
@@ -320,6 +302,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on the first start", () 
         user: generateAthlete({ pains: ["KNEE_LEFT"] }),
       }),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
     });
 
@@ -343,6 +326,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
       random: () => Math.random(),
       request: generateRequest(),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
     });
     seedRandom(2);
@@ -351,6 +335,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
       random: () => Math.random(),
       request: generateRequest(),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
       drawnWorkout: first.drawnWorkoutToSave ?? undefined,
     });
@@ -382,6 +367,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
         random: () => Math.random(),
         request: generateRequest(),
         template,
+        modifiedAt: MODIFIED_AT,
         selection: generateSelection(template),
       });
       seedRandom(2);
@@ -390,6 +376,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
         random: () => Math.random(),
         request: generateRequest(),
         template,
+        modifiedAt: MODIFIED_AT,
         selection: generateSelection(template),
         drawnWorkout: first.drawnWorkoutToSave ?? undefined,
       });
@@ -416,6 +403,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
       random: () => Math.random(),
       request: generateRequest(),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
     });
     seedRandom(9);
@@ -424,6 +412,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout on a reuse", () => {
       random: () => Math.random(),
       request: generateRequest(),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
       drawnWorkout: first.drawnWorkoutToSave ?? undefined,
     });
@@ -458,6 +447,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
         user: generateAthlete({ level: "BEGINNER" }),
       }),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
     });
     seedRandom(2);
@@ -468,6 +458,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
         user: generateAthlete({ level: "PROFESSIONAL" }),
       }),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
       drawnWorkout: first.drawnWorkoutToSave ?? undefined,
     });
@@ -490,6 +481,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
       random: () => Math.random(),
       request: generateRequest(),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
     });
     const branchData = Object.fromEntries(
@@ -505,6 +497,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
         userExerciseData: { exerciseData: {}, branchData },
       }),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
       drawnWorkout: first.drawnWorkoutToSave ?? undefined,
     });
@@ -545,6 +538,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
         user: generateAthlete({ pains: ["KNEE_LEFT"] }),
       }),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
       drawnWorkout,
     });
@@ -552,6 +546,7 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
       random: () => Math.random(),
       request: generateRequest({ equipment: ["DUMBBELL", "BARBELL"] }),
       template,
+      modifiedAt: MODIFIED_AT,
       selection: generateSelection(template),
       drawnWorkout,
     });
@@ -565,8 +560,8 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the at
   });
 });
 
-describe("drawnWorkout: generateSetListFromDrawnWorkout after a template change", () => {
-  it("generates fresh and returns a drawn workout of the new template blocks", () => {
+describe("drawnWorkout: generateSetListFromDrawnWorkout after a change of the custom workout", () => {
+  it("generates fresh and returns a drawn workout with the new last change", () => {
     const oldTemplate = generateStrengthTemplate();
     const newTemplate = generateTemplate([generatePicksBlock("MOB")]);
     const drawnWorkout = generateDrawnWorkoutOfBlocks(oldTemplate, [
@@ -578,16 +573,59 @@ describe("drawnWorkout: generateSetListFromDrawnWorkout after a template change"
       random: () => Math.random(),
       request: generateRequest(),
       template: newTemplate,
+      modifiedAt: "2026-11-02T09:30:00.654321+00:00",
       selection: generateSelection(newTemplate),
       drawnWorkout,
     });
 
-    expect(drawnWorkoutToSave?.templateHash).toBe(
-      hashTemplateBlocks(newTemplate.blocks),
+    expect(drawnWorkoutToSave?.templateModifiedAt).toBe(
+      "2026-11-02T09:30:00.654321+00:00",
     );
     expect(
       drawnWorkoutToSave?.workout.blocks.map((block) => block.skill),
     ).toEqual(["MOB"]);
     expect(listSkills(setList)).toEqual(["MOB"]);
+  });
+
+  it("generates fresh when only the last change differs and the blocks are equal", () => {
+    const template = generateStrengthTemplate();
+    const drawnWorkout = generateDrawnWorkoutOfBlocks(template, [
+      generateBranchesBlock("GKS", ["510"], { duration: undefined }),
+    ]);
+    seedRandom(1);
+
+    const { setList, drawnWorkoutToSave } = generateSetListFromDrawnWorkout({
+      random: () => Math.random(),
+      request: generateRequest(),
+      template,
+      modifiedAt: "2026-11-02T09:30:00.654321+00:00",
+      selection: generateSelection(template),
+      drawnWorkout,
+    });
+
+    expect(listSkills(setList)).toEqual(["GKS", "SWR1"]);
+    expect(drawnWorkoutToSave?.templateModifiedAt).toBe(
+      "2026-11-02T09:30:00.654321+00:00",
+    );
+  });
+
+  it("replays the drawn workout while the last change is equal, even after the template blocks changed", () => {
+    const savedTemplate = generateStrengthTemplate();
+    const changedTemplate = generateTemplate([generatePicksBlock("MOB")]);
+    const drawnWorkout = generateDrawnWorkoutOfBlocks(savedTemplate, [
+      generateBranchesBlock("GKS", ["510"], { duration: undefined }),
+    ]);
+
+    const { setList, drawnWorkoutToSave } = generateSetListFromDrawnWorkout({
+      random: () => Math.random(),
+      request: generateRequest(),
+      template: changedTemplate,
+      modifiedAt: MODIFIED_AT,
+      selection: generateSelection(changedTemplate),
+      drawnWorkout,
+    });
+
+    expect(listBranchIdsOfSkill(setList, "GKS")).toEqual(["510"]);
+    expect(drawnWorkoutToSave).toBeNull();
   });
 });

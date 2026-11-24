@@ -8,7 +8,8 @@ import {
 } from "@/features/training/workoutGeneratorRouter";
 import {
   type CustomWorkoutsState,
-  findCustomTemplate,
+  findCustomWorkout,
+  readModifiedAt,
   useCustomWorkoutsStore,
 } from "@/store/customWorkoutsStore";
 import {
@@ -48,14 +49,15 @@ export const generateTrainingSetList = (
   request: WorkoutGenerationRequest & { place: PlaceType },
 ): GeneratedSetListEntry[] => {
   const selection = selectWorkout(request);
-  const template = findCustomTemplate(ctx.workoutsById, request.type);
-  if (!template || !ctx.drawnWorkoutsHydrated) {
+  const customWorkout = findCustomWorkout(ctx.workoutsById, request.type);
+  if (!customWorkout || !ctx.drawnWorkoutsHydrated) {
     return generateSetList(selection, request, { random }).setList;
   }
   const { setList, drawnWorkoutToSave } = generateSetListFromDrawnWorkout({
     request,
     selection,
-    template,
+    template: customWorkout.template,
+    modifiedAt: readModifiedAt(customWorkout),
     drawnWorkout: ctx.drawnWorkouts[request.type]?.[request.place],
     random,
   });

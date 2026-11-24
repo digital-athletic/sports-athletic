@@ -13,34 +13,21 @@ import type { Template } from "@/schemas/aiwl.schema";
 
 /**
  * What a custom workout drew on its first start at one place: an AIWL
- * workout with one branches block per filled template block. `templateHash`
- * identifies the template blocks, so a template change starts a fresh draw.
+ * workout with one branches block per filled template block.
+ * `templateModifiedAt` is the last change of the custom workout at that draw,
+ * so a later change starts a fresh draw.
  */
 export type DrawnWorkout = {
-  templateHash: string;
+  templateModifiedAt: string;
   workout: Template;
-};
-
-/**
- * Hashes the blocks of a template (FNV-1a, 32 bit) into 8 hex digits. Equal
- * blocks give the same hash on every start. The hash only detects a change:
- * in the unlikely case of a collision, a changed template replays its old
- * draw until the athlete refreshes it.
- *
- * hashTemplateBlocks(template.blocks) → "3f2a9c10"
- */
-export const hashTemplateBlocks = (blocks: Template["blocks"]): string => {
-  let hash = 0x811c9dc5;
-  for (const char of JSON.stringify(blocks)) {
-    hash = Math.imul(hash ^ (char.codePointAt(0) ?? 0), 0x01000193);
-  }
-  return (hash >>> 0).toString(16).padStart(8, "0");
 };
 
 type DrawnWorkoutSetListInput = {
   request: WorkoutGenerationRequest;
   selection: WorkoutSelection;
   template: Template;
+  /** The last change of the custom workout, e.g. "2026-11-01T08:00:00.123456+00:00". */
+  modifiedAt: string;
   drawnWorkout?: DrawnWorkout;
   random: () => number;
 };
@@ -108,19 +95,19 @@ export const readDrawnBlocks = (
   });
 
 /**
- * Runs the drawn workout while the template blocks are unchanged. Otherwise
- * generates fresh from the template and returns the drawn workout to save, or
- * null when no block drew a branch.
+ * Runs the drawn workout while the custom workout has not changed since the
+ * draw. Otherwise generates fresh from the template and returns the drawn
+ * workout to save, or null when no block drew a branch.
  */
 export const generateSetListFromDrawnWorkout = ({
   request,
   selection,
   template,
+  modifiedAt,
   drawnWorkout,
   random,
 }: DrawnWorkoutSetListInput): DrawnWorkoutSetList => {
-  const templateHash = hashTemplateBlocks(template.blocks);
-  if (drawnWorkout?.templateHash === templateHash) {
+  if (drawnWorkout?.templateModifiedAt === modifiedAt) {
     const replay = { ...selection, workout: drawnWorkout.workout };
     const { setList } = generateSetList(replay, request, { random });
     return { setList, drawnWorkoutToSave: null };
@@ -131,7 +118,7 @@ export const generateSetListFromDrawnWorkout = ({
     setList: finished.setList,
     drawnWorkoutToSave:
       blocks.length > 0
-        ? { templateHash, workout: { ...template, blocks } }
+        ? { templateModifiedAt: modifiedAt, workout: { ...template, blocks } }
         : null,
   };
 };

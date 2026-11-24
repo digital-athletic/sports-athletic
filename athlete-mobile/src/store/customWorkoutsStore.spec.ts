@@ -2,10 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { act, renderHook } from "@testing-library/react-native";
 import { loadTemplate } from "@/data/loadTemplates";
 import type { Template } from "@/schemas/aiwl.schema";
+import { generateTeamWorkoutInput } from "@test/factories/teamWorkoutInput";
 import {
   findCustomTemplate,
+  findCustomWorkout,
   generateCustomWorkoutId,
   listWorkoutsForTeam,
+  readModifiedAt,
   useCustomWorkoutsStore,
 } from "./customWorkoutsStore";
 
@@ -49,6 +52,42 @@ describe("customWorkoutsStore: imported trainings", () => {
       expect(saved?.teamId).toBeNull();
       expect(saved?.importedAt).toBe(1000);
       expect(saved?.template).toEqual(template);
+    });
+
+    it("sets modifiedAt to the save time", async () => {
+      jest.spyOn(Date, "now").mockReturnValue(1000);
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
+
+      let saved:
+        | ReturnType<typeof result.current.saveCustomWorkout>
+        | undefined;
+      await act(() => {
+        saved = result.current.saveCustomWorkout(
+          generateCustomTemplate(),
+          null,
+        );
+      });
+
+      expect(saved?.modifiedAt).toBe("1970-01-01T00:00:01.000Z");
+    });
+
+    it("moves modifiedAt when the same file is imported again", async () => {
+      const { result } = await renderHook(() => useCustomWorkoutsStore());
+      const template = generateCustomTemplate();
+      jest.spyOn(Date, "now").mockReturnValue(1000);
+      await act(() => {
+        result.current.saveCustomWorkout(template, null);
+      });
+      jest.spyOn(Date, "now").mockReturnValue(2000);
+
+      let reimported:
+        | ReturnType<typeof result.current.saveCustomWorkout>
+        | undefined;
+      await act(() => {
+        reimported = result.current.saveCustomWorkout(template, null);
+      });
+
+      expect(reimported?.modifiedAt).toBe("1970-01-01T00:00:02.000Z");
     });
 
     it("lists the saved entry for the own scope", async () => {
@@ -438,8 +477,8 @@ describe("customWorkoutsStore: imported trainings", () => {
       const store = useCustomWorkoutsStore.getState();
 
       store.replaceTeamWorkouts("team-1", [
-        generateCustomTemplate({ id: "B" }),
-        generateCustomTemplate({ id: "A" }),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "B" })),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "A" })),
       ]);
 
       const { workoutsById } = useCustomWorkoutsStore.getState();
@@ -454,17 +493,15 @@ describe("customWorkoutsStore: imported trainings", () => {
         teamId,
       ).map((w) => [w.template.id, w.isDraft === true]);
 
-    it("marks exactly the named templates as drafts", () => {
+    it("marks exactly the workouts given as drafts", () => {
       const store = useCustomWorkoutsStore.getState();
 
-      store.replaceTeamWorkouts(
-        "team-1",
-        [
-          generateCustomTemplate({ id: "A" }),
-          generateCustomTemplate({ id: "B" }),
-        ],
-        ["B"],
-      );
+      store.replaceTeamWorkouts("team-1", [
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "A" })),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "B" }), {
+          isDraft: true,
+        }),
+      ]);
 
       expect(listDraftMarks("team-1")).toEqual([
         ["A", false],
@@ -472,11 +509,13 @@ describe("customWorkoutsStore: imported trainings", () => {
       ]);
     });
 
-    it("marks no workout without draft ids", () => {
+    it("marks no workout that is not given as a draft", () => {
       const store = useCustomWorkoutsStore.getState();
 
       store.replaceTeamWorkouts("team-1", [
-        generateCustomTemplate({ id: "A" }),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "A" }), {
+          isDraft: false,
+        }),
       ]);
 
       const [workout] = listWorkoutsForTeam(
@@ -488,13 +527,17 @@ describe("customWorkoutsStore: imported trainings", () => {
 
     it("moves the draft mark when a draft is published and a published workout becomes a draft", () => {
       const store = useCustomWorkoutsStore.getState();
-      const templates = [
-        generateCustomTemplate({ id: "A" }),
-        generateCustomTemplate({ id: "B" }),
-      ];
-      store.replaceTeamWorkouts("team-1", templates, ["A"]);
+      const templateA = generateCustomTemplate({ id: "A" });
+      const templateB = generateCustomTemplate({ id: "B" });
+      store.replaceTeamWorkouts("team-1", [
+        generateTeamWorkoutInput(templateA, { isDraft: true }),
+        generateTeamWorkoutInput(templateB),
+      ]);
 
-      store.replaceTeamWorkouts("team-1", templates, ["B"]);
+      store.replaceTeamWorkouts("team-1", [
+        generateTeamWorkoutInput(templateA),
+        generateTeamWorkoutInput(templateB, { isDraft: true }),
+      ]);
 
       expect(listDraftMarks("team-1")).toEqual([
         ["A", false],
@@ -502,15 +545,57 @@ describe("customWorkoutsStore: imported trainings", () => {
       ]);
     });
 
+    it("stores the last change of each workout as its modifiedAt", () => {
+      const store = useCustomWorkoutsStore.getState();
+
+      store.replaceTeamWorkouts("team-1", [
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "A" }), {
+          modifiedAt: "2026-11-01T08:00:00.123456+00:00",
+        }),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "B" }), {
+          modifiedAt: "2026-11-02T09:30:00.654321+00:00",
+        }),
+      ]);
+
+      expect(
+        listWorkoutsForTeam(
+          useCustomWorkoutsStore.getState().workoutsById,
+          "team-1",
+        ).map((w) => [w.template.id, w.modifiedAt]),
+      ).toEqual([
+        ["A", "2026-11-01T08:00:00.123456+00:00"],
+        ["B", "2026-11-02T09:30:00.654321+00:00"],
+      ]);
+    });
+
+    it("keeps modifiedAt and rewrites importedAt when a workout is synced again unchanged", () => {
+      const store = useCustomWorkoutsStore.getState();
+      const input = generateTeamWorkoutInput(
+        generateCustomTemplate({ id: "A" }),
+      );
+      jest.spyOn(Date, "now").mockReturnValue(1000);
+      store.replaceTeamWorkouts("team-1", [input]);
+      jest.spyOn(Date, "now").mockReturnValue(2000);
+
+      store.replaceTeamWorkouts("team-1", [input]);
+
+      const [workout] = listWorkoutsForTeam(
+        useCustomWorkoutsStore.getState().workoutsById,
+        "team-1",
+      );
+      expect(workout.importedAt).toBe(2000);
+      expect(workout.modifiedAt).toBe(input.modifiedAt);
+    });
+
     it("removes a team workout the templates no longer contain", () => {
       const store = useCustomWorkoutsStore.getState();
       store.replaceTeamWorkouts("team-1", [
-        generateCustomTemplate({ id: "A" }),
-        generateCustomTemplate({ id: "B" }),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "A" })),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "B" })),
       ]);
 
       store.replaceTeamWorkouts("team-1", [
-        generateCustomTemplate({ id: "A" }),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "A" })),
       ]);
 
       const { workoutsById } = useCustomWorkoutsStore.getState();
@@ -522,7 +607,7 @@ describe("customWorkoutsStore: imported trainings", () => {
     it("reuses the app id of a template that is returned again", () => {
       const store = useCustomWorkoutsStore.getState();
       store.replaceTeamWorkouts("team-1", [
-        generateCustomTemplate({ id: "A" }),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "A" })),
       ]);
       const [first] = listWorkoutsForTeam(
         useCustomWorkoutsStore.getState().workoutsById,
@@ -530,7 +615,9 @@ describe("customWorkoutsStore: imported trainings", () => {
       );
 
       store.replaceTeamWorkouts("team-1", [
-        generateCustomTemplate({ id: "A", name: { en: "Renamed" } }),
+        generateTeamWorkoutInput(
+          generateCustomTemplate({ id: "A", name: { en: "Renamed" } }),
+        ),
       ]);
 
       const [second] = listWorkoutsForTeam(
@@ -545,7 +632,7 @@ describe("customWorkoutsStore: imported trainings", () => {
       const store = useCustomWorkoutsStore.getState();
       store.saveCustomWorkout(generateCustomTemplate({ id: "OWN" }), null);
       store.replaceTeamWorkouts("team-2", [
-        generateCustomTemplate({ id: "OTHER" }),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "OTHER" })),
       ]);
 
       store.replaceTeamWorkouts("team-1", []);
@@ -556,15 +643,61 @@ describe("customWorkoutsStore: imported trainings", () => {
     });
   });
 
+  describe("findCustomWorkout", () => {
+    it("returns the entry of the id", () => {
+      const store = useCustomWorkoutsStore.getState();
+      const saved = store.saveCustomWorkout(generateCustomTemplate(), null);
+
+      expect(
+        findCustomWorkout(
+          useCustomWorkoutsStore.getState().workoutsById,
+          saved.id,
+        ),
+      ).toEqual(saved);
+    });
+
+    it("returns undefined for an unknown id or an inherited key", () => {
+      const { workoutsById } = useCustomWorkoutsStore.getState();
+
+      expect(findCustomWorkout(workoutsById, "custom-unknown")).toBeUndefined();
+      expect(findCustomWorkout(workoutsById, "constructor")).toBeUndefined();
+    });
+  });
+
+  describe("readModifiedAt", () => {
+    it("returns modifiedAt when the entry has one", () => {
+      expect(
+        readModifiedAt({
+          id: "custom-a",
+          teamId: "team-1",
+          template: generateCustomTemplate(),
+          importedAt: 1000,
+          modifiedAt: "2026-11-01T08:00:00.123456+00:00",
+        }),
+      ).toBe("2026-11-01T08:00:00.123456+00:00");
+    });
+
+    it("falls back to the import time of an entry saved before modifiedAt existed", () => {
+      expect(
+        readModifiedAt({
+          id: "custom-a",
+          teamId: null,
+          template: generateCustomTemplate(),
+          importedAt: 1000,
+        }),
+      ).toBe("1970-01-01T00:00:01.000Z");
+    });
+  });
+
   describe("keepTeamWorkoutsOf", () => {
     it("removes the workouts of teams missing from the list and leaves own workouts", () => {
       const store = useCustomWorkoutsStore.getState();
       store.saveCustomWorkout(generateCustomTemplate({ id: "OWN" }), null);
       store.replaceTeamWorkouts("team-1", [
-        generateCustomTemplate({ id: "A" }),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "A" })),
       ]);
       store.replaceTeamWorkouts("team-2", [
-        generateCustomTemplate({ id: "B" }),
+        generateTeamWorkoutInput(generateCustomTemplate({ id: "B" })),
       ]);
 
       store.keepTeamWorkoutsOf(["team-2"]);

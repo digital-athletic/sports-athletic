@@ -1,4 +1,5 @@
 import i18n from "@/i18n";
+import { generateTeamWorkoutInput } from "@test/factories/teamWorkoutInput";
 import { Logger } from "@/services/Logger";
 import type { Template } from "@/schemas/aiwl.schema";
 import { type UserTeam } from "@/services/TeamService";
@@ -226,8 +227,8 @@ describe("AdditionalTrainingListScreen: team workouts", () => {
   beforeEach(() => {
     const store = useCustomWorkoutsStore.getState();
     store.clearCustomWorkouts();
-    store.replaceTeamWorkouts("team-1", [template]);
-    store.replaceTeamWorkouts("team-2", [template]);
+    store.replaceTeamWorkouts("team-1", [generateTeamWorkoutInput(template)]);
+    store.replaceTeamWorkouts("team-2", [generateTeamWorkoutInput(template)]);
   });
 
   it("drops the workouts of teams the athlete left after loading the teams", async () => {

@@ -156,7 +156,12 @@ export async function leaveTeam(teamId: string): Promise<void> {
   }
 }
 
-export type TeamWorkoutRow = { template: unknown; isDraft: boolean };
+/** `updatedAt` is the ISO time of the last change, e.g. "2026-11-01T08:00:00.123456+00:00". */
+export type TeamWorkoutRow = {
+  template: unknown;
+  isDraft: boolean;
+  updatedAt: string;
+};
 
 /**
  * The team's workouts with their raw templates, oldest first; rejects when the
@@ -167,12 +172,12 @@ export async function fetchTeamWorkouts(
 ): Promise<TeamWorkoutRow[]> {
   const { data, error } = (await supabase
     .from("team_workouts")
-    .select("template, status")
+    .select("template, status, updated_at")
     .eq("team_id", teamId)
     .order("created_at", { ascending: true })
     // Offline, the default retries wait 1s, 2s and 4s before the list falls back to the last sync.
     .retry(false)) as {
-    data: { template: unknown; status: string }[] | null;
+    data: { template: unknown; status: string; updated_at: string }[] | null;
     error: { message: string } | null;
   };
 
@@ -180,5 +185,6 @@ export async function fetchTeamWorkouts(
   return data.map((row) => ({
     template: row.template,
     isDraft: row.status === "draft",
+    updatedAt: row.updated_at,
   }));
 }

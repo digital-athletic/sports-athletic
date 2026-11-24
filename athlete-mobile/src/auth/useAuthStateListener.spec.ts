@@ -160,12 +160,18 @@ jest.mock("../store/userProfileStore", () => ({
 }));
 
 const mockRestoreSnapshot = jest.fn();
+const mockTakeSnapshot = jest.fn();
 jest.mock("../store/userDataBackupStore", () => ({
   useUserDataBackupStore: (
     selector: (state: {
       restoreSnapshot: typeof mockRestoreSnapshot;
+      takeSnapshot: typeof mockTakeSnapshot;
     }) => unknown,
-  ) => selector({ restoreSnapshot: mockRestoreSnapshot }),
+  ) =>
+    selector({
+      restoreSnapshot: mockRestoreSnapshot,
+      takeSnapshot: mockTakeSnapshot,
+    }),
 }));
 
 const mockClearDrawnWorkouts = jest.fn();
@@ -467,6 +473,27 @@ describe("useAuthStateListener — consent gate", () => {
     capturedAuthCallback!("SIGNED_OUT", null);
 
     expect(mockClearDrawnWorkouts).toHaveBeenCalledTimes(1);
+  });
+
+  it("saves the snapshot of the signed in user before clearing the drawn workouts on SIGNED_OUT", async () => {
+    mockAuthValue = { userId: "user-1" };
+    await renderHook(() => useAuthStateListener());
+
+    capturedAuthCallback!("SIGNED_OUT", null);
+
+    expect(mockTakeSnapshot).toHaveBeenCalledWith("user-1");
+    expect(mockTakeSnapshot.mock.invocationCallOrder[0]).toBeLessThan(
+      mockClearDrawnWorkouts.mock.invocationCallOrder[0],
+    );
+  });
+
+  it("saves no snapshot on SIGNED_OUT after a logout already cleared the auth", async () => {
+    mockAuthValue = null;
+    await renderHook(() => useAuthStateListener());
+
+    capturedAuthCallback!("SIGNED_OUT", null);
+
+    expect(mockTakeSnapshot).not.toHaveBeenCalled();
   });
 
   it("leaves the drawn workouts unchanged on TOKEN_REFRESHED", async () => {

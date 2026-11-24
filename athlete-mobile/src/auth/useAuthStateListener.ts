@@ -21,6 +21,15 @@ import { featureFlags } from "@/config/featureFlags";
  * Checks and caches consent status on sign-in, app foreground, and reconnect.
  * Resets consent on sign-out.
  */
+// A logout cleared the auth after its own snapshot; a sign out the server
+// forced still has it, so the user's data survives it too.
+const saveSnapshotOfSignedInUser = (
+  takeSnapshot: (userId: string) => void,
+): void => {
+  const userId = useAuthStore.getState().auth?.userId;
+  if (userId) takeSnapshot(userId);
+};
+
 export function useAuthStateListener() {
   const setAuth = useAuthStore((state) => state.setAuth);
   const clearAuth = useAuthStore((state) => state.clearAuth);
@@ -38,6 +47,7 @@ export function useAuthStateListener() {
   const restoreSnapshot = useUserDataBackupStore(
     (state) => state.restoreSnapshot,
   );
+  const takeSnapshot = useUserDataBackupStore((state) => state.takeSnapshot);
   const clearDrawnWorkouts = useDrawnWorkoutsStore(
     (state) => state.clearDrawnWorkouts,
   );
@@ -162,6 +172,7 @@ export function useAuthStateListener() {
           }
         }
       } else if (event === "SIGNED_OUT") {
+        saveSnapshotOfSignedInUser(takeSnapshot);
         clearAuth();
         clearDrawnWorkouts();
         setConsentStatus("loading");
@@ -220,6 +231,7 @@ export function useAuthStateListener() {
     setConsentStatus,
     setUsername,
     restoreSnapshot,
+    takeSnapshot,
     clearDrawnWorkouts,
   ]);
 }

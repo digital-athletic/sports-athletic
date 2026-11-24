@@ -104,6 +104,10 @@
         "deleteTraining": "{{name}} löschen",
         "deleteTrainingTitle": "Training löschen?",
         "deleteTrainingMessage": "{{name}} wird aus deinen Trainings entfernt. Du kannst es über die Datei erneut importieren.",
+        "refreshTraining": "{{name}} erneuern",
+        "refreshTrainingTitle": "Neue Version",
+        "refreshTrainingMessage": "Neue Version von {{name}} erstellen?",
+        "refreshTrainingConfirm": "Erstellen",
         "importErrorTitle": "Import fehlgeschlagen",
         "importError": {
           "invalidFormat": "Die Datei ist keine gültige Trainingsdatei. Prüfe, ob es eine vollständige AIWL Datei ist.",

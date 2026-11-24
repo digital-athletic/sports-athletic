@@ -29,6 +29,7 @@ import {
   leaveTeam,
 } from "@/services/TeamService";
 import IconChevronRight from "@tabler/icons-react-native/IconChevronRight";
+import { discardOrphanedDrawnWorkouts } from "@/features/customWorkouts/discardOrphanedDrawnWorkouts";
 
 function errorKeyFrom(err: unknown): I18nKey {
   return err instanceof Error
@@ -106,6 +107,7 @@ export default function JoinTeamScreen() {
                       team.id === teamId ? [] : [team.id],
                     ),
                   );
+                discardOrphanedDrawnWorkouts();
               })
               .catch((err: unknown) => {
                 setLeaveErrorKey(errorKeyFrom(err));

@@ -11,14 +11,15 @@ import { type FC } from "react";
 import { useTranslation } from "react-i18next";
 import IconBarbell from "@tabler/icons-react-native/IconBarbell";
 import IconBolt from "@tabler/icons-react-native/IconBolt";
+import IconRefresh from "@tabler/icons-react-native/IconRefresh";
 import IconRun from "@tabler/icons-react-native/IconRun";
 import IconShieldHeart from "@tabler/icons-react-native/IconShieldHeart";
 import IconStretching from "@tabler/icons-react-native/IconStretching";
 import IconTrash from "@tabler/icons-react-native/IconTrash";
 import IconYoga from "@tabler/icons-react-native/IconYoga";
 
-const DELETE_BUTTON_SIZE = 36;
-const DELETE_HIT_SLOP = { top: 4, bottom: 4, left: 4, right: 4 };
+const ACTION_BUTTON_SIZE = 36;
+const ACTION_HIT_SLOP = { top: 4, bottom: 4, left: 4, right: 4 };
 
 const FOCUS_ICONS: Record<CustomWorkoutFocus, AppIconSource> = {
   strength: IconBarbell,
@@ -37,6 +38,8 @@ type CustomWorkoutTileProps = {
   isDraft?: boolean;
   /** Without it the tile has no delete button. */
   deleteAction?: { label: string; onDelete: () => void };
+  /** Without it the tile has no refresh button. */
+  refreshAction?: { label: string; onRefresh: () => void };
 };
 
 /** A short mark in the top left corner of a tile, e.g. "Draft". */
@@ -58,10 +61,36 @@ const TileBadge: FC<{ label: string }> = ({ label }) => (
   </Box>
 );
 
+/** A round icon button in the top right corner of a tile. */
+const TileActionButton: FC<{
+  icon: AppIconSource;
+  label: string;
+  onPress: () => void;
+}> = ({ icon, label, onPress }) => {
+  const { colors } = useTheme();
+
+  return (
+    <TouchableBox
+      onPress={onPress}
+      width={ACTION_BUTTON_SIZE}
+      height={ACTION_BUTTON_SIZE}
+      borderRadius="round"
+      backgroundColor="white"
+      alignItems="center"
+      justifyContent="center"
+      hitSlop={ACTION_HIT_SLOP}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
+      <AppIcon icon={icon} size={20} color={colors.darkGrey1} decorative />
+    </TouchableBox>
+  );
+};
+
 /**
  * Tile of a custom training in a tile grid. A tap opens the muscle soreness
- * step of the training. The delete button is a sibling of the card, so a tap
- * on it leaves the training closed.
+ * step of the training. The refresh and delete buttons are siblings of the
+ * card, so a tap on them leaves the training closed.
  */
 export const CustomWorkoutTile: FC<CustomWorkoutTileProps> = ({
   workoutId,
@@ -69,8 +98,8 @@ export const CustomWorkoutTile: FC<CustomWorkoutTileProps> = ({
   focus,
   isDraft,
   deleteAction,
+  refreshAction,
 }) => {
-  const { colors } = useTheme();
   const { t } = useTranslation();
   const draftLabel = t("screens.home.additionalTrainings.draft");
   const openWorkout = () =>
@@ -92,29 +121,29 @@ export const CustomWorkoutTile: FC<CustomWorkoutTileProps> = ({
         />
       </TileCard>
       {isDraft && <TileBadge label={draftLabel} />}
-      {deleteAction && (
-        <Box position="absolute" top={0} right={0} margin="xs">
-          <TouchableBox
+      <Box
+        position="absolute"
+        top={0}
+        right={0}
+        margin="xs"
+        flexDirection="row"
+        gap="xs"
+      >
+        {refreshAction && (
+          <TileActionButton
+            icon={IconRefresh}
+            label={refreshAction.label}
+            onPress={refreshAction.onRefresh}
+          />
+        )}
+        {deleteAction && (
+          <TileActionButton
+            icon={IconTrash}
+            label={deleteAction.label}
             onPress={deleteAction.onDelete}
-            width={DELETE_BUTTON_SIZE}
-            height={DELETE_BUTTON_SIZE}
-            borderRadius="round"
-            backgroundColor="white"
-            alignItems="center"
-            justifyContent="center"
-            hitSlop={DELETE_HIT_SLOP}
-            accessibilityRole="button"
-            accessibilityLabel={deleteAction.label}
-          >
-            <AppIcon
-              icon={IconTrash}
-              size={20}
-              color={colors.darkGrey1}
-              decorative
-            />
-          </TouchableBox>
-        </Box>
-      )}
+          />
+        )}
+      </Box>
     </Box>
   );
 };

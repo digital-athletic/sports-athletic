@@ -68,19 +68,23 @@ test.describe("Team workouts: sync on a team tile", () => {
     await expect(page.getByLabel("Loading trainings")).toBeVisible();
     releaseFirstSync();
 
-    await expect(page.getByRole("button", { name: "Team core" })).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Team sprint" }),
+      page.getByRole("button", { name: "Team core", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Team sprint", exact: true }),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "Broken" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Team draft" })).toHaveCount(
-      0,
-    );
+    await expect(
+      page.getByRole("button", { name: "Team draft", exact: true }),
+    ).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: "Import training" }),
     ).toHaveCount(0);
 
-    await page.getByRole("button", { name: "Team sprint" }).click();
+    await page
+      .getByRole("button", { name: "Team sprint", exact: true })
+      .click();
     await expect(
       page.getByRole("heading", { name: "Where do you train today?" }),
     ).toBeVisible();
@@ -99,11 +103,11 @@ test.describe("Team workouts: sync on a team tile", () => {
     server.setRows([TEAM_SPRINT_ROW]);
     await openTeamTile(page);
     await expect(
-      page.getByRole("button", { name: "Team sprint" }),
+      page.getByRole("button", { name: "Team sprint", exact: true }),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: "Team core" })).toHaveCount(
-      0,
-    );
+    await expect(
+      page.getByRole("button", { name: "Team core", exact: true }),
+    ).toHaveCount(0);
 
     server.goOffline();
     await page.goBack();
@@ -114,7 +118,7 @@ test.describe("Team workouts: sync on a team tile", () => {
       ),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Team sprint" }),
+      page.getByRole("button", { name: "Team sprint", exact: true }),
     ).toBeVisible();
   });
 

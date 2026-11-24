@@ -170,6 +170,15 @@ export class TrainingListPage extends BasePage {
     await expect(this.title).toBeVisible();
   }
 
+  /** The exercise names of the checklist rows, top to bottom. */
+  async exerciseNames(): Promise<string[]> {
+    const names = this.page.locator(
+      '[data-testid^="training-list-row-"][data-testid$="-name"]',
+    );
+    await expect(names.first()).toBeVisible();
+    return (await names.allInnerTexts()).map((name) => name.trim());
+  }
+
   entry(testId: string) {
     return this.page.getByTestId(testId);
   }

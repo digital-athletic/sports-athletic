@@ -1,0 +1,17 @@
+{
+  "aiwl": 1,
+  "id": "MY_VERSIONS",
+  "name": { "en": "My versions", "de": "Meine Versionen" },
+  "blocks": [
+    {
+      "kind": "picks",
+      "skill": "GKS",
+      "picks": [{ "tags": [], "count": 3 }]
+    },
+    {
+      "kind": "picks",
+      "skill": "MOB",
+      "picks": [{ "tags": [], "count": 2 }]
+    }
+  ]
+}

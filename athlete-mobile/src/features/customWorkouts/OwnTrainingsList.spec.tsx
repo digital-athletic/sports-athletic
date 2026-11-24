@@ -2,8 +2,10 @@ import { type AlertButton } from "@/common/Alert";
 import i18n from "@/i18n";
 import { type Template } from "@/schemas/aiwl.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { act, fireEvent, render } from "@/utils/testUtils";
 import { OwnTrainingsList } from "./OwnTrainingsList";
+import { generateDrawnWorkout } from "@test/factories/drawnWorkout";
 
 const mockNavigate = jest.fn();
 jest.mock("expo-router", () => ({
@@ -28,19 +30,23 @@ const generateCustomTemplate = (
 
 const EMPTY_MESSAGE = "Currently no workouts available";
 
-/** Labels of the training tiles, without their delete buttons. */
+/** Labels of the training tiles, without their delete and refresh buttons. */
 const listTileLabels = (
   buttons: { props: { accessibilityLabel?: string } }[],
 ): (string | undefined)[] =>
   buttons
     .map((button) => button.props.accessibilityLabel)
-    .filter((label) => !label?.startsWith("Delete "));
+    .filter(
+      (label) =>
+        !label?.startsWith("Delete ") && !label?.startsWith("Refresh "),
+    );
 const IMPORT_LABEL = "Import training";
 const GENERATE_LABEL = "Generate training";
 
 beforeEach(() => {
   jest.clearAllMocks();
   useCustomWorkoutsStore.getState().clearCustomWorkouts();
+  useDrawnWorkoutsStore.setState({ drawnWorkouts: {} });
 });
 
 afterEach(async () => {
@@ -575,5 +581,75 @@ describe("OwnTrainingsList: delete", () => {
         },
       ],
     );
+  });
+});
+
+/**
+ * Saves the own trainings "First" and "Second", each with a drawn workout at HOME.
+ * Returns the id of "Second".
+ *
+ * seedTrainingsWithDrawnWorkouts() → "custom-2"
+ */
+const seedTrainingsWithDrawnWorkouts = () => {
+  const { saveCustomWorkout } = useCustomWorkoutsStore.getState();
+  jest.spyOn(Date, "now").mockReturnValueOnce(1).mockReturnValueOnce(2);
+  const first = saveCustomWorkout(
+    generateCustomTemplate({ id: "FIRST", name: { en: "First" } }),
+    null,
+  );
+  const second = saveCustomWorkout(
+    generateCustomTemplate({ id: "SECOND", name: { en: "Second" } }),
+    null,
+  );
+  useDrawnWorkoutsStore.setState({
+    drawnWorkouts: {
+      [first.id]: { HOME: generateDrawnWorkout("510") },
+      [second.id]: { HOME: generateDrawnWorkout("520") },
+    },
+  });
+  return second.id;
+};
+
+describe("OwnTrainingsList: drawn workouts", () => {
+  it("discards only the drawn workouts of the training whose refresh is confirmed", async () => {
+    const secondId = seedTrainingsWithDrawnWorkouts();
+    const { getByRole } = await render(
+      <OwnTrainingsList
+        onGenerate={jest.fn()}
+        onImport={jest.fn()}
+        importing={false}
+      />,
+    );
+
+    await fireEvent.press(getByRole("button", { name: "Refresh First" }));
+    const [title, message, buttons]: [string, string, AlertButton[]] =
+      mockAlert.mock.calls[0];
+    await act(() => buttons.find(({ text }) => text === "Create")?.onPress?.());
+
+    expect([title, message]).toEqual([
+      "New version",
+      "Create a new version of First?",
+    ]);
+    expect(useDrawnWorkoutsStore.getState().drawnWorkouts).toEqual({
+      [secondId]: { HOME: generateDrawnWorkout("520") },
+    });
+  });
+
+  it("discards the drawn workouts of a deleted training", async () => {
+    const secondId = seedTrainingsWithDrawnWorkouts();
+    const { getByRole } = await render(
+      <OwnTrainingsList
+        onGenerate={jest.fn()}
+        onImport={jest.fn()}
+        importing={false}
+      />,
+    );
+
+    await fireEvent.press(getByRole("button", { name: "Delete First" }));
+    await answerDeleteConfirmation(DELETE_LABEL);
+
+    expect(useDrawnWorkoutsStore.getState().drawnWorkouts).toEqual({
+      [secondId]: { HOME: generateDrawnWorkout("520") },
+    });
   });
 });

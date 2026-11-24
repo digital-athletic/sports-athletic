@@ -3,7 +3,9 @@ import { readLocalizedTemplateName } from "@/data/loadTemplates";
 import { CustomWorkoutTile } from "@/features/customWorkouts/CustomWorkoutTile";
 import { detectCustomWorkoutFocus } from "@/features/customWorkouts/customWorkoutFocus";
 import { EmptyTrainingListMessage } from "@/features/customWorkouts/EmptyTrainingListMessage";
+import { useConfirmRefreshTraining } from "@/features/customWorkouts/useConfirmRefreshTraining";
 import {
+  type CustomWorkout,
   listWorkoutsForTeam,
   useCustomWorkoutsStore,
 } from "@/store/customWorkoutsStore";
@@ -52,12 +54,32 @@ const useTeamWorkoutsSync = (
   return status;
 };
 
+/** Tile of a team workout with its refresh button; athletes cannot delete it. */
+const TeamTrainingTile: FC<{ workout: CustomWorkout }> = ({ workout }) => {
+  const { t, i18n } = useTranslation();
+  const confirmRefreshTraining = useConfirmRefreshTraining();
+  const name = readLocalizedTemplateName(workout.template.name, i18n.language);
+
+  return (
+    <CustomWorkoutTile
+      workoutId={workout.id}
+      isDraft={workout.isDraft}
+      focus={detectCustomWorkoutFocus(workout.template)}
+      name={name}
+      refreshAction={{
+        label: t("screens.home.additionalTrainings.refreshTraining", { name }),
+        onRefresh: () => confirmRefreshTraining(workout.id, name),
+      }}
+    />
+  );
+};
+
 /**
  * The team's workouts from the device, synced on mount, i.e. on every tap on
  * the team tile; callers key the list by team id. Athletes cannot delete them.
  */
 export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { spacing } = useTheme();
   const status = useTeamWorkoutsSync(teamId);
   const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
@@ -110,16 +132,7 @@ export const TeamTrainingsList: FC<TeamTrainingsListProps> = ({ teamId }) => {
       {isOffline && <OfflineNote />}
       <TileGrid testID="team-trainings-grid">
         {workouts.map((workout) => (
-          <CustomWorkoutTile
-            key={workout.id}
-            workoutId={workout.id}
-            isDraft={workout.isDraft}
-            focus={detectCustomWorkoutFocus(workout.template)}
-            name={readLocalizedTemplateName(
-              workout.template.name,
-              i18n.language,
-            )}
-          />
+          <TeamTrainingTile key={workout.id} workout={workout} />
         ))}
       </TileGrid>
     </ScrollBox>

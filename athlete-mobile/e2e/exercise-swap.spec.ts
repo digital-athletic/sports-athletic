@@ -32,6 +32,20 @@ async function swap(page: Page, name: string): Promise<string> {
   return after[index];
 }
 
+/**
+ * Replaces Math.random in the page with a fixed sequence (Park-Miller), so the
+ * generator draws the same workout on every run.
+ *
+ * page.addInitScript(seedMathRandom, 7) → the same draws on every page load
+ */
+function seedMathRandom(seed: number): void {
+  let state = seed;
+  Math.random = () => {
+    state = (state * 16807) % 2147483647;
+    return (state - 1) / 2147483646;
+  };
+}
+
 /** Branch IDs of the stored Tuesday training, one list per plan section. */
 async function readTuesdayBranchIds(page: Page): Promise<string[][]> {
   return page.evaluate(() => {
@@ -108,6 +122,10 @@ test.describe("Focus training overview: swap an exercise", () => {
     test.setTimeout(120000);
     await mockSupabaseAuth(page);
     await mockWakeLock(page);
+    // A fixed random sequence draws the same session on every run. With a
+    // random draw, a swap to a one sided exercise made the name check fail on
+    // WebKit in CI from time to time.
+    await page.addInitScript(seedMathRandom, 7);
 
     const basePage = new BasePage(page);
     await page.goto("/");

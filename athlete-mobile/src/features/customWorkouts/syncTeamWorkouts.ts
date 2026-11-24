@@ -4,6 +4,7 @@ import {
   type TeamWorkoutInput,
   useCustomWorkoutsStore,
 } from "@/store/customWorkoutsStore";
+import { discardOrphanedDrawnWorkouts } from "./discardOrphanedDrawnWorkouts";
 import { validateCustomWorkoutValue } from "./validateCustomWorkout";
 
 export type TeamWorkoutsSyncResult = "synced" | "offline";
@@ -33,5 +34,6 @@ export const syncTeamWorkouts = async (
     });
   }
   useCustomWorkoutsStore.getState().replaceTeamWorkouts(teamId, workouts);
+  discardOrphanedDrawnWorkouts();
   return "synced";
 };

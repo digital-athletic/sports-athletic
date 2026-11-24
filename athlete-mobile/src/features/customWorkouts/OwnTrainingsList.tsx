@@ -5,10 +5,12 @@ import { readLocalizedTemplateName } from "@/data/loadTemplates";
 import { CustomWorkoutTile } from "@/features/customWorkouts/CustomWorkoutTile";
 import { detectCustomWorkoutFocus } from "@/features/customWorkouts/customWorkoutFocus";
 import { EmptyTrainingListMessage } from "@/features/customWorkouts/EmptyTrainingListMessage";
+import { useConfirmRefreshTraining } from "@/features/customWorkouts/useConfirmRefreshTraining";
 import {
   listWorkoutsForTeam,
   useCustomWorkoutsStore,
 } from "@/store/customWorkoutsStore";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
 import { ScrollBox } from "@/theme/ScrollBox";
@@ -56,11 +58,14 @@ const EmptyOwnTrainings: FC<OwnTrainingsListProps> = ({
   );
 };
 
-/** Asks for confirmation, then deletes the own training. */
+/** Asks for confirmation, then deletes the own training and its drawn workouts. */
 const useConfirmDeleteTraining = () => {
   const { t } = useTranslation();
   const deleteOwnCustomWorkout = useCustomWorkoutsStore(
     (state) => state.deleteOwnCustomWorkout,
+  );
+  const discardDrawnWorkouts = useDrawnWorkoutsStore(
+    (state) => state.discardDrawnWorkouts,
   );
 
   return (id: string, name: string) =>
@@ -72,7 +77,10 @@ const useConfirmDeleteTraining = () => {
         {
           text: t("common.delete"),
           style: "destructive",
-          onPress: () => deleteOwnCustomWorkout(id),
+          onPress: () => {
+            deleteOwnCustomWorkout(id);
+            discardDrawnWorkouts(id);
+          },
         },
       ],
     );
@@ -87,6 +95,7 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
   const { spacing } = useTheme();
   const workoutsById = useCustomWorkoutsStore((state) => state.workoutsById);
   const confirmDeleteTraining = useConfirmDeleteTraining();
+  const confirmRefreshTraining = useConfirmRefreshTraining();
   const workouts = listWorkoutsForTeam(workoutsById, null);
 
   if (workouts.length === 0) {
@@ -119,6 +128,12 @@ export const OwnTrainingsList: FC<OwnTrainingsListProps> = ({
               workoutId={workout.id}
               focus={detectCustomWorkoutFocus(workout.template)}
               name={name}
+              refreshAction={{
+                label: t("screens.home.additionalTrainings.refreshTraining", {
+                  name,
+                }),
+                onRefresh: () => confirmRefreshTraining(workout.id, name),
+              }}
               deleteAction={{
                 label: t("screens.home.additionalTrainings.deleteTraining", {
                   name,

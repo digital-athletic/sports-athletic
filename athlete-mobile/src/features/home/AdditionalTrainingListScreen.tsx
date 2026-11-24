@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 import IconBarbell from "@tabler/icons-react-native/IconBarbell";
 import IconUsersGroup from "@tabler/icons-react-native/IconUsersGroup";
+import { discardOrphanedDrawnWorkouts } from "@/features/customWorkouts/discardOrphanedDrawnWorkouts";
 
 const openWorkouts = (title: string, teamId?: string) =>
   router.push({
@@ -34,6 +35,7 @@ export default function AdditionalTrainingListScreen() {
         useCustomWorkoutsStore
           .getState()
           .keepTeamWorkoutsOf(result.map((team) => team.id));
+        discardOrphanedDrawnWorkouts();
         if (!cancelled) setTeams(result);
       })
       .catch((err: unknown) => {

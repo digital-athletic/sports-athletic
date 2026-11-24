@@ -3,6 +3,8 @@ import {
   listWorkoutsForTeam,
   useCustomWorkoutsStore,
 } from "@/store/customWorkoutsStore";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
+import { generateDrawnWorkout } from "@test/factories/drawnWorkout";
 import { syncTeamWorkouts } from "./syncTeamWorkouts";
 
 const mockFetchTeamWorkouts = jest.fn();
@@ -39,6 +41,7 @@ const listTeamTemplateIds = (teamId: string | null): string[] =>
 beforeEach(() => {
   jest.clearAllMocks();
   useCustomWorkoutsStore.getState().clearCustomWorkouts();
+  useDrawnWorkoutsStore.getState().clearDrawnWorkouts();
 });
 
 afterEach(() => {
@@ -158,5 +161,26 @@ describe("syncTeamWorkouts", () => {
 
     expect(result).toBe("offline");
     expect(listTeamTemplateIds("team-1")).toEqual(["A"]);
+  });
+
+  it("discards the drawn workouts of a team workout the sync no longer lists", async () => {
+    const { saveCustomWorkout } = useCustomWorkoutsStore.getState();
+    const kept = saveCustomWorkout(generateTeamTemplate({ id: "A" }), "team-1");
+    const removed = saveCustomWorkout(
+      generateTeamTemplate({ id: "B" }),
+      "team-1",
+    );
+    const { saveDrawnWorkout } = useDrawnWorkoutsStore.getState();
+    saveDrawnWorkout(kept.id, "HOME", generateDrawnWorkout("510"));
+    saveDrawnWorkout(removed.id, "HOME", generateDrawnWorkout("523"));
+    mockFetchTeamWorkouts.mockResolvedValue(
+      asPublished(generateTeamTemplate({ id: "A" })),
+    );
+
+    await syncTeamWorkouts("team-1");
+
+    expect(Object.keys(useDrawnWorkoutsStore.getState().drawnWorkouts)).toEqual(
+      [kept.id],
+    );
   });
 });

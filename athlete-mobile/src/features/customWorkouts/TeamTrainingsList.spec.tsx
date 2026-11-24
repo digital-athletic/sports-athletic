@@ -1,9 +1,17 @@
+import { type AlertButton } from "@/common/Alert";
 import { type Template } from "@/schemas/aiwl.schema";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
-import { render } from "@/utils/testUtils";
+import { useDrawnWorkoutsStore } from "@/store/drawnWorkoutsStore";
+import { act, fireEvent, render } from "@/utils/testUtils";
 import { TeamTrainingsList } from "./TeamTrainingsList";
+import { generateDrawnWorkout } from "@test/factories/drawnWorkout";
 
 jest.mock("expo-router", () => ({ router: { navigate: jest.fn() } }));
+
+const mockAlert = jest.fn();
+jest.mock("@/common/Alert", () => ({
+  Alert: { alert: (...args: unknown[]) => mockAlert(...args) },
+}));
 
 const mockFetchTeamWorkouts = jest.fn();
 jest.mock("@/services/TeamService", () => ({
@@ -30,6 +38,7 @@ const OFFLINE_NOTE =
 beforeEach(() => {
   jest.clearAllMocks();
   useCustomWorkoutsStore.getState().clearCustomWorkouts();
+  useDrawnWorkoutsStore.setState({ drawnWorkouts: {} });
 });
 
 describe("TeamTrainingsList", () => {
@@ -110,5 +119,43 @@ describe("TeamTrainingsList", () => {
 
     expect(await findByText(OFFLINE_NOTE)).toBeTruthy();
     expect(await findByText(EMPTY_MESSAGE)).toBeTruthy();
+  });
+});
+
+const SPRINT = { id: "TEAM_SPRINT", name: { en: "Team sprint" } };
+
+describe("TeamTrainingsList: drawn workouts", () => {
+  it("shows a refresh button in place of the delete button and discards only the drawn workouts of that workout on confirm", async () => {
+    mockFetchTeamWorkouts.mockResolvedValue(
+      asPublished(generateTeamTemplate(), generateTeamTemplate(SPRINT)),
+    );
+    const { saveCustomWorkout } = useCustomWorkoutsStore.getState();
+    const core = saveCustomWorkout(generateTeamTemplate(), "team-1");
+    const sprint = saveCustomWorkout(generateTeamTemplate(SPRINT), "team-1");
+    useDrawnWorkoutsStore.setState({
+      drawnWorkouts: {
+        [core.id]: { HOME: generateDrawnWorkout("510") },
+        [sprint.id]: { HOME: generateDrawnWorkout("523") },
+      },
+    });
+    const { findByRole, queryByRole } = await render(
+      <TeamTrainingsList teamId="team-1" />,
+    );
+
+    await fireEvent.press(
+      await findByRole("button", { name: "Refresh Team core" }),
+    );
+    const [title, message, buttons]: [string, string, AlertButton[]] =
+      mockAlert.mock.calls[0];
+    await act(() => buttons.find(({ text }) => text === "Create")?.onPress?.());
+
+    expect(queryByRole("button", { name: /^Delete / })).toBeNull();
+    expect([title, message]).toEqual([
+      "New version",
+      "Create a new version of Team core?",
+    ]);
+    expect(useDrawnWorkoutsStore.getState().drawnWorkouts).toEqual({
+      [sprint.id]: { HOME: generateDrawnWorkout("523") },
+    });
   });
 });

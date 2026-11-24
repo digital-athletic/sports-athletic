@@ -11,6 +11,7 @@ import {
   WorkoutPage,
 } from "./pages";
 import { getCompletedWorkouts } from "./utils/storage";
+import { importFileThrough } from "./utils/fileChooser";
 
 const FIXTURE_DIRECTORY = path.join(__dirname, "mocks", "files");
 const VALID_FILE = path.join(FIXTURE_DIRECTORY, "custom-workout.json");
@@ -22,18 +23,6 @@ const INVALID_FILE = path.join(
   FIXTURE_DIRECTORY,
   "custom-workout-invalid.json",
 );
-
-/** Clicks the button and answers the browser file dialog with the file. */
-async function importFileThrough(
-  page: Page,
-  buttonName: string,
-  filePath: string,
-) {
-  const chooserPromise = page.waitForEvent("filechooser");
-  await page.getByRole("button", { name: buttonName }).click();
-  const chooser = await chooserPromise;
-  await chooser.setFiles(filePath);
-}
 
 /** Opens the imported workout from its "Your trainings" tile as a checklist. */
 async function openImportedWorkoutAsChecklist(page: Page) {

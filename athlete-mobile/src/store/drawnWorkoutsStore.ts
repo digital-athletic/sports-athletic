@@ -20,6 +20,8 @@ type Actions = {
     place: PlaceType,
     drawnWorkout: DrawnWorkout,
   ) => void;
+  discardDrawnWorkouts: (workoutId: string) => void;
+  keepDrawnWorkoutsOf: (workoutIds: string[]) => void;
   clearDrawnWorkouts: () => void;
   setHasHydrated: (hydrated: boolean) => void;
 };
@@ -38,6 +40,20 @@ export const useDrawnWorkoutsStore = create<DrawnWorkoutsState>()(
             ...state.drawnWorkouts[workoutId],
             [place]: drawnWorkout,
           };
+        }),
+
+      discardDrawnWorkouts: (workoutId) =>
+        set((state) => {
+          delete state.drawnWorkouts[workoutId];
+        }),
+
+      keepDrawnWorkoutsOf: (workoutIds) =>
+        set((state) => {
+          for (const workoutId of Object.keys(state.drawnWorkouts)) {
+            if (!workoutIds.includes(workoutId)) {
+              delete state.drawnWorkouts[workoutId];
+            }
+          }
         }),
 
       clearDrawnWorkouts: () =>

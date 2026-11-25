@@ -19,6 +19,7 @@ export default function FocusTrainingListScreen() {
       title={t("screens.home.focusTrainings.title")}
       heading={t("screens.home.focusTrainings.title")}
       description={t("screens.home.focusTrainings.subtitle")}
+      wide
     >
       <TileGrid testID="focus-prevention-grid">
         <TrainingTile

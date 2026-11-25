@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@/utils/testUtils";
-import { Text } from "react-native";
+import { Dimensions, Text } from "react-native";
 import { HeadlineScreen } from "./HeadlineScreen";
 
 type ScreenOptions = { headerShown?: boolean };
@@ -125,5 +125,48 @@ describe("HeadlineScreen: stack header", () => {
     );
 
     expect(mockScreenOptions.mock.calls.at(-1)?.[0].headerShown).toBe(false);
+  });
+});
+
+describe("HeadlineScreen: width on a tablet", () => {
+  const tabletLandscape = { width: 1280, height: 800, scale: 2, fontScale: 2 };
+
+  it("caps the content and the footer button", async () => {
+    Dimensions.set({ window: tabletLandscape, screen: tabletLandscape });
+
+    await render(
+      <HeadlineScreen
+        title="Sport"
+        heading="Your sport"
+        action={{ label: "Next", onPress: jest.fn() }}
+      />,
+    );
+
+    expect(screen.getByTestId("headline-screen-column")).toHaveStyle({
+      maxWidth: 640,
+    });
+    expect(screen.getByTestId("headline-screen-footer-column")).toHaveStyle({
+      maxWidth: 640,
+    });
+  });
+
+  it("keeps the full width for a wide screen", async () => {
+    Dimensions.set({ window: tabletLandscape, screen: tabletLandscape });
+
+    await render(
+      <HeadlineScreen
+        title="Soreness"
+        heading="Muscle soreness"
+        wide
+        action={{ label: "Next", onPress: jest.fn() }}
+      />,
+    );
+
+    expect(screen.getByTestId("headline-screen-column")).not.toHaveStyle({
+      maxWidth: 640,
+    });
+    expect(screen.getByTestId("headline-screen-footer-column")).not.toHaveStyle(
+      { maxWidth: 640 },
+    );
   });
 });

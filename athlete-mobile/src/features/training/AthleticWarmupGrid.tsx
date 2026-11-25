@@ -25,6 +25,7 @@ export const AthleticWarmupGrid: FC<AthleticWarmupGridProps> = ({
       title={title}
       eyebrow={t("training.athleticWarmup.gridEyebrow")}
       heading={t("training.athleticWarmup.gridHeading")}
+      wide
       onBack={onBack}
     >
       <TileGrid>

@@ -123,6 +123,7 @@ export default function MuscleSorenessScreen() {
       title={title}
       eyebrow={t("training.muscleSoreness.eyebrow")}
       heading={t("training.muscleSoreness.heading")}
+      wide
       description={t("training.muscleSoreness.description")}
       onBack={handleBack}
       action={{

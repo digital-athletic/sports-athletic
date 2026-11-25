@@ -30,6 +30,7 @@ export const PlanDayScreen: FC<PlanDayScreenProps> = ({
       title={title}
       eyebrow={phase && t("training.selectTraining.eyebrow", { phase })}
       heading={t("training.selectTraining.heading")}
+      wide
       description={t("training.selectTraining.description")}
       onBack={onBack}
     >

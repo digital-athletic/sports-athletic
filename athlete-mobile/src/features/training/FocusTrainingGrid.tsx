@@ -24,6 +24,7 @@ export const FocusTrainingGrid: FC<FocusTrainingGridProps> = ({
       title={title}
       eyebrow={t("training.quickstart.gridEyebrow")}
       heading={t("training.quickstart.gridHeading")}
+      wide
       onBack={onBack}
     >
       <TileGrid>

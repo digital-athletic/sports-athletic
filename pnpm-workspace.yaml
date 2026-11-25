@@ -1,6 +1,7 @@
 packages:
   - athlete-mobile
   - trainer-web
+  - assets
 
 # Isolated node_modules with symlinks to the pnpm store
 nodeLinker: isolated

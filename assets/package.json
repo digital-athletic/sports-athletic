@@ -1,0 +1,16 @@
+{
+  "name": "assets",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "mirror:supabase-to-zenodo": "node src/mirror-supabase-to-zenodo.ts",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "type-check": "tsc -p ."
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "~5.9.3"
+  }
+}

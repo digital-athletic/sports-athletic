@@ -1,3 +1,4 @@
+import { ContentColumn, useContentColumnStyle } from "@/common/ContentColumn";
 import { SUPPORT_EMAIL } from "@/constants/AppConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
 import { PowerTest } from "@/features/statistics/components/PowerTest";
@@ -57,6 +58,7 @@ const TrainingSuccessScreen: FC = () => {
   const xpAwarded = useRef(false);
   const workoutSaved = useRef(false);
   const insets = useSafeAreaInsets();
+  const columnStyle = useContentColumnStyle();
 
   // Detect test workout by checking if any exercise has repetition === -1
   // This matches legacy behavior which is more reliable than checking activeTraining.type
@@ -146,7 +148,7 @@ const TrainingSuccessScreen: FC = () => {
         }}
       />
       <Box flex={1} backgroundColor="surface">
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView contentContainerStyle={[{ flexGrow: 1 }, columnStyle]}>
           {isTestWorkout ? (
             <Box flex={1} paddingVertical="m">
               <PowerTest isSuccessScreen={true} />
@@ -176,13 +178,15 @@ const TrainingSuccessScreen: FC = () => {
         </ScrollView>
 
         <Box padding="l">
-          <Button
-            variant="primary"
-            onPress={handleGoOn}
-            style={{ marginBottom: insets.bottom }}
-          >
-            {t("training.success.goOn")}
-          </Button>
+          <ContentColumn>
+            <Button
+              variant="primary"
+              onPress={handleGoOn}
+              style={{ marginBottom: insets.bottom }}
+            >
+              {t("training.success.goOn")}
+            </Button>
+          </ContentColumn>
         </Box>
       </Box>
     </>

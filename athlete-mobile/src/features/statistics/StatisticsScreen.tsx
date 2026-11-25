@@ -1,10 +1,10 @@
+import { ColumnScrollBox } from "@/common/ColumnScrollBox";
 import { PowerTest } from "@/features/statistics/components/PowerTest";
 import { StatisticsHeader } from "@/features/statistics/components/StatisticsHeader";
 import { Workouts } from "@/features/statistics/components/Workouts";
 import type { ExportKind } from "@/features/statistics/models/statisticsCsv";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { Box } from "@/theme/Box";
-import { ScrollBox } from "@/theme/ScrollBox";
 import { useState, type FC } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -19,7 +19,7 @@ export const StatisticsScreen: FC = () => {
   const { top } = useSafeAreaInsets();
 
   return (
-    <ScrollBox
+    <ColumnScrollBox
       flex={1}
       backgroundColor="surface"
       contentContainerStyle={{ paddingTop: top }}
@@ -42,6 +42,6 @@ export const StatisticsScreen: FC = () => {
           <PowerTest scale={scale} />
         )}
       </Box>
-    </ScrollBox>
+    </ColumnScrollBox>
   );
 };

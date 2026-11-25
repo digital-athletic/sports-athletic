@@ -1,4 +1,5 @@
 import { CenteredLoading } from "@/common/CenteredLoading";
+import { ContentColumn } from "@/common/ContentColumn";
 import { TrainingExerciseSheet } from "@/features/training/TrainingExerciseSheet";
 import { TrainingListHeader } from "@/features/training/TrainingListHeader";
 import { TrainingListRows } from "@/features/training/TrainingListRows";
@@ -66,17 +67,19 @@ const TrainingList: FC<TrainingListProps> = () => {
           borderTopWidth={1}
           borderTopColor="surfaceContainerLow"
         >
-          <Box marginBottom="m">
-            <TrainingProgressBar progress={progress} />
-          </Box>
-          <Button
-            onPress={handleFinish}
-            disabled={isFinishing}
-            style={{ opacity: isFinishing ? 0.5 : 1 }}
-            testID="training-list-finish-button"
-          >
-            {t("training.list.finishTraining")}
-          </Button>
+          <ContentColumn>
+            <Box marginBottom="m">
+              <TrainingProgressBar progress={progress} />
+            </Box>
+            <Button
+              onPress={handleFinish}
+              disabled={isFinishing}
+              style={{ opacity: isFinishing ? 0.5 : 1 }}
+              testID="training-list-finish-button"
+            >
+              {t("training.list.finishTraining")}
+            </Button>
+          </ContentColumn>
         </Box>
       </Box>
       <TrainingExerciseSheet {...sheetProps} />

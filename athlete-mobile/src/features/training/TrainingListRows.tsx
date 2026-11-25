@@ -5,6 +5,7 @@ import {
 import { type UserExerciseDataType } from "@/features/training/models/UserExerciseData";
 import { SkillTitle } from "@/features/training/SkillTitle";
 import { TrainingListItem } from "@/features/training/TrainingListItem";
+import { ContentColumn } from "@/common/ContentColumn";
 import { Box } from "@/theme/Box";
 import { type FC, Fragment } from "react";
 import { ScrollView } from "react-native";
@@ -98,7 +99,7 @@ export const TrainingListRows: FC<TrainingListRowsProps> = ({
   ...entryProps
 }) => (
   <ScrollView keyboardShouldPersistTaps="handled">
-    <Box padding="l">
+    <ContentColumn padding="l">
       {blocks.map((block, index) => {
         const previousSkill = blocks[index - 1]?.skill;
         return (
@@ -115,6 +116,6 @@ export const TrainingListRows: FC<TrainingListRowsProps> = ({
           </Fragment>
         );
       })}
-    </Box>
+    </ContentColumn>
   </ScrollView>
 );

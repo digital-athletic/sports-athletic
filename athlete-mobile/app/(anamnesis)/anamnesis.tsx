@@ -1,3 +1,4 @@
+import { ContentColumn } from "@/common/ContentColumn";
 import { SkipHeader } from "@/common/SkipHeader";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
@@ -32,21 +33,22 @@ const WelcomeSheet: FC<WelcomeSheetProps> = ({
     <Box
       backgroundColor="surface"
       padding="l"
-      gap="m"
       style={[
         styles.sheet,
         { paddingBottom: Math.max(insets.bottom, spacing.l) },
       ]}
     >
-      <Text variant="display" accessibilityRole="header">
-        {headline}
-      </Text>
-      <Text variant="subtitle" fontSize={17} lineHeight={25}>
-        {text}
-      </Text>
-      <Button variant="cta" marginTop="s" onPress={onStart}>
-        {startLabel}
-      </Button>
+      <ContentColumn gap="m">
+        <Text variant="display" accessibilityRole="header">
+          {headline}
+        </Text>
+        <Text variant="subtitle" fontSize={17} lineHeight={25}>
+          {text}
+        </Text>
+        <Button variant="cta" marginTop="s" onPress={onStart}>
+          {startLabel}
+        </Button>
+      </ContentColumn>
     </Box>
   );
 };

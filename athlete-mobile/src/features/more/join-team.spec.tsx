@@ -44,8 +44,10 @@ jest.mock("@/theme/Box", () => ({
   Box: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-jest.mock("@/theme/ScrollBox", () => ({
-  ScrollBox: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+jest.mock("@/common/ColumnScrollBox", () => ({
+  ColumnScrollBox: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 jest.mock("@/theme/Text", () => ({

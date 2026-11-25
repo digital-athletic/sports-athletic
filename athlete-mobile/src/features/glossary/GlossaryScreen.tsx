@@ -1,3 +1,4 @@
+import { useContentColumnStyle } from "@/common/ContentColumn";
 import { ListDivider } from "@/common/ListDivider";
 import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
@@ -27,6 +28,7 @@ const GlossaryListItem: FC<{ id: GlossaryTermId }> = ({ id }) => {
 
 export function GlossaryScreen() {
   const { t } = useTranslation();
+  const columnStyle = useContentColumnStyle();
 
   return (
     <>
@@ -42,6 +44,7 @@ export function GlossaryScreen() {
             </Text>
           }
           contentInsetAdjustmentBehavior="automatic"
+          contentContainerStyle={columnStyle}
           accessibilityRole="list"
           showsVerticalScrollIndicator={false}
         />

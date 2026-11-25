@@ -1,3 +1,4 @@
+import { ColumnScrollBox } from "@/common/ColumnScrollBox";
 import { SwitchInputField } from "@/form/SwitchInputField";
 import { AsyncStorageService } from "@/services/AsyncStorageService";
 import { PushNotificationService } from "@/services/PushNotificationService";
@@ -5,7 +6,6 @@ import { useAuthStore } from "@/store/authStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
-import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack, useRouter } from "expo-router";
@@ -92,7 +92,7 @@ export default function NotificationsScreen() {
           title: t("more.notifications.settings"),
         }}
       />
-      <ScrollBox
+      <ColumnScrollBox
         flex={1}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ flexGrow: 1 }}
@@ -139,7 +139,7 @@ export default function NotificationsScreen() {
             </Button>
           </Box>
         )}
-      </ScrollBox>
+      </ColumnScrollBox>
     </>
   );
 }

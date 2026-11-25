@@ -1,11 +1,11 @@
 import { Alert as RNAlert, Platform } from "react-native";
 import { Alert } from "./Alert";
-import { dismissCurrentAlert, getCurrentAlert } from "./alertQueue";
+import { dismissAlert, getCurrentAlert } from "./alertQueue";
 
 afterEach(() => {
   jest.restoreAllMocks();
-  while (getCurrentAlert()) {
-    dismissCurrentAlert();
+  for (let alert = getCurrentAlert(); alert; alert = getCurrentAlert()) {
+    dismissAlert(alert);
   }
 });
 

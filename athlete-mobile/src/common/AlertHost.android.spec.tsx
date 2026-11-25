@@ -1,10 +1,6 @@
 import { type ReactNode } from "react";
 import { act, fireEvent, render, screen } from "../utils/testUtils";
-import {
-  dismissCurrentAlert,
-  enqueueAlert,
-  getCurrentAlert,
-} from "./alertQueue";
+import { dismissAlert, enqueueAlert, getCurrentAlert } from "./alertQueue";
 import { AlertHost } from "./AlertHost.android";
 
 // Compose views map to React Native views; dialog slots render their children
@@ -28,6 +24,8 @@ jest.mock("@expo/ui/jetpack-compose", () => {
     Host: ({ children }: { children?: ReactNode }) =>
       createElement(View, null, children),
     AlertDialog,
+    Row: ({ children }: { children?: ReactNode }) =>
+      createElement(View, null, children),
     Text: ({ children }: { children?: string }) =>
       createElement(Text, null, children),
     TextButton: ({
@@ -46,8 +44,8 @@ jest.mock("@expo/ui/jetpack-compose", () => {
 });
 
 afterEach(() => {
-  while (getCurrentAlert()) {
-    dismissCurrentAlert();
+  for (let alert = getCurrentAlert(); alert; alert = getCurrentAlert()) {
+    dismissAlert(alert);
   }
 });
 
@@ -72,6 +70,42 @@ describe("AlertHost android: dialog", () => {
     expect(screen.getByText("You can join again later.")).toBeOnTheScreen();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeOnTheScreen();
     expect(screen.getByRole("button", { name: "Leave" })).toBeOnTheScreen();
+  });
+
+  it("shows a third button and runs its callback", async () => {
+    const onLater = jest.fn();
+    await render(<AlertHost />);
+    await act(async () => {
+      enqueueAlert("Save changes?", undefined, [
+        { text: "Later", onPress: onLater },
+        { text: "Discard", style: "destructive" },
+        { text: "Save" },
+      ]);
+    });
+
+    expect(screen.getByRole("button", { name: "Discard" })).toBeOnTheScreen();
+    expect(screen.getByRole("button", { name: "Save" })).toBeOnTheScreen();
+
+    await fireEvent.press(screen.getByRole("button", { name: "Later" }));
+
+    expect(onLater).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId("alert-dialog")).toBeNull();
+  });
+
+  it("keeps the next alert when a button is tapped twice", async () => {
+    const onOk = jest.fn();
+    await render(<AlertHost />);
+    await act(async () => {
+      enqueueAlert("First", undefined, [{ text: "OK", onPress: onOk }]);
+      enqueueAlert("Second");
+    });
+    const firstOk = screen.getByRole("button", { name: "OK" });
+
+    await fireEvent.press(firstOk);
+    await fireEvent.press(firstOk);
+
+    expect(onOk).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Second")).toBeOnTheScreen();
   });
 
   it("closes the dialog before running the button callback", async () => {

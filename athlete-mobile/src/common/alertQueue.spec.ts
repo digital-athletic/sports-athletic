@@ -1,5 +1,6 @@
 import {
-  dismissCurrentAlert,
+  type AlertRequest,
+  dismissAlert,
   enqueueAlert,
   getCurrentAlert,
   subscribeAlerts,
@@ -7,10 +8,16 @@ import {
 } from "./alertQueue";
 
 afterEach(() => {
-  while (getCurrentAlert()) {
-    dismissCurrentAlert();
+  for (let alert = getCurrentAlert(); alert; alert = getCurrentAlert()) {
+    dismissAlert(alert);
   }
 });
+
+function requireCurrentAlert(): AlertRequest {
+  const alert = getCurrentAlert();
+  if (!alert) throw new Error("No alert is shown");
+  return alert;
+}
 
 describe("alertQueue: queueing", () => {
   it("shows the first alert until it is dismissed, then the next one", () => {
@@ -19,19 +26,31 @@ describe("alertQueue: queueing", () => {
 
     expect(getCurrentAlert()?.title).toBe("First");
 
-    dismissCurrentAlert();
+    expect(dismissAlert(requireCurrentAlert())).toBe(true);
 
     expect(getCurrentAlert()?.title).toBe("Second");
 
-    dismissCurrentAlert();
+    dismissAlert(requireCurrentAlert());
 
     expect(getCurrentAlert()).toBeNull();
+  });
+
+  it("keeps the next alert when a closed alert is dismissed again", () => {
+    enqueueAlert("First");
+    enqueueAlert("Second");
+    const first = requireCurrentAlert();
+
+    dismissAlert(first);
+
+    expect(dismissAlert(first)).toBe(false);
+    expect(getCurrentAlert()?.title).toBe("Second");
   });
 
   it("adds an OK button when no buttons are given", () => {
     enqueueAlert("Title", "Message");
 
     expect(getCurrentAlert()).toEqual({
+      id: expect.any(Number),
       title: "Title",
       message: "Message",
       buttons: [{ text: "OK" }],
@@ -44,7 +63,7 @@ describe("alertQueue: queueing", () => {
 
     enqueueAlert("Title");
     unsubscribe();
-    dismissCurrentAlert();
+    dismissAlert(requireCurrentAlert());
 
     expect(listener).toHaveBeenCalledTimes(1);
   });
@@ -64,6 +83,31 @@ describe("alertQueue: toDialogSlots", () => {
     expect(toDialogSlots([cancel, remove])).toEqual({
       confirm: remove,
       dismiss: cancel,
+    });
+  });
+
+  it("puts the first of three buttons into the neutral slot", () => {
+    const later = { text: "Later" };
+    const cancel = { text: "Cancel", style: "cancel" as const };
+    const save = { text: "Save" };
+
+    expect(toDialogSlots([later, cancel, save])).toEqual({
+      confirm: save,
+      dismiss: cancel,
+      neutral: later,
+    });
+  });
+
+  it("drops every button after the third, like React Native on Android", () => {
+    const later = { text: "Later" };
+    const cancel = { text: "Cancel" };
+    const save = { text: "Save" };
+    const extra = { text: "Extra" };
+
+    expect(toDialogSlots([later, cancel, save, extra])).toEqual({
+      confirm: save,
+      dismiss: cancel,
+      neutral: later,
     });
   });
 

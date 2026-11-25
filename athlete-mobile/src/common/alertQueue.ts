@@ -1,6 +1,8 @@
 import type { AlertButton } from "./Alert";
 
 export interface AlertRequest {
+  /** Unique per alert, so each one gets its own dialog */
+  id: number;
   title: string;
   message?: string;
   buttons: AlertButton[];
@@ -9,6 +11,7 @@ export interface AlertRequest {
 export interface DialogSlots {
   confirm: AlertButton;
   dismiss?: AlertButton;
+  neutral?: AlertButton;
 }
 
 type Listener = () => void;
@@ -16,6 +19,7 @@ type Listener = () => void;
 const DEFAULT_BUTTONS: AlertButton[] = [{ text: "OK" }];
 
 let queue: AlertRequest[] = [];
+let nextId = 0;
 const listeners = new Set<Listener>();
 
 function notify() {
@@ -28,7 +32,9 @@ export function enqueueAlert(
   message?: string,
   buttons?: AlertButton[],
 ) {
+  nextId += 1;
   const request: AlertRequest = {
+    id: nextId,
     title,
     message,
     buttons: buttons && buttons.length > 0 ? buttons : DEFAULT_BUTTONS,
@@ -37,9 +43,12 @@ export function enqueueAlert(
   notify();
 }
 
-export function dismissCurrentAlert() {
+/** Closes the given alert if it is shown; false when it was already closed */
+export function dismissAlert(request: AlertRequest): boolean {
+  if (queue[0] !== request) return false;
   queue = queue.slice(1);
   notify();
+  return true;
 }
 
 export function getCurrentAlert(): AlertRequest | null {
@@ -53,9 +62,13 @@ export function subscribeAlerts(listener: Listener) {
   };
 }
 
-/** Last button confirms, the one before dismisses: the Android button order */
+/**
+ * Same mapping as React Native on Android: of the first three buttons the last
+ * confirms, the one before dismisses and the first is neutral. Further buttons are dropped
+ */
 export function toDialogSlots(buttons: AlertButton[]): DialogSlots {
-  const confirm = buttons[buttons.length - 1] ?? DEFAULT_BUTTONS[0];
-  const dismiss = buttons.length > 1 ? buttons[buttons.length - 2] : undefined;
-  return { confirm, dismiss };
+  const [confirm = DEFAULT_BUTTONS[0], dismiss, neutral] = buttons
+    .slice(0, 3)
+    .reverse();
+  return { confirm, dismiss, neutral };
 }

@@ -1,11 +1,7 @@
 import { useTheme } from "@/theme/theme";
 import { useSyncExternalStore } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import {
-  dismissCurrentAlert,
-  getCurrentAlert,
-  subscribeAlerts,
-} from "./alertQueue";
+import { dismissAlert, getCurrentAlert, subscribeAlerts } from "./alertQueue";
 
 /** Web: draws queued alerts as a modal. Render once at app root */
 export function AlertHost() {
@@ -25,6 +21,7 @@ export function AlertHost() {
           ]}
         />
         <View
+          key={current.id}
           style={[
             styles.dialog,
             { backgroundColor: colors.surfaceContainerLowest },
@@ -48,8 +45,9 @@ export function AlertHost() {
                   { backgroundColor: colors.surfaceContainerHigh },
                 ]}
                 onPress={() => {
-                  dismissCurrentAlert();
-                  button.onPress?.();
+                  if (dismissAlert(current)) {
+                    button.onPress?.();
+                  }
                 }}
               >
                 <Text style={[styles.buttonText, { color: colors.onSurface }]}>

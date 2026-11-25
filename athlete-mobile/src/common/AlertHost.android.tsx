@@ -1,9 +1,16 @@
 import { useTheme } from "@/theme/theme";
-import { AlertDialog, Host, Text, TextButton } from "@expo/ui/jetpack-compose";
+import {
+  AlertDialog,
+  Host,
+  Row,
+  Text,
+  TextButton,
+} from "@expo/ui/jetpack-compose";
 import { useSyncExternalStore } from "react";
 import { type AlertButton } from "./Alert";
 import {
-  dismissCurrentAlert,
+  type AlertRequest,
+  dismissAlert,
   getCurrentAlert,
   subscribeAlerts,
   toDialogSlots,
@@ -16,24 +23,29 @@ const DIALOG_PROPERTIES = {
   dismissOnBackPress: false,
 };
 
+// Gap between dialog buttons in Material 3
+const BUTTON_SPACING = 8;
+
 /** Android: draws queued alerts as a Material 3 dialog. Render once at app root */
 export function AlertHost() {
   const current = useSyncExternalStore(subscribeAlerts, getCurrentAlert);
   const { colors } = useTheme();
 
-  const press = (button: AlertButton) => {
-    dismissCurrentAlert();
-    button.onPress?.();
+  // A second tap before the dialog closes must not close the next queued alert
+  const press = (request: AlertRequest, button: AlertButton) => {
+    if (dismissAlert(request)) {
+      button.onPress?.();
+    }
   };
 
-  const renderButton = (button: AlertButton) => (
+  const renderButton = (request: AlertRequest, button: AlertButton) => (
     <TextButton
       colors={
         button.style === "destructive"
           ? { contentColor: colors.error }
           : undefined
       }
-      onClick={() => press(button)}
+      onClick={() => press(request, button)}
     >
       <Text>{button.text}</Text>
     </TextButton>
@@ -45,7 +57,8 @@ export function AlertHost() {
   return (
     <Host matchContents colorScheme="light">
       {current && slots && (
-        <AlertDialog properties={DIALOG_PROPERTIES}>
+        // A fresh dialog per alert, so a late tap reaches the closed one
+        <AlertDialog key={current.id} properties={DIALOG_PROPERTIES}>
           <AlertDialog.Title>
             <Text>{current.title}</Text>
           </AlertDialog.Title>
@@ -55,11 +68,18 @@ export function AlertHost() {
             </AlertDialog.Text>
           )}
           <AlertDialog.ConfirmButton>
-            {renderButton(slots.confirm)}
+            {renderButton(current, slots.confirm)}
           </AlertDialog.ConfirmButton>
           {slots.dismiss && (
             <AlertDialog.DismissButton>
-              {renderButton(slots.dismiss)}
+              {slots.neutral ? (
+                <Row horizontalArrangement={{ spacedBy: BUTTON_SPACING }}>
+                  {renderButton(current, slots.neutral)}
+                  {renderButton(current, slots.dismiss)}
+                </Row>
+              ) : (
+                renderButton(current, slots.dismiss)
+              )}
             </AlertDialog.DismissButton>
           )}
         </AlertDialog>

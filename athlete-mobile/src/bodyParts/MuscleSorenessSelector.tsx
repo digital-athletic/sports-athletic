@@ -40,7 +40,7 @@ type SelectorLayoutProps = {
 };
 
 // The screen around the selector scrolls, so the figure keeps its size when
-// many chips are selected. In landscape the chips sit beside the figure.
+// many chips are selected. In landscape it takes half the width, centered.
 const SelectorLayout: FC<SelectorLayoutProps> = ({
   isLandscape,
   silhouetteHeight,
@@ -48,20 +48,23 @@ const SelectorLayout: FC<SelectorLayoutProps> = ({
   sideToggle,
   chips,
 }) => (
-  <Box flexDirection={isLandscape ? "row" : "column"} gap="m">
-    <Box flex={isLandscape ? 1 : undefined} gap="m">
-      {sideToggle}
-      <Card
-        variant="outlined"
-        backgroundColor="surfaceContainerLow"
-        overflow="hidden"
-      >
-        <Box height={silhouetteHeight} padding="m" testID="soreness-figure">
-          {figure}
-        </Box>
-      </Card>
-    </Box>
-    <Box flex={isLandscape ? 1 : undefined}>{chips}</Box>
+  <Box
+    width={isLandscape ? "50%" : "100%"}
+    alignSelf="center"
+    gap="m"
+    testID="soreness-selector"
+  >
+    {sideToggle}
+    <Card
+      variant="outlined"
+      backgroundColor="surfaceContainerLow"
+      overflow="hidden"
+    >
+      <Box height={silhouetteHeight} padding="m" testID="soreness-figure">
+        {figure}
+      </Box>
+    </Card>
+    {chips}
   </Box>
 );
 

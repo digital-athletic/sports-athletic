@@ -170,4 +170,27 @@ describe("MuscleSorenessSelector: figure size", () => {
     expect(second.getByTestId("soreness-figure")).toHaveStyle({ height: 500 });
     await second.unmount();
   });
+
+  it("centers the selector at half the width in landscape", async () => {
+    setGender("MALE");
+    Dimensions.set({ window: landscape, screen: landscape });
+
+    const view = await render(<MuscleSorenessSelector tags={[]} />);
+
+    expect(view.getByTestId("soreness-selector")).toHaveStyle({
+      width: "50%",
+      alignSelf: "center",
+    });
+  });
+
+  it("uses the full width in portrait", async () => {
+    setGender("MALE");
+    Dimensions.set({ window: portrait, screen: portrait });
+
+    const view = await render(<MuscleSorenessSelector tags={[]} />);
+
+    expect(view.getByTestId("soreness-selector")).toHaveStyle({
+      width: "100%",
+    });
+  });
 });

@@ -42,7 +42,9 @@ export const SegmentedControl = <T extends string>({
       appearance="light"
       accessibilityLabel={accessibilityLabel}
       // Replaces the Material default purple on Android.
-      tintColor={Platform.OS === "android" ? colors.primaryContainer : undefined}
+      tintColor={
+        Platform.OS === "android" ? colors.primaryContainer : undefined
+      }
     />
   );
 };

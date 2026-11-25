@@ -154,7 +154,7 @@ const ValueLine: FC<
           cy={y}
           r={dotRadius}
           fill={colors.primary}
-          stroke={colors.white}
+          stroke={colors.surfaceContainerLowest}
           strokeWidth={2}
         />
       ))}

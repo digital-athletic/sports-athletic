@@ -12,7 +12,7 @@ const lightRoleValues = {
   surfaceContainerHigh: "#E8E8E8",
   outlineVariant: "#E8E8E8",
   outline: "#AAAAAA",
-  onSurfaceVariant: "#767676",
+  onSurfaceVariant: "#555555",
   onSurface: "#333333",
   error: "#D70015",
   success: "#34C759",

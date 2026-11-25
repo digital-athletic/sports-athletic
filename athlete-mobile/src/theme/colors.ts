@@ -105,7 +105,7 @@ const lightRoles: ColorRoles = {
   surfaceContainerHigh: "#E8E8E8",
   surfaceContainerHighest: "#FBDBD7",
   onSurface: "#333333",
-  onSurfaceVariant: "#767676",
+  onSurfaceVariant: "#555555",
   outline: "#AAAAAA",
   outlineVariant: "#E8E8E8",
 

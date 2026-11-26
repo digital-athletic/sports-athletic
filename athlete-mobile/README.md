@@ -94,6 +94,99 @@ Both are cleared when the emulator restarts or the adb server is killed. Without
 
 > **Linux:** the emulator needs KVM. Without it, it falls back to software emulation and is unusably slow, and nothing reports an error. Check with `test -w /dev/kvm`.
 
+#### Optional: Building an APK (on a different machine)
+For some setups it might not be desirable to have everything run on the same machine. For example the metro server running on ARM Linux(e.g. in a VM on macOS) where there are no  build tools for Android might make you want to split up the creation of the apk from the dev server.
+*Note: This has only been tested on macOS with a dev server running on ARM Linux, but it should work for different platforms as well*
+
+##### Setting up the build environment
+First we need to install the JDK 17 and Android Command-Line-Tools. If you are using Android Studio you can install the Command Line Tools through its SDK Manager.
+
+###### macOS
+```bash
+brew install --cask zulu@17 android-commandlinetools
+```
+###### Linux(x86_64)
+```bash
+sudo apt install openjdk-17-jdk
+```
+Then download the [command-line-tools](https://developer.android.com/studio#command-line-tools-only)
+and unpack them into 
+```
+~/Android/Sdk/cmdline-tools/latest
+```
+###### Windows
+```bash
+winget install Azul.Zulu.17.JDK
+```
+Then download the [command-line-tools](https://developer.android.com/studio#command-line-tools-only) and unpack them into
+```bash
+%LOCALAPPDATA%\Android\Sdk\cmdline-tools\latest
+```
+##### Setting the Environment variables
+###### macOS
+In `~/.zshrc`:
+```bash
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+export ANDROID_HOME="/opt/homebrew/share/android-commandlinetools"
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+```
+*Note: on Intel Macs, Homebrew uses `/usr/local/share/android-commandlinetools` instead.*
+
+###### Linux
+In `~/.bashrc`:
+```bash
+export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+export ANDROID_HOME="$HOME/Android/Sdk"
+export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin"
+```
+###### Windows
+Run this in Powershell
+```Powershell
+setx JAVA_HOME "C:\Program Files\Zulu\zulu-17"
+setx ANDROID_HOME "$env:LOCALAPPDATA\Android\Sdk"
+setx PATH "$env:PATH;$env:LOCALAPPDATA\Android\Sdk\platform-tools;$env:LOCALAPPDATA\Android\Sdk\cmdline-tools\latest\bin"
+```
+Open a new Terminal afterwards.
+
+*Note: `setx` cuts values longer than 1024 characters, which can break a long `PATH`. In that case add the two folders under "Edit the system environment variables" instead.*
+
+##### SDK parts and licenses
+```bash
+sdkmanager "platform-tools" "cmake;3.22.1"
+sdkmanager --licenses
+```
+Accept the licenses.
+
+Install the Node version from [Dockerfile](Dockerfile). Run `corepack enable`. If corepack isnt found run `npm install -g corepack` first.
+
+##### Building the APK
+###### macOS and Linux
+```bash
+cd athlete-mobile
+git pull
+pnpm install
+npx expo prebuild --platform android --clean
+cd android
+./gradlew assembleDebug -PreactNativeArchitectures=arm64-v8a
+```
+**If your Android emulator/device is on x86 replace `arm64-v8a` with `x86_64` in the last line**
+
+###### Windows
+```bash
+cd athlete-mobile
+git pull
+pnpm install
+npx expo prebuild --platform android --clean
+cd android
+.\gradlew.bat assembleDebug -PreactNativeArchitectures=arm64-v8a
+```
+**If youre Android emulator/device is on x86 replace `arm64-v8a` with `x86_64` in the last line**
+
+
+##### Usage
+This will give you a dev APK which needs to be pointed at a Metro server to run. You can do this within the launcher of the app itself.
+The apk will be at `android/app/build/outputs/apk/debug/app-debug.apk`
+
 ### iOS
 
 **Requirements:**

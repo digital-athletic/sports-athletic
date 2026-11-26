@@ -11,6 +11,9 @@
 -- After this migration a table is reachable only through the grants listed
 -- here. The result is the same on every environment, whatever its default
 -- privileges were when the tables were created.
+--
+-- Not covered: objects that a role other than postgres creates. Supabase does
+-- not let postgres change the default privileges of supabase_admin.
 
 BEGIN;
 
@@ -51,19 +54,55 @@ GRANT SELECT, DELETE ON public.teams, public.team_members TO authenticated;
 GRANT SELECT ON public.user_profiles TO authenticated;
 
 -- ============================================================================
--- 3. Future tables start without grants
+-- 3. The reset took effect
+-- ============================================================================
+-- REVOKE and GRANT only warn when the role running them does not own the
+-- table. The migration would then finish without changing a privilege. Fail
+-- instead, so the deployment stops and the cause gets fixed.
+DO $$
+DECLARE
+  v_open text;
+BEGIN
+  SELECT string_agg(DISTINCT c.relname::text, ', ')
+  INTO   v_open
+  FROM   pg_catalog.pg_class c
+  CROSS JOIN unnest(ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'TRUNCATE',
+                          'REFERENCES', 'TRIGGER']) AS p(privilege)
+  WHERE  c.relnamespace = 'public'::regnamespace
+  AND    c.relname IN ('teams', 'team_members', 'team_invitations', 'team_member_details',
+                       'user_profiles', 'user_completed_workouts', 'user_exercises',
+                       'strength_tests')
+  AND    pg_catalog.has_table_privilege('anon', c.oid, p.privilege);
+
+  IF v_open IS NOT NULL THEN
+    RAISE EXCEPTION 'anon still holds table privileges: %', v_open
+      USING HINT = 'The tables must be owned by the role that runs this migration.';
+  END IF;
+END;
+$$;
+
+-- ============================================================================
+-- 4. Future objects start without grants
 -- ============================================================================
 -- Projects created before the 2026 change may still hand out the old defaults
--- to tables that postgres creates. Remove them, so a new table is closed until
--- its migration grants access. This does nothing where the defaults are
--- already strict. service_role keeps its defaults.
+-- to tables, sequences and functions that postgres creates. Remove them, so a
+-- new object is closed until its migration grants access. This does nothing
+-- where the defaults are already strict. service_role keeps its defaults.
+--
+-- Two things stay the job of each migration:
+--   * A new function is still executable by PUBLIC, a Postgres default that
+--     cannot be changed per schema. Revoke it there, as the functions so far do.
+--   * A serial or identity column needs USAGE on its sequence for every role
+--     that inserts.
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
   REVOKE ALL ON TABLES FROM anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
   REVOKE ALL ON SEQUENCES FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  REVOKE ALL ON FUNCTIONS FROM anon, authenticated;
 
 -- ============================================================================
--- 4. Functions
+-- 5. Functions
 -- ============================================================================
 -- Trigger functions are never called directly. A trigger fires without an
 -- EXECUTE check on the caller, so no API role needs the privilege.

@@ -70,7 +70,7 @@ export const TrainingSheetHeading: FC<Props> = ({
         {title}
       </Text>
       {subtitle && (
-        <Text variant="small" color="darkGrey1" textAlign="center">
+        <Text variant="small" color="onSurfaceVariant" textAlign="center">
           {subtitle}
         </Text>
       )}
@@ -79,7 +79,7 @@ export const TrainingSheetHeading: FC<Props> = ({
     <Text
       fontSize={isTimed ? 32 : 16}
       fontWeight="300"
-      color={isTimed ? "darkGrey3" : "darkGrey2"}
+      color={isTimed ? "onSurface" : "onSurfaceVariant"}
       textAlign="center"
       testID={timerTestID}
     >

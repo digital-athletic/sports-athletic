@@ -65,9 +65,9 @@ export const PlaceSelection: FC<PlaceSelectionProps> = ({
       >
         <Box
           width="100%"
-          backgroundColor="white"
+          backgroundColor="surfaceContainerLowest"
           borderBottomWidth={1}
-          borderBottomColor="lightGrey2"
+          borderBottomColor="outlineVariant"
           flexDirection="row"
           alignItems="center"
         >
@@ -80,11 +80,11 @@ export const PlaceSelection: FC<PlaceSelectionProps> = ({
             <Text variant="cardTitle" marginBottom="xs">
               {place.name}
             </Text>
-            <Text variant="body" color="darkGrey1">
+            <Text variant="body" color="onSurfaceVariant">
               {equipmentCount}
             </Text>
             {trainingDays ? (
-              <Text variant="body" color="darkGrey1" marginTop="xs">
+              <Text variant="body" color="onSurfaceVariant" marginTop="xs">
                 {trainingDays}
               </Text>
             ) : null}
@@ -93,7 +93,7 @@ export const PlaceSelection: FC<PlaceSelectionProps> = ({
             <AppIcon
               icon={IconChevronRight}
               size={20}
-              color={colors.lightGrey3}
+              color={colors.outline}
               decorative
             />
           </Box>

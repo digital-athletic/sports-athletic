@@ -36,7 +36,7 @@ export const TrainingPlanStatusWidget: FC<TrainingPlanStatusWidgetProps> = ({
         alignItems="center"
         alignSelf="stretch"
         padding="s"
-        backgroundColor="white"
+        backgroundColor="surfaceContainerLowest"
       >
         <Text variant="small">{t("training.status.noSections")}</Text>
       </Box>

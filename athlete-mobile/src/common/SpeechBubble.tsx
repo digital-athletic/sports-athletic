@@ -57,7 +57,7 @@ export const SpeechBubble: FC<SpeechBubbleProps> = ({ text, centered }) => {
         >
           <Text
             variant={centered ? "title" : "sectionTitle"}
-            color="white"
+            color="onPrimary"
             style={{ fontSize }}
           >
             {text}

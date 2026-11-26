@@ -5,6 +5,7 @@ import { useTheme } from "@/theme/theme";
 import { useResponsiveProp } from "@shopify/restyle";
 import { type FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { StyleSheet } from "react-native";
 import {
   calculateUserLevel,
   getXpForNextLevel,
@@ -72,17 +73,21 @@ export const LevelProgress: FC<LevelProgressProps> = ({
       right={0}
       bottom={0}
       left={0}
-      backgroundColor="overlay"
       justifyContent="center"
       alignItems="stretch"
     >
+      <Box
+        style={StyleSheet.absoluteFill}
+        backgroundColor="scrim"
+        opacity={0.8}
+      />
       <Box
         flex={1}
         marginVertical="xxl"
         marginHorizontal="m"
         padding="m"
         borderRadius="m"
-        backgroundColor="white"
+        backgroundColor="surfaceContainerLowest"
         justifyContent="center"
         alignItems="stretch"
       >
@@ -93,7 +98,7 @@ export const LevelProgress: FC<LevelProgressProps> = ({
             <Text
               variant="body"
               fontSize={fontSize}
-              style={{ color: colors.darkGrey3 }}
+              style={{ color: colors.onSurface }}
             >
               {t("common.levelProgress.congratulations")}
             </Text>
@@ -104,7 +109,7 @@ export const LevelProgress: FC<LevelProgressProps> = ({
             <Text
               variant="body"
               fontSize={fontSize}
-              style={{ color: colors.darkGrey3 }}
+              style={{ color: colors.onSurface }}
             >
               {value} / {levelMax}
             </Text>
@@ -115,7 +120,7 @@ export const LevelProgress: FC<LevelProgressProps> = ({
             <Text
               variant="body"
               fontSize={fontSize}
-              style={{ color: colors.darkGrey3 }}
+              style={{ color: colors.onSurface }}
             >
               {t("common.levelProgress.level", { level })}
             </Text>
@@ -127,7 +132,7 @@ export const LevelProgress: FC<LevelProgressProps> = ({
             height={elementHeight}
             borderRadius="m"
             borderWidth={1}
-            borderColor="darkGrey1"
+            borderColor="onSurfaceVariant"
             flexDirection="row"
           >
             {/* Filled Portion */}

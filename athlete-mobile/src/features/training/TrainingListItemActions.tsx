@@ -73,7 +73,7 @@ export const TrainingListItemActions: FC<TrainingListItemActionsProps> = ({
   return (
     <Box flexDirection="row" alignItems="center" gap="m">
       {isTest && isCompleted && repsValue > 0 && (
-        <Text variant="small" color="darkGrey1">
+        <Text variant="small" color="onSurfaceVariant">
           {t("training.overview.repetitions", { count: repsValue })}
         </Text>
       )}

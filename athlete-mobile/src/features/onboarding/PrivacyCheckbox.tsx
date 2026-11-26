@@ -27,7 +27,7 @@ const PrivacyCheckboxText: FC<
 
   if (label === "ANONYMISED_DATA_USE") {
     return (
-      <Text color="darkGrey2" fontSize={14}>
+      <Text color="onSurfaceVariant" fontSize={14}>
         {t("onboarding.anonymisedDataUse")}
       </Text>
     );
@@ -40,7 +40,7 @@ const PrivacyCheckboxText: FC<
   };
 
   return (
-    <Text color="darkGrey2" fontSize={14}>
+    <Text color="onSurfaceVariant" fontSize={14}>
       <Trans
         i18nKey={
           label === "PRIVACY_FULL"

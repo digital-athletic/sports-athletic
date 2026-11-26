@@ -41,7 +41,7 @@ const SetSummary: FC<{ sets: ChecklistSetSummary[]; testId: string }> = ({
   if (labelledSets.length === 0) return null;
 
   return (
-    <Text variant="small" color="darkGrey1">
+    <Text variant="small" color="onSurfaceVariant">
       {labelledSets.map((set, position) => {
         const isDone = set.completed && !set.skipped;
         return (
@@ -49,7 +49,7 @@ const SetSummary: FC<{ sets: ChecklistSetSummary[]; testId: string }> = ({
             {position > 0 && " / "}
             <Text
               variant="small"
-              color={isDone ? "successText" : "darkGrey1"}
+              color={isDone ? "onSuccessContainer" : "onSurfaceVariant"}
               fontWeight={isDone ? "600" : "400"}
               accessibilityState={{ checked: isDone }}
               testID={`${testId}-set-${set.index}`}
@@ -73,7 +73,11 @@ const SkippedNote: FC<{
   if (skippedCount === 0) return null;
 
   return (
-    <Text variant="small" color="darkGrey1" testID={`${testId}-skipped-label`}>
+    <Text
+      variant="small"
+      color="onSurfaceVariant"
+      testID={`${testId}-skipped-label`}
+    >
       {skippedCount === setCount
         ? t("training.list.skipped")
         : t("training.list.skippedOfSets", {
@@ -125,7 +129,7 @@ export const TrainingListItem: FC<TrainingListItemProps> = ({
     <Box
       testID={testId}
       borderBottomWidth={1}
-      borderBottomColor="lightGrey2"
+      borderBottomColor="outlineVariant"
       paddingVertical="m"
     >
       <Box flexDirection="row" alignItems="center" gap="s">

@@ -34,7 +34,7 @@ const LatestValue: FC<{ test: SportTest; latest: LatestResult | null }> = ({
       <Text
         variant="small"
         fontSize={{ phone: 14, tablet: 17 }}
-        color="darkGrey1"
+        color="onSurfaceVariant"
       >
         {t("more.performanceTests.noValue")}
       </Text>
@@ -102,7 +102,7 @@ export const PerformanceTestRow: FC<Props> = ({
     >
       <Card
         variant="outlined"
-        backgroundColor="lightGrey1"
+        backgroundColor="surfaceContainerLow"
         flexDirection="row"
         alignItems="center"
         gap={{ phone: "s", tablet: "m" }}
@@ -122,7 +122,7 @@ export const PerformanceTestRow: FC<Props> = ({
             <Text
               variant="small"
               fontSize={{ phone: 14, tablet: 17 }}
-              color="darkGrey1"
+              color="onSurfaceVariant"
               numberOfLines={1}
             >
               {categoryLabel}
@@ -131,7 +131,7 @@ export const PerformanceTestRow: FC<Props> = ({
           <Text
             variant="small"
             fontSize={{ phone: 14, tablet: 17 }}
-            color="darkGrey1"
+            color="onSurfaceVariant"
           >
             {reference}
           </Text>

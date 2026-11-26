@@ -61,7 +61,7 @@ const SummaryCard: FC<SummaryCardProps> = ({ type, value, testID }) => {
         width={ICON_CIRCLE_SIZE}
         height={ICON_CIRCLE_SIZE}
         borderRadius="round"
-        backgroundColor="primaryTint"
+        backgroundColor="primaryContainer"
         alignItems="center"
         justifyContent="center"
       >
@@ -81,7 +81,7 @@ const SummaryCard: FC<SummaryCardProps> = ({ type, value, testID }) => {
         >
           {value}
         </Text>
-        <Text variant="xSmall" color="darkGrey1">
+        <Text variant="xSmall" color="onSurfaceVariant">
           {label}
         </Text>
       </Box>

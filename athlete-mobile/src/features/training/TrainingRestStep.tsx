@@ -21,7 +21,7 @@ const NextSetPreview: FC<{ nextSet: NonNullable<SheetRest["nextSet"]> }> = ({
 
   return (
     <Box alignItems="center" gap="xs" testID="training-list-sheet-next-set">
-      <Text variant="body" color="darkGrey2">
+      <Text variant="body" color="onSurfaceVariant">
         {t("training.list.rest.nextSet")}
       </Text>
       <Text variant="title" textAlign="center">

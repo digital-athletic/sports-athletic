@@ -34,14 +34,14 @@ exports[`<TextInputField /> renders correctly with an icon 1`] = `
         align="xMidYMid"
         bbHeight={22}
         bbWidth={22}
-        color="#767676"
+        color="#555555"
         fill="none"
         focusable={false}
         height={22}
         meetOrSlice={0}
         minX={0}
         minY={0}
-        stroke="#767676"
+        stroke="#555555"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={2}
@@ -76,7 +76,7 @@ exports[`<TextInputField /> renders correctly with an icon 1`] = `
           }
           stroke={
             {
-              "payload": 4285953654,
+              "payload": 4283782485,
               "type": 0,
             }
           }
@@ -98,7 +98,7 @@ exports[`<TextInputField /> renders correctly with an icon 1`] = `
             }
             stroke={
               {
-                "payload": 4285953654,
+                "payload": 4283782485,
                 "type": 0,
               }
             }
@@ -120,7 +120,7 @@ exports[`<TextInputField /> renders correctly with an icon 1`] = `
             }
             stroke={
               {
-                "payload": 4285953654,
+                "payload": 4283782485,
                 "type": 0,
               }
             }

@@ -16,7 +16,7 @@ export default function TabLayout() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const activeTintColor = colors.primary;
-  const inactiveTintColor = colors.darkGrey1;
+  const inactiveTintColor = colors.onSurfaceVariant;
   // The tab bar callback may pass numeric and null colors, which the icons reject.
   const iconColor = (focused: boolean) =>
     focused ? activeTintColor : inactiveTintColor;
@@ -28,7 +28,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: activeTintColor,
         tabBarInactiveTintColor: inactiveTintColor,
         tabBarStyle: {
-          backgroundColor: colors.white,
+          backgroundColor: colors.surface,
         },
         tabBarLabelStyle: {
           fontSize: 11,

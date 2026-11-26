@@ -183,7 +183,11 @@ export function EmailVerificationScreen() {
 
   return (
     <KeyboardDismissArea>
-      <Box flex={1} backgroundColor="white" style={{ paddingTop: insets.top }}>
+      <Box
+        flex={1}
+        backgroundColor="surface"
+        style={{ paddingTop: insets.top }}
+      >
         <Box paddingHorizontal="l" paddingVertical="s" alignItems="flex-start">
           <BackHeader onBack={() => router.replace("/onboarding")} />
         </Box>
@@ -199,7 +203,7 @@ export function EmailVerificationScreen() {
               heading={t("onboarding.confirmEmailAddressTitle")}
               description={t("onboarding.confirmEmailAddressMessage")}
             />
-            <Text variant="subtitle" color="darkGrey3" fontWeight="700">
+            <Text variant="subtitle" color="onSurface" fontWeight="700">
               {email}
             </Text>
           </Box>
@@ -219,16 +223,16 @@ export function EmailVerificationScreen() {
               autoCorrect={false}
               spellCheck={false}
               placeholder="_ _ _ _ _ _"
-              placeholderTextColor={colors.darkGrey2}
+              placeholderTextColor={colors.onSurfaceVariant}
               accessibilityLabel={t("onboarding.verificationCodeInput")}
               style={[
                 styles.otpInput,
                 {
-                  color: colors.darkGrey3,
-                  backgroundColor: colors.white,
+                  color: colors.onSurface,
+                  backgroundColor: colors.surfaceContainerLowest,
                   borderColor: verificationError
                     ? colors.error
-                    : colors.lightGrey3,
+                    : colors.outline,
                   borderRadius: borderRadii.xl,
                 },
               ]}
@@ -243,7 +247,7 @@ export function EmailVerificationScreen() {
                 {verificationError}
               </Text>
             ) : (
-              <Text variant="small" color="darkGrey1">
+              <Text variant="small" color="onSurfaceVariant">
                 {t("onboarding.enterVerificationCode")}
               </Text>
             )}
@@ -264,13 +268,13 @@ export function EmailVerificationScreen() {
           paddingHorizontal="l"
           paddingTop="m"
           borderTopWidth={StyleSheet.hairlineWidth}
-          borderTopColor="lightGrey2"
+          borderTopColor="outlineVariant"
           style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
         >
           <Text
             variant="small"
             textAlign="center"
-            color={resent ? "successText" : "darkGrey1"}
+            color={resent ? "onSuccessContainer" : "onSurfaceVariant"}
             {...(resent ? liveRegionProps : {})}
           >
             {resent

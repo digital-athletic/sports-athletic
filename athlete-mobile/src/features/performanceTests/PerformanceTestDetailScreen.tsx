@@ -41,7 +41,7 @@ const SummaryCard: FC<{
   return (
     <Card
       variant="outlined"
-      backgroundColor="lightGrey1"
+      backgroundColor="surfaceContainerLow"
       flexDirection="row"
       alignItems="center"
       gap={{ phone: "s", tablet: "m" }}
@@ -53,7 +53,7 @@ const SummaryCard: FC<{
         <Text
           variant="small"
           fontSize={{ phone: 14, tablet: 17 }}
-          color="darkGrey1"
+          color="onSurfaceVariant"
         >
           {t("more.performanceTests.latestValue")}
         </Text>
@@ -130,7 +130,7 @@ const HistoryRow: FC<{
       <Text
         variant="body"
         fontSize={{ phone: 16, tablet: 20 }}
-        color="darkGrey1"
+        color="onSurfaceVariant"
       >
         {formatDateForDisplay(entry.date)}
       </Text>

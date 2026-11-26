@@ -80,7 +80,7 @@ describe("TrainingProgressBar: Android", () => {
     await render(<AndroidTrainingProgressBar progress={0.5} />);
     const indicator = screen.getByTestId("native-progress");
     expect(indicator.props.color).toBe(theme.colors.primary);
-    expect(indicator.props.trackColor).toBe(theme.colors.lightGrey2);
+    expect(indicator.props.trackColor).toBe(theme.colors.outlineVariant);
   });
 
   it("tags the native indicator with the progress bar testID", async () => {

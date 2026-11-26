@@ -82,7 +82,7 @@ const YAxis: FC<PartProps & { unit: string; fontSize: number }> = ({
         x2={plot.width}
         y1={tick.y}
         y2={tick.y}
-        stroke={colors.lightGrey2}
+        stroke={colors.outlineVariant}
         strokeWidth={1}
       />
       <Text
@@ -90,7 +90,7 @@ const YAxis: FC<PartProps & { unit: string; fontSize: number }> = ({
         y={tick.y + fontSize / 3}
         fontSize={fontSize}
         fontFamily={AXIS_FONT_FAMILY}
-        fill={colors.darkGrey2}
+        fill={colors.onSurfaceVariant}
         textAnchor="end"
       >
         {`${formatRangeNumber(tick.value, i18n.language)} ${unit}`}
@@ -121,7 +121,7 @@ const XAxis: FC<
       y={plot.height + fontSize * 1.8}
       fontSize={fontSize}
       fontFamily={AXIS_FONT_FAMILY}
-      fill={colors.darkGrey2}
+      fill={colors.onSurfaceVariant}
       textAnchor={label.anchor}
     >
       {formatDateForDisplay(label.date)}
@@ -154,7 +154,7 @@ const ValueLine: FC<
           cy={y}
           r={dotRadius}
           fill={colors.primary}
-          stroke={colors.white}
+          stroke={colors.surfaceContainerLowest}
           strokeWidth={2}
         />
       ))}

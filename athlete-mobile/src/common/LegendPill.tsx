@@ -13,7 +13,7 @@ export const LegendPill: FC<LegendPillProps> = ({ label, color }) => (
     paddingHorizontal="s"
     paddingVertical="xs"
     borderRadius="round"
-    backgroundColor="surfaceSubtle"
+    backgroundColor="surfaceContainer"
   >
     <Box
       width={8}
@@ -21,7 +21,7 @@ export const LegendPill: FC<LegendPillProps> = ({ label, color }) => (
       borderRadius="round"
       style={{ backgroundColor: color }}
     />
-    <Text variant="xSmall" color="darkGrey3">
+    <Text variant="xSmall" color="onSurface">
       {label}
     </Text>
   </Box>

@@ -75,7 +75,7 @@ describe("SnapSliderInputField", () => {
     expect(getByLabelText("slider").props.value).toBe(2);
   });
 
-  it("draws the unfilled track in a color of the light design", async () => {
+  it("draws the unfilled track in the high surface container color", async () => {
     const { getByLabelText } = await render(
       <SnapSliderInputField
         startItem={0}
@@ -86,7 +86,7 @@ describe("SnapSliderInputField", () => {
     );
 
     expect(getByLabelText("slider").props.maximumTrackTintColor).toBe(
-      theme.colors.lightGrey2,
+      theme.colors.surfaceContainerHigh,
     );
   });
 

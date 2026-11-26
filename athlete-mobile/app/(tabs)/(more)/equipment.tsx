@@ -3,6 +3,7 @@ import { Coaching } from "@/common/Coaching";
 import { PlaceType, WorkoutConstants } from "@/constants/workoutConstants";
 // Navigate to screen-based details instead of embedding component here
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
+import { TrainingDayType } from "@/features/training/models/TrainingDay";
 import { I18nKey } from "@/i18n";
 import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
@@ -11,6 +12,25 @@ import { ScrollBox } from "@/theme/ScrollBox";
 import { Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+
+const groupTrainingDaysByPlace = (trainingDays: TrainingDayType[]) => {
+  const trainingDaysAtPlaces: Record<PlaceType, I18nKey[]> = {
+    HOME: [],
+    OUTSIDE: [],
+    HALL: [],
+    STUDIO: [],
+  };
+
+  trainingDays.forEach((day) => {
+    if (day.active) {
+      trainingDaysAtPlaces[day.place].push(
+        WorkoutConstants.WEEKDAY_TRAINING_KEYS[day.weekday],
+      );
+    }
+  });
+
+  return trainingDaysAtPlaces;
+};
 
 /**
  * Equipment Screen
@@ -40,21 +60,7 @@ export default function EquipmentScreen() {
     });
   }, [getPlaceEquipment, setPlaceEquipment]);
 
-  // Map training days to places
-  const trainingDaysAtPlaces: Record<PlaceType, I18nKey[]> = {
-    HOME: [],
-    OUTSIDE: [],
-    HALL: [],
-    STUDIO: [],
-  };
-
-  trainingDays.forEach((day) => {
-    if (day.active) {
-      trainingDaysAtPlaces[day.place].push(
-        WorkoutConstants.WEEKDAY_TRAINING_KEYS[day.weekday],
-      );
-    }
-  });
+  const trainingDaysAtPlaces = groupTrainingDaysByPlace(trainingDays);
 
   const handleSelectPlace = (placeId: PlaceType) => {
     router.push({
@@ -76,14 +82,18 @@ export default function EquipmentScreen() {
       />
       <ScrollBox
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         contentInsetAdjustmentBehavior="automatic"
       >
-        <Box backgroundColor="white">
+        <Box backgroundColor="surface">
           <Box paddingTop="s" paddingHorizontal="m">
             <Coaching text={t("equipment.coachMessage")} />
           </Box>
-          <Box borderTopWidth={1} borderTopColor="lightGrey2" marginTop="s" />
+          <Box
+            borderTopWidth={1}
+            borderTopColor="outlineVariant"
+            marginTop="s"
+          />
           <PlaceSelection
             selectPlace={handleSelectPlace}
             places={places}

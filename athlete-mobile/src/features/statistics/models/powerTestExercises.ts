@@ -1,11 +1,11 @@
 import { type MaxValuesType } from "@/features/training/models/MaxValues";
 import { type I18nKey } from "@/i18n";
-import { type colors } from "@/theme/colors";
+import { type ThemeColor } from "@/theme/theme";
 
 type PowerTestExercise = {
   /** Movement direction whose barbell maximum the exercise measures. */
   direction: keyof Omit<MaxValuesType, "testAt">;
-  color: keyof typeof colors;
+  color: ThemeColor;
   legendKey: I18nKey;
   resultKey: I18nKey;
 };

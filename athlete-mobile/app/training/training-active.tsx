@@ -139,12 +139,12 @@ const TrainingActive: FC<TrainingActiveProps> = () => {
         }}
       >
         <KeyboardAwareScrollView
-          style={{ flex: 1, backgroundColor: colors.white }}
+          style={{ flex: 1, backgroundColor: colors.surface }}
           // Ensures input and save button remain visible
           bottomOffset={TRAINING_INPUT_OFFSET}
           keyboardShouldPersistTaps="handled"
         >
-          <Box flex={1} backgroundColor="white" justifyContent="flex-start">
+          <Box flex={1} backgroundColor="surface" justifyContent="flex-start">
             {/* Progress bar */}
             <TrainingProgressBar progress={progress} />
 

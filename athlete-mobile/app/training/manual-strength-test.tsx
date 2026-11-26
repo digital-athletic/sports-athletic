@@ -210,7 +210,7 @@ const ManualStrengthTestScreen: FC = () => {
             borderRadius="round"
             style={{ backgroundColor: config.color }}
           />
-          <Text variant="subtitle" color="darkGrey3">
+          <Text variant="subtitle" color="onSurface">
             {config.label}
           </Text>
         </Box>
@@ -260,7 +260,7 @@ const ManualStrengthTestScreen: FC = () => {
             gestureEnabled: false,
           }}
         />
-        <Box flex={1} backgroundColor="white">
+        <Box flex={1} backgroundColor="surface">
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <Box flex={1} paddingVertical="m">
               <PowerTest isSuccessScreen={true} />
@@ -290,11 +290,11 @@ const ManualStrengthTestScreen: FC = () => {
           headerLeft: () => <BackHeader />,
         }}
       />
-      <Box flex={1} backgroundColor="white">
+      <Box flex={1} backgroundColor="surface">
         <KeyboardAwareScrollView
           contentContainerStyle={{ flexGrow: 1, padding: 16 }}
         >
-          <Text variant="body" color="darkGrey2" marginBottom="s">
+          <Text variant="body" color="onSurfaceVariant" marginBottom="s">
             {t("training.manualStrengthTest.description")}
           </Text>
 

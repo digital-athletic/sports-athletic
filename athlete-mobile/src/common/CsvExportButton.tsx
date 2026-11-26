@@ -25,7 +25,7 @@ export const CsvExportButton: FC<CsvExportButtonProps> = ({
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const color = disabled ? "lightGrey3" : "primary";
+  const color = disabled ? "outline" : "primary";
 
   return (
     <TouchableBox

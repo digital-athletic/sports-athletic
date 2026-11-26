@@ -53,16 +53,19 @@ export const SelectMenu: FC<SelectMenuProps> = ({
         accessibilityValue={{ text: currentLabel }}
         style={[
           styles.trigger,
-          { backgroundColor: colors.white, borderColor: colors.lightGrey2 },
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.outlineVariant,
+          },
         ]}
       >
-        <Text variant="small" fontWeight="600" color="darkGrey3">
+        <Text variant="small" fontWeight="600" color="onSurface">
           {currentLabel}
         </Text>
         <AppIcon
           icon={IconChevronDown}
           size={16}
-          color={colors.darkGrey3}
+          color={colors.onSurface}
           decorative
         />
       </View>

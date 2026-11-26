@@ -70,7 +70,7 @@ const WorkoutCard: FC<{ workout: CompleteWorkoutType }> = ({ workout }) => {
       </Text>
       <Text
         variant="small"
-        color="darkGrey1"
+        color="onSurfaceVariant"
         numberOfLines={1}
         adjustsFontSizeToFit
         testID={`${testID}-summary`}
@@ -114,7 +114,7 @@ export const Workouts: FC<WorkoutsProps> = ({
       />
       {!hasWorkouts ? (
         <Box alignItems="center" testID="no-workouts-message">
-          <Text variant="title" padding="l" color="darkGrey2">
+          <Text variant="title" padding="l" color="onSurfaceVariant">
             {t("statistics.workouts.noWorkoutYet")}
           </Text>
         </Box>

@@ -16,7 +16,7 @@ const GlossaryListItem: FC<{ id: GlossaryTermId }> = ({ id }) => {
         <Text variant="body" accessibilityRole="header">
           {t(`more.glossary.terms.${id}.term`)}
         </Text>
-        <Text variant="small" color="darkGrey2">
+        <Text variant="small" color="onSurfaceVariant">
           {t(`more.glossary.terms.${id}.explanation`)}
         </Text>
       </Box>
@@ -31,13 +31,13 @@ export function GlossaryScreen() {
   return (
     <>
       <Stack.Screen options={{ title: t("more.glossary.title") }} />
-      <Box flex={1} backgroundColor="white">
+      <Box flex={1} backgroundColor="surface">
         <FlatList
           data={GLOSSARY_TERM_IDS}
           keyExtractor={(id) => id}
           renderItem={({ item }) => <GlossaryListItem id={item} />}
           ListHeaderComponent={
-            <Text variant="body" color="darkGrey3" padding="l">
+            <Text variant="body" color="onSurface" padding="l">
               {t("more.glossary.intro")}
             </Text>
           }

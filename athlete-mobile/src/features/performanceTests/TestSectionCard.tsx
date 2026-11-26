@@ -9,7 +9,7 @@ export const TestSectionCard: FC<PropsWithChildren<{ testID?: string }>> = ({
 }) => (
   <Card
     variant="outlined"
-    backgroundColor="lightGrey1"
+    backgroundColor="surfaceContainerLow"
     padding={{ phone: "m", tablet: "l" }}
     gap={{ phone: "s", tablet: "m" }}
     testID={testID}

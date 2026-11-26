@@ -73,7 +73,7 @@ export const TextInputField: FC<TextInputFieldProps> = ({
         {suffix ? (
           <Text
             variant="body"
-            color="darkGrey1"
+            color="onSurfaceVariant"
             marginRight="m"
             flexShrink={0}
             testID={testID ? `${testID}-suffix` : undefined}

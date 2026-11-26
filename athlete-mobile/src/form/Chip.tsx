@@ -49,21 +49,24 @@ export const Chip: FC<ChipProps> = ({
         styles[size],
         selected
           ? { backgroundColor: colors.primary, borderColor: colors.primary }
-          : { backgroundColor: colors.white, borderColor: colors.lightGrey2 },
+          : {
+              backgroundColor: colors.surfaceContainerLowest,
+              borderColor: colors.outlineVariant,
+            },
       ]}
     >
       {selected && (
         <AppIcon
           icon={IconCheck}
           size={iconSize}
-          color={colors.white}
+          color={colors.onPrimary}
           decorative
         />
       )}
       <Text
         variant={textVariant}
         fontWeight={selected ? "600" : "500"}
-        color={selected ? "white" : "darkGrey3"}
+        color={selected ? "onPrimary" : "onSurface"}
       >
         {label}
       </Text>

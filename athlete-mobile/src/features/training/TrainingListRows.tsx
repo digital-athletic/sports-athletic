@@ -78,7 +78,7 @@ const Block: FC<BlockProps> = ({ block, ...entryProps }) => {
     <Box
       testID={`training-list-superset-${block.key}`}
       borderWidth={1}
-      borderColor="lightGrey3"
+      borderColor="outline"
       borderRadius="m"
       paddingHorizontal="m"
       marginVertical="s"

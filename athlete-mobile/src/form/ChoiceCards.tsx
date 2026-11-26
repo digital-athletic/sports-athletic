@@ -40,13 +40,18 @@ const RadioMark: FC<{ selected: boolean }> = ({ selected }) => {
       height={24}
       borderRadius="round"
       borderWidth={selected ? 0 : 2}
-      borderColor="lightGrey3"
-      backgroundColor={selected ? "primary" : "white"}
+      borderColor="outline"
+      backgroundColor={selected ? "primary" : "surfaceContainerLowest"}
       alignItems="center"
       justifyContent="center"
     >
       {selected && (
-        <AppIcon icon={IconCheck} size={16} color={colors.white} decorative />
+        <AppIcon
+          icon={IconCheck}
+          size={16}
+          color={colors.onPrimary}
+          decorative
+        />
       )}
     </Box>
   );
@@ -72,8 +77,10 @@ const ChoiceCard: FC<ChoiceCardProps> = ({
         styles.card,
         stretch && styles.stretch,
         {
-          backgroundColor: selected ? colors.primaryTint : colors.white,
-          borderColor: selected ? colors.primary : colors.lightGrey2,
+          backgroundColor: selected
+            ? colors.primaryContainer
+            : colors.surfaceContainerLowest,
+          borderColor: selected ? colors.primary : colors.outlineVariant,
         },
       ]}
     >
@@ -81,7 +88,7 @@ const ChoiceCard: FC<ChoiceCardProps> = ({
         <AppIcon
           icon={option.icon}
           size={24}
-          color={selected ? colors.primary : colors.darkGrey1}
+          color={selected ? colors.primary : colors.onSurfaceVariant}
           decorative
         />
       )}
@@ -90,7 +97,7 @@ const ChoiceCard: FC<ChoiceCardProps> = ({
           {option.label}
         </Text>
         {option.description && (
-          <Text variant="small" color="darkGrey1" marginTop="xs">
+          <Text variant="small" color="onSurfaceVariant" marginTop="xs">
             {option.description}
           </Text>
         )}

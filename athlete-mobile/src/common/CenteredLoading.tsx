@@ -11,7 +11,7 @@ export const CenteredLoading: FC = () => {
       flex={1}
       justifyContent="center"
       alignItems="center"
-      backgroundColor="white"
+      backgroundColor="surface"
     >
       <Text variant="title">{t("common.loading")}</Text>
     </Box>

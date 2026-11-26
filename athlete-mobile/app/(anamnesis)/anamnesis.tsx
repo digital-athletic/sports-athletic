@@ -30,7 +30,7 @@ const WelcomeSheet: FC<WelcomeSheetProps> = ({
 
   return (
     <Box
-      backgroundColor="white"
+      backgroundColor="surface"
       padding="l"
       gap="m"
       style={[
@@ -77,7 +77,7 @@ export default function WelcomeScreen() {
           headerStyle: { backgroundColor: colors.transparent },
           headerRight: () => (
             <SkipHeader
-              color="white"
+              color="onPrimary"
               alertTitle="screens.welcome.abortQuestion"
               alertMessage={
                 anamnesisCompleted
@@ -88,9 +88,9 @@ export default function WelcomeScreen() {
           ),
         }}
       />
-      <Box flex={1} backgroundColor="primaryDark">
+      <Box flex={1} backgroundColor="onPrimaryContainer">
         <LinearGradient
-          colors={[colors.primary, colors.primaryDark]}
+          colors={[colors.primary, colors.onPrimaryContainer]}
           style={[styles.hero, { paddingTop: insets.top + HEADER_HEIGHT }]}
         >
           <Image

@@ -50,7 +50,7 @@ export const ExerciseThumbnail: FC<Props> = ({
     <Box
       width={size}
       height={size}
-      backgroundColor="lightGrey2"
+      backgroundColor="surfaceContainerHigh"
       style={{ borderRadius }}
       alignItems="center"
       justifyContent="center"
@@ -61,7 +61,7 @@ export const ExerciseThumbnail: FC<Props> = ({
         <AppIcon
           icon={VALUE_ICONS[valueKind]}
           size={size * 0.4}
-          color={colors.lightGrey3}
+          color={colors.outline}
           decorative
         />
       )}

@@ -24,7 +24,7 @@ export const StepProgress: FC<StepProgressProps> = ({ current, total }) => (
         flex={1}
         height={5}
         borderRadius="round"
-        backgroundColor={index < current ? "primary" : "lightGrey2"}
+        backgroundColor={index < current ? "primary" : "surfaceContainerHigh"}
       />
     ))}
   </Box>

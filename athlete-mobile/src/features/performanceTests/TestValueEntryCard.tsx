@@ -53,7 +53,7 @@ const BodyWeightLine: FC<{ bodyWeightKg: number }> = ({ bodyWeightKg }) => {
   return (
     <Text
       variant="small"
-      color="darkGrey1"
+      color="onSurfaceVariant"
       testID="performance-test-body-weight"
     >
       {t("more.performanceTests.bodyWeight", {

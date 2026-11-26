@@ -206,7 +206,7 @@ export default function TrainingOverviewScreen() {
       />
       <Box
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         style={{ paddingBottom: insets.bottom }}
       >
         <ScrollView>
@@ -226,7 +226,7 @@ export default function TrainingOverviewScreen() {
           paddingHorizontal="l"
           paddingVertical="m"
           borderTopWidth={1}
-          borderTopColor="lightGrey1"
+          borderTopColor="surfaceContainerLow"
         >
           <Button onPress={handleStartTraining}>
             {t("training.overview.startTraining")}

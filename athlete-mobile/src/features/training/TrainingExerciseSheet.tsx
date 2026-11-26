@@ -300,15 +300,15 @@ export const TrainingExerciseSheet: FC<TrainingExerciseSheetProps> = ({
 }) => {
   const { colors } = useTheme();
 
-  // The native sheet follows the dark mode of the device by default, while
-  // the app has a light design only, so the sheet colors are set explicitly.
+  // The native sheet follows the dark mode of the device, not the app theme,
+  // so the sheet colors are set explicitly.
   return (
     <BottomSheet
       isPresented={isPresented}
       onDismiss={contentProps.onDismiss}
       contentPadding={0}
-      containerColor={colors.white}
-      contentColor={colors.darkGrey3}
+      containerColor={colors.surface}
+      contentColor={colors.onSurface}
       testID="training-list-sheet"
     >
       {row && (

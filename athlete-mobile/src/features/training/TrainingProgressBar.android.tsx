@@ -18,7 +18,7 @@ export const TrainingProgressBar: FC<TrainingProgressBarProps> = ({
       <LinearProgressIndicator
         progress={clampProgress(progress)}
         color={colors.primary}
-        trackColor={colors.lightGrey2}
+        trackColor={colors.outlineVariant}
         modifiers={[fillMaxWidth(), testID(TRAINING_PROGRESS_BAR_TEST_ID)]}
       />
     </Host>

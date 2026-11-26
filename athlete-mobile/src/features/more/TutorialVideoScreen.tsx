@@ -21,7 +21,7 @@ export default function TutorialVideoScreen() {
           orientation: "portrait",
         }}
       />
-      <Box flex={1} backgroundColor="lightGrey2">
+      <Box flex={1} backgroundColor="surfaceContainerHigh">
         {tutorial && <VideoPlayer source={tutorial.video} isTutorial />}
       </Box>
     </>

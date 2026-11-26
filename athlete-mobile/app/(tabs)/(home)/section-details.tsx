@@ -237,7 +237,7 @@ const SectionDetailsScreen: FC = () => {
       />
       <ScrollBox
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         contentInsetAdjustmentBehavior="automatic"
       >
         <TallLandscapeColumns

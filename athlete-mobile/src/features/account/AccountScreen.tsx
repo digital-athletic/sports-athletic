@@ -19,7 +19,7 @@ const DeletingOverlay: FC = () => {
       left={0}
       right={0}
       bottom={0}
-      backgroundColor="black"
+      backgroundColor="scrim"
       opacity={0.5}
       justifyContent="center"
       alignItems="center"
@@ -43,24 +43,24 @@ export const AccountScreen: FC = () => {
         options={{
           title: t("more.account.title"),
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: colors.white },
+          headerStyle: { backgroundColor: colors.surface },
         }}
       />
       <ScrollBox
         flex={1}
-        backgroundColor="white"
+        backgroundColor="surface"
         contentInsetAdjustmentBehavior="automatic"
       >
         <DataExportSection />
 
         {/* Separates the irreversible delete action from the downloads. */}
-        <Box height={10} backgroundColor="lightGrey2" />
+        <Box height={10} backgroundColor="surfaceContainerHigh" />
 
-        <Box backgroundColor="white" paddingVertical="s">
+        <Box backgroundColor="surface" paddingVertical="s">
           <ListItem
             title={t("more.deleteUser")}
             icon={IconTrash}
-            iconBackground="darkGrey1"
+            iconBackground="onSurfaceVariant"
             onPress={deleteAccount}
             isLast
           />

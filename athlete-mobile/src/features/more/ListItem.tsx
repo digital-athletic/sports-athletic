@@ -9,12 +9,20 @@ import { type FC } from "react";
 import { TouchableOpacity } from "react-native";
 import { ListDivider } from "../../common/ListDivider";
 
+// Icon color per circle background, so the icon stays readable in both schemes.
+const ICON_COLORS = {
+  primary: "onPrimary",
+  onSurfaceVariant: "surface",
+} as const satisfies Record<string, ThemeColor>;
+
+type ListItemIconBackground = keyof typeof ICON_COLORS;
+
 export type ListItemProps = {
   title: string;
   navPath?: RoutePath;
   externalUrl?: string;
   icon: AppIconSource;
-  iconBackground: ThemeColor;
+  iconBackground: ListItemIconBackground;
   backPath?: string;
   isLast?: boolean;
   navParams?: Record<string, string>;
@@ -23,10 +31,10 @@ export type ListItemProps = {
   disabled?: boolean;
 };
 
-const ListItemIcon: FC<{ icon: AppIconSource; background: ThemeColor }> = ({
-  icon,
-  background,
-}) => {
+const ListItemIcon: FC<{
+  icon: AppIconSource;
+  background: ListItemIconBackground;
+}> = ({ icon, background }) => {
   const { colors } = useTheme();
   const iconContainerSize = useResponsiveProp({ phone: 30, tablet: 38 });
   const iconSize = useResponsiveProp({ phone: 16, tablet: 28 });
@@ -39,9 +47,14 @@ const ListItemIcon: FC<{ icon: AppIconSource; background: ThemeColor }> = ({
         borderRadius="round"
         justifyContent="center"
         alignItems="center"
-        backgroundColor={background || "primary"}
+        backgroundColor={background}
       >
-        <AppIcon icon={icon} size={iconSize} color={colors.white} decorative />
+        <AppIcon
+          icon={icon}
+          size={iconSize}
+          color={colors[ICON_COLORS[background]]}
+          decorative
+        />
       </Box>
     </Box>
   );

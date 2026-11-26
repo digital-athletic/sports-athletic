@@ -51,7 +51,11 @@ const SelectorLayout: FC<SelectorLayoutProps> = ({
   <Box flexDirection={isLandscape ? "row" : "column"} gap="m">
     <Box flex={isLandscape ? 1 : undefined} gap="m">
       {sideToggle}
-      <Card variant="outlined" backgroundColor="lightGrey1" overflow="hidden">
+      <Card
+        variant="outlined"
+        backgroundColor="surfaceContainerLow"
+        overflow="hidden"
+      >
         <Box height={silhouetteHeight} padding="m" testID="soreness-figure">
           {figure}
         </Box>

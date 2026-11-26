@@ -33,7 +33,7 @@ const COLUMN_FRAME = {
   right: 0,
   bottom: 0,
   left: 0,
-  backgroundColor: "black",
+  backgroundColor: "scrim",
 } as const;
 
 const useVideoFrame = (fillColumnInTallLandscape: boolean | undefined) => {
@@ -137,12 +137,12 @@ export const VideoPlayer: FC<Props> = ({
       <Box
         testID="video-frame"
         {...frame}
-        backgroundColor="darkGrey3"
+        backgroundColor="scrim"
         justifyContent="center"
         alignItems="center"
       >
         <Text
-          color="lightGrey3"
+          color="outline"
           textAlign="center"
           marginBottom="s"
           accessibilityRole="alert"
@@ -161,7 +161,7 @@ export const VideoPlayer: FC<Props> = ({
             paddingVertical="s"
             backgroundColor="primary"
           >
-            <Text color="white">{t("common.retry")}</Text>
+            <Text color="onPrimary">{t("common.retry")}</Text>
           </Box>
         </TouchableOpacity>
       </Box>
@@ -175,7 +175,7 @@ export const VideoPlayer: FC<Props> = ({
         {...frame}
         justifyContent="center"
         alignItems="center"
-        backgroundColor="darkGrey3"
+        backgroundColor="scrim"
       >
         <ActivityIndicator />
       </Box>
@@ -197,14 +197,12 @@ export const VideoPlayer: FC<Props> = ({
         player={player}
       />
       {!isPlaying && !!title && (
-        <Box
-          backgroundColor="overlay"
-          position="absolute"
-          bottom={0}
-          left={0}
-          right={0}
-          padding="s"
-        >
+        <Box position="absolute" bottom={0} left={0} right={0} padding="s">
+          <Box
+            style={StyleSheet.absoluteFill}
+            backgroundColor="scrim"
+            opacity={0.8}
+          />
           <Text color="white" textAlign="center">
             {title}
           </Text>

@@ -28,7 +28,10 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
     <TouchableOpacity
       style={[
         styles.quickstartButton,
-        { backgroundColor: colors.lightGrey1, borderColor: colors.lightGrey2 },
+        {
+          backgroundColor: colors.surfaceContainerLow,
+          borderColor: colors.outlineVariant,
+        },
       ]}
       onPress={onPress}
       accessibilityRole="button"
@@ -39,7 +42,7 @@ const ShortcutButton: FC<ShortcutButtonProps> = ({
         <Text variant="cardTitle" textAlign="center" fontSize={14}>
           {title}
         </Text>
-        <Text variant="xSmall" textAlign="center" color="darkGrey1">
+        <Text variant="xSmall" textAlign="center" color="onSurfaceVariant">
           {subtitle}
         </Text>
       </Box>

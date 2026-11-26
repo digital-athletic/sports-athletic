@@ -52,7 +52,7 @@ const TileText: FC<TileTextProps> = ({ title, description, onPhoto }) => (
       variant="body"
       fontSize={17}
       fontWeight="700"
-      color={onPhoto ? "white" : "darkGrey3"}
+      color={onPhoto ? "white" : "onSurface"}
       android_hyphenationFrequency="normal"
     >
       {title}
@@ -61,7 +61,7 @@ const TileText: FC<TileTextProps> = ({ title, description, onPhoto }) => (
       <Text
         variant="small"
         fontSize={13}
-        color={onPhoto ? "white" : "darkGrey1"}
+        color={onPhoto ? "white" : "onSurfaceVariant"}
       >
         {description}
       </Text>
@@ -106,8 +106,8 @@ export const TrainingTile: FC<TrainingTileProps> = ({
         flex={1}
         borderRadius="xl"
         overflow="hidden"
-        backgroundColor={image ? undefined : "lightGrey1"}
-        borderColor="lightGrey2"
+        backgroundColor={image ? undefined : "surfaceContainerLow"}
+        borderColor="outlineVariant"
         borderWidth={image ? 0 : 1.5}
       >
         {image && <TilePhoto image={image} />}

@@ -1,0 +1,37 @@
+name: Gitleaks
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gitleaks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          # Full history so the PR's commit range can be scanned.
+          fetch-depth: 0
+      # Runs the official image instead of gitleaks-action, which needs a
+      # license key (free, issued after sign-up) for organization
+      # repositories. Rules come from .gitleaks.toml at the repo root.
+      - name: Scan PR commits for secrets
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          docker run --rm -v "$PWD:/repo" -w /repo \
+            ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f \
+            git /repo \
+            --config /repo/.gitleaks.toml \
+            --log-opts="$BASE_SHA..$HEAD_SHA" \
+            --redact \
+            --verbose \
+            --exit-code 1

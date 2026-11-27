@@ -49,7 +49,7 @@ const SetSummary: FC<{ sets: ChecklistSetSummary[]; testId: string }> = ({
             {position > 0 && " / "}
             <Text
               variant="small"
-              color={isDone ? "onSuccessContainer" : "onSurfaceVariant"}
+              color={isDone ? "success" : "onSurfaceVariant"}
               fontWeight={isDone ? "600" : "400"}
               accessibilityState={{ checked: isDone }}
               testID={`${testId}-set-${set.index}`}

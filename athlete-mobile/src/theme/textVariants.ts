@@ -109,6 +109,12 @@ export const textVariants = {
     color: "primary",
   },
 
+  buttonSuccess: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "onSuccess",
+  },
+
   // Labels
   label: {
     fontSize: 16,

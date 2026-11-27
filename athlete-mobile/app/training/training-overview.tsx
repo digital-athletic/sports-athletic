@@ -1,5 +1,6 @@
 import { BackHeader } from "@/common/BackHeader";
 import { CenteredLoading } from "@/common/CenteredLoading";
+import { ContentColumn } from "@/common/ContentColumn";
 import { featureFlags } from "@/config/featureFlags";
 import { isPlaceType, WorkoutConstants } from "@/constants/workoutConstants";
 import { getAllExercises } from "@/data/exerciseRegistry";
@@ -210,7 +211,7 @@ export default function TrainingOverviewScreen() {
         style={{ paddingBottom: insets.bottom }}
       >
         <ScrollView>
-          <Box padding="l">
+          <ContentColumn padding="l">
             <EquipmentSection equipment={trainingEquipment} />
             <SwapControlsContext value={swapControls}>
               <ExercisesSection
@@ -219,7 +220,7 @@ export default function TrainingOverviewScreen() {
                 onShowExerciseInfo={handleShowExerciseInfo}
               />
             </SwapControlsContext>
-          </Box>
+          </ContentColumn>
         </ScrollView>
 
         <Box
@@ -228,18 +229,20 @@ export default function TrainingOverviewScreen() {
           borderTopWidth={1}
           borderTopColor="surfaceContainerLow"
         >
-          <Button onPress={handleStartTraining}>
-            {t("training.overview.startTraining")}
-          </Button>
-          {featureFlags.trainingListViewEnabled && (
-            <Button
-              onPress={handleStartTrainingAsChecklist}
-              variant="secondary"
-              marginTop="s"
-            >
-              {t("training.overview.startAsChecklist")}
+          <ContentColumn>
+            <Button onPress={handleStartTraining}>
+              {t("training.overview.startTraining")}
             </Button>
-          )}
+            {featureFlags.trainingListViewEnabled && (
+              <Button
+                onPress={handleStartTrainingAsChecklist}
+                variant="secondary"
+                marginTop="s"
+              >
+                {t("training.overview.startAsChecklist")}
+              </Button>
+            )}
+          </ContentColumn>
         </Box>
       </Box>
     </>

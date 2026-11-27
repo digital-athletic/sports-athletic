@@ -1,15 +1,5 @@
-import { useState, useEffect } from "react";
-import {
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  Alert as RNAlert,
-  Platform,
-  type AlertOptions,
-} from "react-native";
-import { useTheme } from "../theme/theme";
+import { Alert as RNAlert, Platform } from "react-native";
+import { enqueueAlert } from "./alertQueue";
 
 export interface AlertButton {
   text: string;
@@ -17,158 +7,13 @@ export interface AlertButton {
   onPress?: () => void;
 }
 
-interface AlertState {
-  visible: boolean;
-  title: string;
-  message?: string;
-  buttons: AlertButton[];
-}
-
-type Listener = (state: AlertState) => void;
-
-const initialState: AlertState = {
-  visible: false,
-  title: "",
-  message: undefined,
-  buttons: [],
-};
-
-let currentState = initialState;
-let listener: Listener | null = null;
-
-function showAlert(title: string, message?: string, buttons?: AlertButton[]) {
-  currentState = {
-    visible: true,
-    title,
-    message,
-    buttons: buttons || [{ text: "OK" }],
-  };
-  listener?.(currentState);
-}
-
-function hideAlert() {
-  currentState = { ...currentState, visible: false };
-  listener?.(currentState);
-}
-
-/** Render this once at app root for web alert support */
-export function AlertHost() {
-  const [state, setState] = useState(currentState);
-  const { colors } = useTheme();
-
-  useEffect(() => {
-    listener = setState;
-    return () => {
-      listener = null;
-    };
-  }, []);
-
-  if (!state.visible) return null;
-
-  return (
-    <Modal visible transparent animationType="fade">
-      <View style={styles.backdrop}>
-        <View
-          style={[
-            StyleSheet.absoluteFill,
-            styles.scrim,
-            { backgroundColor: colors.scrim },
-          ]}
-        />
-        <View
-          style={[
-            styles.dialog,
-            { backgroundColor: colors.surfaceContainerLowest },
-          ]}
-        >
-          <Text style={[styles.title, { color: colors.onSurface }]}>
-            {state.title}
-          </Text>
-          {state.message && (
-            <Text style={[styles.message, { color: colors.onSurfaceVariant }]}>
-              {state.message}
-            </Text>
-          )}
-          <View style={styles.buttons}>
-            {state.buttons.map((btn, i) => (
-              <Pressable
-                key={i}
-                accessibilityRole="button"
-                style={[
-                  styles.button,
-                  { backgroundColor: colors.surfaceContainerHigh },
-                ]}
-                onPress={() => {
-                  hideAlert();
-                  btn.onPress?.();
-                }}
-              >
-                <Text style={[styles.buttonText, { color: colors.onSurface }]}>
-                  {btn.text}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
+/** iOS shows the native alert; Android and web are drawn by AlertHost */
 export const Alert = {
-  alert(
-    title: string,
-    message?: string,
-    buttons?: AlertButton[],
-    options?: AlertOptions,
-  ) {
-    if (Platform.OS === "web") {
-      showAlert(title, message, buttons);
+  alert(title: string, message?: string, buttons?: AlertButton[]) {
+    if (Platform.OS === "ios") {
+      RNAlert.alert(title, message, buttons);
     } else {
-      RNAlert.alert(title, message, buttons, options);
+      enqueueAlert(title, message, buttons);
     }
   },
 };
-
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  scrim: {
-    opacity: 0.5,
-  },
-  dialog: {
-    borderRadius: 12,
-    padding: 20,
-    minWidth: 250,
-    maxWidth: 300,
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: "600",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  message: {
-    fontSize: 13,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    minWidth: 80,
-    alignItems: "center",
-  },
-  buttonText: {
-    fontSize: 15,
-  },
-});

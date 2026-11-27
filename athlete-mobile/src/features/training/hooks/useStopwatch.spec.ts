@@ -238,6 +238,45 @@ describe("useStopwatch", () => {
       expect(onStop).toHaveBeenCalledWith(500);
     });
 
+    // Moving the clock without running timers puts the stop between two ticks.
+    it("shows the reported running time when it stops between two ticks", async () => {
+      const onStop = jest.fn();
+      const { result, rerender } = await renderHook(
+        ({ isActive }: { isActive: boolean }) =>
+          useStopwatch({ exerciseId: "1", isActive, onStop, timeoutMs: 1000 }),
+        { initialProps: { isActive: true } },
+      );
+      await act(() => {
+        jest.advanceTimersByTime(400);
+      });
+      await act(() => {
+        jest.setSystemTime(Date.now() + 800);
+      });
+
+      await rerender({ isActive: false });
+
+      expect(onStop).toHaveBeenCalledTimes(1);
+      expect(onStop).toHaveBeenCalledWith(1200);
+      expect(result.current).toBe(1);
+    });
+
+    it("keeps zero when it stops before the first second", async () => {
+      const onStop = jest.fn();
+      const { result, rerender } = await renderHook(
+        ({ isActive }: { isActive: boolean }) =>
+          useStopwatch({ exerciseId: "1", isActive, onStop, timeoutMs: 1000 }),
+        { initialProps: { isActive: true } },
+      );
+      await act(() => {
+        jest.advanceTimersByTime(400);
+      });
+
+      await rerender({ isActive: false });
+
+      expect(onStop).toHaveBeenCalledWith(400);
+      expect(result.current).toBe(0);
+    });
+
     it("does not report before it ever ran", async () => {
       const onStop = jest.fn();
       await renderHook(() =>

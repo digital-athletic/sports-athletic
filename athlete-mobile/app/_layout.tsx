@@ -1,5 +1,5 @@
 import { useAuthStateListener } from "@/auth/useAuthStateListener";
-import { AlertHost } from "@/common/Alert";
+import { AlertHost } from "@/common/AlertHost";
 import { OfflineBanner } from "@/common/OfflineBanner";
 import { usePendingPlanCheck } from "@/features/training/hooks/usePendingPlanCheck";
 import { useOTAService } from "@/services/OTAService";
@@ -12,7 +12,7 @@ import {
 import { theme } from "@/theme/theme";
 import { ThemeProvider } from "@shopify/restyle";
 import { type Href, Stack } from "expo-router";
-import { ActivityIndicator, Platform, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 
 function FullscreenSpinner() {
@@ -95,7 +95,7 @@ export default function RootLayout() {
           <Stack.Screen name="test" options={{ headerShown: false }} />
         </Stack>
         <OfflineBanner />
-        {Platform.OS === "web" && <AlertHost />}
+        <AlertHost />
       </KeyboardProvider>
     </ThemeProvider>
   );

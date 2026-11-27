@@ -81,7 +81,7 @@ const QuietFace: FC<ButtonFaceProps> = ({ resumeTime, testId }) => {
         alignItems="center"
         backgroundColor="primaryContainer"
         borderWidth={1.5}
-        borderColor="inversePrimary"
+        borderColor="mutedRedContainer"
         borderRadius="round"
       >
         <AppIcon

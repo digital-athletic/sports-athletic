@@ -127,7 +127,12 @@ test.describe("Muscle Soreness: selection", () => {
     const overview = page.getByRole("heading", { name: "Training Overview" });
     const goOn = page.getByRole("button", { name: "Go on" });
 
-    await goOn.dblclick();
+    // Both clicks reach Go on before the overview renders. Web shows the
+    // overview without a transition, so dblclick() can hit it with click two.
+    await goOn.evaluate((button: HTMLElement) => {
+      button.click();
+      button.click();
+    });
     await expect(overview).toBeVisible({ timeout: 15000 });
 
     // One back step lands on the soreness screen: no second overview is stacked.

@@ -49,7 +49,9 @@ export const Button: FC<ButtonProps> = ({
   const textVariant =
     variant === "secondary" || variant === "ctaOutline"
       ? "buttonSecondary"
-      : "button";
+      : variant === "success"
+        ? "buttonSuccess"
+        : "button";
 
   return (
     <ButtonContainer variant={variant} role="button" {...props}>

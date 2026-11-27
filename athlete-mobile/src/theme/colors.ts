@@ -115,20 +115,19 @@ const lightRoles: ColorRoles = {
   scrim: "#000000",
   shadow: "#000000",
 
-  // Placeholders until the Theme Builder export: successContainer,
-  // onWarningContainer, onInfoContainer
-  success: "#34C759",
-  onSuccess: "#FFF",
-  successContainer: "#E3F7E8",
-  onSuccessContainer: "#1E7B34",
-  warning: "#FF9500",
-  onWarning: "#FFF",
-  warningContainer: "#FFF3E0",
-  onWarningContainer: "#663E00",
-  info: "#007AFF",
-  onInfo: "#FFF",
-  infoContainer: "#EAF3FF",
-  onInfoContainer: "#00458F",
+  // Theme Builder custom colors (sources #34C759, #FF9500, #007AFF, color match)
+  success: "#006E28",
+  onSuccess: "#FFFFFF",
+  successContainer: "#34C759",
+  onSuccessContainer: "#004D1A",
+  warning: "#8C5000",
+  onWarning: "#FFFFFF",
+  warningContainer: "#FF9500",
+  onWarningContainer: "#643700",
+  info: "#0058BC",
+  onInfo: "#FFFFFF",
+  infoContainer: "#0070EB",
+  onInfoContainer: "#FEFCFF",
 };
 
 // Material Theme Builder export (seed #C71B1B, color match), dark scheme
@@ -184,19 +183,19 @@ const darkRoles: ColorRoles = {
   scrim: "#000000",
   shadow: "#000000",
 
-  // Light values until the Theme Builder export
-  success: "#34C759",
-  onSuccess: "#FFF",
-  successContainer: "#E3F7E8",
-  onSuccessContainer: "#1E7B34",
-  warning: "#FF9500",
-  onWarning: "#FFF",
-  warningContainer: "#FFF3E0",
-  onWarningContainer: "#663E00",
-  info: "#007AFF",
-  onInfo: "#FFF",
-  infoContainer: "#EAF3FF",
-  onInfoContainer: "#00458F",
+  // Theme Builder custom colors (sources #34C759, #FF9500, #007AFF, color match)
+  success: "#56E472",
+  onSuccess: "#003911",
+  successContainer: "#34C759",
+  onSuccessContainer: "#004D1A",
+  warning: "#FFBD7F",
+  onWarning: "#4B2800",
+  warningContainer: "#FF9500",
+  onWarningContainer: "#643700",
+  info: "#ADC6FF",
+  onInfo: "#002E69",
+  infoContainer: "#4B8EFF",
+  onInfoContainer: "#001435",
 };
 
 // Colors without a matching role, identical in both schemes

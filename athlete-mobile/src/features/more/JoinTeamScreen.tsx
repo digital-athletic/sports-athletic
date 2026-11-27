@@ -260,7 +260,7 @@ export default function JoinTeamScreen() {
           {joinState.status === "success" && (
             <Text
               variant="body"
-              color="onSuccessContainer"
+              color="success"
               textAlign="center"
               marginTop="m"
               {...liveRegionProps}

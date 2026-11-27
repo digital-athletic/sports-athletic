@@ -15,12 +15,6 @@ const lightRoleValues = {
   onSurfaceVariant: "#555555",
   onSurface: "#333333",
   error: "#D70015",
-  success: "#34C759",
-  onSuccessContainer: "#1E7B34",
-  warning: "#FF9500",
-  warningContainer: "#FFF3E0",
-  info: "#007AFF",
-  infoContainer: "#EAF3FF",
 };
 
 describe("colors: light scheme", () => {

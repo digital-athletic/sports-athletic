@@ -274,7 +274,7 @@ export function EmailVerificationScreen() {
           <Text
             variant="small"
             textAlign="center"
-            color={resent ? "onSuccessContainer" : "onSurfaceVariant"}
+            color={resent ? "success" : "onSurfaceVariant"}
             {...(resent ? liveRegionProps : {})}
           >
             {resent

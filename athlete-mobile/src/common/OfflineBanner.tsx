@@ -30,7 +30,7 @@ export function OfflineBanner() {
       zIndex={999 as never}
     >
       <Text
-        color="onSurface"
+        color="onWarning"
         textAlign="center"
         variant="small"
         {...liveRegionProps}

@@ -4,13 +4,13 @@ import { useTranslation } from "react-i18next";
 import { Alert } from "@/common/Alert";
 
 import { SkipHeader } from "@/common/SkipHeader";
+import { TileGrid } from "@/common/TileGrid";
 import { WorkoutConstants } from "@/constants/workoutConstants";
 import { HeadlineScreen } from "@/common/HeadlineScreen";
 import { SportTile } from "@/features/anamnesis/SportTile";
 import { useHardwareBackHandler } from "@/hooks/useHardwareBackHandler";
 import { useUserProfileStore } from "@/store/userProfileStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
-import { Box } from "@/theme/Box";
 
 export default function SportScreen() {
   const { t } = useTranslation();
@@ -91,6 +91,7 @@ export default function SportScreen() {
     <HeadlineScreen
       title={t("screens.sport.title")}
       heading={t("screens.sport.question")}
+      wide
       onBack={isOnboarding ? showClosePopup : back}
       headerRight={
         isOnboarding ? (
@@ -106,14 +107,7 @@ export default function SportScreen() {
           : undefined
       }
     >
-      <Box
-        flexDirection="row"
-        flexWrap="wrap"
-        justifyContent="space-between"
-        rowGap="s"
-      >
-        {renderSports()}
-      </Box>
+      <TileGrid>{renderSports()}</TileGrid>
     </HeadlineScreen>
   );
 }

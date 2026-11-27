@@ -107,7 +107,7 @@ export const SportTile: FC<SportTileProps> = ({
 
 const styles = StyleSheet.create({
   tile: {
-    width: "48%",
+    width: "100%",
     aspectRatio: 1.15,
     padding: 3,
     borderRadius: 18,

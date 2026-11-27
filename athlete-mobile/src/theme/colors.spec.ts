@@ -21,6 +21,7 @@ const lightRoleValues = {
   warningContainer: "#FFF3E0",
   info: "#007AFF",
   infoContainer: "#EAF3FF",
+  mutedRedContainer: "#E38D8D",
 };
 
 describe("colors: light scheme", () => {

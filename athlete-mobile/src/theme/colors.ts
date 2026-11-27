@@ -57,7 +57,11 @@ type ColorRole =
   | "info"
   | "onInfo"
   | "infoContainer"
-  | "onInfoContainer";
+  | "onInfoContainer"
+  | "mutedRed"
+  | "onMutedRed"
+  | "mutedRedContainer"
+  | "onMutedRedContainer";
 
 type ColorRoles = Record<ColorRole, string>;
 
@@ -129,6 +133,11 @@ const lightRoles: ColorRoles = {
   onInfo: "#FFF",
   infoContainer: "#EAF3FF",
   onInfoContainer: "#00458F",
+  // Theme Builder custom color (source #E38D8D, color match)
+  mutedRed: "#90494A",
+  onMutedRed: "#FFFFFF",
+  mutedRedContainer: "#E38D8D",
+  onMutedRedContainer: "#642629",
 };
 
 // Material Theme Builder export (seed #C71B1B, color match), dark scheme
@@ -197,6 +206,12 @@ const darkRoles: ColorRoles = {
   onInfo: "#FFF",
   infoContainer: "#EAF3FF",
   onInfoContainer: "#00458F",
+
+  // Theme Builder custom color (source #E38D8D, color match)
+  mutedRed: "#FFB3B2",
+  onMutedRed: "#571D1F",
+  mutedRedContainer: "#E38D8D",
+  onMutedRedContainer: "#642629",
 };
 
 // Colors without a matching role, identical in both schemes

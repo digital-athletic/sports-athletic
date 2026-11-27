@@ -6,12 +6,12 @@
  */
 
 import { useLogout } from "@/auth/useAuthActions";
+import { ColumnScrollBox } from "@/common/ColumnScrollBox";
 import { featureFlags } from "@/config/featureFlags";
 import { InfoMenuItems } from "@/features/more/InfoMenuItems";
 import { ListItem } from "@/features/more/ListItem";
 import { StrengthTestMenuItems } from "@/features/more/StrengthTestMenuItems";
 import { Box } from "@/theme/Box";
-import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack } from "expo-router";
@@ -46,7 +46,7 @@ export default function MoreScreen() {
           headerStyle: { backgroundColor: colors.surface },
         }}
       />
-      <ScrollBox
+      <ColumnScrollBox
         flex={1}
         backgroundColor="surface"
         contentInsetAdjustmentBehavior="automatic"
@@ -156,7 +156,7 @@ export default function MoreScreen() {
             </Text>
           </Box>
         )}
-      </ScrollBox>
+      </ColumnScrollBox>
     </>
   );
 }

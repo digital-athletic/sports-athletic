@@ -13,7 +13,6 @@ import { useAuthStore } from "@/store/authStore";
 import { useCustomWorkoutsStore } from "@/store/customWorkoutsStore";
 import { type I18nKey } from "@/i18n";
 import { Box } from "@/theme/Box";
-import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { Button } from "@/theme/Button";
 import { useTheme } from "@/theme/theme";
@@ -21,6 +20,7 @@ import { Alert } from "@/common/Alert";
 import { liveRegionProps, useAnnounce } from "@/common/announce";
 import { ListDivider } from "@/common/ListDivider";
 import { AppIcon } from "@/common/AppIcon";
+import { ColumnScrollBox } from "@/common/ColumnScrollBox";
 import { Logger } from "@/services/Logger";
 import {
   type UserTeam,
@@ -148,7 +148,7 @@ export default function JoinTeamScreen() {
   return (
     <>
       <Stack.Screen options={{ title: t("more.joinTeam.title") }} />
-      <ScrollBox
+      <ColumnScrollBox
         flex={1}
         backgroundColor="surfaceContainerHigh"
         contentInsetAdjustmentBehavior="automatic"
@@ -283,7 +283,7 @@ export default function JoinTeamScreen() {
         </Box>
 
         <TrainerAccessButton />
-      </ScrollBox>
+      </ColumnScrollBox>
     </>
   );
 }

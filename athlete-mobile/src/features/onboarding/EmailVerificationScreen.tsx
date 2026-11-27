@@ -11,7 +11,6 @@ import { useRegistrationConsentStore } from "@/store/registrationConsentStore";
 import { getErrorCode } from "@/utils/ErrorUtils";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
-import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -21,6 +20,8 @@ import { Alert } from "@/common/Alert";
 import { StyleSheet, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackHeader } from "@/common/BackHeader";
+import { ColumnScrollBox } from "@/common/ColumnScrollBox";
+import { ContentColumn } from "@/common/ContentColumn";
 import { OnboardingHeadline } from "@/features/onboarding/OnboardingHeadline";
 import { KeyboardDismissArea } from "@/common/KeyboardDismissArea";
 import { liveRegionProps, useAnnounce } from "@/common/announce";
@@ -192,7 +193,7 @@ export function EmailVerificationScreen() {
           <BackHeader onBack={() => router.replace("/onboarding")} />
         </Box>
 
-        <ScrollBox
+        <ColumnScrollBox
           flex={1}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ padding: spacing.l, gap: spacing.xl }}
@@ -261,36 +262,37 @@ export function EmailVerificationScreen() {
           >
             {t("onboarding.verifyCode")}
           </Button>
-        </ScrollBox>
+        </ColumnScrollBox>
 
         <Box
-          gap="s"
           paddingHorizontal="l"
           paddingTop="m"
           borderTopWidth={StyleSheet.hairlineWidth}
           borderTopColor="outlineVariant"
           style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
         >
-          <Text
-            variant="small"
-            textAlign="center"
-            color={resent ? "onSuccessContainer" : "onSurfaceVariant"}
-            {...(resent ? liveRegionProps : {})}
-          >
-            {resent
-              ? t("onboarding.emailResent")
-              : t("onboarding.noCodeReceived")}
-          </Text>
-          <Button
-            variant="ctaOutline"
-            onPress={handleResend}
-            disabled={resending || cooldown > 0}
-            accessibilityRole="button"
-          >
-            {cooldown > 0
-              ? `${t("onboarding.resendEmail")} (${cooldown}s)`
-              : t("onboarding.resendEmail")}
-          </Button>
+          <ContentColumn gap="s">
+            <Text
+              variant="small"
+              textAlign="center"
+              color={resent ? "onSuccessContainer" : "onSurfaceVariant"}
+              {...(resent ? liveRegionProps : {})}
+            >
+              {resent
+                ? t("onboarding.emailResent")
+                : t("onboarding.noCodeReceived")}
+            </Text>
+            <Button
+              variant="ctaOutline"
+              onPress={handleResend}
+              disabled={resending || cooldown > 0}
+              accessibilityRole="button"
+            >
+              {cooldown > 0
+                ? `${t("onboarding.resendEmail")} (${cooldown}s)`
+                : t("onboarding.resendEmail")}
+            </Button>
+          </ContentColumn>
         </Box>
       </Box>
     </KeyboardDismissArea>

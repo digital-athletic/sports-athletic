@@ -1,5 +1,7 @@
 import { BackHeader } from "@/common/BackHeader";
 import { AppIcon } from "@/common/AppIcon";
+import { ColumnScrollBox } from "@/common/ColumnScrollBox";
+import { ContentColumn } from "@/common/ContentColumn";
 import { PlaceType, WorkoutConstants } from "@/constants/workoutConstants";
 import { useUpdateTrainingPlan } from "@/features/training/hooks/useUpdateTrainingPlan";
 import { Logger } from "@/services/Logger";
@@ -8,7 +10,6 @@ import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { useUserWorkoutStore } from "@/store/userWorkoutStore";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
-import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -130,7 +131,7 @@ export default function EquipmentDetailsScreen() {
           ),
         }}
       />
-      <ScrollBox
+      <ColumnScrollBox
         flex={1}
         backgroundColor="surface"
         contentInsetAdjustmentBehavior="automatic"
@@ -184,25 +185,29 @@ export default function EquipmentDetailsScreen() {
             );
           })}
         </Box>
-      </ScrollBox>
+      </ColumnScrollBox>
       {hasChanges && (
         <Box
           position="absolute"
-          right={16}
+          left={0}
+          right={0}
           bottom={16}
-          width="40%"
-          minHeight={56}
+          pointerEvents="box-none"
         >
-          <Button onPress={handleSaveChanges}>
-            <Box alignItems="center">
-              <Text variant="button" color="onPrimary">
-                {t("common.save")}
-              </Text>
-              <Text variant="small" color="onPrimary">
-                {t("equipment.planWillBeUpdated")}
-              </Text>
+          <ContentColumn alignItems="flex-end" pointerEvents="box-none">
+            <Box width="40%" minHeight={56} style={{ marginRight: 16 }}>
+              <Button onPress={handleSaveChanges}>
+                <Box alignItems="center">
+                  <Text variant="button" color="onPrimary">
+                    {t("common.save")}
+                  </Text>
+                  <Text variant="small" color="onPrimary">
+                    {t("equipment.planWillBeUpdated")}
+                  </Text>
+                </Box>
+              </Button>
             </Box>
-          </Button>
+          </ContentColumn>
         </Box>
       )}
     </>

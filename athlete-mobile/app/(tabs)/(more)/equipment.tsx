@@ -1,5 +1,6 @@
 import { BackHeader } from "@/common/BackHeader";
 import { Coaching } from "@/common/Coaching";
+import { ColumnScrollBox } from "@/common/ColumnScrollBox";
 import { PlaceType, WorkoutConstants } from "@/constants/workoutConstants";
 // Navigate to screen-based details instead of embedding component here
 import { PlaceSelection } from "@/features/equipment/PlaceSelection";
@@ -8,7 +9,6 @@ import { I18nKey } from "@/i18n";
 import { usePlacesStore } from "@/store/placesStore";
 import { useTrainingScheduleStore } from "@/store/trainingScheduleStore";
 import { Box } from "@/theme/Box";
-import { ScrollBox } from "@/theme/ScrollBox";
 import { Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -80,7 +80,7 @@ export default function EquipmentScreen() {
           headerLeft: () => <BackHeader />,
         }}
       />
-      <ScrollBox
+      <ColumnScrollBox
         flex={1}
         backgroundColor="surface"
         contentInsetAdjustmentBehavior="automatic"
@@ -100,7 +100,7 @@ export default function EquipmentScreen() {
             trainingDaysAtPlaces={trainingDaysAtPlaces}
           />
         </Box>
-      </ScrollBox>
+      </ColumnScrollBox>
     </>
   );
 }

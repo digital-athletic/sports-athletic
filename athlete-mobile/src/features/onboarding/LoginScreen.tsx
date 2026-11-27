@@ -1,8 +1,9 @@
+import { ColumnScrollBox } from "@/common/ColumnScrollBox";
+import { ContentColumn } from "@/common/ContentColumn";
 import { OnboardingHeadline } from "@/features/onboarding/OnboardingHeadline";
 import { EmailInputField } from "@/form/EmailInputField";
 import { Box } from "@/theme/Box";
 import { Button } from "@/theme/Button";
-import { ScrollBox } from "@/theme/ScrollBox";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { type FC } from "react";
@@ -38,7 +39,7 @@ export const LoginScreen: FC<Props> = ({
 
   return (
     <Box flex={1} backgroundColor="surface" style={{ paddingTop: insets.top }}>
-      <ScrollBox
+      <ColumnScrollBox
         flex={1}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ padding: spacing.l, gap: spacing.xl }}
@@ -70,22 +71,23 @@ export const LoginScreen: FC<Props> = ({
             )}
           </Button>
         </Box>
-      </ScrollBox>
+      </ColumnScrollBox>
 
       <Box
-        gap="s"
         paddingHorizontal="l"
         paddingTop="m"
         borderTopWidth={StyleSheet.hairlineWidth}
         borderTopColor="outlineVariant"
         style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
       >
-        <Text variant="small" color="onSurfaceVariant" textAlign="center">
-          {t("onboarding.noAccountYet")}
-        </Text>
-        <Button onPress={onSignup} variant="ctaOutline">
-          {t("onboarding.register")}
-        </Button>
+        <ContentColumn gap="s">
+          <Text variant="small" color="onSurfaceVariant" textAlign="center">
+            {t("onboarding.noAccountYet")}
+          </Text>
+          <Button onPress={onSignup} variant="ctaOutline">
+            {t("onboarding.register")}
+          </Button>
+        </ContentColumn>
       </Box>
     </Box>
   );

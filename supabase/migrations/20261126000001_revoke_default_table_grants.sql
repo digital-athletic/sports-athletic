@@ -1,0 +1,119 @@
+-- Migration: Take back the table privileges Supabase granted by default
+--
+-- Until 2026 hosted Supabase granted ALL on every new table in public to anon,
+-- authenticated and service_role. The eight tables created before
+-- 20261113000001 never revoked that, so on such a project
+--   * anon holds every privilege on them, and
+--   * authenticated holds more than 20260717000001 intended.
+-- RLS filters the rows, but it does not cover TRUNCATE, and a single policy
+-- mistake would expose a table to callers without a session.
+--
+-- After this migration a table is reachable only through the grants listed
+-- here. The result is the same on every environment, whatever its default
+-- privileges were when the tables were created.
+--
+-- Not covered: objects that a role other than postgres creates. Supabase does
+-- not let postgres change the default privileges of supabase_admin.
+
+BEGIN;
+
+-- ============================================================================
+-- 1. Reset the eight older tables
+-- ============================================================================
+REVOKE ALL ON
+  public.teams,
+  public.team_members,
+  public.team_invitations,
+  public.team_member_details,
+  public.user_profiles,
+  public.user_completed_workouts,
+  public.user_exercises,
+  public.strength_tests
+FROM PUBLIC, anon, authenticated;
+
+-- ============================================================================
+-- 2. authenticated: the grants from 20260717000001, nothing else
+-- ============================================================================
+-- anon gets no grant on any table.
+
+-- Sync tables the mobile client writes directly. RLS limits every verb to the
+-- caller's own rows; SELECT also allows the staff of the caller's groups.
+GRANT SELECT, INSERT, UPDATE, DELETE
+  ON public.user_completed_workouts, public.user_exercises, public.strength_tests
+  TO authenticated;
+
+-- Users maintain their own display name. No DELETE policy exists.
+GRANT SELECT, INSERT, UPDATE ON public.team_member_details TO authenticated;
+
+-- Group data is read under SELECT RLS and written through functions. DELETE is
+-- needed by the two SECURITY INVOKER functions leave_team and delete_team.
+GRANT SELECT         ON public.team_invitations           TO authenticated;
+GRANT SELECT, DELETE ON public.teams, public.team_members TO authenticated;
+
+-- Users read their own profile. Writes go through save_user_consent.
+GRANT SELECT ON public.user_profiles TO authenticated;
+
+-- ============================================================================
+-- 3. The reset took effect
+-- ============================================================================
+-- REVOKE and GRANT only warn when the role running them does not own the
+-- table. The migration would then finish without changing a privilege. Fail
+-- instead, so the deployment stops and the cause gets fixed.
+DO $$
+DECLARE
+  v_open text;
+BEGIN
+  SELECT string_agg(DISTINCT c.relname::text, ', ')
+  INTO   v_open
+  FROM   pg_catalog.pg_class c
+  CROSS JOIN unnest(ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'TRUNCATE',
+                          'REFERENCES', 'TRIGGER']) AS p(privilege)
+  WHERE  c.relnamespace = 'public'::regnamespace
+  AND    c.relname IN ('teams', 'team_members', 'team_invitations', 'team_member_details',
+                       'user_profiles', 'user_completed_workouts', 'user_exercises',
+                       'strength_tests')
+  AND    pg_catalog.has_table_privilege('anon', c.oid, p.privilege);
+
+  IF v_open IS NOT NULL THEN
+    RAISE EXCEPTION 'anon still holds table privileges: %', v_open
+      USING HINT = 'The tables must be owned by the role that runs this migration.';
+  END IF;
+END;
+$$;
+
+-- ============================================================================
+-- 4. Future objects start without grants
+-- ============================================================================
+-- Projects created before the 2026 change may still hand out the old defaults
+-- to tables, sequences and functions that postgres creates. Remove them, so a
+-- new object is closed until its migration grants access. This does nothing
+-- where the defaults are already strict. service_role keeps its defaults.
+--
+-- Two things stay the job of each migration:
+--   * A new function is still executable by PUBLIC, a Postgres default that
+--     cannot be changed per schema. Revoke it there, as the functions so far do.
+--   * A serial or identity column needs USAGE on its sequence for every role
+--     that inserts.
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  REVOKE ALL ON TABLES FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  REVOKE ALL ON SEQUENCES FROM anon, authenticated;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  REVOKE ALL ON FUNCTIONS FROM anon, authenticated;
+
+-- ============================================================================
+-- 5. Functions
+-- ============================================================================
+-- Trigger functions are never called directly. A trigger fires without an
+-- EXECUTE check on the caller, so no API role needs the privilege.
+REVOKE EXECUTE ON FUNCTION public.update_updated_at_column()
+  FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.update_consent_updated_at()
+  FROM PUBLIC, anon, authenticated;
+
+-- service_role maintains sport_tests. The CHECK constraint on translations
+-- calls this function with the rights of the writing role. Without default
+-- privileges service_role has no EXECUTE on it and every insert fails.
+GRANT EXECUTE ON FUNCTION public.is_valid_sport_test_translations(jsonb) TO service_role;
+
+COMMIT;

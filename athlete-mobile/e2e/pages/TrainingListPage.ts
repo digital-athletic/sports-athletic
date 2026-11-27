@@ -232,8 +232,10 @@ export class TrainingListPage extends BasePage {
     await this.waitForSheetChange([setBefore]);
   }
 
+  /** Starts a row and waits until the sheet shows its set and runs the timer. */
   async startRow(testId: string) {
     await this.startFor(testId).click({ timeout: 3000 });
+    await expect(this.sheetSet).toBeVisible();
   }
 
   /** The entry of an exercise, found by its visible name. */
@@ -251,14 +253,7 @@ export class TrainingListPage extends BasePage {
    * and the next row's exercise name.
    */
   async firstRowFollowedByRest() {
-    const rowIndices = await this.page
-      .locator('[data-testid^="training-list-row-"]')
-      .evaluateAll((elements) =>
-        elements
-          .map((element) => element.getAttribute("data-testid") ?? "")
-          .filter((id) => /^training-list-row-\d+$/.test(id))
-          .map((id) => Number(id.replace("training-list-row-", ""))),
-      );
+    const rowIndices = await this.rowIndices();
     const position = rowIndices.findIndex(
       (index, i) => rowIndices[i + 1] === index + 2,
     );
@@ -275,6 +270,24 @@ export class TrainingListPage extends BasePage {
       restIndex: setIndex + 1,
       nextExerciseName: nextExerciseName.trim(),
     };
+  }
+
+  /** Set list index of each row's first set, top to bottom, e.g. [0, 2, 5]. */
+  private async rowIndices(): Promise<number[]> {
+    return this.page
+      .locator('[data-testid^="training-list-row-"]')
+      .evaluateAll((elements) =>
+        elements
+          .map((element) => element.getAttribute("data-testid") ?? "")
+          .filter((id) => /^training-list-row-\d+$/.test(id))
+          .map((id) => Number(id.replace("training-list-row-", ""))),
+      );
+  }
+
+  /** Set list index of the set the open sheet shows. */
+  private async sheetSetIndex(): Promise<number> {
+    const id = await this.currentSheetSet();
+    return Number(id?.replace("training-list-sheet-set-", ""));
   }
 
   async expectRowCompleted(testId: string) {
@@ -462,15 +475,23 @@ export class TrainingListPage extends BasePage {
   /**
    * Completes the first open exercises set by set until the given number of
    * entries is done, then closes the sheet, as Next leads on to the next exercise.
+   * An exercise is done once the sheet closes or shows a set of a later row.
+   * Superset sets interleave, so the helper fits workouts without a superset.
    */
   async completeExercises(count: number) {
     const openBefore = await this.startButtons.count();
-    for (let i = 0; i < 60; i++) {
-      if (openBefore - (await this.startButtons.count()) >= count) break;
+    const rowIndices = await this.rowIndices();
+    let done = 0;
+    for (let i = 0; i < 60 && done < count; i++) {
       if (!(await this.sheet.isVisible().catch(() => false))) {
         await this.firstStartButton.click({ timeout: 3000 });
       }
-      await this.completeSheetSet();
+      const setIndex = await this.sheetSetIndex();
+      const nextRowIndex =
+        rowIndices.find((index) => index > setIndex) ?? Infinity;
+
+      const closed = await this.completeSheetSet();
+      if (closed || (await this.sheetSetIndex()) >= nextRowIndex) done++;
     }
     if (await this.sheet.isVisible().catch(() => false)) {
       await this.dismissSheet();

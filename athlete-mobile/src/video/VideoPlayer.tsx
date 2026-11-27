@@ -7,7 +7,11 @@ import { Box } from "@/theme/Box";
 import { Text } from "@/theme/Text";
 import { useWindowClass } from "@/theme/useWindowClass";
 import { useEvent } from "expo";
-import { useVideoPlayer, VideoView } from "expo-video";
+import {
+  type VideoPlayer as VideoPlayerInstance,
+  useVideoPlayer,
+  VideoView,
+} from "expo-video";
 import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
@@ -41,6 +45,20 @@ const useVideoFrame = (fillColumnInTallLandscape: boolean | undefined) => {
   return fillColumnInTallLandscape && isTallLandscape
     ? COLUMN_FRAME
     : FIXED_FRAME;
+};
+
+/**
+ * Whether the video plays. On web, expo-video keeps `playing` true when the
+ * source fails after play(), so the hook treats status `error` as not playing.
+ */
+const useIsVideoPlaying = (player: VideoPlayerInstance): boolean => {
+  const { isPlaying } = useEvent(player, "playingChange", {
+    isPlaying: player.playing,
+  });
+  const { status } = useEvent(player, "statusChange", {
+    status: player.status,
+  });
+  return isPlaying && status !== "error";
 };
 
 type Props = {
@@ -116,9 +134,7 @@ export const VideoPlayer: FC<Props> = ({
     loadVideo();
   }, [source, isTutorial, player, retryCount, t]);
 
-  const { isPlaying } = useEvent(player, "playingChange", {
-    isPlaying: player.playing,
-  });
+  const isPlaying = useIsVideoPlaying(player);
 
   useEffect(() => {
     setIsVideoPlaying?.(isPlaying);

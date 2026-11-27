@@ -16,6 +16,7 @@ import { Button } from "@/theme/Button";
 import { Text } from "@/theme/Text";
 import { useTheme } from "@/theme/theme";
 import { BackHeader } from "@/common/BackHeader";
+import { ContentColumn, useContentColumnStyle } from "@/common/ContentColumn";
 import { Stack, useRouter } from "expo-router";
 import { type FC, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -77,6 +78,7 @@ const ManualStrengthTestScreen: FC = () => {
   const { colors } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const columnStyle = useContentColumnStyle();
 
   const storeStrengthTestResult = useStoreStrengthTestResult();
   const workoutMaxValues = useUserWorkoutStore(
@@ -261,21 +263,23 @@ const ManualStrengthTestScreen: FC = () => {
           }}
         />
         <Box flex={1} backgroundColor="surface">
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <ScrollView contentContainerStyle={[{ flexGrow: 1 }, columnStyle]}>
             <Box flex={1} paddingVertical="m">
               <PowerTest isSuccessScreen={true} />
             </Box>
           </ScrollView>
 
           <Box padding="l">
-            <Button
-              variant="primary"
-              onPress={handleGoOn}
-              testID="manual-test-go-on-button"
-              style={{ marginBottom: insets.bottom }}
-            >
-              {t("training.success.goOn")}
-            </Button>
+            <ContentColumn>
+              <Button
+                variant="primary"
+                onPress={handleGoOn}
+                testID="manual-test-go-on-button"
+                style={{ marginBottom: insets.bottom }}
+              >
+                {t("training.success.goOn")}
+              </Button>
+            </ContentColumn>
           </Box>
         </Box>
       </>
@@ -292,7 +296,7 @@ const ManualStrengthTestScreen: FC = () => {
       />
       <Box flex={1} backgroundColor="surface">
         <KeyboardAwareScrollView
-          contentContainerStyle={{ flexGrow: 1, padding: 16 }}
+          contentContainerStyle={[{ flexGrow: 1, padding: 16 }, columnStyle]}
         >
           <Text variant="body" color="onSurfaceVariant" marginBottom="s">
             {t("training.manualStrengthTest.description")}
@@ -311,14 +315,16 @@ const ManualStrengthTestScreen: FC = () => {
         </KeyboardAwareScrollView>
 
         <Box padding="l">
-          <Button
-            variant="primary"
-            onPress={handleSave}
-            testID="manual-test-save-button"
-            style={{ marginBottom: insets.bottom }}
-          >
-            {t("training.manualStrengthTest.save")}
-          </Button>
+          <ContentColumn>
+            <Button
+              variant="primary"
+              onPress={handleSave}
+              testID="manual-test-save-button"
+              style={{ marginBottom: insets.bottom }}
+            >
+              {t("training.manualStrengthTest.save")}
+            </Button>
+          </ContentColumn>
         </Box>
       </Box>
     </>

@@ -1,5 +1,8 @@
-import { render } from "@/utils/testUtils";
+import { fireEvent, render } from "@/utils/testUtils";
 import { PowerTest } from "./PowerTest";
+
+// The chart box measures 400 points, as on a phone of 448 points.
+const LAYOUT_EVENT = { nativeEvent: { layout: { width: 400 } } };
 
 // Default mock chart data
 const mockChartData = {
@@ -40,7 +43,12 @@ describe("PowerTest LineChart", () => {
 
   describe("data transformation", () => {
     it("passes primary data series with inline labels", async () => {
-      await render(<PowerTest />);
+      const { getByTestId } = await render(<PowerTest />);
+      await fireEvent(
+        getByTestId("power-test-line-chart"),
+        "layout",
+        LAYOUT_EVENT,
+      );
 
       const data = capturedProps?.data as {
         value: number;
@@ -65,13 +73,24 @@ describe("PowerTest LineChart", () => {
     });
 
     it("does not pass xAxisLabelTexts prop (labels are inline)", async () => {
-      await render(<PowerTest />);
+      const { getByTestId } = await render(<PowerTest />);
+      await fireEvent(
+        getByTestId("power-test-line-chart"),
+        "layout",
+        LAYOUT_EVENT,
+      );
 
+      expect(capturedProps).not.toBeNull();
       expect(capturedProps?.xAxisLabelTexts).toBeUndefined();
     });
 
     it("passes secondary series without labels", async () => {
-      await render(<PowerTest />);
+      const { getByTestId } = await render(<PowerTest />);
+      await fireEvent(
+        getByTestId("power-test-line-chart"),
+        "layout",
+        LAYOUT_EVENT,
+      );
 
       const data2 = capturedProps?.data2 as { value: number }[];
       expect(data2[1]).toEqual({ value: 70 });
@@ -79,7 +98,12 @@ describe("PowerTest LineChart", () => {
     });
 
     it("passes all five data series with correct colors", async () => {
-      await render(<PowerTest />);
+      const { getByTestId } = await render(<PowerTest />);
+      await fireEvent(
+        getByTestId("power-test-line-chart"),
+        "layout",
+        LAYOUT_EVENT,
+      );
 
       expect({
         color: capturedProps?.color,
@@ -99,7 +123,12 @@ describe("PowerTest LineChart", () => {
 
   describe("chart configuration", () => {
     it("passes correct Y-axis configuration", async () => {
-      await render(<PowerTest />);
+      const { getByTestId } = await render(<PowerTest />);
+      await fireEvent(
+        getByTestId("power-test-line-chart"),
+        "layout",
+        LAYOUT_EVENT,
+      );
 
       expect({
         maxValue: capturedProps?.maxValue,
@@ -111,7 +140,12 @@ describe("PowerTest LineChart", () => {
     });
 
     it("hides all data points to match design", async () => {
-      await render(<PowerTest />);
+      const { getByTestId } = await render(<PowerTest />);
+      await fireEvent(
+        getByTestId("power-test-line-chart"),
+        "layout",
+        LAYOUT_EVENT,
+      );
 
       expect({
         hideDataPoints: capturedProps?.hideDataPoints,
@@ -129,9 +163,33 @@ describe("PowerTest LineChart", () => {
     });
 
     it("disables vertical grid lines", async () => {
-      await render(<PowerTest />);
+      const { getByTestId } = await render(<PowerTest />);
+      await fireEvent(
+        getByTestId("power-test-line-chart"),
+        "layout",
+        LAYOUT_EVENT,
+      );
 
       expect(capturedProps?.showVerticalLines).toBe(false);
+    });
+  });
+
+  describe("width", () => {
+    it("sizes the chart from its box, leaving room for padding and y axis labels", async () => {
+      const { getByTestId } = await render(<PowerTest />);
+      await fireEvent(
+        getByTestId("power-test-line-chart"),
+        "layout",
+        LAYOUT_EVENT,
+      );
+
+      expect(capturedProps?.width).toBe(348);
+    });
+
+    it("renders no chart before its box is measured", async () => {
+      await render(<PowerTest />);
+
+      expect(capturedProps).toBeNull();
     });
   });
 

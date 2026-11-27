@@ -2,8 +2,8 @@ import { usePowerTestData } from "@/features/statistics/hooks/usePowerTestData";
 import type { ScaleType } from "@/features/statistics/models/WorkoutsData";
 import { Box } from "@/theme/Box";
 import { useTheme } from "@/theme/theme";
-import { type FC } from "react";
-import { useWindowDimensions } from "react-native";
+import { type FC, useState } from "react";
+import { type LayoutChangeEvent } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 import {
   LINE_CHART_AXIS,
@@ -19,6 +19,9 @@ import {
   transformToLineData,
 } from "./lineChartUtils";
 
+// Room for the padding and the y axis labels inside the measured box.
+const CHART_INSET = 52;
+
 interface PowerTestChartProps {
   /** Undefined shows the whole history. */
   scale?: ScaleType;
@@ -30,11 +33,10 @@ interface PowerTestChartProps {
  */
 export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
   const { chartData } = usePowerTestData({ scale });
-  const { width: screenWidth } = useWindowDimensions();
   const chartColors = lineChartColors(useTheme().colors);
+  const [boxWidth, setBoxWidth] = useState(0);
 
-  // Chart width with right margin
-  const chartWidth = screenWidth - 100;
+  const chartWidth = Math.max(boxWidth - CHART_INSET, 0);
 
   // Transform data for LineChart (labels embedded in primary series, max 6 visible)
   const lineData = transformToLineData(chartData);
@@ -62,68 +64,73 @@ export const PowerTest: FC<PowerTestChartProps> = ({ scale }) => {
       paddingHorizontal="m"
       marginTop="m"
       marginRight={"m"}
+      onLayout={(event: LayoutChangeEvent) =>
+        setBoxWidth(event.nativeEvent.layout.width)
+      }
     >
-      <LineChart
-        // Data series
-        data={lineData.squad}
-        data2={lineData.deadlift}
-        data3={lineData.benchPress}
-        data4={lineData.rowing}
-        data5={lineData.shoulderPress}
-        // Sizing
-        height={LINE_CHART_SIZING.chartHeight}
-        width={chartWidth}
-        initialSpacing={LINE_CHART_SIZING.yAxisOffset}
-        spacing={spacing}
-        endSpacing={0}
-        // Line colors
-        color={chartColors.squad}
-        color2={chartColors.deadlift}
-        color3={chartColors.benchPress}
-        color4={chartColors.rowing}
-        color5={chartColors.shoulderPress}
-        // Line styling
-        thickness={LINE_CHART_STYLE.thickness}
-        thickness2={LINE_CHART_STYLE.thickness}
-        thickness3={LINE_CHART_STYLE.thickness}
-        thickness4={LINE_CHART_STYLE.thickness}
-        thickness5={LINE_CHART_STYLE.thickness}
-        curved={LINE_CHART_STYLE.curved}
-        areaChart={LINE_CHART_STYLE.areaChart}
-        // Data points (hidden to match design)
-        hideDataPoints
-        hideDataPoints2
-        hideDataPoints3
-        hideDataPoints4
-        hideDataPoints5
-        yAxisTextStyle={{
-          color: chartColors.axisText,
-          fontSize: LINE_CHART_AXIS.fontSize,
-        }}
-        yAxisLabelSuffix={LINE_CHART_AXIS.yAxisSuffix}
-        yAxisOffset={0}
-        yAxisLabelWidth={LINE_CHART_SIZING.yAxisLabelWidth}
-        // X-axis labels are embedded in data items via label and showXAxisIndex
-        xAxisLabelTextStyle={{
-          color: chartColors.axisText,
-          fontSize: LINE_CHART_AXIS.fontSize,
-          marginLeft: 10,
-        }}
-        labelsExtraHeight={30}
-        xAxisColor={chartColors.axisLine}
-        yAxisColor={chartColors.axisLine}
-        // Grid configuration
-        showVerticalLines={LINE_CHART_AXIS.showVerticalLines}
-        rulesType="solid"
-        rulesColor={chartColors.grid}
-        rulesThickness={LINE_CHART_AXIS.rulesThickness}
-        // Y-axis scale configuration
-        maxValue={yAxisMax}
-        noOfSections={yAxisMax / LINE_CHART_DATA.stepValue}
-        // Scroll behavior (disabled for small datasets)
-        scrollToEnd={false}
-        isAnimated={false}
-      />
+      {boxWidth > 0 && (
+        <LineChart
+          // Data series
+          data={lineData.squad}
+          data2={lineData.deadlift}
+          data3={lineData.benchPress}
+          data4={lineData.rowing}
+          data5={lineData.shoulderPress}
+          // Sizing
+          height={LINE_CHART_SIZING.chartHeight}
+          width={chartWidth}
+          initialSpacing={LINE_CHART_SIZING.yAxisOffset}
+          spacing={spacing}
+          endSpacing={0}
+          // Line colors
+          color={chartColors.squad}
+          color2={chartColors.deadlift}
+          color3={chartColors.benchPress}
+          color4={chartColors.rowing}
+          color5={chartColors.shoulderPress}
+          // Line styling
+          thickness={LINE_CHART_STYLE.thickness}
+          thickness2={LINE_CHART_STYLE.thickness}
+          thickness3={LINE_CHART_STYLE.thickness}
+          thickness4={LINE_CHART_STYLE.thickness}
+          thickness5={LINE_CHART_STYLE.thickness}
+          curved={LINE_CHART_STYLE.curved}
+          areaChart={LINE_CHART_STYLE.areaChart}
+          // Data points (hidden to match design)
+          hideDataPoints
+          hideDataPoints2
+          hideDataPoints3
+          hideDataPoints4
+          hideDataPoints5
+          yAxisTextStyle={{
+            color: chartColors.axisText,
+            fontSize: LINE_CHART_AXIS.fontSize,
+          }}
+          yAxisLabelSuffix={LINE_CHART_AXIS.yAxisSuffix}
+          yAxisOffset={0}
+          yAxisLabelWidth={LINE_CHART_SIZING.yAxisLabelWidth}
+          // X-axis labels are embedded in data items via label and showXAxisIndex
+          xAxisLabelTextStyle={{
+            color: chartColors.axisText,
+            fontSize: LINE_CHART_AXIS.fontSize,
+            marginLeft: 10,
+          }}
+          labelsExtraHeight={30}
+          xAxisColor={chartColors.axisLine}
+          yAxisColor={chartColors.axisLine}
+          // Grid configuration
+          showVerticalLines={LINE_CHART_AXIS.showVerticalLines}
+          rulesType="solid"
+          rulesColor={chartColors.grid}
+          rulesThickness={LINE_CHART_AXIS.rulesThickness}
+          // Y-axis scale configuration
+          maxValue={yAxisMax}
+          noOfSections={yAxisMax / LINE_CHART_DATA.stepValue}
+          // Scroll behavior (disabled for small datasets)
+          scrollToEnd={false}
+          isAnimated={false}
+        />
+      )}
     </Box>
   );
 };

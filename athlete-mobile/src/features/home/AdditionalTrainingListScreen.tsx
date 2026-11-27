@@ -56,6 +56,7 @@ export default function AdditionalTrainingListScreen() {
       title={t("screens.home.additionalTrainings.title")}
       heading={t("screens.home.additionalTrainings.title")}
       description={t("screens.home.additionalTrainings.subtitle")}
+      wide
     >
       <Box gap="l">
         <TileGrid testID="additional-training-grid">

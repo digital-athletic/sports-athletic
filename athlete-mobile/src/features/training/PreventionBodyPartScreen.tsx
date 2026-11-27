@@ -69,6 +69,7 @@ export const PreventionBodyPartScreen: FC<PreventionBodyPartScreenProps> = ({
       title={title}
       eyebrow={t("training.prevention.selection.eyebrow")}
       heading={t("training.prevention.selection.heading")}
+      wide
       description={t("training.prevention.selection.description")}
       onBack={onBack}
     >

@@ -9,6 +9,7 @@ import { type FC, type PropsWithChildren, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ContentColumn } from "./ContentColumn";
 import { StepProgress } from "./StepProgress";
 
 type Step = { current: number; total: number };
@@ -29,9 +30,28 @@ type HeadlineScreenProps = PropsWithChildren<{
   headerRight?: ReactNode;
   /** Main button, pinned to the bottom. Without it the screen has no footer. */
   action?: Action;
+  /** Uses the full window width on a tablet, for content that adapts to it, like a tile grid. */
+  wide?: boolean;
 }>;
 
-const Footer: FC<{ action: Action }> = ({ action }) => {
+type ColumnProps = PropsWithChildren<{
+  wide: boolean;
+  testID: string;
+  gap?: "xl";
+}>;
+
+const Column: FC<ColumnProps> = ({ wide, testID, gap, children }) =>
+  wide ? (
+    <Box testID={testID} gap={gap}>
+      {children}
+    </Box>
+  ) : (
+    <ContentColumn testID={testID} gap={gap}>
+      {children}
+    </ContentColumn>
+  );
+
+const Footer: FC<{ action: Action; wide: boolean }> = ({ action, wide }) => {
   const insets = useSafeAreaInsets();
   const { spacing } = useTheme();
 
@@ -44,9 +64,15 @@ const Footer: FC<{ action: Action }> = ({ action }) => {
       borderTopColor="outlineVariant"
       style={{ paddingBottom: Math.max(insets.bottom, spacing.l) }}
     >
-      <Button variant="cta" onPress={action.onPress} disabled={action.disabled}>
-        {action.label}
-      </Button>
+      <Column wide={wide} testID="headline-screen-footer-column">
+        <Button
+          variant="cta"
+          onPress={action.onPress}
+          disabled={action.disabled}
+        >
+          {action.label}
+        </Button>
+      </Column>
     </Box>
   );
 };
@@ -65,6 +91,7 @@ export const HeadlineScreen: FC<HeadlineScreenProps> = ({
   onBack,
   headerRight,
   action,
+  wide = false,
   children,
 }) => {
   const { t } = useTranslation();
@@ -90,22 +117,26 @@ export const HeadlineScreen: FC<HeadlineScreenProps> = ({
           flex={1}
           contentInsetAdjustmentBehavior="automatic"
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ padding: spacing.l, gap: spacing.xl }}
+          contentContainerStyle={{ padding: spacing.l }}
         >
-          <Box gap="s">
-            {eyebrowText ? <Text variant="eyebrow">{eyebrowText}</Text> : null}
-            <Text variant="display" accessibilityRole="header">
-              {heading}
-            </Text>
-            {description && (
-              <Text variant="subtitle" color="onSurfaceVariant">
-                {description}
+          <Column wide={wide} testID="headline-screen-column" gap="xl">
+            <Box gap="s">
+              {eyebrowText ? (
+                <Text variant="eyebrow">{eyebrowText}</Text>
+              ) : null}
+              <Text variant="display" accessibilityRole="header">
+                {heading}
               </Text>
-            )}
-          </Box>
-          {children}
+              {description && (
+                <Text variant="subtitle" color="onSurfaceVariant">
+                  {description}
+                </Text>
+              )}
+            </Box>
+            {children}
+          </Column>
         </ScrollBox>
-        {action && <Footer action={action} />}
+        {action && <Footer action={action} wide={wide} />}
       </Box>
     </>
   );

@@ -180,7 +180,7 @@ const TestDetail: FC<{ test: SportTest }> = ({ test }) => {
   const reference = useReferenceLine(test, range);
 
   return (
-    <HeadlineScreen title={name} heading={name} description={reference}>
+    <HeadlineScreen title={name} heading={name} description={reference} wide>
       <Box gap="s">
         <SummaryCard test={test} values={values} />
         <ChartCard test={test} values={values} />
